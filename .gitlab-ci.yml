@@ -1,20 +1,20 @@
 stages:
-  # - compile
+  - compile
   - test
-  #- deploy
+  - deploy
 
 include:
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  ref: issue1_multipleStages
-  #  file: 'pylint.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  ref: issue1_multipleStages
-  #  file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  ref: issue1_multipleStages
-  #  file: 'pages/pages.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    ref: issue1_multipleStages
+    file: 'pylint.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    ref: issue1_multipleStages
+    file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    ref: issue1_multipleStages
+    file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     ref: issue1_multipleStages
     file: 'tests/tests.gitlab-ci.yml'
-  #- template: Dependency-Scanning.gitlab-ci.yml
-  #- template: SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
