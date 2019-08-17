@@ -1,0 +1,15 @@
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+modelicares
+tables
+h5py
+seaborn
+IPython
+pydot
+psutil
+xlrd
+SALib
+PyQt5
