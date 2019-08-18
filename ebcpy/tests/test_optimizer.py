@@ -4,7 +4,7 @@ ebcpy.optimizer."""
 import unittest
 import os
 import shutil
-from ebcpy.optimizer import Optimizer, Calibrator
+from ebcpy.optimizer import Optimizer
 import numpy as np
 
 
@@ -59,7 +59,7 @@ class TestOptimizer(unittest.TestCase):
         self.assertEqual(0.0, np.round(delta_solution, 3))
 
     def tearDown(self):
-        """Remove all created folders while calibrating."""
+        """Remove all created folders while optimizing."""
         shutil.rmtree(self.example_opt_dir)
 
 
