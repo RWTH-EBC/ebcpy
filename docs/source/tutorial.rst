@@ -1,4 +1,4 @@
-How to use AixCal
+How to use ebcpy
 =====================
 
 As this framework supports multiple stages in the process of calibration,
@@ -26,14 +26,3 @@ simulation in Modelica.
 All functions in the pre-processing module should have a doctest. We refer to the example
 in this doctest for a better understanding of the functions. If you don't understand the behaviour of
 a function or the meaning, please raise an issue.
-
-Segmentation
--------------
-
-
-Sensitivity Analysis
----------------------
-
-
-Calibration
-------------

@@ -53,9 +53,6 @@ class Optimizer:
     # The maximal number of function evaluations in dlib is 1e9.
     solver_epsilon = 0
     num_function_calls = int(1e9)
-    # The maximal number of function evaluations in dlib is 1e9.
-    solver_epsilon = 0
-    num_function_calls = int(1e9)
     show_plot = True
 
     # Define the list of supported kwargs:
@@ -172,39 +169,3 @@ class Optimizer:
         parameters
         """
         return self.obj(np.array(args))
-
-
-class Calibrator(Optimizer):
-    """Base class for calibration in ebcpy. All classes
-    performing calibration tasks must inherit from this
-    class.
-    """
-
-    tuner_paras = data_types.TunerParas
-    goals = data_types.Goals
-
-    def __init__(self, cd, sim_api, statistical_measure, **kwargs):
-        super().__init__(cd, **kwargs)
-        self.sim_api = sim_api
-        self.statistical_measure = statistical_measure
-
-    @abstractmethod
-    def obj(self, xk, *args):
-        raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
-
-    @abstractmethod
-    def run(self, method, framework):
-        super().run(method, framework)
-
-    @abstractmethod
-    def validate(self, goals):
-        """
-        Function to use different measurement data and run the objective function
-        again to validate the calibration. The final parameter vector of the
-        calibration is used.
-
-        :param data_types.Goals goals:
-            Goals with data to be validated
-        """
-        raise NotImplementedError('{}.validate function is not'
-                                  ' defined'.format(self.__class__.__name__))
