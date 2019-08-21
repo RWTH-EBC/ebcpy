@@ -1,12 +1,13 @@
 stages:
-  - compile
+  - doc
+  - code_quality
   - test
   - deploy
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     ref: issue1_multipleStages
-    file: 'pylint.gitlab-ci.yml'
+    file: 'Code-Quality/pylint.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     ref: issue1_multipleStages
     file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
