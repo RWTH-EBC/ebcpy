@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# AixCaliBuHa documentation build configuration file, created by
+# ebcpy documentation build configuration file, created by
 # sphinx-quickstart on Thu Jul 11 11:40:00 2019.
 #
 # This file is execfile()d with the current directory set to its
@@ -55,7 +55,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'AixCaliBuHa'
+project = 'ebcpy'
 copyright = '2019, EON EBC'
 author = 'EON EBC'
 
@@ -121,7 +121,7 @@ html_sidebars = {
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'AixCaliBuHadoc'
+htmlhelp_basename = 'ebcpydoc'
 
 
 # -- Options for LaTeX output ---------------------------------------------
@@ -148,7 +148,7 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'AixCaliBuHa.tex', 'AixCaliBuHa Documentation',
+    (master_doc, 'ebcpy.tex', 'ebcpy Documentation',
      'EON EBC', 'manual'),
 ]
 
@@ -158,7 +158,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, 'aixcalibuha', 'AixCaliBuHa Documentation',
+    (master_doc, 'ebcpy', 'ebcpy Documentation',
      [author], 1)
 ]
 
@@ -169,8 +169,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'AixCaliBuHa', 'AixCaliBuHa Documentation',
-     author, 'AixCaliBuHa', 'One line description of project.',
+    (master_doc, 'ebcpy', 'ebcpy Documentation',
+     author, 'ebcpy', 'One line description of project.',
      'Miscellaneous'),
 ]
 
