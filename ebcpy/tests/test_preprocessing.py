@@ -20,13 +20,13 @@ class TestConversion(unittest.TestCase):
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.normpath(self.framework_dir + "//examples")
         self.example_data_hdf_path = os.path.normpath(self.example_dir +
-                                                      "//data//example_data.hdf")
+                                                      "//example_data.hdf")
 
     def test_conversion_hdf_to_mat(self):
         """Test function conversion.convert_hdf_to_mat().
         For an example, see the doctest in the function."""
         # First convert the file
-        save_path = os.path.normpath(self.example_dir + "//data//example_data_converted.mat")
+        save_path = os.path.normpath(self.example_dir + "//example_data_converted.mat")
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
@@ -55,7 +55,7 @@ class TestPreProcessing(unittest.TestCase):
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.normpath(self.framework_dir + "//examples")
         self.example_data_hdf_path = os.path.normpath(self.example_dir +
-                                                      "//data//example_data.hdf")
+                                                      "//example_data.hdf")
 
     def test_build_average_on_duplicate_rows(self):
         """Test function of preprocessing.build_average_on_duplicate_rows().

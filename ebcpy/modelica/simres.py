@@ -37,7 +37,7 @@ def to_pandas(sim, names=None, aliases=None, with_unit=True):
 
     >>> from modelicares import SimRes
     >>> dir_path = os.path.dirname(os.path.dirname(__file__))
-    >>> sim = SimRes(dir_path + '\\examples\\data\\ChuaCircuit.mat')
+    >>> sim = SimRes(dir_path + '\\examples\\ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
     >>> to_pandas(sim, voltages) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
                 C1.v / V  C2.v / V   G.v / V   L.v / V  Nr.v / V  Ro.v / V
@@ -49,7 +49,7 @@ def to_pandas(sim, names=None, aliases=None, with_unit=True):
 
     >>> from modelicares import SimRes
     >>> dir_path = os.path.dirname(os.path.dirname(__file__))
-    >>> sim = SimRes(dir_path + '\\examples\\data\\ChuaCircuit.mat')
+    >>> sim = SimRes(dir_path + '\\examples\\ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
     >>> to_pandas(sim, voltages, with_unit=False) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
               C1.v      C2.v      G.v       L.v       Nr.v      Ro.v
