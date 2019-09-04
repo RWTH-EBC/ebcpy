@@ -19,18 +19,18 @@ class TestOptimizer(unittest.TestCase):
         self.example_opt_dir = os.path.normpath(self.example_dir + "//test_optimization")
         self.supported_frameworks = ["scipy", "dlib"]
 
-    def test_optimizer_base_class(self):
+    def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
-        opt = Optimizer(self.example_opt_dir)
+        opt = Optimizer("scipy", self.example_opt_dir)
         for _framework in self.supported_frameworks:
             if _framework == "scipy":
                 reference_function = opt._minimize_scipy
             elif _framework == "dlib":
                 reference_function = opt._minimize_dlib
-            opt.run("dummy_method", _framework)
+            opt._choose_framework(_framework)
             self.assertEqual(opt._minimize_func, reference_function)
         with self.assertRaises(TypeError):
-            opt.run("dummy_method", "not_supported_framework")
+            opt._choose_framework("not_supported_framework")
 
     def test_custom_optimizer(self):
         """Test-case for the customization of the optimization-base-class."""
@@ -38,6 +38,7 @@ class TestOptimizer(unittest.TestCase):
         class CustomOptimizer(Optimizer):
 
             x_goal = np.random.rand(3)
+            x0 = np.array([0, 0, 0])
 
             def obj(self, xk, *args):
                 x_data = np.linspace(-2, 2, 100)
@@ -48,19 +49,17 @@ class TestOptimizer(unittest.TestCase):
                 # Return the MAE of the quadratic function.
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
-            def run(self, method, framework):
-                super().run(method, framework)
-                self.x0 = np.array([0, 0, 0])
-                return self._minimize_func(method)
-
-        my_custom_optimizer = CustomOptimizer(self.example_opt_dir)
-        res = my_custom_optimizer.run("L-BFGS-B", "scipy")
+        my_custom_optimizer = CustomOptimizer("scipy", self.example_opt_dir)
+        res = my_custom_optimizer.optimize("L-BFGS-B")
         delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
 
     def tearDown(self):
         """Remove all created folders while optimizing."""
-        shutil.rmtree(self.example_opt_dir)
+        try:
+            shutil.rmtree(self.example_opt_dir)
+        except (FileNotFoundError, PermissionError):
+            pass
 
 
 if __name__ == "__main__":

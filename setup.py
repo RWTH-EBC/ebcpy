@@ -1,8 +1,6 @@
 """Setup.py script for the ebcpy-framework"""
 
 import setuptools
-import pip
-from packaging import version
 
 install_requires = ['numpy',
                     'scipy',
