@@ -1,9 +1,9 @@
 numpy
 scipy
 pandas
-matplotlib
+matplotlib<=3.0
 scikit-learn
-modelicares
+modelicares==0.12.2
 tables
 h5py
 seaborn
@@ -13,3 +13,4 @@ psutil
 xlrd
 SALib
 PyQt5
+sklearn

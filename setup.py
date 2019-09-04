@@ -5,7 +5,7 @@ import setuptools
 install_requires = ['numpy',
                     'scipy',
                     'pandas',
-                    'matplotlib',
+                    'matplotlib<=3.0',  # matplotlib 3.1 does not support python 3.5
                     'h5py',
                     'SALib',
                     'pydot',
@@ -13,7 +13,7 @@ install_requires = ['numpy',
                     'modelicares'
                     ]
 setup_requires = install_requires.copy()  # Add all open-source packages to setup-requires
-#install_requires.append('dlib')
+install_requires.append('dlib')
 
 setuptools.setup(name='ebcpy',
                  version='0.1',
