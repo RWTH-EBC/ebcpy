@@ -411,9 +411,35 @@ def interquartile_range(x):
 
 
 def cross_validation(x, y, test_size=0.3):
-    """Split data set randomly with test_size
+    """
+    Split data set randomly with test_size
     (if test_size = 0.30 --> 70 % are training data).
     You can use this function for segmentation tasks.
     Time-series-data may not be splitted with this function
-    as the results are not coherent (time-wise)."""
+    as the results are not coherent (time-wise).
+
+    :param x:
+        Indexables with same length / shape[0] as y.
+        Allowed inputs are lists, numpy arrays, scipy-sparse
+        matrices or pandas dataframes.
+    :param list,np.ndarray,pd.DataFrame y:
+        Indexables with same length / shape[0] as x.
+        Allowed inputs are lists, numpy arrays, scipy-sparse
+        matrices or pandas dataframes.
+    :param float test_size:
+        Value between 0 and 1 specifying what percentage of the data
+        will be used for testing.
+    :return: list
+        Split data into 4 objects. The order is:
+        x_train, x_test, y_train, y_test
+
+    Examples:
+
+    >>> import numpy as np
+    >>> x = np.random.rand(100)
+    >>> y = np.random.rand(100)
+    >>> ret = cross_validation(x, y)
+    >>> len(ret)
+    4
+    """
     return model_selection.train_test_split(x, y, test_size=test_size)

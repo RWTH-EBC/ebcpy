@@ -296,9 +296,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             if structural_para in initial_names:
                 # Get the location of the parameter for
                 # extraction of the corresponding initial value
-                for k in range(0, len(initial_names)):
-                    if initial_names[k] == structural_para:
-                        break
+                k = initial_names.index(structural_para)
                 all_modifiers.append("%s = %s" % (structural_para, initial_values[k]))
         altered_model_name = "%s(%s)" % (model_name, ",".join(all_modifiers))
         return altered_model_name

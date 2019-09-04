@@ -21,6 +21,7 @@ class Logger:
     :param str name:
         Name of the reason of logging, e.g. classification, processing etc.
     """
+
     def __init__(self, cd, name):
         """Instantiate class parameters"""
 
@@ -38,12 +39,6 @@ class Logger:
                 log_file.seek(0)
                 if log_file.read() != "":
                     log_file.write("\n" + _spacer)
-
-        self.integer_prec = 4  # Number of integer parts
-        self.decimal_prec = 6
-        self._counter_calibration = 0  # Number of function calls of calibration
-        self._prec = self.decimal_prec
-        self._width = self.integer_prec + self.decimal_prec + 1  # Calculate the actual width
 
     def log(self, text):
         """

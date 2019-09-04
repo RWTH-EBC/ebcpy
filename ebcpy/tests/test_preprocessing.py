@@ -114,7 +114,7 @@ class TestPreProcessing(unittest.TestCase):
         df.iloc[0, 0] = np.NaN
         df_temp = preprocessing.clean_and_space_equally_time_series(df, freq)
 
-    def test_low_pass_filter_func(self):
+    def test_low_pass_filter(self):
         """Test function of preprocessing.low_pass_filter().
         For an example, see the doctest in the function."""
         # Randomly generate all inputs to assure that different
@@ -123,14 +123,16 @@ class TestPreProcessing(unittest.TestCase):
         vals = np.random.rand(dim)
         freq = np.random.randint(1, 100)/100
         order = np.random.randint(1, 5)
-        preprocessing.low_pass_filter(vals, freq, order)
+        output = preprocessing.low_pass_filter(vals, freq, order)
+        self.assertIsInstance(output, np.ndarray)
 
-    def test_moving_average_func(self):
+    def test_moving_average(self):
         """Test function of preprocessing.moving_average().
         For an example, see the doctest in the function."""
         series = np.sin(np.linspace(-30, 30, 1000))
         window = np.random.randint(1, len(series))
-        preprocessing.moving_average(series, window)
+        output = preprocessing.moving_average(series, window)
+        self.assertIsInstance(output, np.ndarray)
 
     def test_create_on_off_signal(self):
         """Test function of preprocessing.create_on_off_signal().
@@ -187,6 +189,20 @@ class TestPreProcessing(unittest.TestCase):
         normal_dis = np.random.normal(0, 1, 1000)
         res = preprocessing.interquartile_range(normal_dis)
         self.assertIsInstance(res, np.ndarray)
+
+    def test_cross_validation(self):
+        """Test function of preprocessing.cross_validation().
+        For an example, see the doctest in the function.
+        """
+        dim = np.random.randint(1, 1000)
+        test_size = np.random.rand(1)[0]
+        x = np.random.rand(dim)
+        y = np.random.rand(dim)
+        ret = preprocessing.cross_validation(x, y, test_size=test_size)
+        self.assertEqual(len(ret), 4)
+        # Compare sizes of test and train-sets
+        self.assertEqual(len(ret[0]), len(ret[2]))
+        self.assertEqual(len(ret[1]), len(ret[3]))
 
 
 if __name__ == "__main__":
