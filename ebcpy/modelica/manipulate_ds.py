@@ -7,7 +7,8 @@ import pandas as pd
 
 
 def convert_ds_file_to_dataframe(filename):
-    """Function to convert a given dsfinal or dsfin file to a DataFrame.
+    """
+        Function to convert a given dsfinal or dsfin file to a DataFrame.
         The index is the name of the variable. Further,
         the following columns are used analog to the dsfinal:
         column 1: Type of initial value
@@ -32,10 +33,11 @@ def convert_ds_file_to_dataframe(filename):
                   = 6: auxiliary variable.
         column 6: Data type of variable and flags according to dsBaseType
 
-        :param filename: str, os.path.normpath
+        :param str,os.path.normpath filename:
             Filepath to the dsfinal or dsinto be loaded.
         :return: pd.DataFrame
-            Converted DataFrame"""
+            Converted DataFrame
+        """
     if not os.path.isfile(filename):
         raise FileNotFoundError("Given filename {} does not exists.".format(filename))
 
@@ -86,21 +88,22 @@ def convert_ds_file_to_dataframe(filename):
     return df
 
 
-def eliminate_parameters_from_ds_file(filename, savepath,
-                                      exclude_paras, eliminate_auxiliary_parameters = True):
+def eliminate_parameters_from_ds_file(filename, savepath, exclude_paras, del_aux_paras=True):
     """
     Create a new dsfinal file out of the given dsfinal.txt
     All parameteres except those listed in exclude_paras
     will be eliminated from the dsfinal file.
     Used for continuing of simulation in calibration problems.
-    :param filename: str, os.path.normpath
+
+    :param str,os.path.normpath filename:
         Filepath to the dsfinal or dsin file
-    :param savepath: str, os.path.normpath
+    :param str,os.path.normpath savepath:
         .txt-file for storing output of this function
-    :param exclude_paras: list
-        List of paramters to exclude.
-    :param eliminate_auxiliary_parameters: Boolean, default True
-        Whether to eliminate auxiliary parameters or not.
+    :param list exclude_paras:
+        List of parameters to exclude.
+    :param bool del_aux_paras:
+        Whether to delete auxiliary parameters or not.
+        Default value is True.
     :return:
     """
 
@@ -114,7 +117,7 @@ def eliminate_parameters_from_ds_file(filename, savepath,
     df = convert_ds_file_to_dataframe(filename)
 
     # Manipulate DataFrame
-    if eliminate_auxiliary_parameters:
+    if del_aux_paras:
         # Delete all rows with a parameter or an auxilliary value
         df = df[(df["5"] != "1") & (df["5"] != "6") | [idx in exclude_paras for idx in df.index]]
     else:

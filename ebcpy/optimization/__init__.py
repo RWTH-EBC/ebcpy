@@ -1,4 +1,4 @@
-"""Base-module for the whole optimizer pacakge.
+"""Base-module for the whole optimization pacakge.
 Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
@@ -15,6 +15,10 @@ class Optimizer:
     performing optimization tasks must inherit from this
     class.
 
+    :param str framework:
+        The framework (python module) you want to use to perform the optimization.
+        Currently, scipy and dlib are supported options. The further inform yourself
+        about these frameworks, please see: # TODO Add links to web-pages here
     :param str,os.path.normpath cd:
         Directory for storing all output of optimization.
     :param dict kwargs:
@@ -61,13 +65,12 @@ class Optimizer:
                          "num_function_calls", "show_plot"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
 
-    def __init__(self, cd, **kwargs):
+    def __init__(self, framework, cd, **kwargs):
         """Instantiate class parameters"""
-        # Check if given directory exists. If not, create it.
-        if not os.path.isdir(cd):
-            os.mkdir(cd)
         self.cd = cd
-        self.logger = visualizer.Logger(cd, "optimization")
+        self.logger = visualizer.Logger(self.cd, "Optimization")
+        # Select the framework to work with while optimizing.
+        self._choose_framework(framework)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -89,24 +92,43 @@ class Optimizer:
     @abstractmethod
     def obj(self, xk, *args):
         """
-        Base objective function.
+        Base objective function. Overload this function and create your own
+        objective function. Make sure that the return value is a scalar.
+        Furthermore, the parameter vector xk is always a numpy array.
 
         :param np.array xk:
             Array with parameters for optimization
+        :returns float result
+            A scalar (float/ 1d) value for the optimization framework.
         """
         raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
 
-    @abstractmethod
-    def run(self, method, framework):
+    def optimize(self, method, framework=None):
         """
-        Function to select the functions for optimization
-        and for executing said functions. This function has to be
-        overloaded, only the selection of said functions takes place here.
+        Perform the optimization based on the given method and framework.
 
         :param str method:
-            Method for optimization
+            The method you pass depends on the methods available in the framework
+            you choose.
         :param str framework:
-            String for selection of the relevant function
+            If different you want to alter the frameworks within the same script,
+            pass one of the supported frameworks as an optional argument here.
+        :return: res
+            Optimization result.
+        """
+        if framework:
+            self._choose_framework(framework)
+        res = self._minimize_func(method)
+        return res
+
+    def _choose_framework(self, framework):
+        """
+        Function to select the functions for optimization
+        and for executing said functions.
+
+        :param str framework:
+            String for selection of the relevant function. Currently,
+            scipy and dlib are supported frameworks.
         """
         if framework.lower() == "scipy":
             self._minimize_func = self._minimize_scipy

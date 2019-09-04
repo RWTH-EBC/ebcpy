@@ -1,7 +1,7 @@
 """
 This module provides useful classes for all ebcpy.
 Every data_type class should include every parameter
-other classes like optimizer etc. may need. The checking
+other classes like optimization etc. may need. The checking
 of correct input is especially relevant here as the correct
 format of data-types will prevent errors during simulations,
 optimization etc.

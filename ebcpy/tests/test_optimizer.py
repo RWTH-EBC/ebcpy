@@ -1,15 +1,15 @@
 """Test-module for all classes inside
-ebcpy.optimizer."""
+ebcpy.optimization."""
 
 import unittest
 import os
 import shutil
-from ebcpy.optimizer import Optimizer
+from ebcpy.optimization import Optimizer
 import numpy as np
 
 
 class TestOptimizer(unittest.TestCase):
-    """Test-class for optimizer class"""
+    """Test-class for optimization class"""
 
     def setUp(self):
         """Called before every test.
@@ -33,7 +33,7 @@ class TestOptimizer(unittest.TestCase):
             opt.run("dummy_method", "not_supported_framework")
 
     def test_custom_optimizer(self):
-        """Test-case for the customization of the optimizer-base-class."""
+        """Test-case for the customization of the optimization-base-class."""
         # Define the customized class:
         class CustomOptimizer(Optimizer):
 

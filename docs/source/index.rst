@@ -3,6 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
+About ebcpy
+-------------------
+
+**ebcpy** is the official python package of the Institute for Energy and Building Climate
+(EBC) from the RWTH Aachen. While the main use-case is to provide a common set of
+interfaces for different challenges concerning building-simulations, one of the
+use-cases below may lead to a direct use of this package.
+
+- Process pandas.DataFrames or numpy arrays with functions for many different, typical problems
+in the sector of Building-Simulations
+- Provide different API`s to control modelica (or dymola) simulations
+- Use a collection of functions to process or alter modelica-specific files such as .mat-files
+or dsfinal.txt / dsin.txt files
+
+
 Installation
 -------------------
 

@@ -9,37 +9,32 @@ from modelicares import util
 
 
 def to_pandas(sim, names=None, aliases={}, with_unit=True):
-    """Return a `pandas DataFrame`_ with values from selected variables.
+    """
+    Return a `pandas.DataFrame` with values from selected variables.
 
     The index is time.  The column headings indicate the variable names and
     units.
 
-    The data frame has methods for further manipulation and exporting (e.g.,
-    :meth:`~pandas.DataFrame.to_clipboard`,
-    :meth:`~pandas.DataFrame.to_csv`, :meth:`~pandas.DataFrame.to_excel`,
-    :meth:`~pandas.DataFrame.to_hdf`, and
-    :meth:`~pandas.DataFrame.to_html`).
+    :param modelicares.SimRes sim:
+        Simulation result object loaded with modelicares.SimRes.
+    :param str,list names
+         If None (default), then all variables are included.
+    :param dict aliases:
+        Dictionary of aliases for the variable names
 
-    **Arguments:**
-
-    - *names*: String or list of strings of the variable names
-
-         If *names* is *None* (default), then all variables are included.
-
-    - *aliases*: Dictionary of aliases for the variable names
-
-         The keys are the "official" variable names from the Modelica_ model
+         The keys are the "official" variable names from the Modelica model
          and the values are the names as they should be included in the
-         column headings.  Any variables not in this list will not be
-         aliased.  Any unmatched aliases will not be used.
-
-    - *with_unit*: Boolean to determine format of keys
+         column headings. Any variables not in this list will not be
+         aliased. Any unmatched aliases will not be used.
+    :param bool with_unit:
+        Boolean to determine format of keys. Default value is True.
 
         If set to True, the unit will be added to the key. As not all modelica-
         result files export the unit information, using with_unit=True can lead
         to errors.
 
     **Examples:**
+    For further examples, please see modelicares.SimRes.to_pandas # TODO insert link
 
     >>> sim = SimRes('examples/ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
@@ -51,22 +46,6 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
     ...
     [514 rows x 6 columns]
 
-    We can relabel columns using the *aliases* argument:
-
-    >>> sim = SimRes('examples/ThreeTanks.mat')
-    >>> aliases = {'tank1.level': "Tank 1 level",
-    ...            'tank2.level': "Tank 2 level",
-    ...            'tank3.level': "Tank 3 level"}
-    >>> to_pandas(sim, list(aliases), aliases) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-               Tank 1 level / m  Tank 2 level / m  Tank 3 level / m
-    Time / s
-    0.000000           8.000000          3.000000          3.000000
-    0.400000           7.974962          2.990460          3.034578
-    0.800000           7.950003          2.981036          3.068961
-    1.200000           7.925121          2.971729          3.103150
-    1.600000           7.900317          2.962539          3.137144
-    ...
-    [502 rows x 3 columns]
 
     >>> sim = SimRes('examples/ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
@@ -125,11 +104,15 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
 
 
 def get_trajectories(sim):
-    """Function to filter time-variant parameters.
+    """
+    Function to filter time-variant parameters.
 
     All variables which are trajectories are extracted from the simulation result.
     Either the length of the variable is greater than two, or the values are not
     equal. In both cases, the variable is considered to be a trajectory.
+
+    :param modelicares.SimRes sim:
+        Simulation result object loaded with modelicares.SimRes.
 
     **Examples:**
     >>> from modelicares import SimRes
