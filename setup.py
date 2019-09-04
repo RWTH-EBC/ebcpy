@@ -13,7 +13,7 @@ INSTALL_REQUIRES = ['numpy',
                     'modelicares'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
-INSTALL_REQUIRES.append('dlib')
+# INSTALL_REQUIRES.append('dlib') # Disabled until this is open-source
 
 setuptools.setup(name='ebcpy',
                  version='0.1',
