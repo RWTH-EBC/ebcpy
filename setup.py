@@ -7,11 +7,11 @@ INSTALL_REQUIRES = ['numpy',
                     'pandas',
                     'matplotlib<3.1',  # matplotlib 3.1 does not support python 3.5
                     'h5py',
-                    'SALib',
                     'pydot',
                     'cmake',
                     'modelicares',
-					'sklearn'
+					'sklearn',
+                    'PyQt5'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 # INSTALL_REQUIRES.append('dlib') # Disabled until this is open-source

@@ -11,6 +11,5 @@ IPython
 pydot
 psutil
 xlrd
-SALib
 PyQt5
 sklearn

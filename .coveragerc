@@ -3,7 +3,7 @@ omit =
     # omit all test directories
     */test*
     # omit the gui
-	*_io*
+	*io*
 	# omit examples
 	*/examples*
 source = 
