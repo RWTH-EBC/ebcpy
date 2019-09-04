@@ -4,11 +4,10 @@ merged upstream, this "fork" of the to_pandas() function is used.
 """
 import pandas as pd
 import numpy as np
-from modelicares.simres import SimRes
 from modelicares import util
 
 
-def to_pandas(sim, names=None, aliases={}, with_unit=True):
+def to_pandas(sim, names=None, aliases=None, with_unit=True):
     """
     Return a `pandas.DataFrame` with values from selected variables.
 
@@ -34,9 +33,11 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
         to errors.
 
     **Examples:**
-    For further examples, please see modelicares.SimRes.to_pandas # TODO insert link
+    For further examples, please see `to_pandas <http://kdavies4.github.io/ModelicaRes/modelicares.simres.html>`_
 
-    >>> sim = SimRes('examples/ChuaCircuit.mat')
+    >>> from modelicares import SimRes
+    >>> dir_path = os.path.dirname(os.path.dirname(__file__))
+    >>> sim = SimRes(dir_path + '\\examples\\data\\ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
     >>> to_pandas(sim, voltages) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
                 C1.v / V  C2.v / V   G.v / V   L.v / V  Nr.v / V  Ro.v / V
@@ -46,8 +47,9 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
     ...
     [514 rows x 6 columns]
 
-
-    >>> sim = SimRes('examples/ChuaCircuit.mat')
+    >>> from modelicares import SimRes
+    >>> dir_path = os.path.dirname(os.path.dirname(__file__))
+    >>> sim = SimRes(dir_path + '\\examples\\data\\ChuaCircuit.mat')
     >>> voltages = sim.names('^[^.]*.v$', re=True)
     >>> to_pandas(sim, voltages, with_unit=False) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
               C1.v      C2.v      G.v       L.v       Nr.v      Ro.v
@@ -60,6 +62,10 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
     """
     # Note: The first doctest above requires pandas >= 0.14.0.  Otherwise,
     # more decimal places are shown in the Time column.
+
+    # Avoid mutable argument
+    if aliases is None:
+        aliases = {}
 
     # Create the list of variable names.
     if names:
@@ -98,9 +104,10 @@ def to_pandas(sim, names=None, aliases={}, with_unit=True):
 
     # Create the pandas data frame.
     if with_unit:
-        return pd.DataFrame(data).set_index('Time / s')
+        time_key = 'Time / s'
     else:
-        return pd.DataFrame(data).set_index('Time')
+        time_key = 'Time'
+    return pd.DataFrame(data).set_index(time_key)
 
 
 def get_trajectories(sim):

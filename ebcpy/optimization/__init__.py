@@ -18,7 +18,9 @@ class Optimizer:
     :param str framework:
         The framework (python module) you want to use to perform the optimization.
         Currently, scipy and dlib are supported options. The further inform yourself
-        about these frameworks, please see: # TODO Add links to web-pages here
+        about these frameworks, please see:
+            - `dlib <http://dlib.net/python/index.html>`_
+            - `scipy <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
     :param str,os.path.normpath cd:
         Directory for storing all output of optimization.
     :param dict kwargs:

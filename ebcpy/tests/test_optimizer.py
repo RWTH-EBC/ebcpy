@@ -36,6 +36,7 @@ class TestOptimizer(unittest.TestCase):
         """Test-case for the customization of the optimization-base-class."""
         # Define the customized class:
         class CustomOptimizer(Optimizer):
+            """Dummy class"""
 
             x_goal = np.random.rand(3)
             x0 = np.array([0, 0, 0])

@@ -14,9 +14,9 @@ def convert_hdf_to_mat(filepath, save_path_file, columns=None, key=None, set_tim
         String or even os.path.normpath.
         Must point to a valid hdf file.
     :param str,os.path.normpath save_path_file:
-        File path and name where to store the output \*.mat file.
+        File path and name where to store the output .mat file.
     :param list columns:
-        A list with names of columns that should be saved to \*.mat file.
+        A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.
     :param str key:
         The name of the dataframe inside the given hdf-file.
@@ -30,8 +30,8 @@ def convert_hdf_to_mat(filepath, save_path_file, columns=None, key=None, set_tim
 
     >>> import os
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//example_data_converted.mat")
+    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
+    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.mat")
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
     >>> success, filepath = convert_hdf_to_mat(example_file, save_path, columns=cols, key=key)

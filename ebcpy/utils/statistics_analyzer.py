@@ -34,15 +34,13 @@ class StatisticsAnalyzer:
         _method_internal = method.lower()
 
         if _method_internal not in _supported_methods:
-            raise ValueError("The given method {} is not supported.\n Choose one out "
-                             "of: {}".format(_method_internal, ", ".join(_supported_methods.keys())))
-        self.calc = _supported_methods[_method_internal]
+            raise ValueError("The given method {} is not supported.\n Choose one out of: "
+                             "{}".format(_method_internal, ", ".join(_supported_methods.keys())))
+        self._calc_internal = _supported_methods[_method_internal]
 
-    @staticmethod
-    def calc(meas, sim):
+    def calc(self, meas, sim):
         """Placeholder class before instantiating the class correctly."""
-        raise NotImplementedError('Instantiate the class to call this function.\n For direct '
-                                  'analysis, call calc_METHOD with the method you want to use.')
+        return self._calc_internal(meas, sim)
 
     @staticmethod
     def calc_mae(meas, sim):
@@ -117,14 +115,14 @@ class StatisticsAnalyzer:
         :return: float NRMSE:
             NRMSE of the given data.
         """
+
         # Check if NRMSE can be calculated
-        if (np.max(meas) - np.min(meas)) != 0:
-            return np.sqrt(skmetrics.mean_squared_error(meas, sim)) \
-                   / (np.max(meas) - np.min(meas))
-        else:
+        if (np.max(meas) - np.min(meas)) == 0:
             raise ValueError("The given measurement data's maximum is equal to "
                              "it's minimum. This makes the calculation of the "
                              "NRMSE impossible. Choose another method.")
+
+        return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / (np.max(meas) - np.min(meas))
 
     @staticmethod
     def calc_cvrmse(meas, sim):
@@ -140,11 +138,13 @@ class StatisticsAnalyzer:
         :return: float CVRMSE:
             CVRMSE of the given data.
         """
+
         # Check if CVRMSE can be calculated
-        
-        if np.mean(meas) != 0:
-            return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
-        else:
+        if np.mean(meas) == 0:
             raise ValueError("The given measurement data has a mean of 0. "
                              "This makes the calculation of the CVRMSE impossible. "
                              "Choose another method.")
+
+        return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+
+

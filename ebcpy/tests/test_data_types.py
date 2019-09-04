@@ -17,9 +17,12 @@ class TestDataTypes(unittest.TestCase):
         """
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.normpath(self.framework_dir + "//examples")
-        self.example_data_hdf_path = os.path.normpath(self.example_dir + "//example_data.hdf")
-        self.example_data_csv_path = os.path.normpath(self.example_dir + "//example_data.CSV")
-        self.example_data_mat_path = os.path.normpath(self.example_dir + "//example_data.mat")
+        self.example_data_hdf_path = os.path.normpath(self.example_dir +
+                                                      "//data//example_data.hdf")
+        self.example_data_csv_path = os.path.normpath(self.example_dir +
+                                                      "//data//example_data.CSV")
+        self.example_data_mat_path = os.path.normpath(self.example_dir +
+                                                      "//data//example_data.mat")
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""

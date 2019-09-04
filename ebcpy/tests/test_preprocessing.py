@@ -19,13 +19,14 @@ class TestConversion(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.normpath(self.framework_dir + "//examples")
-        self.example_data_hdf_path = os.path.normpath(self.example_dir + "//example_data.hdf")
+        self.example_data_hdf_path = os.path.normpath(self.example_dir +
+                                                      "//data//example_data.hdf")
 
     def test_conversion_hdf_to_mat(self):
         """Test function conversion.convert_hdf_to_mat().
         For an example, see the doctest in the function."""
         # First convert the file
-        save_path = os.path.normpath(self.example_dir + "//example_data_converted.mat")
+        save_path = os.path.normpath(self.example_dir + "//data//example_data_converted.mat")
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
@@ -53,7 +54,8 @@ class TestPreProcessing(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.normpath(self.framework_dir + "//examples")
-        self.example_data_hdf_path = os.path.normpath(self.example_dir + "//example_data.hdf")
+        self.example_data_hdf_path = os.path.normpath(self.example_dir +
+                                                      "//data//example_data.hdf")
 
     def test_build_average_on_duplicate_rows(self):
         """Test function of preprocessing.build_average_on_duplicate_rows().
@@ -168,17 +170,23 @@ class TestPreProcessing(unittest.TestCase):
     def test_z_score(self):
         """Test function of preprocessing.z_score().
         For an example, see the doctest in the function."""
-        pass
+        normal_dis = np.random.normal(0, 1, 1000)
+        res = preprocessing.z_score(normal_dis, limit=2)
+        self.assertIsInstance(res, np.ndarray)
 
     def test_modified_z_score(self):
         """Test function of preprocessing.modified_z_score().
         For an example, see the doctest in the function."""
-        pass
+        normal_dis = np.random.normal(0, 1, 1000)
+        res = preprocessing.modified_z_score(normal_dis, limit=2)
+        self.assertIsInstance(res, np.ndarray)
 
     def test_interquartile_range(self):
         """Test function of preprocessing.interquartile_range().
         For an example, see the doctest in the function."""
-        pass
+        normal_dis = np.random.normal(0, 1, 1000)
+        res = preprocessing.interquartile_range(normal_dis)
+        self.assertIsInstance(res, np.ndarray)
 
 
 if __name__ == "__main__":

@@ -1,3 +1,9 @@
+"""
+Example file for the data_types module. The usage of classes inside
+the data_types module should be clear when looking at the examples.
+If not, please raise an issue.
+"""
+
 import os
 from ebcpy import data_types
 
@@ -58,12 +64,12 @@ def setup_goals():
 
     # Load example simTargetData and measTargetData:
     _filepath = os.path.dirname(__file__)
-    simTargetData = data_types.SimTargetData(_filepath + "//data//simTargetData.mat")
-    measTargetData = data_types.MeasTargetData(_filepath + "//data//measTargetData.mat")
+    sim_target_data = data_types.SimTargetData(_filepath + "//data//simTargetData.mat")
+    meas_target_data = data_types.MeasTargetData(_filepath + "//data//measTargetData.mat")
 
     # Setup the goals object
-    goals = data_types.Goals(measTargetData,
-                             simTargetData,
+    goals = data_types.Goals(meas_target_data,
+                             sim_target_data,
                              meas_columns=["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
                              sim_columns=["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
                              weightings=[0.7, 0.3])
@@ -97,4 +103,3 @@ def setup_calibration_classes():
         cal_class.set_goals(goals)
 
     return calibration_classes
-

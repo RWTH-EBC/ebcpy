@@ -91,7 +91,7 @@ def convert_ds_file_to_dataframe(filename):
 def eliminate_parameters_from_ds_file(filename, savepath, exclude_paras, del_aux_paras=True):
     """
     Create a new dsfinal file out of the given dsfinal.txt
-    All parameteres except those listed in exclude_paras
+    All parameters except those listed in exclude_paras
     will be eliminated from the dsfinal file.
     Used for continuing of simulation in calibration problems.
 
@@ -104,7 +104,6 @@ def eliminate_parameters_from_ds_file(filename, savepath, exclude_paras, del_aux
     :param bool del_aux_paras:
         Whether to delete auxiliary parameters or not.
         Default value is True.
-    :return:
     """
 
     # Check types
@@ -118,17 +117,16 @@ def eliminate_parameters_from_ds_file(filename, savepath, exclude_paras, del_aux
 
     # Manipulate DataFrame
     if del_aux_paras:
-        # Delete all rows with a parameter or an auxilliary value
+        # Delete all rows with a parameter or an auxiliary value
         df = df[(df["5"] != "1") & (df["5"] != "6") | [idx in exclude_paras for idx in df.index]]
     else:
         df = df[(df["5"] != "1") | [idx in exclude_paras for idx in df.index]]
 
-    # Generate string out of trimmed dataframe
-    size = len(df.index)
+    # Generate string out of trimmed DataFrame
     longest_name = len(max(df.index, key=len))
-    char_initial_name = "char initialName(%s,%s)" % (size, longest_name)
+    char_initial_name = "char initialName(%s,%s)" % (len(df.index), longest_name)
     char_initial_name += "\n" + "\n".join(df.index)
-    double_initial_value = "double initialValue(%s,6)" % size  # Always 6
+    double_initial_value = "double initialValue(%s,6)" % len(df.index)  # Always 6
     for index, row in df.iterrows():
         double_initial_value += "\n" + " ".join(row) + " # " + index
 

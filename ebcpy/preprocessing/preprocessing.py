@@ -218,7 +218,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     return output
 
 
-def moving_average(values, window, shift=True):
+def moving_average(values, window):
     """
     Creates a pandas Series as moving average of the input series.
 
@@ -226,8 +226,6 @@ def moving_average(values, window, shift=True):
         For dataframe e.g. df['a_col_name'].values
     :param int window:
         sample rate of input
-    :param bool shift:
-        if True, shift array back by window/2 and fill up values at start and end
     :return: numpy.array
         shape has (###,). First and last points of input Series are extrapolated as constant
         values (hold first and last point).
@@ -245,7 +243,6 @@ def moving_average(values, window, shift=True):
     >>> plt.show()
 
     """
-    # TODO How to implement the shift parameter
     window = int(window)
     weights = np.repeat(1.0, window) / window
     sma = np.convolve(values, weights, 'valid')
@@ -346,7 +343,16 @@ def z_score(x, limit=3):
     :param float limit: default 3
         Lower limit for required z-score
     :return: np.array iqr:
-        modified z score"""
+        modified z score
+
+    Examples:
+
+    >>> import numpy as np
+    >>> normal_dis = np.random.normal(0, 1, 1000)
+    >>> res = z_score(normal_dis, limit=2)
+    >>> values = normal_dis[res]
+
+    """
     mean = np.mean(x)
     standard_deviation = np.std(x)
     z_score_value = (x-mean)/standard_deviation
@@ -364,6 +370,14 @@ def modified_z_score(x, limit=3.5):
         Lower limit for required z-score
     :return: np.array iqr:
         modified z score
+
+    Examples:
+
+    >>> import numpy as np
+    >>> normal_dis = np.random.normal(0, 1, 1000)
+    >>> res = modified_z_score(normal_dis, limit=2)
+    >>> values = normal_dis[res]
+
     """
     median = np.median(x)
     median_average_deviation = np.median(np.abs(x-median))
@@ -374,11 +388,20 @@ def modified_z_score(x, limit=3.5):
 def interquartile_range(x):
     """
     Calculate interquartile range of given array.
+    Returns the indices of values outside of the interquartile range.
 
     :param np.array x:
         For dataframe e.g. df['a_col_name'].values
     :return: np.array iqr:
         Array matching the interquartile-range
+
+    Examples:
+
+    >>> import numpy as np
+    >>> normal_dis = np.random.normal(0, 1, 1000)
+    >>> res = interquartile_range(normal_dis)
+    >>> values = normal_dis[res]
+
     """
     quartile_1, quartile_3 = np.percentile(x, [25, 75])
     iqr = quartile_3 - quartile_1

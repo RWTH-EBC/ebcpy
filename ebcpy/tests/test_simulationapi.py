@@ -19,7 +19,7 @@ class TestDymolaAPI(unittest.TestCase):
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
         ebcpy_test_package_dir = os.path.normpath(self.example_dir +
-                                                       "//Modelica//AixCalTest//package.mo")
+                                                  "//Modelica//AixCalTest//package.mo")
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest.TestModel"
         self.initial_names = ["C",
