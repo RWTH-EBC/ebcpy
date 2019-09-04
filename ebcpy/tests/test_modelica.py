@@ -17,7 +17,7 @@ class TestSimRes(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         dir_path = os.path.dirname(os.path.dirname(__file__))
-        self.sim = SimRes(dir_path + '\\examples\\data\\ChuaCircuit.mat')
+        self.sim = SimRes(os.path.join(dir_path + '\\examples\\data\\ChuaCircuit.mat'))
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
