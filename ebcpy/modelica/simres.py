@@ -34,7 +34,7 @@ def to_pandas(sim, names=None, aliases=None, with_unit=True):
 
     **Examples:**
     For further examples, please see
-    `to_pandas <http://kdavies4.github.io/ModelicaRes/modelicares.simres.html>`_
+    `to_pandas <http://kdavies4.github._io/ModelicaRes/modelicares.simres.html>`_
 
     >>> from modelicares import SimRes
     >>> dir_path = os.path.dirname(os.path.dirname(__file__))
