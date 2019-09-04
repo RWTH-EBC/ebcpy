@@ -20,7 +20,8 @@ class Optimizer:
         Currently, scipy and dlib are supported options. The further inform yourself
         about these frameworks, please see:
             - `dlib <http://dlib.net/python/index.html>`_
-            - `scipy <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
+            - `scipy <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.minimize.html>`_
     :param str,os.path.normpath cd:
         Directory for storing all output of optimization.
     :param dict kwargs:

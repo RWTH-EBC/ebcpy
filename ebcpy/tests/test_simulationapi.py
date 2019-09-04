@@ -14,7 +14,7 @@ class TestDymolaAPI(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(framework_dir + "//examples")
+        self.example_dir = os.path.normpath(framework_dir + "//examples//data")
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
@@ -83,7 +83,7 @@ class TestPyFMI(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples")
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
 
 
 if __name__ == "__main__":

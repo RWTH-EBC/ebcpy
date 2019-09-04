@@ -16,7 +16,7 @@ class TestDataTypes(unittest.TestCase):
         Define example paths and parameters used in all test-functions.
         """
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples")
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
         self.example_data_hdf_path = os.path.normpath(self.example_dir +
                                                       "//example_data.hdf")
         self.example_data_csv_path = os.path.normpath(self.example_dir +

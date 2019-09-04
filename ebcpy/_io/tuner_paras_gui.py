@@ -3,7 +3,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from ebcpy import data_types
 import numpy as np
-
+# pylint: disable=R0902
 
 class TunerParasUI:
     """
@@ -135,7 +135,6 @@ class TunerParasUI:
             self.main_window.close()
         except ValueError as error:
             QtWidgets.QMessageBox.warning(self.centralwidget, "Error", str(error))
-
 
     def close_app(self):
         """Close the application and set tuner_paras to None"""

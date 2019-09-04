@@ -146,5 +146,3 @@ class StatisticsAnalyzer:
                              "Choose another method.")
 
         return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
-
-

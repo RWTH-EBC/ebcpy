@@ -10,13 +10,13 @@ optimization etc.
 import os
 import warnings
 from PyQt5 import QtWidgets
-import pandas as pd
-import modelicares.simres as sr
-import ebcpy.modelica.simres as ebc_sr
-import numpy as np
 from ebcpy.utils import statistics_analyzer
 from ebcpy.preprocessing import preprocessing
 from ebcpy._io import tuner_paras_gui
+import ebcpy.modelica.simres as ebc_sr
+import modelicares.simres as sr
+import numpy as np
+import pandas as pd
 
 
 class TimeSeriesData:

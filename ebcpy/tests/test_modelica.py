@@ -6,7 +6,6 @@ import os
 from modelicares import SimRes
 from ebcpy.modelica import manipulate_ds
 import ebcpy.modelica.simres as sr_ebc
-import numpy as np
 import pandas as pd
 
 
@@ -16,8 +15,9 @@ class TestSimRes(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        dir_path = os.path.dirname(os.path.dirname(__file__))
-        self.sim = SimRes(os.path.join(dir_path + '\\examples\\ChuaCircuit.mat'))
+        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
+        self.sim = SimRes(os.path.normpath(self.example_dir + '//ChuaCircuit.mat'))
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
@@ -41,8 +41,9 @@ class TestManipulateDS(unittest.TestCase):
     def setUp(self):
         """Called before every test.
             Used to setup relevant paths and APIs etc."""
-        dir_path = os.path.dirname(os.path.dirname(__file__))
-        self.ds_path = os.path.join(dir_path + "\\examples\\example_dsfinal.txt")
+        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
+        self.ds_path = os.path.normpath(self.example_dir + "//example_dsfinal.txt")
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""

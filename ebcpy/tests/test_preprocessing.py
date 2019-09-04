@@ -18,7 +18,7 @@ class TestConversion(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples")
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
         self.example_data_hdf_path = os.path.normpath(self.example_dir +
                                                       "//example_data.hdf")
 
@@ -53,7 +53,7 @@ class TestPreProcessing(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples")
+        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
         self.example_data_hdf_path = os.path.normpath(self.example_dir +
                                                       "//example_data.hdf")
 
@@ -114,7 +114,7 @@ class TestPreProcessing(unittest.TestCase):
         df.iloc[0, 0] = np.NaN
         df_temp = preprocessing.clean_and_space_equally_time_series(df, freq)
 
-    def test_low_pass_filter(self):
+    def test_low_pass_filter_func(self):
         """Test function of preprocessing.low_pass_filter().
         For an example, see the doctest in the function."""
         # Randomly generate all inputs to assure that different
@@ -125,7 +125,7 @@ class TestPreProcessing(unittest.TestCase):
         order = np.random.randint(1, 5)
         preprocessing.low_pass_filter(vals, freq, order)
 
-    def test_moving_average(self):
+    def test_moving_average_func(self):
         """Test function of preprocessing.moving_average().
         For an example, see the doctest in the function."""
         series = np.sin(np.linspace(-30, 30, 1000))
