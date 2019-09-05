@@ -12,3 +12,4 @@ psutil
 xlrd
 PyQt5
 sklearn
+tables
