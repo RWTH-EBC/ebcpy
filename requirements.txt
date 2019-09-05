@@ -4,7 +4,6 @@ pandas
 matplotlib<3.1
 scikit-learn
 modelicares==0.12.2
-tables
 h5py
 seaborn
 IPython

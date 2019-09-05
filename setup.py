@@ -10,8 +10,9 @@ INSTALL_REQUIRES = ['numpy',
                     'pydot',
                     'cmake',
                     'modelicares',
-					'sklearn',
-                    'PyQt5'
+                    'sklearn',
+                    'PyQt5',
+                    'xlrd'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 # INSTALL_REQUIRES.append('dlib') # Disabled until this is open-source
