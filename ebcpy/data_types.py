@@ -12,7 +12,6 @@ import warnings
 from PyQt5 import QtWidgets
 from ebcpy.utils import statistics_analyzer
 from ebcpy.preprocessing import preprocessing
-from ebcpy._io import tuner_paras_gui
 import ebcpy.modelica.simres as ebc_sr
 import modelicares.simres as sr
 import numpy as np
@@ -280,6 +279,7 @@ class TunerParas:
         the object if wanted.
         """
         import sys
+        from ebcpy._io import tuner_paras_gui
         try:
             app = QtWidgets.QApplication(sys.argv)
             main_window = QtWidgets.QMainWindow()

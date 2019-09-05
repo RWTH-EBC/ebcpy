@@ -5,6 +5,7 @@ from ebcpy import data_types
 import numpy as np
 # pylint: disable=R0902
 
+
 class TunerParasUI:
     """
     Class for the PyQt5-Window to show and
