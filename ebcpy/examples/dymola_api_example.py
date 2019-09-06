@@ -24,13 +24,17 @@ def example_dymola_api(dym_api):
     return tuner_paras
 
 
-def setup_dymola_api(show_window=True):
+def setup_dymola_api(cd=None, show_window=True):
     """
     Function to show how to setup the DymolaAPI.
     As stated in the DymolaAPI-documentation, you need to
     pass a current working directory, the name of the model
     you want to work with and the necessary packages.
 
+    :param str,os.path.normpath cd:
+        Default is the current python working directory.
+        A testzone-folder is created to keep everything ordered.
+        Pass another directory to work where you want.
     :param bool show_window:
         True if you want to see the Dymola instance on
         your machine. You can see what commands in the
@@ -47,7 +51,7 @@ def setup_dymola_api(show_window=True):
     >>> DYM_API.close()
     """
     # Define path in which you want ot work:
-    cd = os.getcwd()
+    cd = os.path.normpath(os.getcwd() + "//testzone")
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice

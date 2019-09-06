@@ -64,8 +64,8 @@ def setup_goals():
 
     # Load example simTargetData and measTargetData:
     _filepath = os.path.dirname(__file__)
-    sim_target_data = data_types.SimTargetData(_filepath + "//simTargetData.mat")
-    meas_target_data = data_types.MeasTargetData(_filepath + "//measTargetData.mat")
+    sim_target_data = data_types.SimTargetData(_filepath + "//data//simTargetData.mat")
+    meas_target_data = data_types.MeasTargetData(_filepath + "//data//measTargetData.mat")
 
     # Setup the goals object
     goals = data_types.Goals(meas_target_data,

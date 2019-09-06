@@ -78,7 +78,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface(self.show_window)
         # Register this class to the atexit module to always close dymola-instances
 
-
     def simulate(self, savepath_files=""):
         """
         Simulate the current setup.
@@ -201,7 +200,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     def close(self):
         """Closes dymola."""
-        self.dymola.close()
+
+        # Change so the atexit function works without an error.
+        if self.dymola is not None:
+            self.dymola.close()
         # Set dymola object to None to avoid further access to it.
         self.dymola = None
 

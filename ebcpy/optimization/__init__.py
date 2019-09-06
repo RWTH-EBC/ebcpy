@@ -2,11 +2,9 @@
 Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
-import os
 from collections import namedtuple
 from abc import abstractmethod
 from ebcpy.utils import visualizer
-from ebcpy import data_types
 import numpy as np
 
 
@@ -68,12 +66,12 @@ class Optimizer:
                          "num_function_calls", "show_plot"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
 
-    def __init__(self, framework, cd, **kwargs):
+    def __init__(self, cd, **kwargs):
         """Instantiate class parameters"""
         self.cd = cd
         self.logger = visualizer.Logger(self.cd, "Optimization")
         # Select the framework to work with while optimizing.
-        self._choose_framework(framework)
+        #self._choose_framework(framework)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
