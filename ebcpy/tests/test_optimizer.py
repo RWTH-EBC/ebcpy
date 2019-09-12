@@ -15,8 +15,11 @@ class TestOptimizer(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
-        self.example_opt_dir = os.path.normpath(self.example_dir + "//test_optimization")
+        self.example_dir = os.path.normpath(os.path.join(self.framework_dir,
+                                                         "examples",
+                                                         "data"))
+        self.example_opt_dir = os.path.normpath(os.path.join(self.example_dir,
+                                                             "test_optimization"))
         self.supported_frameworks = ["scipy", "dlib"]
 
     def test_optimizer_choose_function(self):

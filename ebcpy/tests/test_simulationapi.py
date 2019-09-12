@@ -19,8 +19,10 @@ class TestDymolaAPI(unittest.TestCase):
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
-        ebcpy_test_package_dir = os.path.normpath(self.example_dir +
-                                                  "//Modelica//AixCalTest//package.mo")
+        ebcpy_test_package_dir = os.path.normpath(os.path.join(self.example_dir,
+                                                               "Modelica",
+                                                               "AixCalTest",
+                                                               "package.mo"))
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest.TestModel"
         self.initial_names = ["C",
@@ -37,8 +39,9 @@ class TestDymolaAPI(unittest.TestCase):
                                                 model_name,
                                                 packages,
                                                 dymola_exe_path=dymola_exe_path)
-        except (FileNotFoundError, ImportError, ConnectionError):
-            self.skipTest("Could not load the dymola interface on this machine.")
+        except (FileNotFoundError, ImportError, ConnectionError) as error:
+            raise error
+            #self.skipTest("Could not load the dymola interface on this machine.")
 
     def test_close(self):
         """Test close functionality of dymola api"""
