@@ -54,6 +54,8 @@ class TestOptimizer(unittest.TestCase):
         res = my_custom_optimizer.optimize("L-BFGS-B")
         delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize()
 
     def tearDown(self):
         """Remove all created folders while optimizing."""
