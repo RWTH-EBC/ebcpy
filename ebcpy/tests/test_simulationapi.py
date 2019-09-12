@@ -3,6 +3,7 @@ ebcpy.simulationapi."""
 
 import unittest
 import os
+import sys
 import shutil
 from ebcpy.simulationapi import dymola_api
 
@@ -14,7 +15,7 @@ class TestDymolaAPI(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(framework_dir + "//examples//data")
+        self.example_dir = os.path.normpath(os.path.join(framework_dir, "examples", "data"))
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
@@ -27,9 +28,15 @@ class TestDymolaAPI(unittest.TestCase):
                               "heatConv_a"]
         self.initial_values = [2000, 5, 5]
         try:
+            if "linux" in sys.platform:
+                # Path is based on the image for testing in gitlab-ci
+                dymola_exe_path = "/opt/dymola-2020-x86_64/bin64/dymola"
+            else:
+                dymola_exe_path = ""
             self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
                                                 model_name,
-                                                packages)
+                                                packages,
+                                                dymola_exe_path=dymola_exe_path)
         except (FileNotFoundError, ImportError, ConnectionError):
             self.skipTest("Could not load the dymola interface on this machine.")
 

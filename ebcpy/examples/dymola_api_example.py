@@ -51,12 +51,15 @@ def setup_dymola_api(cd=None, show_window=True):
     >>> DYM_API.close()
     """
     # Define path in which you want ot work:
-    cd = os.path.normpath(os.getcwd() + "//testzone")
+    cd = os.path.normpath(os.path.join(os.getcwd(), "testzone"))
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice
     model_name = "AixCalTest.TestModel"
-    packages = [os.path.normpath(os.path.dirname(__file__) + "//Modelica//AixCalTest//package.mo")]
+    packages = [os.path.normpath(os.path.join(os.path.dirname(__file__),
+                                              "Modelica",
+                                              "AixCalTest",
+                                              "package.mo"))]
     # Setup the dymola api
     dym_api = dymola_api.DymolaAPI(cd,
                                    model_name,
