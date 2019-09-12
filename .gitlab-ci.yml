@@ -1,17 +1,17 @@
 stages:
-  - doc
-  - code_quality
+#  - doc
+#  - code_quality
   - test
-  - deploy
+#  - deploy
 
 include:
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'Code-Quality/pylint.gitlab-ci.yml'
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'pages/pages.gitlab-ci.yml'
+ # - project: 'EBC/EBC_all/gitlab_ci/templates'
+ #   file: 'Code-Quality/pylint.gitlab-ci.yml'
+ # - project: 'EBC/EBC_all/gitlab_ci/templates'
+ #   file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
+ # - project: 'EBC/EBC_all/gitlab_ci/templates'
+ #   file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'tests/tests.gitlab-ci.yml'
-  - template: Dependency-Scanning.gitlab-ci.yml
-  - template: SAST.gitlab-ci.yml
+  #- template: Dependency-Scanning.gitlab-ci.yml
+ # - template: SAST.gitlab-ci.yml
