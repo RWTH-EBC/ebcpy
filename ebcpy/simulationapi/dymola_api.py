@@ -28,7 +28,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     show_window = False
     get_structural_parameters = True
-    _supported_kwargs = ["show_window", "get_structural_parameters"]
+    _supported_kwargs = ["show_window",
+                         "get_structural_parameters",
+                         "dymola_exe_path",
+                         "dymola_interface_path"]
     dymola_exe_path = ""
 
     dymola = None
@@ -60,8 +63,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dymola_interface_path = self.get_dymola_interface_path()
             if not dymola_interface_path:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
-        if "dymola_exe_path" in kwargs:
-            self.dymola_exe_path = kwargs.get("dymola_exe_path")
+
         self._global_import_dymola(dymola_interface_path)
         self.packages = packages
 
