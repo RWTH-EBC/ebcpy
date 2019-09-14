@@ -19,7 +19,8 @@ class TestDymolaAPI(unittest.TestCase):
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
-        ebcpy_test_package_dir = os.path.normpath(os.path.join(self.example_dir,
+        ebcpy_test_package_dir = os.path.normpath(os.path.join(framework_dir,
+                                                               "examples",
                                                                "Modelica",
                                                                "AixCalTest",
                                                                "package.mo"))
