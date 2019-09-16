@@ -484,7 +484,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
         for dym_version in reversed(dym_versions):
             for system_path in syspaths:
                 full_path = os.path.join(system_path, dym_version)
-                if os.path.isfile(full_path):
+                if os.path.isdir(full_path):
                     return full_path
         # If still inside the function, no interface was found
         return None
+
