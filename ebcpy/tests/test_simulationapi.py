@@ -30,23 +30,10 @@ class TestDymolaAPI(unittest.TestCase):
                               "heatConv_b",
                               "heatConv_a"]
         self.initial_values = [2000, 5, 5]
-        try:
-            if "linux" in sys.platform:
-                # Path is based on the image for testing in gitlab-ci
-                dymola_exe_path = "/opt/dymola-2020-x86_64/bin64/dymola"
-                dymola_interface_path = "/opt/dymola-2020-x86_64/Modelica" \
-                                        "/Library/python_interface/dymola.egg"
-            else:
-                dymola_exe_path = ""
-                dymola_interface_path = dymola_api.DymolaAPI.get_dymola_interface_path()
-            self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
-                                                model_name,
-                                                packages,
-                                                dymola_exe_path=dymola_exe_path,
-                                                dymola_interface_path=dymola_interface_path)
-        except (FileNotFoundError, ImportError, ConnectionError) as error:
-            raise error
-            #self.skipTest("Could not load the dymola interface on this machine.")
+
+        self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
+                                            model_name,
+                                            packages)
 
     def test_close(self):
         """Test close functionality of dymola api"""
