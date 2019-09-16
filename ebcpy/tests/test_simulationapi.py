@@ -53,9 +53,10 @@ class TestDymolaAPI(unittest.TestCase):
         self.dym_api.close()
         self.assertIsNone(self.dym_api.dymola)
 
-    @unittest.skip("Just for testing dymola in ci")
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
+        self.dym_api.set_sim_setup({"startTime": 0.0,
+                                    "stopTime": 10.0})
         _filepath_dsres = self.dym_api.simulate()
         self.assertTrue(os.path.isfile(_filepath_dsres))
 
