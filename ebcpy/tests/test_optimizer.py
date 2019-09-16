@@ -54,11 +54,11 @@ class TestOptimizer(unittest.TestCase):
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
         my_custom_optimizer = CustomOptimizer("scipy", self.example_opt_dir)
-        res = my_custom_optimizer.optimize("L-BFGS-B")
-        delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
-        self.assertEqual(0.0, np.round(delta_solution, 3))
         with self.assertRaises(ValueError):
             my_custom_optimizer.optimize()
+        res = my_custom_optimizer.optimize(method="L-BFGS-B")
+        delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
 
     def tearDown(self):
         """Remove all created folders while optimizing."""

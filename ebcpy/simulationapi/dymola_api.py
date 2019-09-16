@@ -232,7 +232,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.logger.log(self.dymola.getLastErrorLog())
             raise Exception("Translation failed!")
         # Get path to dsin:
-        dsin_path = os.path.normpath(self.cd + "//dsin.txt")
+        dsin_path = os.path.join(self.cd, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
         # Convert and return all parameters of dsin as a TunerParas-object.
         df = df[df["5"] == "1"]
@@ -387,7 +387,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         :return: str
             Path to the dymola.egg-file
         """
-        path_to_egg_file = os.path.normpath("/Modelica/Library/python_interface/dymola.egg")
+        path_to_egg_file = os.path.normpath("Modelica/Library/python_interface/dymola.egg")
         egg_file = os.path.join(dymola_install_dir, path_to_egg_file)
         if not os.path.isfile(egg_file):
             raise FileNotFoundError(f"The given dymola installation directory {dymola_install_dir}"

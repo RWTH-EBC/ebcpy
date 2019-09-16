@@ -46,6 +46,7 @@ class Optimizer:
     _bound_min = None
     # Instantiate framework parameter:
     framework = None
+    method = None
     _framework_requires_method = True
 
     # Handle the kwargs
@@ -66,7 +67,7 @@ class Optimizer:
     # Define the list of supported kwargs:
     _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
                          "hessp", "is_integer_variable", "solver_epsilon",
-                         "num_function_calls", "show_plot"]
+                         "num_function_calls", "show_plot", "method"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
 
     def __init__(self, framework, cd, **kwargs):
@@ -124,11 +125,13 @@ class Optimizer:
         """
         if framework:
             self._choose_framework(framework)
-        if method is None and self._framework_requires_method:
+        if method:
+            self.method = method
+        if self.method is None and self._framework_requires_method:
             raise ValueError(f"{self.framework} requires a method, but None is "
                              f"provided. Please choose one.")
         # Perform minimization
-        res = self._minimize_func(method)
+        res = self._minimize_func(self.method)
         return res
 
     def _choose_framework(self, framework):
