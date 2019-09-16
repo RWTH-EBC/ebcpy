@@ -68,7 +68,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             else:
                 raise FileNotFoundError("Given dymola-interface could not be found.")
         else:
-            if not _dym_install:
+            if _dym_install is None:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
             dymola_interface_path = self.get_dymola_interface_path(_dym_install)
 
