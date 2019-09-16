@@ -60,7 +60,6 @@ class TestDymolaAPI(unittest.TestCase):
         _filepath_dsres = self.dym_api.simulate()
         self.assertTrue(os.path.isfile(_filepath_dsres))
 
-    @unittest.skip("Just for testing dymola in ci")
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
         # Test the setting of the function
