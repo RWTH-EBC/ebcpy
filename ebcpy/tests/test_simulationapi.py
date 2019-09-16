@@ -48,16 +48,19 @@ class TestDymolaAPI(unittest.TestCase):
             raise error
             #self.skipTest("Could not load the dymola interface on this machine.")
 
+    @unittest.skip("Just for testing dymola in ci")
     def test_close(self):
         """Test close functionality of dymola api"""
         self.dym_api.close()
         self.assertIsNone(self.dym_api.dymola)
 
+    @unittest.skip("Just for testing dymola in ci")
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
         _filepath_dsres = self.dym_api.simulate()
         self.assertTrue(os.path.isfile(_filepath_dsres))
 
+    @unittest.skip("Just for testing dymola in ci")
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
         # Test the setting of the function
