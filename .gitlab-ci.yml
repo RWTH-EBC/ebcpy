@@ -15,5 +15,6 @@ include:
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'tests/tests.gitlab-ci.yml'
+    ref: issue2_insertTestVariables
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
