@@ -7,14 +7,11 @@ stages:
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'Code-Quality/pylint.gitlab-ci.yml'
-    ref: issue2_insertTestVariables
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
-    ref: issue2_insertTestVariables
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'tests/tests.gitlab-ci.yml'
-    ref: issue2_insertTestVariables
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
