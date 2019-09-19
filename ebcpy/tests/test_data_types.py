@@ -3,9 +3,9 @@ ebcpy.data_types."""
 
 import os
 import unittest
-from ebcpy import data_types
 import pandas as pd
 import numpy as np
+from ebcpy import data_types
 
 
 class TestDataTypes(unittest.TestCase):

@@ -69,7 +69,7 @@ def setup_goals():
                                                             "simTargetData.mat"))
     meas_target_data = data_types.MeasTargetData(os.path.join(_filepath,
                                                               "data",
-                                                              "measTargetData.mat")
+                                                              "measTargetData.mat"))
 
     # Setup the goals object
     goals = data_types.Goals(meas_target_data,

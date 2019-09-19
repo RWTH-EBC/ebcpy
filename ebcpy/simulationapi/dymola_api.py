@@ -6,10 +6,10 @@ import os
 import warnings
 import atexit
 import psutil
+import pandas as pd
 from ebcpy import simulationapi
 from ebcpy import data_types
 from ebcpy.modelica import manipulate_ds
-import pandas as pd
 DymolaInterface = None  # Create dummy to later be used for global-import
 DymolaConnectionException = None  # Create dummy to later be used for global-import
 
@@ -30,9 +30,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
     get_structural_parameters = True
     _supported_kwargs = ["show_window",
                          "get_structural_parameters",
-                         "dymola_exe_path",
+                         "dymola_path",
                          "dymola_interface_path"]
-    dymola_exe_path = ""
+    dymola_path = ""
     _bit_64 = True  # Whether to use 32 bit or not.
 
     dymola = None
@@ -55,8 +55,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Get the dymola-install-path:
         _dym_install = self.get_dymola_install_path()
         if _dym_install:
-            self.dymola_exe_path = self.get_dymola_exe_path(_dym_install)
-            if "bin64" not in self.dymola_exe_path:
+            self.dymola_path = self.get_dymola_path(_dym_install)
+            if "bin64" not in self.dymola_path:
                 self._bit_64 = False
 
         # First import the dymola-interface
@@ -201,11 +201,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     def set_cd(self, cd):
         """Set the working directory to the given path"""
-        dymola_path = self._make_dym_path(cd)
+        modelica_normpath = self._make_modelica_normpath(cd)
         # Check if path exists, if not create it.
-        if not os.path.exists(dymola_path):
-            os.mkdir(dymola_path)
-        res = self.dymola.cd(dymola_path)
+        if not os.path.exists(modelica_normpath):
+            os.mkdir(modelica_normpath)
+        res = self.dymola.cd(modelica_normpath)
         if res:
             self.cd = cd
         else:
@@ -256,7 +256,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """Load all packages and change the current working directory"""
         try:
             self.dymola = DymolaInterface(showwindow=show_window,
-                                          dymolapath=self.dymola_exe_path,
+                                          dymolapath=self.dymola_path,
                                           win64=self._bit_64)
         except DymolaConnectionException as error:
             raise ConnectionError(error)
@@ -357,7 +357,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                               "not be loaded:\n %s" % dymola_interface_path)
 
     @staticmethod
-    def _make_dym_path(path):
+    def _make_modelica_normpath(path):
         """
         Convert given path to a path readable in dymola.
         If the path does not exist, create it.
@@ -395,14 +395,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
         return egg_file
 
     @staticmethod
-    def get_dymola_exe_path(dymola_install_dir, dymola_name=None):
+    def get_dymola_path(dymola_install_dir, dymola_name=None):
         """
         Function to get the path of the dymola exe-file
         on the current used machine.
 
         :param str dymola_install_dir:
             The dymola installation folder. Example:
-            "C:\Program Files\Dymola 2020"
+            "C://Program Files//Dymola 2020"
         :param str dymola_name:
             Name of the executable. On Windows it is always Dymola.exe, on
             linux just dymola.
@@ -425,7 +425,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         elif os.path.isfile(bin_32): # Else use the 32bit version
             dym_file = bin_32
         else:
-            raise FileNotFoundError(f"The given dymola file{bin32} is not found. Either the "
+            raise FileNotFoundError(f"The given dymola file{bin_32} is not found. Either the "
                                     f"dymola_install_dir, or the dymola_name have false values.")
 
         return dym_file
@@ -444,7 +444,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         :param str basedir:
             The base-directory to search for the dymola-installation.
             The default value depends on the platform one is using.
-            On Windows it is "C:\Program Files" or "C:\Program Files (x86)" (for 64 bit)
+            On Windows it is "C://Program Files" or "C://Program Files (x86)" (for 64 bit)
             On Linux it is "/opt" (based on our ci-Docker configuration
             On Mac OS X "/Application" (based on the default)
         :return: str
@@ -488,4 +488,3 @@ class DymolaAPI(simulationapi.SimulationAPI):
                     return full_path
         # If still inside the function, no interface was found
         return None
-

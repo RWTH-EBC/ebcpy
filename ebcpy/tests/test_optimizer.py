@@ -4,8 +4,8 @@ ebcpy.optimization."""
 import unittest
 import os
 import shutil
-from ebcpy.optimization import Optimizer
 import numpy as np
+from ebcpy.optimization import Optimizer
 
 
 class TestOptimizer(unittest.TestCase):

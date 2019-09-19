@@ -3,7 +3,6 @@ ebcpy.simulationapi."""
 
 import unittest
 import os
-import sys
 import shutil
 from ebcpy.simulationapi import dymola_api
 

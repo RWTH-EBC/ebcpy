@@ -4,9 +4,9 @@ ebcpy.optimization."""
 import unittest
 import os
 from modelicares import SimRes
+import pandas as pd
 from ebcpy.modelica import manipulate_ds
 import ebcpy.modelica.simres as sr_ebc
-import pandas as pd
 
 
 class TestSimRes(unittest.TestCase):

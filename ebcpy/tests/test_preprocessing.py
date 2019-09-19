@@ -18,7 +18,7 @@ class TestConversion(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(self.framework_dir, "examples","data"))
+        self.example_dir = os.path.normpath(os.path.join(self.framework_dir, "examples", "data"))
         self.example_data_hdf_path = os.path.normpath(os.path.join(self.example_dir,
                                                                    "example_data.hdf"))
 

@@ -4,8 +4,8 @@ Calibrator."""
 
 from collections import namedtuple
 from abc import abstractmethod
-from ebcpy.utils import visualizer
 import numpy as np
+from ebcpy.utils import visualizer
 
 
 class Optimizer:
