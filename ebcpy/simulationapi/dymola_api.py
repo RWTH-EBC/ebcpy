@@ -465,7 +465,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         syspaths = [basedir]
         # Check if 64bit is installed (Windows only)
         systempath_64 = os.path.normpath("C:\Program Files (x86)")
-        if os.path.isdir(systempath_64):
+        if os.path.exists(systempath_64):
             syspaths.append(systempath_64)
         # Get all folders in both path's
         temp_list = []
