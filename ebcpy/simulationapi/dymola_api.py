@@ -256,8 +256,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """Load all packages and change the current working directory"""
         try:
             self.dymola = DymolaInterface(showwindow=show_window,
-                                          dymolapath=self.dymola_path,
-                                          use64bit=self._bit_64)
+                                          dymolapath=self.dymola_path)
         except DymolaConnectionException as error:
             raise ConnectionError(error)
         # Register the function now in case of an error.
