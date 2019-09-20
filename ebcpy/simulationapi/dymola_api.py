@@ -257,7 +257,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         try:
             self.dymola = DymolaInterface(showwindow=show_window,
                                           dymolapath=self.dymola_path,
-                                          win64=self._bit_64)
+                                          use64bit=self._bit_64)
         except DymolaConnectionException as error:
             raise ConnectionError(error)
         # Register the function now in case of an error.
