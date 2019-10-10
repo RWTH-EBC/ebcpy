@@ -333,7 +333,7 @@ class Goals:
 
         if not isinstance(meas_target_data, MeasTargetData):
             raise TypeError("Given meas_target_data is of type {} but MeasTargetData "
-                            "is required.".format(type(sim_target_data).__name__))
+                            "is required.".format(type(meas_target_data).__name__))
         if not isinstance(sim_target_data, SimTargetData):
             raise TypeError("Given sim_target_data is of type {} but SimTargetData "
                             "is required.".format(type(sim_target_data).__name__))
