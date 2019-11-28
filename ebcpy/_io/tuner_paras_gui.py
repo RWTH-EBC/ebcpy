@@ -1,9 +1,10 @@
 """Module with GUI for showing and altering tuner-parameters"""
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from ebcpy import data_types
 import numpy as np
+from ebcpy import data_types
 # pylint: disable=R0902
+# pylint: disable=I1101
 
 
 class TunerParasUI:

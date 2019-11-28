@@ -2,12 +2,10 @@
 Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
-import os
 from collections import namedtuple
 from abc import abstractmethod
-from ebcpy.utils import visualizer
-from ebcpy import data_types
 import numpy as np
+from ebcpy.utils import visualizer
 
 
 class Optimizer:
@@ -46,6 +44,10 @@ class Optimizer:
     bounds = None
     _bound_max = None
     _bound_min = None
+    # Instantiate framework parameter:
+    framework = None
+    method = None
+    _framework_requires_method = True
 
     # Handle the kwargs
     # Scipy:
@@ -65,7 +67,7 @@ class Optimizer:
     # Define the list of supported kwargs:
     _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
                          "hessp", "is_integer_variable", "solver_epsilon",
-                         "num_function_calls", "show_plot"]
+                         "num_function_calls", "show_plot", "method"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
 
     def __init__(self, framework, cd, **kwargs):
@@ -106,13 +108,15 @@ class Optimizer:
         """
         raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
 
-    def optimize(self, method, framework=None):
+    def optimize(self, method=None, framework=None):
         """
         Perform the optimization based on the given method and framework.
 
         :param str method:
             The method you pass depends on the methods available in the framework
-            you choose.
+            you choosed when setting up the class. Some frameworks don't require a
+            method, as only one exists. This is the case for dlib. For any framework
+            with different methods, you must provide one.
         :param str framework:
             If different you want to alter the frameworks within the same script,
             pass one of the supported frameworks as an optional argument here.
@@ -121,7 +125,13 @@ class Optimizer:
         """
         if framework:
             self._choose_framework(framework)
-        res = self._minimize_func(method)
+        if method:
+            self.method = method
+        if self.method is None and self._framework_requires_method:
+            raise ValueError(f"{self.framework} requires a method, but None is "
+                             f"provided. Please choose one.")
+        # Perform minimization
+        res = self._minimize_func(self.method)
         return res
 
     def _choose_framework(self, framework):
@@ -135,10 +145,14 @@ class Optimizer:
         """
         if framework.lower() == "scipy":
             self._minimize_func = self._minimize_scipy
+            self._framework_requires_method = True
         elif framework.lower() == "dlib":
             self._minimize_func = self._minimize_dlib
+            self._framework_requires_method = False
         else:
             raise TypeError("Given framework {} is currently not supported.".format(framework))
+        # Update the class-parameter
+        self.framework = framework.lower()
 
     def _minimize_scipy(self, method):
         try:

@@ -4,8 +4,8 @@ ebcpy.optimization."""
 import unittest
 import os
 import shutil
-from ebcpy.optimization import Optimizer
 import numpy as np
+from ebcpy.optimization import Optimizer
 
 
 class TestOptimizer(unittest.TestCase):
@@ -15,8 +15,11 @@ class TestOptimizer(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
-        self.example_opt_dir = os.path.normpath(self.example_dir + "//test_optimization")
+        self.example_dir = os.path.normpath(os.path.join(self.framework_dir,
+                                                         "examples",
+                                                         "data"))
+        self.example_opt_dir = os.path.normpath(os.path.join(self.example_dir,
+                                                             "test_optimization"))
         self.supported_frameworks = ["scipy", "dlib"]
 
     def test_optimizer_choose_function(self):
@@ -51,7 +54,9 @@ class TestOptimizer(unittest.TestCase):
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
         my_custom_optimizer = CustomOptimizer("scipy", self.example_opt_dir)
-        res = my_custom_optimizer.optimize("L-BFGS-B")
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize()
+        res = my_custom_optimizer.optimize(method="L-BFGS-B")
         delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
 
