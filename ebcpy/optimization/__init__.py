@@ -15,19 +15,20 @@ class Optimizer:
 
     :param str framework:
         The framework (python module) you want to use to perform the optimization.
-        Currently, scipy and dlib are supported options. The further inform yourself
-        about these frameworks, please see:
+        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
+        are supported options. To further inform yourself about these frameworks, please see:
             - `dlib <http://dlib.net/python/index.html>`_
-            - `scipy <https://docs.scipy.org/doc/scipy/
+            - `scipy minimize <https://docs.scipy.org/doc/scipy/
             reference/generated/scipy.optimize.minimize.html>`_
+            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.differential_evolution.html>`_
     :param str,os.path.normpath cd:
         Directory for storing all output of optimization.
     :param dict kwargs:
-        Keyword arguments can be passed to this class. All given keywords
-        will be an object of this class. The ones used in different optimization
-        frameworks will be passed automatically to the functions when calling them.
-        E.g. For scipy.optimize.minimize one could add "tol=1e-3" as a kwarg.
-
+        Keyword arguments can be used to further tune the optimization to your need.
+        All keywords used in different optimization frameworks will be passed automatically
+        to the functions when calling them, E.g. For scipy.optimize.minimize one could
+        add "tol=1e-3" as a kwarg.
     """
 
     # Used to display number of obj-function-calls
@@ -50,10 +51,10 @@ class Optimizer:
     _framework_requires_method = True
 
     # Handle the kwargs
-    # Scipy:
+    # Scipy-minimize:
     tol = None
     options = None
-    constraints = ()
+    constraints = None
     jac = None
     hess = None
     hessp = None
@@ -63,7 +64,15 @@ class Optimizer:
     solver_epsilon = 0
     num_function_calls = int(1e9)
     show_plot = True
-
+    # scipy differential evolution
+    maxiter = 1000
+    popsize = 15
+    mutation = (0.5, 1)
+    recombination = 0.7
+    seed = None
+    polish = True
+    init = 'latinhypercube'
+    atol = 0
     # Define the list of supported kwargs:
     _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
                          "hessp", "is_integer_variable", "solver_epsilon",
@@ -114,11 +123,13 @@ class Optimizer:
 
         :param str method:
             The method you pass depends on the methods available in the framework
-            you choosed when setting up the class. Some frameworks don't require a
+            you chose when setting up the class. Some frameworks don't require a
             method, as only one exists. This is the case for dlib. For any framework
             with different methods, you must provide one.
+            For the scipy.differential_evolution function, method is equal to the
+            strategy.
         :param str framework:
-            If different you want to alter the frameworks within the same script,
+            If you want to alter the frameworks within the same script,
             pass one of the supported frameworks as an optional argument here.
         :return: res
             Optimization result.
@@ -140,21 +151,26 @@ class Optimizer:
         and for executing said functions.
 
         :param str framework:
-            String for selection of the relevant function. Currently,
-            scipy and dlib are supported frameworks.
+            String for selection of the relevant function. Supported options are:
+            - scipy_minimize
+            - dlib_minimize
+            - scipy_differential_evolution
         """
-        if framework.lower() == "scipy":
-            self._minimize_func = self._minimize_scipy
+        if framework.lower() == "scipy_minimize":
+            self._minimize_func = self._scipy_minimize
             self._framework_requires_method = True
-        elif framework.lower() == "dlib":
-            self._minimize_func = self._minimize_dlib
+        elif framework.lower() == "dlib_minimize":
+            self._minimize_func = self._dlib_minimize
             self._framework_requires_method = False
+        elif framework.lower() == "scipy_differential_evolution":
+            self._minimize_func = self._scipy_differential_evolution
+            self._framework_requires_method = True
         else:
             raise TypeError("Given framework {} is currently not supported.".format(framework))
         # Update the class-parameter
         self.framework = framework.lower()
 
-    def _minimize_scipy(self, method):
+    def _scipy_minimize(self, method):
         try:
             import scipy.optimize as opt
         except ImportError:
@@ -177,7 +193,7 @@ class Optimizer:
             self.logger.log(str(self._current_iterate))
             raise error
 
-    def _minimize_dlib(self, _):
+    def _dlib_minimize(self, _):
         try:
             import dlib
         except ImportError:
@@ -199,6 +215,39 @@ class Optimizer:
         except Exception as error:
             self.logger.log("Parameter set which caused the failure:")
             self.logger.log(self._current_iterate)
+            raise error
+
+    def _scipy_differential_evolution(self, method="best1bin"):
+        try:
+            import scipy.optimize as opt
+        except ImportError:
+            raise ImportError("Please install scipy to use the minimize_scipy function.")
+
+        try:
+            if self.bounds is None:
+                raise ValueError("For the differential evolution approach, you need to specify "
+                                 "boundaries. Currently, no bounds are specified.")
+            if self.tol is None:
+                # Default value. tol kwarg for scipy_minimize is None, therefore this adjustment is necessary
+                self.tol = 0.01
+
+            res = opt.differential_evolution(func=self.obj,
+                                             bounds=self.bounds,
+                                             strategy=method,
+                                             maxiter=self.maxiter,
+                                             popsize=self.popsize,
+                                             tol=self.tol,
+                                             mutation=self.mutation,
+                                             recombination=self.recombination,
+                                             seed=self.seed,
+                                             disp=False,  # We have our own logging.
+                                             polish=self.polish,
+                                             init=self.init,
+                                             atol=self.atol)
+            return res
+        except Exception as error:
+            self.logger.log("Parameter set which caused the failure:")
+            self.logger.log(str(self._current_iterate))
             raise error
 
     def _dlib_obj(self, *args):
