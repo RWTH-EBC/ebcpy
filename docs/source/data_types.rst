@@ -50,15 +50,3 @@ To build the objective for minimizing the differences betweeen simulation and me
 
 .. autoclass:: ebcpy.data_types.Goals
    :members:
-
-.. _calibration-class:
-CalibrationClass
-------------------
-
-Last but not least, a calibration class is an object wrapping the most important information for a calibration into one class.
-The **Tuner parameters** and **Goals** are members, as well as the time-interval for the simulation and the name of the class.
-
-
-.. autoclass:: ebcpy.data_types.CalibrationClass
-   :members:
-

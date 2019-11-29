@@ -183,25 +183,6 @@ class TestDataTypes(unittest.TestCase):
                                      sim_columns=sim_columns,
                                      weightings=weightings)
 
-    def test_calibration_class(self):
-        """Test the class CalibrationClass"""
-        with self.assertRaises(ValueError):
-            # Test if start-time higher than stop-time raises an error.
-            data_types.CalibrationClass("dummy", 100, 50)
-        with self.assertRaises(TypeError):
-            # Test if a given name not equal to string raises an error.
-            not_a_string = 1
-            data_types.CalibrationClass(not_a_string, 0, 10)
-
-        # Test set_functions for goals and tuner parameters
-        dummy_tuner_para = "not TunerParas-Class"
-        dummy_goal = "not Goals-Class"
-        dummy_cal_class = data_types.CalibrationClass("dummy", 0, 10)
-        with self.assertRaises(TypeError):
-            dummy_cal_class.set_tuner_paras(dummy_tuner_para)
-        with self.assertRaises(TypeError):
-            dummy_cal_class.set_goals(dummy_goal)
-
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.
         Check the keys of the file with e.g. the SDFEditor and
