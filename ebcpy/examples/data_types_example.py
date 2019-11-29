@@ -72,10 +72,10 @@ def setup_goals():
                                                               "measTargetData.mat"))
 
     # Setup the goals object
-    goals = data_types.Goals(meas_target_data,
-                             sim_target_data,
-                             meas_columns=["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
-                             sim_columns=["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
+    goals = data_types.Goals(["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
+                             ["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
+                             meas_target_data,
+                             sim_target_data=sim_target_data,
                              weightings=[0.7, 0.3])
     return goals
 

@@ -147,20 +147,20 @@ class TestDataTypes(unittest.TestCase):
         meas_columns = ["sine.amplitude / ", "sine.phase / rad"]
         sim_columns = ["sine.freqHz / Hz", "sine.startTime / s"]
         # Setup the goals class:
-        goals = data_types.Goals(meas_target_data,
-                                 sim_target_data,
-                                 meas_columns=meas_columns,
-                                 sim_columns=sim_columns)
+        goals = data_types.Goals(meas_columns,
+                                 sim_columns,
+                                 meas_target_data,
+                                 sim_target_data=sim_target_data)
         # Check different formats of setting up:
         # First check if no columns are specified
         with self.assertRaises(TypeError):
             goals = data_types.Goals(meas_target_data,
                                      sim_target_data)
         # Now if passing of strings works:
-        goals = data_types.Goals(meas_target_data,
-                                 sim_target_data,
-                                 sim_columns=sim_columns[0],
-                                 meas_columns=meas_columns[1])
+        goals = data_types.Goals(meas_columns[0],
+                                 sim_columns[1],
+                                 meas_target_data,
+                                 sim_target_data=sim_target_data)
         self.assertIsInstance(goals, data_types.Goals)
         # Check the eval_difference function:
         self.assertIsInstance(goals.eval_difference("RMSE"), float)
@@ -170,17 +170,17 @@ class TestDataTypes(unittest.TestCase):
         # Play around with wrong weightings:
         with self.assertRaises(IndexError):
             weightings = [1, 2, 4, 5, 6]
-            goals = data_types.Goals(meas_target_data,
-                                     sim_target_data,
-                                     meas_columns=meas_columns,
-                                     sim_columns=sim_columns,
+            goals = data_types.Goals(meas_columns,
+                                     sim_columns,
+                                     meas_target_data,
+                                     sim_target_data=sim_target_data,
                                      weightings=weightings)
         with self.assertRaises(IndexError):
             weightings = np.ones(100)/100
-            goals = data_types.Goals(meas_target_data,
-                                     sim_target_data,
-                                     meas_columns=meas_columns,
-                                     sim_columns=sim_columns,
+            goals = data_types.Goals(meas_columns,
+                                     sim_columns,
+                                     meas_target_data,
+                                     sim_target_data=sim_target_data,
                                      weightings=weightings)
 
     def test_get_keys_of_hdf_file(self):

@@ -305,18 +305,18 @@ class Goals:
     Class for one or multiple goals. Used to evaluate the
     difference between current simulation and measured data
 
+    :param list,str meas_columns:
+        List of strings or one string with names to the columns
+        inside measured_data.
+    :param list,str sim_columns:
+        List of strings or one string with names to the columns
+        inside simulated_data.
     :param MeasTargetData meas_target_data:
         The dataset to be used as a reference for the simulation output.
-    :param SimTargetData sim_target_data:
-        Class holding the dataframe of the simulated data
-    :param list,str,None meas_columns:
-        List of strings or one string with names to the columns
-        inside measured_data. If None, the measured_data's
-        dataframe has to hold exactly one column. This will then be used.
-    :param list,str,None sim_columns:
-        List of strings or one string with names to the columns
-        inside simulated_data. If None, the simulated_data's dataframe
-        has to hold exactly one column. This will then be used.
+    :param SimTargetData, None sim_target_data:
+        Class holding the dataframe of the simulated data.
+        Can be empty for instantiation, however has to be set before
+        calling eval_difference().
     :param list weightings:
         Values between 0 and 1 to account for multiple Goals to be evaluated.
         If multiple goals are selected, and weightings is None, each
@@ -327,57 +327,46 @@ class Goals:
     _meas_df = pd.DataFrame()
     _sim_df = pd.DataFrame()
 
-    def __init__(self, meas_target_data, sim_target_data,
-                 meas_columns=None, sim_columns=None, weightings=None):
+    def __init__(self, meas_columns, sim_columns, meas_target_data,
+                 sim_target_data=None, weightings=None):
         """Initialize class-objects and check correct input."""
 
-        if not isinstance(meas_target_data, MeasTargetData):
-            raise TypeError("Given meas_target_data is of type {} but MeasTargetData "
-                            "is required.".format(type(meas_target_data).__name__))
-        if not isinstance(sim_target_data, SimTargetData):
-            raise TypeError("Given sim_target_data is of type {} but SimTargetData "
-                            "is required.".format(type(sim_target_data).__name__))
-        self._meas_target_data = meas_target_data
-        self._sim_target_data = sim_target_data
-        _meas_keys = list(self._meas_target_data.df.keys())
-        _sim_keys = list(self._sim_target_data.df.keys())
         # Convert given str to list for identical processing:
         if isinstance(meas_columns, str):
             self._meas_columns = [meas_columns]
         elif isinstance(meas_columns, list):
             self._meas_columns = meas_columns
         else:
-            if len(_meas_keys) == 1:
-                self._meas_columns = _meas_keys
-            else:
-                raise TypeError("Given meas_target_data has more than"
-                                "one key. Please specify column names(s) to proceed.")
+            raise TypeError("Given sim_columns is pf type {} but should be "
+                            "float or string".format(type(meas_columns).__name__))
 
         if isinstance(sim_columns, str):
             self._sim_columns = [sim_columns]
         elif isinstance(sim_columns, list):
             self._sim_columns = sim_columns
         else:
-            if len(_sim_keys) == 1:
-                self._meas_columns = _sim_keys
-            else:
-                raise TypeError("Given sim_target_data has more than"
-                                "one key. Please specify column names(s) to proceed.")
-
-        _diff_meas = self._get_difference(self._meas_columns, _meas_keys)
-        if _diff_meas:
-            raise KeyError("Given meas_columns not found in "
-                           "meas_target_data:\n{}".format(", ".join(_diff_meas)))
-        _diff_sim = self._get_difference(self._sim_columns, _sim_keys)
-        if _diff_sim:
-            raise KeyError("Given meas_columns not found in "
-                           "meas_target_data:\n{}".format(", ".join(_diff_sim)))
+            raise TypeError("Given sim_columns is pf type {} but should be "
+                            "float or string".format(type(sim_columns).__name__))
 
         if len(self._meas_columns) != len(self._sim_columns):
             raise ValueError("The given amount of meas_columns ({}) does not equal"
                              "the amount of sim_columns ({}). Can't map goals if the number"
                              "is not equal.".format(len(self._meas_columns),
                                                     len(self._sim_columns)))
+
+        # Open the meas target data:
+        if not isinstance(meas_target_data, MeasTargetData):
+            raise TypeError("Given meas_target_data is of type {} but MeasTargetData "
+                            "is required.".format(type(meas_target_data).__name__))
+
+        self._meas_target_data = meas_target_data
+        _meas_keys = list(self._meas_target_data.df.keys())
+
+        _diff_meas = self._get_difference(self._meas_columns, _meas_keys)
+        if _diff_meas:
+            raise KeyError("Given meas_columns not found in "
+                           "meas_target_data:\n{}".format(", ".join(_diff_meas)))
+
         # Set the weightings, if not specified.
         self._num_goals = len(self._meas_columns)
         if weightings is None:
@@ -393,11 +382,12 @@ class Goals:
 
         # Extract the dataframe from the meas_target_data and sim_target_data
         self._meas_df = self._meas_target_data.df
-        self._sim_df = self._sim_target_data.df
 
         # Create an array for the goals.
         self._goals = []
-        self._update_goals()
+        # Eventually set the given sim_target_data
+        if sim_target_data is not None:
+            self.set_sim_target_data(sim_target_data)
 
     def _update_goals(self):
         """Function to create or update the goals-list. As
@@ -460,6 +450,7 @@ class Goals:
         if not isinstance(sim_target_data, SimTargetData):
             raise TypeError("Given sim_target_data is of type {} but SimTargetData "
                             "is required.".format(type(sim_target_data).__name__))
+
         _diff = self._get_difference(self._sim_columns, sim_target_data.df.keys())
         if _diff:
             raise KeyError("Given sim_target_data does not contain all required column-keys "
