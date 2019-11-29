@@ -20,7 +20,9 @@ class TestOptimizer(unittest.TestCase):
                                                          "data"))
         self.example_opt_dir = os.path.normpath(os.path.join(self.example_dir,
                                                              "test_optimization"))
-        self.supported_frameworks = ["scipy_minimize", "dlib_minimize", "scipy_differential_evolution"]
+        self.supported_frameworks = ["scipy_minimize",
+                                     "dlib_minimize",
+                                     "scipy_differential_evolution"]
 
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
@@ -64,7 +66,8 @@ class TestOptimizer(unittest.TestCase):
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # Test scipy differential evolution
-        # Bounds are necessary (here, 1 and 0 are sufficient, as the goal values are element of [0,1]
+        # Bounds are necessary (here, 1 and 0 are sufficient,
+        #  as the goal values are element of [0,1]
         my_custom_optimizer.bounds = [(0, 1) for _ in range(3)]
         res_de = my_custom_optimizer.optimize(framework="scipy_differential_evolution",
                                               method="best2bin")

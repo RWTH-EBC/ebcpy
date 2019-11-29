@@ -228,7 +228,8 @@ class Optimizer:
                 raise ValueError("For the differential evolution approach, you need to specify "
                                  "boundaries. Currently, no bounds are specified.")
             if self.tol is None:
-                # Default value. tol kwarg for scipy_minimize is None, therefore this adjustment is necessary
+                # Default value. tol kwarg for scipy_minimize is None,
+                # therefore this adjustment is necessary
                 self.tol = 0.01
 
             res = opt.differential_evolution(func=self.obj,

@@ -194,8 +194,8 @@ class TestPreProcessing(unittest.TestCase):
         """Test function of preprocessing.cross_validation().
         For an example, see the doctest in the function.
         """
-        dim = np.random.randint(1, 1000)
-        test_size = np.random.rand(1)[0]
+        dim = np.random.randint(100, 1000)
+        test_size = np.random.uniform(low=0.1, high=0.9, size=(1,))
         x = np.random.rand(dim)
         y = np.random.rand(dim)
         ret = preprocessing.cross_validation(x, y, test_size=test_size)
