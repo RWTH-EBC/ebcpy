@@ -321,7 +321,7 @@ class Goals:
         Values between 0 and 1 to account for multiple Goals to be evaluated.
         If multiple goals are selected, and weightings is None, each
         weighting will be equal to 1/(Number of goals).
-        The sum has to be 1.
+        The weigthing is scaled so that the sum will equal 1.
     """
 
     _meas_df = pd.DataFrame()
@@ -381,18 +381,15 @@ class Goals:
         # Set the weightings, if not specified.
         self._num_goals = len(self._meas_columns)
         if weightings is None:
-            self._weightings = [1/self._num_goals for i in range(self._num_goals)]
+            self._weightings = np.array([1/self._num_goals for i in range(self._num_goals)])
         else:
             if not isinstance(weightings, (list, np.ndarray)):
                 raise TypeError("weightings is of type {} but should be of type"
                                 " list.".format(type(weightings).__name__))
-            if not round(sum(weightings), 4) == 1:  # Avoid numerical precision problems.
-                raise ValueError("Given weightings list sums up to {}, "
-                                 "not 1.".format(sum(weightings)))
             if len(weightings) != self._num_goals:
                 raise IndexError("The given number of weightings ({}) does not match the number"
                                  " of goals ({})".format(len(weightings), self._num_goals))
-            self._weightings = weightings
+            self._weightings = np.array(weightings) / sum(weightings)
 
         # Extract the dataframe from the meas_target_data and sim_target_data
         self._meas_df = self._meas_target_data.df

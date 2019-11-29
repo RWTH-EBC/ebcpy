@@ -168,8 +168,8 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(TypeError):
             goals.set_sim_target_data(meas_target_data)
         # Play around with wrong weightings:
-        with self.assertRaises(ValueError):
-            weightings = [1, 2]
+        with self.assertRaises(IndexError):
+            weightings = [1, 2, 4, 5, 6]
             goals = data_types.Goals(meas_target_data,
                                      sim_target_data,
                                      meas_columns=meas_columns,
