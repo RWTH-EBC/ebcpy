@@ -40,6 +40,16 @@ Be aware of forward slashes (for python) and backslashes (for Windows). You migh
    simulationapi
 
 
+Version History
+-------------------
+
+v0.1.0: Implemented necessary features
+v0.1.1: Fixed bugs necessary to work with AixCaliBuHa and EnSTATS and refactor functions based on feedback
+v0.1.2:
+- Move CalibrationClass to AixCaliBuHa
+- Add scipy.optimize.differential_evolution as an optimizer
+
+
 Indices and tables
 ==================
 
