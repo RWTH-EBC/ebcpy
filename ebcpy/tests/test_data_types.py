@@ -147,20 +147,20 @@ class TestDataTypes(unittest.TestCase):
         meas_columns = ["sine.amplitude / ", "sine.phase / rad"]
         sim_columns = ["sine.freqHz / Hz", "sine.startTime / s"]
         # Setup the goals class:
-        goals = data_types.Goals(meas_target_data,
-                                 sim_target_data,
-                                 meas_columns=meas_columns,
-                                 sim_columns=sim_columns)
+        goals = data_types.Goals(meas_columns,
+                                 sim_columns,
+                                 meas_target_data,
+                                 sim_target_data=sim_target_data)
         # Check different formats of setting up:
         # First check if no columns are specified
         with self.assertRaises(TypeError):
             goals = data_types.Goals(meas_target_data,
                                      sim_target_data)
         # Now if passing of strings works:
-        goals = data_types.Goals(meas_target_data,
-                                 sim_target_data,
-                                 sim_columns=sim_columns[0],
-                                 meas_columns=meas_columns[1])
+        goals = data_types.Goals(meas_columns[0],
+                                 sim_columns[1],
+                                 meas_target_data,
+                                 sim_target_data=sim_target_data)
         self.assertIsInstance(goals, data_types.Goals)
         # Check the eval_difference function:
         self.assertIsInstance(goals.eval_difference("RMSE"), float)
@@ -168,39 +168,20 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(TypeError):
             goals.set_sim_target_data(meas_target_data)
         # Play around with wrong weightings:
-        with self.assertRaises(ValueError):
-            weightings = [1, 2]
-            goals = data_types.Goals(meas_target_data,
-                                     sim_target_data,
-                                     meas_columns=meas_columns,
-                                     sim_columns=sim_columns,
+        with self.assertRaises(IndexError):
+            weightings = [1, 2, 4, 5, 6]
+            goals = data_types.Goals(meas_columns,
+                                     sim_columns,
+                                     meas_target_data,
+                                     sim_target_data=sim_target_data,
                                      weightings=weightings)
         with self.assertRaises(IndexError):
             weightings = np.ones(100)/100
-            goals = data_types.Goals(meas_target_data,
-                                     sim_target_data,
-                                     meas_columns=meas_columns,
-                                     sim_columns=sim_columns,
+            goals = data_types.Goals(meas_columns,
+                                     sim_columns,
+                                     meas_target_data,
+                                     sim_target_data=sim_target_data,
                                      weightings=weightings)
-
-    def test_calibration_class(self):
-        """Test the class CalibrationClass"""
-        with self.assertRaises(ValueError):
-            # Test if start-time higher than stop-time raises an error.
-            data_types.CalibrationClass("dummy", 100, 50)
-        with self.assertRaises(TypeError):
-            # Test if a given name not equal to string raises an error.
-            not_a_string = 1
-            data_types.CalibrationClass(not_a_string, 0, 10)
-
-        # Test set_functions for goals and tuner parameters
-        dummy_tuner_para = "not TunerParas-Class"
-        dummy_goal = "not Goals-Class"
-        dummy_cal_class = data_types.CalibrationClass("dummy", 0, 10)
-        with self.assertRaises(TypeError):
-            dummy_cal_class.set_tuner_paras(dummy_tuner_para)
-        with self.assertRaises(TypeError):
-            dummy_cal_class.set_goals(dummy_goal)
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.
