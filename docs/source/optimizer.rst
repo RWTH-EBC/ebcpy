@@ -1,11 +1,5 @@
 .. _optimizer:
-Optimizer
+optimization
 =====================
-.. automodule:: ebcpy.optimizer
-   :members:
-
-Optimization
-------------------
-.. _optimization:
-.. automodule:: ebcpy.optimizer.optimization
+.. automodule:: ebcpy.optimization
    :members:

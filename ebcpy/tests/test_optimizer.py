@@ -4,8 +4,8 @@ ebcpy.optimization."""
 import unittest
 import os
 import shutil
-from ebcpy.optimization import Optimizer
 import numpy as np
+from ebcpy.optimization import Optimizer
 
 
 class TestOptimizer(unittest.TestCase):
@@ -15,18 +15,25 @@ class TestOptimizer(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
-        self.example_opt_dir = os.path.normpath(self.example_dir + "//test_optimization")
-        self.supported_frameworks = ["scipy", "dlib"]
+        self.example_dir = os.path.normpath(os.path.join(self.framework_dir,
+                                                         "examples",
+                                                         "data"))
+        self.example_opt_dir = os.path.normpath(os.path.join(self.example_dir,
+                                                             "test_optimization"))
+        self.supported_frameworks = ["scipy_minimize",
+                                     "dlib_minimize",
+                                     "scipy_differential_evolution"]
 
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
-        opt = Optimizer("scipy", self.example_opt_dir)
+        opt = Optimizer("scipy_minimize", self.example_opt_dir)
         for _framework in self.supported_frameworks:
-            if _framework == "scipy":
-                reference_function = opt._minimize_scipy
-            elif _framework == "dlib":
-                reference_function = opt._minimize_dlib
+            if _framework == "scipy_minimize":
+                reference_function = opt._scipy_minimize
+            elif _framework == "dlib_minimize":
+                reference_function = opt._dlib_minimize
+            elif _framework == "scipy_differential_evolution":
+                reference_function = opt._scipy_differential_evolution
             opt._choose_framework(_framework)
             self.assertEqual(opt._minimize_func, reference_function)
         with self.assertRaises(TypeError):
@@ -50,10 +57,23 @@ class TestOptimizer(unittest.TestCase):
                 # Return the MAE of the quadratic function.
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
-        my_custom_optimizer = CustomOptimizer("scipy", self.example_opt_dir)
-        res = my_custom_optimizer.optimize("L-BFGS-B")
-        delta_solution = np.sum(res.x - my_custom_optimizer.x_goal)
+        my_custom_optimizer = CustomOptimizer("scipy_minimize", self.example_opt_dir)
+        # Test value error if no method is supplied
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize()
+        # Test scipy minimize
+        res_min = my_custom_optimizer.optimize(method="L-BFGS-B")
+        delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        # Test scipy differential evolution
+        # Bounds are necessary (here, 1 and 0 are sufficient,
+        #  as the goal values are element of [0,1]
+        my_custom_optimizer.bounds = [(0, 1) for _ in range(3)]
+        res_de = my_custom_optimizer.optimize(framework="scipy_differential_evolution",
+                                              method="best2bin")
+        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
+        # Skip dlib test as problems in ci occur.
 
     def tearDown(self):
         """Remove all created folders while optimizing."""
