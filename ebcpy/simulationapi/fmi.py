@@ -13,51 +13,64 @@ from ebcpy import simulationapi
 from ebcpy import data_types
 import pandas as pd
 import shutil
-from fmpy import read_model_description, extract
-from fmpy.fmi2 import FMU2Slave
+from fmpy
 import logging as logger
 
-class FmuApi(simulationapi.SimulationAPI):
+
+class FMI_API(simulationapi.SimulationAPI):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
     """
     sim_setup = {'startTime': 0.0,
-                 'stopTime': 1.0}
+                 'stopTime': 1.0,
+                 'solver': "CVode",  # Or "Euler"
+                 'step_size': None,
+                 'relative_tolerance': None,
+                 'output_interval': None}
     sim_time = 0
 
-    def __init__(self, cd, model_name, speed):
-        """Instantiate class parameters"""
-        super().__init__(cd, model_name)
-        if not model_name.lower().endswith(".fmu"):
-            raise ValueError(f"{model_name} is no valid fmu file!")
-        self.speed = speed
-        self.fmu_path = cd + "\\" + model_name
-        self.start_time = time.time()
-        self.load()
+    validate = True  # Whether to validate the given fmu-model description or not
 
-    def load(self):
+    def __init__(self, cd, fmu_file, **kwargs):
+        """Instantiate class parameters"""
+
+        if not fmu_file.lower().endswith(".fmu"):
+            raise TypeError("Given file is not a fmu-file")
+        if not os.path.exists(fmu_file):
+            raise FileNotFoundError("Given file does not exist on your machine")
+
+        # Update Kwargs:
+        self.__dict__.update(kwargs)
+
+        # Model description
         # read the model description
-        self.model_description = read_model_description(self.fmu_path)
+        self.model_description = fmpy.read_model_description(self.fmu_file, validate=self.validate)
+        super().__init__(cd, self.model_description.modelName)
 
         # collect the value references
         self.vrs = {}
         for variable in self.model_description.modelVariables:
             self.vrs[variable.name] = variable.valueReference
 
-        self.unzipdir = extract(self.fmu_path)
+        self.speed = speed
+        self.fmu_file = fmu_file
+        self.start_time = time.time()
+        self._setup_fmu()
 
-        self.model = FMU2Slave(guid=self.model_description.guid,
-                                   unzipDirectory=self.unzipdir,
-                                   modelIdentifier=
-                                   self.model_description.coSimulation.modelIdentifier,
-                                   instanceName='instance1')
+    def _setup_fmu(self):
+        self.unzipdir = fmpy.extract(self.fmu_file)
 
-        self.model.instantiate()
-        self.model.setupExperiment(startTime=0.0)
-        self.model.enterInitializationMode()
-        self.model.exitInitializationMode()
+        self.fmu = fmpy.fmi2.FMU2Slave(guid=self.model_description.guid,
+                                       unzipDirectory=self.unzipdir,
+                                       modelIdentifier=
+                                       self.model_description.coSimulation.modelIdentifier,
+                                       instanceName='instance1')
 
+        self.fmu.instantiate()
+        self.fmu.setupExperiment(startTime=0.0)
+        self.fmu.enterInitializationMode()
+        self.fmu.exitInitializationMode()
 
     def close(self):
         """
@@ -66,13 +79,12 @@ class FmuApi(simulationapi.SimulationAPI):
             True on success
         """
         try:
-            self.model.terminate()
-            self.model.freeInstance()
+            self.fmu.terminate()
+            self.fmu.freeInstance()
             shutil.rmtree(self.unzipdir)
             logger.info('File successfully closed!')
         except Exception as e:
             logger.error('Failed to close file: ' + str(e))
-
 
     def set_cd(self, cd):
         """
@@ -92,7 +104,27 @@ class FmuApi(simulationapi.SimulationAPI):
         :return:
             Filepath of the mat-file.
         """
-        raise NotImplementedError
+        fmpy.simulate_fmu(filename=filename,
+                          validate=self.validate,
+                          start_time=self.sim_setup["start_time"],
+                          stop_time=self.sim_setup["stop_time"],
+                          solver=self.sim_setup["solver"],
+                          step_size=self.sim_setup["step_size"],
+                          relative_tolerance=self.sim_setup["relative_tolerance"],
+                          output_interval=self.sim_setup["output_interval"],
+                          record_events=True,   # TODO
+                          fmi_type=None,    # TODO
+                          use_source_code=False,
+                          start_values={},
+                          apply_default_start_values=False,
+                          input=None,  # TODO
+                          output=None,  # TODO
+                          timeout=None,  # TODO
+                          debug_logging=False,   # TODO
+                          logger=None,   # TODO
+                          fmi_call_logger=None,   # TODO
+                          step_finished=None,   # TODO
+                          model_description=None)
 
     def set_sim_setup(self, sim_setup):
         """
@@ -100,7 +132,7 @@ class FmuApi(simulationapi.SimulationAPI):
 
         :param sim_setup:
         """
-        self.sim_setup=sim_setup
+        self.sim_setup = sim_setup
 
     def read(self, var):
         name = self.vrs[var]
