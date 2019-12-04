@@ -116,17 +116,18 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
-        res = self.dymola.simulateExtendedModel(self.model_name,
-                                                startTime=self.sim_setup['startTime'],
-                                                stopTime=self.sim_setup['stopTime'],
-                                                numberOfIntervals=self.sim_setup['numberOfIntervals'],
-                                                outputInterval=self.sim_setup['outputInterval'],
-                                                method=self.sim_setup['method'],
-                                                tolerance=self.sim_setup['tolerance'],
-                                                fixedstepsize=self.sim_setup['fixedstepsize'],
-                                                resultFile=self.sim_setup['resultFile'],
-                                                initialNames=self.sim_setup['initialNames'],
-                                                initialValues=self.sim_setup['initialValues'])
+        res = self.dymola.simulateExtendedModel(
+                    self.model_name,
+                    startTime=self.sim_setup['startTime'],
+                    stopTime=self.sim_setup['stopTime'],
+                    numberOfIntervals=self.sim_setup['numberOfIntervals'],
+                    outputInterval=self.sim_setup['outputInterval'],
+                    method=self.sim_setup['method'],
+                    tolerance=self.sim_setup['tolerance'],
+                    fixedstepsize=self.sim_setup['fixedstepsize'],
+                    resultFile=self.sim_setup['resultFile'],
+                    initialNames=self.sim_setup['initialNames'],
+                    initialValues=self.sim_setup['initialValues'])
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")

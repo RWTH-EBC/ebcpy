@@ -31,7 +31,7 @@ class SimulationAPI:
                                   'defined'.format(self.__class__.__name__))
 
     @abstractmethod
-    def simulate(self, savepath_files):
+    def simulate(self):
         """Base function for simulating the simulation-model."""
         raise NotImplementedError('{}.simulate function is not '
                                   'defined'.format(self.__class__.__name__))
@@ -48,7 +48,7 @@ class SimulationAPI:
         _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
         if _diff:
             raise KeyError("The given sim_setup contains the following keys ({}) which are "
-                           "not part of the sim_setup of class {}.".format(" ,".join(list(_diff)),
+                           "not part of the sim_setup of class {}".format(" ,".join(list(_diff)),
                                                                            self.__class__.__name__))
 
         for key, value in sim_setup.items():
