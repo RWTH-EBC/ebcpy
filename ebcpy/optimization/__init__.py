@@ -54,7 +54,7 @@ class Optimizer:
     # Scipy-minimize:
     tol = None
     options = None
-    constraints = None
+    constraints = {}
     jac = None
     hess = None
     hessp = None
