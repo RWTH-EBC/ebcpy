@@ -52,6 +52,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'initialNames': [],
                  'initialValues': []}
 
+    _number_values = ["startTime", "stopTime", "numberOfIntervals",
+                      "outputInterval", "tolerance", "fixedstepsize"]
+
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
         super().__init__(cd, model_name)
@@ -160,30 +163,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
             List containing initial values for the dymola interface
         """
         self.sim_setup["initialValues"] = list(initial_values)
-
-    def set_sim_setup(self, sim_setup):
-        """
-        Overwrites multiple entries in the simulation setup dictionary
-
-        :param dict sim_setup:
-            Dictionary object with the same keys as this class's sim_setup dictionary
-        """
-        _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
-        if _diff:
-            raise KeyError("The given sim_setup contains the following keys ({}) which are "
-                           "not part of the dymola sim_setup.".format(" ,".join(list(_diff))))
-        _number_values = ["startTime", "stopTime", "numberOfIntervals",
-                          "outputInterval", "tolerance", "fixedstepsize"]
-        for key, value in sim_setup.items():
-            if key in _number_values:
-                _ref = (float, int)
-            else:
-                _ref = type(self.sim_setup[key])
-            if isinstance(value, _ref):
-                self.sim_setup[key] = value
-            else:
-                raise TypeError("{} is of type {} but should be"
-                                " type {}".format(key, type(value).__name__, _ref))
 
     def import_initial(self, filepath):
         """

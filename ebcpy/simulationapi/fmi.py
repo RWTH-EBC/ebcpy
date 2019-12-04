@@ -1,20 +1,12 @@
 """Module for classes using a fmu to
 simulate models."""
 
-from ebcpy import simulationapi
 import time
 import fmpy
-import sys
 import os
-import warnings
-import atexit
-import psutil
 from ebcpy import simulationapi
-from ebcpy import data_types
-import pandas as pd
 import shutil
 from fmpy
-import logging as logger
 
 
 class FMI_API(simulationapi.SimulationAPI):
@@ -28,9 +20,15 @@ class FMI_API(simulationapi.SimulationAPI):
                  'step_size': None,
                  'relative_tolerance': None,
                  'output_interval': None}
+
+    _number_values = ["startTime", "stopTime", "step_size",
+                      "relative_tolerance", "output_interval"]
+
     sim_time = 0
 
     validate = True  # Whether to validate the given fmu-model description or not
+    equidistant_output = True
+    instance_name = None
 
     def __init__(self, cd, fmu_file, **kwargs):
         """Instantiate class parameters"""
@@ -55,7 +53,8 @@ class FMI_API(simulationapi.SimulationAPI):
 
         self.speed = speed
         self.fmu_file = fmu_file
-        self.start_time = time.time()
+        if self.instance_name is None:
+            self.instance_name = self.model_name
         self._setup_fmu()
 
     def _setup_fmu(self):
@@ -65,7 +64,7 @@ class FMI_API(simulationapi.SimulationAPI):
                                        unzipDirectory=self.unzipdir,
                                        modelIdentifier=
                                        self.model_description.coSimulation.modelIdentifier,
-                                       instanceName='instance1')
+                                       instanceName=self.instance_name)
 
         self.fmu.instantiate()
         self.fmu.setupExperiment(startTime=0.0)
@@ -82,9 +81,9 @@ class FMI_API(simulationapi.SimulationAPI):
             self.fmu.terminate()
             self.fmu.freeInstance()
             shutil.rmtree(self.unzipdir)
-            logger.info('File successfully closed!')
+            self.logger.log('File successfully closed!')
         except Exception as e:
-            logger.error('Failed to close file: ' + str(e))
+            self.logger.log('Failed to close file: ' + str(e))
 
     def set_cd(self, cd):
         """
@@ -93,7 +92,14 @@ class FMI_API(simulationapi.SimulationAPI):
             New working directory
         :return:
         """
-        raise NotImplementedError
+        # Check if path is valid
+        if not os.path.isdir(cd):
+            raise ValueError("Given working directory is not a valid path.")
+        # Create path if it does not exist
+        if not os.path.exists(cd):
+            os.mkdir(cd)
+        # Set the new working directory
+        self.cd = cd
 
     def simulate(self, savepath_files):
         """
@@ -104,35 +110,21 @@ class FMI_API(simulationapi.SimulationAPI):
         :return:
             Filepath of the mat-file.
         """
-        fmpy.simulate_fmu(filename=filename,
-                          validate=self.validate,
-                          start_time=self.sim_setup["start_time"],
-                          stop_time=self.sim_setup["stop_time"],
-                          solver=self.sim_setup["solver"],
-                          step_size=self.sim_setup["step_size"],
-                          relative_tolerance=self.sim_setup["relative_tolerance"],
-                          output_interval=self.sim_setup["output_interval"],
-                          record_events=True,   # TODO
-                          fmi_type=None,    # TODO
-                          use_source_code=False,
-                          start_values={},
-                          apply_default_start_values=False,
-                          input=None,  # TODO
-                          output=None,  # TODO
-                          timeout=None,  # TODO
-                          debug_logging=False,   # TODO
-                          logger=None,   # TODO
-                          fmi_call_logger=None,   # TODO
-                          step_finished=None,   # TODO
-                          model_description=None)
 
-    def set_sim_setup(self, sim_setup):
-        """
-        Alter the simulation setup by changing the setup-dict.
+        result = fmpy.simulate_fmu(filename=self.fmu_file,
+                                   validate=self.validate,
+                                   start_time=self.sim_setup["start_time"],
+                                   stop_time=self.sim_setup["stop_time"],
+                                   solver=self.sim_setup["solver"],
+                                   step_size=self.sim_setup["step_size"],
+                                   relative_tolerance=self.sim_setup["relative_tolerance"],
+                                   output_interval=self.sim_setup["output_interval"],
+                                   record_events=not self.equidistant_output,
+                                   start_values={},
+                                   input=None,
+                                   output=None)
 
-        :param sim_setup:
-        """
-        self.sim_setup = sim_setup
+        return result
 
     def read(self, var):
         name = self.vrs[var]
@@ -143,7 +135,6 @@ class FMI_API(simulationapi.SimulationAPI):
     def write(self, var, value):
         name = self.vrs[var]
         self.model.setReal([name], [value])
-
 
     def proceed(self):
         cur_time = time.time() - self.start_time
