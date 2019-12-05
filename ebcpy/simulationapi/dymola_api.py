@@ -28,10 +28,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     show_window = False
     get_structural_parameters = True
+    # Alter the output-format so all simulations will result in the same array-length
+    equidistant_output = True
     _supported_kwargs = ["show_window",
                          "get_structural_parameters",
                          "dymola_path",
-                         "dymola_interface_path"]
+                         "dymola_interface_path",
+                         "equidistant_output"]
     dymola_path = ""
     _bit_64 = True  # Whether to use 32 bit or not.
 
@@ -269,6 +272,12 @@ class DymolaAPI(simulationapi.SimulationAPI):
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
         self.logger.log("Loaded modules")
+        if self.equidistant_output:
+            # Change the Simulation Output, to ensure all
+            # simulation results have the same array shape.
+            # Events can also cause errors in the shape.
+            self.dymola.experimentSetupOutput(equidistant=True,
+                                              events=False)
 
     def _check_dymola_instances(self):
         """
