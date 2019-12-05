@@ -483,8 +483,13 @@ class Goals:
         :param float end_time:
             End-time of the relevant time interval
         """
-        self._sim_df = self._sim_target_data.df[start_time:end_time]
-        self._meas_df = self._meas_target_data.df[start_time:end_time]
+        _sim_df_ref = self._sim_target_data.get_df().copy()
+        _meas_df_ref = self._meas_target_data.get_df().copy()
+        self._meas_df = _meas_df_ref.loc[(_meas_df_ref.index >= start_time) &
+                                         (_meas_df_ref.index <= end_time)]
+        self._sim_df = _sim_df_ref.loc[(_sim_df_ref.index >= start_time)
+                                       &
+                                       (_sim_df_ref.index <= end_time)]
         self._update_goals()
 
     def set_meas_target_data(self, meas_target_data):
