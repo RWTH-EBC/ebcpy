@@ -14,7 +14,7 @@ import modelicares.simres as sr
 import numpy as np
 import pandas as pd
 from ebcpy.utils import statistics_analyzer
-from ebcpy.preprocessing import preprocessing
+from ebcpy import preprocessing
 import ebcpy.modelica.simres as ebc_sr
 # pylint: disable=I1101
 

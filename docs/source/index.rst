@@ -43,11 +43,17 @@ Be aware of forward slashes (for python) and backslashes (for Windows). You migh
 Version History
 -------------------
 
-v0.1.0: Implemented necessary features
-v0.1.1: Fixed bugs necessary to work with AixCaliBuHa and EnSTATS and refactor functions based on feedback
-v0.1.2:
-- Move CalibrationClass to AixCaliBuHa
-- Add scipy.optimize.differential_evolution as an optimizer
+v0.1
+
+- v0.1.0:
+   - Implemented necessary features to run together with AixCaliBuHa and EnSTATS
+- v0.1.1:
+   - Fixed bugs necessary to work with AixCaliBuHa and EnSTATS and refactor functions based on feedback
+- v0.1.2:
+   - Move CalibrationClass to AixCaliBuHa
+   - Add scipy.optimize.differential_evolution as an optimizer
+- v0.1.3:
+   - Move conversion.py to utils and make preprocessing a direct module
 
 
 Indices and tables
