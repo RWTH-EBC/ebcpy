@@ -33,9 +33,12 @@ class Optimizer:
 
     # Used to display number of obj-function-calls
     _counter = 0
-    # Used to access the current parameter set if a optimization-step fails
+    # Used to access the current parameter set if an optimization-step fails
     _current_iterate = np.array([])
+    # Used to access the best iterate if an optimization step fails
+    _current_best_iterate = {"Objective": np.inf}
     # List storing every objective value for plotting and logging.
+    # Can be used, but will enlarge runtime
     _obj_his = []
     # Dummy variable for selected optimization function
     _minimize_func = None
@@ -63,7 +66,6 @@ class Optimizer:
     # The maximal number of function evaluations in dlib is 1e9.
     solver_epsilon = 0
     num_function_calls = int(1e9)
-    show_plot = True
     # scipy differential evolution
     maxiter = 1000
     popsize = 15
@@ -76,7 +78,7 @@ class Optimizer:
     # Define the list of supported kwargs:
     _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
                          "hessp", "is_integer_variable", "solver_epsilon",
-                         "num_function_calls", "show_plot", "method"]
+                         "num_function_calls", "method", "maxiter", "popsize"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
 
     def __init__(self, framework, cd, **kwargs):
@@ -188,10 +190,8 @@ class Optimizer:
                                tol=self.tol,
                                options=self.options)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(str(self._current_iterate))
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _dlib_minimize(self, _):
         try:
@@ -212,10 +212,8 @@ class Optimizer:
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=x_res, fun=f_res)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(self._current_iterate)
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _scipy_differential_evolution(self, method="best1bin"):
         try:
@@ -246,10 +244,8 @@ class Optimizer:
                                              init=self.init,
                                              atol=self.atol)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(str(self._current_iterate))
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _dlib_obj(self, *args):
         """
@@ -258,3 +254,18 @@ class Optimizer:
         parameters
         """
         return self.obj(np.array(args))
+
+    def _handle_error(self, error):
+        """
+        Function to handle the case when an optimization step fails (e.g. simulation-fail).
+        The parameter set which caused the failure and the best iterate until this point
+        are of interest for the user in such case.
+        :param error:
+            Any Exception that may occur
+        """
+        self.logger.log("Parameter set which caused the failure:")
+        self.logger.log(str(self._current_iterate))
+        self.logger.log("Current best objective and parameter set:")
+        self.logger.log("\n".join(["{}: {}".format(key, value)
+                                   for key, value in self._current_best_iterate.items()]))
+        raise error

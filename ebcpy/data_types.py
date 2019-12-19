@@ -424,21 +424,33 @@ class Goals:
                                     _sim_data,
                                     _weighting))
 
-    def eval_difference(self, statistical_measure):
+    def eval_difference(self, statistical_measure, verbose=False):
         """
         Evaluate the difference of the measurement and simulated data based on the
         given statistical_measure.
 
         :param str statistical_measure:
             Method supported by statistics_analyzer.StatisticsAnalyzer, e.g. RMSE
+        :param boolean verbose:
+            If True, a dict with difference-values of for all goals and the
+            corresponding weightings is returned together with the total difference.
+            This can be useful to better understand which goals is performing
+            well in an optimization and which goals needs further is not performing well.
         :return: float total_difference
             weighted ouput for all goals.
         """
         stat_analyzer = statistics_analyzer.StatisticsAnalyzer(statistical_measure)
         total_difference = 0
+        _verbose_calculation = {}
         for goal in self._goals:
-            total_difference += goal.weighting * stat_analyzer.calc(goal.meas, goal.sim)
-        return total_difference
+            _diff = stat_analyzer.calc(goal.meas, goal.sim)
+            _verbose_calculation[goal.weighting] = _diff
+            total_difference += goal.weighting * _diff
+
+        if verbose:
+            return total_difference, _verbose_calculation
+        else:
+            return total_difference
 
     def set_sim_target_data(self, sim_target_data):
         """Alter the object self._sim_target_data based on given
@@ -459,25 +471,31 @@ class Goals:
         self._sim_df = self._sim_target_data.df
         self._update_goals()
 
-    def set_relevant_time_interval(self, start_time, end_time):
+    def set_relevant_time_intervals(self, intervals):
         """
         For many calibration-uses cases, different time-intervals of the measured
         and simulated data are relevant. Set the interval to be used with this function.
         This will change both measured and simulated data. Therefore, the eval_difference
         function can be called at every moment.
 
-        :param float start_time:
-            Start-time of the relevant time interval
-        :param float end_time:
-            End-time of the relevant time interval
+        :param list intervals:
+            List with time-intervals. Each list element has to be a tuple
+            with the first element being the start_time as float or int and
+            the second item being the end_time of the interval as float or int.
+            E.g:
+            [(0, 100), [150, 200), (500, 600)]
         """
-        _sim_df_ref = self._sim_target_data.get_df().copy()
         _meas_df_ref = self._meas_target_data.get_df().copy()
-        self._meas_df = _meas_df_ref.loc[(_meas_df_ref.index >= start_time) &
-                                         (_meas_df_ref.index <= end_time)]
-        self._sim_df = _sim_df_ref.loc[(_sim_df_ref.index >= start_time)
-                                       &
-                                       (_sim_df_ref.index <= end_time)]
+        _sim_df_ref = self._sim_target_data.get_df().copy()
+        # Create initial False mask
+        _mask_meas = np.full(_meas_df_ref.index.shape, False)
+        _mask_sim = np.full(_sim_df_ref.index.shape, False)
+        # Dynamically make mask for multiple possible time-intervals
+        for _start_time, _end_time in intervals:
+            _mask_meas = _mask_meas | ((_meas_df_ref.index >= _start_time) & (_meas_df_ref.index <= _end_time))
+            _mask_sim = _mask_sim | ((_sim_df_ref.index >= _start_time) & (_sim_df_ref.index <= _end_time))
+        self._meas_df = _meas_df_ref.loc[_mask_meas]
+        self._sim_df = _sim_df_ref.loc[_mask_sim]
         self._update_goals()
 
     def set_meas_target_data(self, meas_target_data):
