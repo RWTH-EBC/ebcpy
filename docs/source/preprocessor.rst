@@ -3,10 +3,7 @@
 Preprocessing
 ===================
 
-.. automodule:: ebcpy.preprocessing.__init__
-   :members:
-
-.. automodule:: ebcpy.preprocessing.preprocessing
+.. automodule:: ebcpy.preprocessing
    :members:
 
 
@@ -14,5 +11,5 @@ Preprocessing
 
 Conversion
 ------------------
-.. automodule:: ebcpy.preprocessing.conversion
+.. automodule:: ebcpy.utils.conversion
    :members:
