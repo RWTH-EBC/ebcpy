@@ -54,6 +54,9 @@ v0.1
    - Add scipy.optimize.differential_evolution as an optimizer
 - v0.1.3:
    - Move conversion.py to utils and make preprocessing a direct module
+   - Introduce current_best_iterate as a parameter for optimization to ensure that the best solution to a problem is still saved even if an iteration step causes an error
+   - Make interrupt of optimization through Keyboard-Interrupt possible
+   - Adjust Goals functions to make slicing of multiple time-intervals possible.
 
 
 Indices and tables
