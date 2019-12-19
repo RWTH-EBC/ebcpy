@@ -8,7 +8,8 @@ from ebcpy import data_types
 import numpy as np
 
 
-def convert_hdf_to_mat(filepath, save_path_file, columns=None, key=None, set_time_to_zero=True, offset=0):
+def convert_hdf_to_mat(filepath, save_path_file, columns=None,
+                       key=None, set_time_to_zero=True, offset=0):
     """
     Function to convert a hdf file to a mat-file readable within Dymola.
 
@@ -160,18 +161,23 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
     data = data_types.TimeSeriesData(filepath, **{"key": key})
     df = data.get_df().copy()
 
-    df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
-    df['time_in_s'] = df.index.total_seconds() + offset
-
     if columns:
-        columns.insert(0, 'time_in_s')
         headers = df[columns].columns.values.tolist()
     else:
         headers = df.columns.values.tolist()
 
+    headers.insert(0, 'time_in_s')  # Ensure time will be at first place
+
+    df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
+    df['time_in_s'] = df.index.total_seconds() + offset
+    # Avoid 1e-8 errors in timedelta calculation.
+    df['time_in_s'] = df['time_in_s'].round(4)
+
+    df = df.loc[:, headers]
+
     n_cols = len(headers)
     n_rows = len(df.index)
-    content_as_lines = ["#" + sep.join(headers)]  # Comment header line
+    content_as_lines = ["#" + sep.join(headers) + "\n"]  # Comment header line
     content_as_lines.insert(0, f"double {table_name}({n_rows}, {n_cols})\n")
     content_as_lines.insert(0, "#1\n")  # Print Modelica table no
 
@@ -189,7 +195,13 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
 
 
 if __name__ == '__main__':
-    import doctest
-    doctest.testmod()
+    #import doctest
+    #doctest.testmod()
+    project_dir = r"D:\02_git\ebcpy\ebcpy"
+    example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
+    save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
+    cols = ["sine.y / "]
+    key = "trajectories"
+    success, filepath = convert_hdf_to_modelica_txt(example_file, "dummy_input_data", columns=None, key=key, offset=0)
 
 
