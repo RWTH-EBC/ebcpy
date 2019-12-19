@@ -4,6 +4,7 @@ certain format into other formats.
 """
 import scipy.io as spio
 from ebcpy import data_types
+import numpy as np
 
 
 def convert_hdf_to_mat(filepath, save_path_file, columns=None, key=None, set_time_to_zero=True):
@@ -58,6 +59,54 @@ def convert_hdf_to_mat(filepath, save_path_file, columns=None, key=None, set_tim
     # Provide user feedback whether the conversion was successful.
     return True, save_path_file
 
+
+def convert_mat_to_txt(filepath, save_path_file, columns=None, key=None, set_time_to_zero=True):
+    """
+    Function to convert a hdf file to a mat-file readable within Dymola.
+
+    :param str,os.path.normpath filepath:
+        String or even os.path.normpath.
+        Must point to a valid hdf file.
+    :param str,os.path.normpath save_path_file:
+        File path and name where to store the output .mat file.
+    :param list columns:
+        A list with names of columns that should be saved to .mat file.
+        If no list is provided, all columns are converted.
+    :param str key:
+        The name of the dataframe inside the given hdf-file.
+        Only needed if multiple tables are stored within tht given file.
+    :param bool set_time_to_zero: (default True),
+        If True, the index, which is the time, will start at a zero base.
+    :returns mat_file:
+        Returns the version 4 mat-file
+
+    Examples:
+
+    >>> import os
+    >>> project_dir = os.path.dirname(os.path.dirname(__file__))
+    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.mat")
+    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
+    >>> cols = ["combiTimeTable.y[1]","combiTimeTable.y[2]"]
+    >>> key = "trajectories"
+    >>> success, filepath = convert_mat_to_txt(example_file, save_path, columns=cols, key=key)
+    >>> print(success)
+    True
+    >>> os.remove(filepath)
+    """
+    data = data_types.TimeSeriesData(filepath, **{"key": key})
+    df = data.df
+    # Store desired columns in new variable, which is a np.array
+    subset = df[columns]
+    # Convert np.array into a list and create a list as matrix name
+    subset.values.tolist()
+    # Save matrix as a *.txt file, which is readable by TICC.
+    np.savetxt(save_path_file, subset, delimiter=',',fmt='%.4f')
+    # Provide user feedback whether the conversion was successful.
+    return True, save_path_file
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
+
+
