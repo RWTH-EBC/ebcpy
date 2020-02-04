@@ -112,6 +112,42 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     return df
 
 
+def time_based_weighted_mean(df):
+    """
+    Creates the weighted mean according to time index that does not need to be equidistant.
+    Further info: https://stackoverflow.com/questions/26343252/create-a-weighted-mean-for-a-irregular-timeseries-in-pandas
+
+    :param df:
+        A pandas DataFrame with DatetimeIndex.
+    :return np.array:
+        A numpy array containing weighted means of all columns
+
+    Examples:
+    >>> from datetime import datetime
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> time_vec = [datetime(2007,1,1,0,0)
+               ,datetime(2007,1,1,0,0)
+               ,datetime(2007,1,1,0,5)
+               ,datetime(2007,1,1,0,7)
+               ,datetime(2007,1,1,0,10)]
+    >>> df = pd.DataFrame({'A': [1,2,4,3,6], 'B': [11,12,14,13,16]}, index=time_vec)
+    >>> print(time_based_weighted_mean(df=df))
+    [  3.55  13.55]
+
+    """
+
+    assert isinstance(df.index, pd.core.indexes.datetimes.DatetimeIndex), f"df.index must be DatetimeIndex, but it is {type(df.index)}."
+
+    time_delta = [(x-y).total_seconds() for x,y in zip(df.index[1:],df.index[:-1])]
+    weights = [x+y for x,y in zip([0] + time_delta, time_delta + [0])]
+    # Create empty numpy array
+    res = np.empty(len(df.columns)); res[:] = np.nan
+    for i, col_name in zip(range(len(df.columns)), df.columns):
+        res[i] = np.average(df[col_name], weights=weights)
+    return res
+
+
 def clean_and_space_equally_time_series(df, desired_freq):
     """
     Function for cleaning of the given dataFrame and interpolating
