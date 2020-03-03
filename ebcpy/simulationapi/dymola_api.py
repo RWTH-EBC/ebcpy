@@ -55,25 +55,43 @@ class DymolaAPI(simulationapi.SimulationAPI):
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
         super().__init__(cd, model_name)
-        # Get the dymola-install-path:
-        _dym_install = self.get_dymola_install_path()
-        if _dym_install:
-            self.dymola_path = self.get_dymola_path(_dym_install)
-            if "bin64" not in self.dymola_path:
-                self._bit_64 = False
 
         # First import the dymola-interface
         if "dymola_interface_path" in kwargs:
             if not kwargs["dymola_interface_path"].endswith(".egg"):
                 raise TypeError("Please provide an .egg-file for the dymola-interface.")
-            if os.path.isfile(kwargs["dymola_interface_path"]):
-                dymola_interface_path = kwargs["dymola_interface_path"]
-            else:
-                raise FileNotFoundError("Given dymola-interface could not be found.")
+            dymola_interface_path = kwargs["dymola_interface_path"]
+            if not (os.path.isfile(dymola_interface_path) and
+                    os.path.exists(dymola_interface_path)):
+                raise FileNotFoundError("Given path {} can not be found on "
+                                        "your machine.".format(dymola_interface_path))
         else:
-            if _dym_install is None:
+            dymola_interface_path = None
+
+
+        if "dymola_path" in kwargs:
+            dymola_path = kwargs["dymola_path"]
+            if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
+                raise FileNotFoundError("Given path {} can not be found on "
+                                        "your machine.".format(dymola_path))
+        else:
+            dymola_path = None
+
+        if (not dymola_path) or (not dymola_interface_path):
+            # First get the dymola-install-path:
+            _dym_install = self.get_dymola_install_path()
+            if _dym_install:
+                if dymola_path:
+                    self.dymola_path = dymola_path
+                else:
+                    self.dymola_path = self.get_dymola_path(_dym_install)
+                if "bin64" not in self.dymola_path:
+                    self._bit_64 = False
+                if not dymola_interface_path:
+                    dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+            else:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
-            dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+
 
         self._global_import_dymola(dymola_interface_path)
         self.packages = packages
@@ -391,7 +409,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         :param str dymola_install_dir:
             The dymola installation folder. Example:
-            "C:\Program Files\Dymola 2020"
+            "C://Program Files//Dymola 2020"
         :return: str
             Path to the dymola.egg-file
         """
@@ -472,7 +490,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         syspaths = [basedir]
         # Check if 64bit is installed (Windows only)
-        systempath_64 = os.path.normpath("C:\Program Files (x86)")
+        systempath_64 = os.path.normpath("C://Program Files (x86)")
         if os.path.exists(systempath_64):
             syspaths.append(systempath_64)
         # Get all folders in both path's

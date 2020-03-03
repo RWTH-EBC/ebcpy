@@ -7,16 +7,18 @@ About ebcpy
 -------------------
 
 **ebcpy** is the official python package of the Institute for Energy and Building Climate
-(EBC) from the RWTH Aachen. While the main use-case is to provide a common set of
-interfaces for different challenges concerning building-simulations, one of the
-use-cases below may lead to a direct use of this package.
+(EBC) from the RWTH Aachen. The main use-case is to provide a common set of
+interfaces for different challenges concerning building-simulations.  one of the
+Find below possible challenges that may lead you to use this package.:
 
-- Process pandas.DataFrames or numpy arrays with functions for many different, typical problems
-in the sector of Building-Simulations
-- Provide different API`s to control modelica (or dymola) simulations
-- Use a collection of functions to process or alter modelica-specific files such as .mat-files
-or dsfinal.txt / dsin.txt files
+- Easily load and process Time-Series-Data into a pd.DataFrame and further pre-process it using various functions
+- (Co-)Simulate models in the simulation-language Modelica either trough our fmu-api or dymola-api
+- Optimize results of the simulation through a given objective-function using different open-source python frameworks and solvers for optimization.
+- Process pandas.DataFrames or numpy arrays with functions for many different, typical problems in the sector of Building-Simulations
+- Use a collection of functions to process or alter modelica-specific files such as .mat-files or dsfinal.txt / dsin.txt files
 
+Check out our tutorial to fully understand the different classes and functions in this repo.
+Always contribute if you see room for improvement by raising and issues
 
 Installation
 -------------------
@@ -36,8 +38,19 @@ Be aware of forward slashes (for python) and backslashes (for Windows). You migh
    tutorial
    data_types
    preprocessor
-   optimizer
    simulationapi
+   optimizer
+   modelica
+
+
+Version History
+-------------------
+
+v0.1.0: Implemented necessary features for use in AixCaliBuHa and EnSTATS
+v0.1.1: Fixed bugs necessary to work with AixCaliBuHa and EnSTATS and refactor functions based on feedback
+v0.1.2:
+- Move CalibrationClass to AixCaliBuHa
+- Add scipy.optimize.differential_evolution as an optimizer
 
 
 Version History
@@ -57,7 +70,10 @@ v0.1
    - Introduce current_best_iterate as a parameter for optimization to ensure that the best solution to a problem is still saved even if an iteration step causes an error
    - Make interrupt of optimization through Keyboard-Interrupt possible
    - Adjust Goals functions to make slicing of multiple time-intervals possible.
-
+- v0.1.4:
+   - Create a tutorial with juypter-notebook
+   - Introduce MultiIndex (from pandas) and make TimeSeriesData extend of the standard DataFrame
+   - Adjust all classes, most notably Goals. This class will go into AixCaliBuHa, as it is only relevant for Calibrations.
 
 Indices and tables
 ==================

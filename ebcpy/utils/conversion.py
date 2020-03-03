@@ -4,12 +4,12 @@ certain format into other formats.
 """
 import os
 import scipy.io as spio
-from ebcpy import data_types
 import numpy as np
+from ebcpy import data_types
 
 
-def convert_hdf_to_mat(filepath, save_path_file, columns=None,
-                       key=None, set_time_to_zero=True, offset=0):
+def convert_hdf_to_modelica_mat(filepath, save_path_file=None, columns=None,
+                                key=None, offset=0):
     """
     Function to convert a hdf file to a mat-file readable within Dymola.
 
@@ -18,14 +18,14 @@ def convert_hdf_to_mat(filepath, save_path_file, columns=None,
         Must point to a valid hdf file.
     :param str,os.path.normpath save_path_file:
         File path and name where to store the output .mat file.
+        If None is provided, the filepath will be used just with the
+        .mat-ending
     :param list columns:
         A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.
     :param str key:
         The name of the dataframe inside the given hdf-file.
         Only needed if multiple tables are stored within tht given file.
-    :param bool set_time_to_zero: (default True),
-        If True, the index, which is the time, will start at a zero base.
     :param float offset:
         Offset for time in seconds, default 0
     :returns mat_file:
@@ -39,25 +39,25 @@ def convert_hdf_to_mat(filepath, save_path_file, columns=None,
     >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.mat")
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
-    >>> success, filepath = convert_hdf_to_mat(example_file, save_path, columns=cols, key=key)
+    >>> success, filepath = convert_hdf_to_modelica_mat(example_file,
+    >>>                         save_path, columns=cols, key=key)
     >>> print(success)
     True
     >>> os.remove(filepath)
     """
-    data = data_types.TimeSeriesData(filepath, **{"key": key})
-    df = data.get_df().copy()
-    if set_time_to_zero:
-        df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
-    df['time_vector'] = df.index.total_seconds() + offset  # Copy values of index as seconds into new column
-    if not columns:
-        columns = df.columns
-    # Add column name of time in front of desired columns,
-    # since time must be first column in the *.mat file.
-    columns = ['time_vector'] + list(columns)
-    # Store desired columns in new variable, which is a np.array
-    subset = df[columns]
+    if save_path_file and not save_path_file.endswith(".mat"):
+        raise ValueError("Given savepath for txt-file is not a .mat file!")
+
+    if save_path_file is None:
+        # Change file extension
+        pre, _ = os.path.splitext(filepath)
+        save_path_file = pre + ".mat"
+
+    # Load the relavant part of the df
+    df_sub, _ = _convert_hdf_to_df_subset(filepath, key, columns, offset)
+
     # Convert np.array into a list and create a dict with 'table' as matrix name
-    new_mat = {'table': subset.values.tolist()}
+    new_mat = {'table': df_sub.values.tolist()}
     # Save matrix as a MATLAB *.mat file, which is readable by Modelica.
     spio.savemat(save_path_file, new_mat, format="4")
     # Provide user feedback whether the conversion was successful.
@@ -90,22 +90,19 @@ def convert_hdf_to_clustering_txt(filepath, save_path_file, columns=None, key=No
     >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
-    >>> success, filepath = convert_hdf_to_clustering_txt(example_file, save_path, columns=cols, key=key)
+    >>> success, filepath = convert_hdf_to_clustering_txt(example_file,
+    >>>                         save_path, columns=cols, key=key)
     >>> print(success)
     True
     >>> os.remove(filepath)
     """
-    data = data_types.TimeSeriesData(filepath, **{"key": key})
-    df = data.get_df().copy()
-    # Store desired columns in new variable, which is a np.array
-    if columns is not None:
-        subset = df[columns]
-    else:
-        subset = df
+    # Get the subset of the dataFrame
+    df_sub, _ = _convert_hdf_to_df_subset(filepath, key, columns, offset=0)
+
     # Convert np.array into a list and create a list as matrix name
-    subset.values.tolist()
+    df_sub.values.tolist()
     # Save matrix as a *.txt file, which is readable by TICC.
-    np.savetxt(save_path_file, subset, delimiter=',', fmt='%.4f')
+    np.savetxt(save_path_file, df_sub, delimiter=',', fmt='%.4f')
     # Provide user feedback whether the conversion was successful.
     return True, save_path_file
 
@@ -123,13 +120,15 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
         Name of the table for modelica.
         Needed in Modelica to correctly load the file.
     :param str,os.path.normpath save_path_file:
-        File path and name where to store the output .mat file.
+        File path and name where to store the output .txt file.
+        If None is provided, the filepath will be used just with the
+        .txt-ending
     :param list columns:
         A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.
     :param str key:
         The name of the dataframe inside the given hdf-file.
-        Only needed if multiple tables are stored within tht given file.
+        Only needed if multiple tables are stored within the given file.
     :param float offset:
         Offset for time in seconds, default 0
     :param str sep:
@@ -144,12 +143,12 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
     >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
-    >>> success, filepath = convert_hdf_to_modelica_txt(example_file, "dummy_input_data", columns=cols, key=key)
+    >>> success, filepath = convert_hdf_to_modelica_txt(example_file,
+    >>>                              "dummy_input_data", columns=cols, key=key)
     >>> print(success)
     True
     >>> os.remove(filepath)
     """
-
     if save_path_file and not save_path_file.endswith(".txt"):
         raise ValueError("Given savepath for txt-file is not a .txt file!")
 
@@ -157,51 +156,61 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
         # Change file extension
         pre, _ = os.path.splitext(filepath)
         save_path_file = pre + ".txt"
+    # Load the relavant part of the df
+    df_sub, headers = _convert_hdf_to_df_subset(filepath, key, columns, offset)
 
-    data = data_types.TimeSeriesData(filepath, **{"key": key})
-    df = data.get_df().copy()
+    n_cols = len(headers)
+    n_rows = len(df_sub.index)
+    # Comment header line
+    # Convert ("variable", "tag") to "variable_tag" for better display
+    content_as_lines = ["#"
+                        + sep.join(["_".join(variable_tag) for variable_tag in headers])
+                        + "\n"]
+    content_as_lines.insert(0, f"double {table_name}({n_rows}, {n_cols})\n")
+    content_as_lines.insert(0, "#1\n")  # Print Modelica table no
+
+    # Open file and write the header
+    with open(file=save_path_file, mode="a+", encoding="utf-8") as file:
+        file.seek(0)
+        file.truncate()  # Delete possible old content
+        file.writelines(content_as_lines)
+
+    # Append the data directly using to_csv from pandas
+    df_sub.to_csv(save_path_file, header=None, index=None, sep=sep, mode="a")
+
+    return True, save_path_file
+
+
+def _convert_hdf_to_df_subset(filepath, key, columns, offset):
+    """
+    Private function to ensure lean conversion to either mat or txt.
+    """
+    df = data_types.TimeSeriesData(filepath, key=key)
 
     if columns:
         headers = df[columns].columns.values.tolist()
     else:
         headers = df.columns.values.tolist()
 
-    headers.insert(0, 'time_in_s')  # Ensure time will be at first place
+    _time_header = ('time', 'in_s')
+    headers.insert(0, _time_header)  # Ensure time will be at first place
 
     df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
-    df['time_in_s'] = df.index.total_seconds() + offset
+    df[_time_header] = df.index.total_seconds() + offset
     # Avoid 1e-8 errors in timedelta calculation.
-    df['time_in_s'] = df['time_in_s'].round(4)
+    df[_time_header] = df[_time_header].round(4)
 
-    df = df.loc[:, headers]
-
-    n_cols = len(headers)
-    n_rows = len(df.index)
-    content_as_lines = ["#" + sep.join(headers) + "\n"]  # Comment header line
-    content_as_lines.insert(0, f"double {table_name}({n_rows}, {n_cols})\n")
-    content_as_lines.insert(0, "#1\n")  # Print Modelica table no
-
-    # Open file and write the header
-    f = open(file=save_path_file, mode="a+", encoding="utf-8")
-    f.seek(0)
-    f.truncate()  # Delete possible old content
-    f.writelines(content_as_lines)
-    f.close()
-    # Append the data directly using to_csv from pandas
-    df_sub = df[headers]
-    df_sub.to_csv(save_path_file, header=None, index=None, sep=sep, mode="a")
-
-    return True, save_path_file
+    return df.loc[:, headers], headers
 
 
 if __name__ == '__main__':
-    #import doctest
-    #doctest.testmod()
-    project_dir = r"D:\02_git\ebcpy\ebcpy"
-    example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
-    cols = ["sine.y / "]
-    key = "trajectories"
-    success, filepath = convert_hdf_to_modelica_txt(example_file, "dummy_input_data", columns=None, key=key, offset=0)
-
-
+    PROJECT_DIR = r"D:\02_git\ebcpy\ebcpy"
+    EXAMPLE_FILE = os.path.normpath(PROJECT_DIR + "//examples//data//example_data.hdf")
+    SAVE_PATH = os.path.normpath(PROJECT_DIR + "//examples//data//example_data_converted.txt")
+    COLS = ["sine.y / "]
+    KEY = "trajectories"
+    SUCCESS, FILEPATH = convert_hdf_to_modelica_txt(EXAMPLE_FILE,
+                                                    "dummy_input_data",
+                                                    columns=COLS,
+                                                    key=KEY,
+                                                    offset=0)
