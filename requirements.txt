@@ -1,6 +1,6 @@
 numpy
 scipy
-pandas
+pandas>=0.25
 matplotlib
 scikit-learn
 modelicares==0.12.2
@@ -13,3 +13,4 @@ xlrd
 PyQt5
 sklearn
 tables
+cmake

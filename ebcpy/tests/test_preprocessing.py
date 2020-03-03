@@ -54,6 +54,32 @@ class TestPreProcessing(unittest.TestCase):
             df_temp = preprocessing.convert_index_to_datetime_index(df,
                                                                     unit_of_index="not_a_unit")
 
+    def test_convert_datetime_index_to_float_index(self):
+        """Test function of preprocessing.convert_datetime_index_to_float_index().
+         For an example, see the doctest in the function."""
+        dim = np.random.randint(1, 10000)
+        df = pd.DataFrame(np.random.rand(dim, 4), columns=list('ABCD'))
+        df_temp = preprocessing.convert_index_to_datetime_index(df.copy())
+        df_temp = preprocessing.convert_datetime_index_to_float_index(df_temp.copy(), offset=0.0)
+        self.assertIsInstance(df_temp.index, pd.Float64Index)
+        self.assertTrue(all((df_temp-df) == 0))
+
+    def test_time_based_weighted_mean(self):
+        """Test function of preprocessing.time_based_weighted_mean().
+         For an example, see the doctest in the function."""
+        time_vec = [datetime(2007, 1, 1, 0, 0),
+                    datetime(2007, 1, 1, 0, 0),
+                    datetime(2007, 1, 1, 0, 5),
+                    datetime(2007, 1, 1, 0, 7),
+                    datetime(2007, 1, 1, 0, 10)]
+        df = pd.DataFrame({'A': [1, 2, 4, 3, 6],
+                           'B': [11, 12, 14, 13, 16]}, index=time_vec)
+        res = preprocessing.time_based_weighted_mean(df=df)
+        # Check correct return type
+        self.assertIsInstance(res, np.ndarray)
+        # Check correct values
+        self.assertEqual(0, np.mean(np.array([3.55, 13.55])-res))
+
     def test_clean_and_space_equally_time_series(self):
         """Test function of preprocessing.clean_and_space_equally_time_series().
         For an example, see the doctest in the function."""

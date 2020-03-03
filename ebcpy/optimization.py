@@ -9,7 +9,9 @@ from ebcpy.utils import visualizer
 
 
 class Optimizer:
-    """Base class for optimization in ebcpy. All classes
+    """
+    # TODO Enhance DocString using a longer text.
+    Base class for optimization in ebcpy. All classes
     performing optimization tasks must inherit from this
     class.
 

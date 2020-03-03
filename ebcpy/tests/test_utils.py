@@ -22,17 +22,17 @@ class TestConversion(unittest.TestCase):
                                                                    "example_data.hdf"))
 
     def test_conversion_hdf_to_mat(self):
-        """Test function conversion.convert_hdf_to_mat().
+        """Test function conversion.convert_hdf_to_modelica_mat().
         For an example, see the doctest in the function."""
         # First convert the file
         save_path = os.path.normpath(os.path.join(self.example_dir, "example_data_converted.mat"))
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_mat = conversion.convert_hdf_to_mat(self.example_data_hdf_path,
-                                                              save_path,
-                                                              columns=col,
-                                                              key="trajectories")
+            res, filepath_mat = conversion.convert_hdf_to_modelica_mat(self.example_data_hdf_path,
+                                                                       save_path,
+                                                                       columns=col,
+                                                                       key="trajectories")
             # Check if successfully converted
             self.assertTrue(res)
             # Check if converted file exists
@@ -49,7 +49,7 @@ class TestConversion(unittest.TestCase):
         For an example, see the doctest in the function."""
         columns = ["sine.y / "]
         for col in [columns, None]:
-            res, filepath_txt= conversion.convert_hdf_to_modelica_txt(self.example_data_hdf_path,
+            res, filepath_txt = conversion.convert_hdf_to_modelica_txt(self.example_data_hdf_path,
                                                                        table_name="dummy",
                                                                        columns=col,
                                                                        key="trajectories",)

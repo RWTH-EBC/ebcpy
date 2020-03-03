@@ -1,6 +1,7 @@
 within AixCalTest;
-model TestModel
+model TestModelInput
   "Basic model for testing of calibration and sensitivity analysis"
+  import ModelicaServices;
 
     extends Modelica.Icons.Example;
    replaceable package Medium =
@@ -119,7 +120,7 @@ model TestModel
       Placement(transformation(
         extent={{-13,-13},{13,13}},
         rotation=180,
-        origin={145,-33})));
+        origin={145,-5})));
   Modelica.Blocks.Logical.Switch switch1 annotation (Placement(transformation(
         extent={{-10,-10},{10,10}},
         rotation=0,
@@ -129,14 +130,21 @@ model TestModel
         rotation=180,
         origin={100,-46})));
   Modelica.Blocks.Sources.Constant const_zero(final k=0)
-    annotation (Placement(transformation(extent={{-150,-28},{-134,-12}})));
+    annotation (Placement(transformation(extent={{-8,-8},{8,8}},
+        rotation=180,
+        origin={-96,-6})));
   Modelica.Blocks.Sources.Constant m_flow_source(final k=0.5)
-    annotation (Placement(transformation(extent={{-150,44},{-126,68}})));
-  Modelica.Blocks.Sources.BooleanPulse booleanStep(
-    width=50,
-    period=800,
-    final startTime=0)
-    annotation (Placement(transformation(extent={{-142,-72},{-126,-56}})));
+    annotation (Placement(transformation(extent={{-154,28},{-130,52}})));
+  Modelica.Blocks.Logical.GreaterThreshold greaterThreshold
+    annotation (Placement(transformation(extent={{-148,-64},{-128,-44}})));
+  Modelica.Blocks.Sources.CombiTimeTable combiTimeTable(
+    tableOnFile=true,
+    tableName="Simulation_Input",
+    fileName=ModelicaServices.ExternalReferences.loadResource(
+        "modelica://AixCalTest/Input/model_input.txt"),
+    columns={2})
+    annotation (Placement(transformation(extent={{-182,-64},{-162,-44}})));
+
 equation
   connect(source_1.ports[1], heater.port_a)
     annotation (Line(points={{-64,40},{-10,40}}, color={0,127,255}));
@@ -160,20 +168,23 @@ equation
     annotation (Line(points={{-91,48},{-84,48}}, color={0,0,127}));
   connect(switch2.y, source_2.m_flow_in)
     annotation (Line(points={{89,-46},{84,-46}}, color={0,0,127}));
-  connect(m_flow_sink.y, switch2.u1)
-    annotation (Line(points={{130.7,-33},{122,-33},{122,-38},{112,-38}},
-                                                     color={0,0,127}));
-  connect(m_flow_source.y, switch1.u1) annotation (Line(points={{-124.8,56},{
-          -114,56}},                     color={0,0,127}));
-  connect(const_zero.y, switch1.u3) annotation (Line(points={{-133.2,-20},{-122,
-          -20},{-122,40},{-114,40}}, color={0,0,127}));
-  connect(const_zero.y, switch2.u3) annotation (Line(points={{-133.2,-20},{-120,
-          -20},{-120,-96},{120,-96},{120,-54},{112,-54}}, color={0,0,127}));
-  connect(booleanStep.y, switch1.u2) annotation (Line(points={{-125.2,-64},{
-          -118,-64},{-118,48},{-114,48}}, color={255,0,255}));
-  connect(booleanStep.y, switch2.u2) annotation (Line(points={{-125.2,-64},{-10,
-          -64},{-10,-78},{130,-78},{130,-46},{112,-46}}, color={255,0,255}));
-  annotation (Icon(coordinateSystem(preserveAspectRatio=false)), Diagram(
-        coordinateSystem(preserveAspectRatio=false)),
+  connect(greaterThreshold.y, switch1.u2) annotation (Line(points={{-127,-54},{
+          -120,-54},{-120,48},{-114,48}}, color={255,0,255}));
+  connect(greaterThreshold.y, switch2.u2) annotation (Line(points={{-127,-54},{
+          -84,-54},{-84,-82},{148,-82},{148,-46},{112,-46}}, color={255,0,255}));
+  connect(combiTimeTable.y[1], greaterThreshold.u)
+    annotation (Line(points={{-161,-54},{-150,-54}}, color={0,0,127}));
+  connect(m_flow_source.y, switch1.u3)
+    annotation (Line(points={{-128.8,40},{-114,40}}, color={0,0,127}));
+  connect(const_zero.y, switch1.u1) annotation (Line(points={{-104.8,-6},{-118,
+          -6},{-118,56},{-114,56}}, color={0,0,127}));
+  connect(const_zero.y, switch2.u1) annotation (Line(points={{-104.8,-6},{-118,
+          -6},{-118,-90},{126,-90},{126,-38},{112,-38}}, color={0,0,127}));
+  connect(m_flow_sink.y, switch2.u3) annotation (Line(points={{130.7,-5},{130.7,
+          -6},{122,-6},{122,-54},{112,-54}}, color={0,0,127}));
+  annotation (Icon(coordinateSystem(preserveAspectRatio=false, extent={{-160,
+            -100},{160,100}})),                                  Diagram(
+        coordinateSystem(preserveAspectRatio=false, extent={{-160,-100},{160,
+            100}})),
     experiment(StopTime=3600, Interval=1));
-end TestModel;
+end TestModelInput;

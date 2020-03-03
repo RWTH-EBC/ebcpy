@@ -4,7 +4,6 @@ the data_types module should be clear when looking at the examples.
 If not, please raise an issue.
 """
 
-import os
 from ebcpy import data_types
 
 
@@ -40,42 +39,3 @@ def setup_tuner_paras():
                                         bounds=[(4000, 6000), (0.01, 0.1), (10, 300)])
 
     return tuner_paras
-
-
-def setup_goals():
-    """
-    Example setup of the Goals object.
-    First, some simulated and measured target data is loaded from the
-    example data.
-    Then the goals object is instantiated. Please refer to the
-    Goals documentation on the meaning of the parameters.
-
-
-    :return: Goals object
-    :rtype: data_types.Goals
-
-    Example:
-
-    >>> goals = setup_goals()
-    >>> dif = goals.eval_difference(statistical_measure="RMSE")
-    >>> print(round(dif, 3))
-    1.055
-    """
-
-    # Load example simTargetData and measTargetData:
-    _filepath = os.path.dirname(__file__)
-    sim_target_data = data_types.SimTargetData(os.path.join(_filepath,
-                                                            "data",
-                                                            "simTargetData.mat"))
-    meas_target_data = data_types.MeasTargetData(os.path.join(_filepath,
-                                                              "data",
-                                                              "measTargetData.mat"))
-
-    # Setup the goals object
-    goals = data_types.Goals(["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
-                             ["heater.heatPorts[1].T", "heater1.heatPorts[1].T"],
-                             meas_target_data,
-                             sim_target_data=sim_target_data,
-                             weightings=[0.7, 0.3])
-    return goals
-
