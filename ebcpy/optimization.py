@@ -78,10 +78,11 @@ class Optimizer:
     init = 'latinhypercube'
     atol = 0
     # Define the list of supported kwargs:
-    _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
-                         "hessp", "is_integer_variable", "solver_epsilon",
-                         "num_function_calls", "method", "maxiter", "popsize"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
+    _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
+                         "hessp", "is_integer_variable", "method", "maxiter",
+                         "popsize", "mutation", "recombination", "seed",
+                         "polish", "init", "atol"] + _dlib_kwargs
 
     def __init__(self, framework, cd, **kwargs):
         """Instantiate class parameters"""
