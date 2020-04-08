@@ -74,6 +74,10 @@ v0.1
    - Create a tutorial with juypter-notebook
    - Introduce MultiIndex (from pandas) and make TimeSeriesData extend of the standard DataFrame
    - Adjust all classes, most notably Goals. This class will go into AixCaliBuHa, as it is only relevant for Calibrations.
+- v0.1.5:
+   - Remove dlib and PyQt5 from setup.py and delete TunerParas.show()
+   - Refactor Optimizer so the framework parameter is only necessary to call optimize()
+
 
 Indices and tables
 ==================
