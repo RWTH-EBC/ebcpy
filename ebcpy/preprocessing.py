@@ -112,6 +112,80 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     return df
 
 
+def convert_datetime_index_to_float_index(df, offset=0):
+    """
+    Convert a datetime-based index to FloatIndex (in seconds).
+    Seconds are used as a standard unit as simulation software
+    outputs data in seconds (e.g. Modelica)
+
+    :param pd.DataFrame df:
+        DataFrame to be converted to FloatIndex
+    :param float offset:
+        Offset in seconds
+    :return: pd.DataFrame df:
+        DataFrame with correct index
+
+    Examples:
+    >>> import pandas as pd
+    >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
+    >>> print(convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1)))
+                           A    B    C    D
+    2007-01-01 00:00:00  1.0  1.0  1.0  1.0
+    2007-01-01 00:00:01  1.0  1.0  1.0  1.0
+    2007-01-01 00:00:02  1.0  1.0  1.0  1.0
+    >>> print(convert_datetime_index_to_float_index(df))
+           A    B    C    D
+    0.0  1.0  1.0  1.0  1.0
+    1.0  1.0  1.0  1.0  1.0
+    2.0  1.0  1.0  1.0  1.0
+    """
+    # Check correct input
+    if not isinstance(df.index, pd.DatetimeIndex):
+        raise IndexError("Given DataFrame has no DatetimeIndex, conversion not possible")
+
+    new_index = pd.to_timedelta(df.index - df.index[0]).total_seconds()
+    df.index = np.round(new_index, 4) + offset
+    return df
+
+
+def time_based_weighted_mean(df):
+    """
+    Creates the weighted mean according to time index that does not need to be equidistant.
+    Further info:
+    https://stackoverflow.com/questions/26343252/create-a-weighted-mean-for-a-irregular-timeseries-in-pandas
+
+    :param pd.DataFrame df:
+        A pandas DataFrame with DatetimeIndex.
+    :return np.array:
+        A numpy array containing weighted means of all columns
+
+    Examples:
+    >>> from datetime import datetime
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> time_vec = [datetime(2007,1,1,0,0),
+    >>>             datetime(2007,1,1,0,0),
+    >>>             datetime(2007,1,1,0,5),
+    >>>             datetime(2007,1,1,0,7),
+    >>>             datetime(2007,1,1,0,10)]
+    >>> df = pd.DataFrame({'A': [1,2,4,3,6], 'B': [11,12,14,13,16]}, index=time_vec)
+    >>> print(time_based_weighted_mean(df=df))
+    [  3.55  13.55]
+    """
+
+    if not isinstance(df.index, pd.DatetimeIndex):
+        raise IndexError(f"df.index must be DatetimeIndex, but it is {type(df.index)}.")
+
+    time_delta = [(x-y).total_seconds() for x, y in zip(df.index[1:], df.index[:-1])]
+    weights = [x+y for x, y in zip([0] + time_delta, time_delta + [0])]
+    # Create empty numpy array
+    res = np.empty(len(df.columns))
+    res[:] = np.nan
+    for i, col_name in enumerate(df.columns):
+        res[i] = np.average(df[col_name], weights=weights)
+    return res
+
+
 def clean_and_space_equally_time_series(df, desired_freq):
     """
     Function for cleaning of the given dataFrame and interpolating
@@ -168,7 +242,14 @@ def clean_and_space_equally_time_series(df, desired_freq):
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
     time_index = pd.date_range(start=df.index[0], end=df.index[-1], freq=desired_freq)
     # Create an empty data frame
-    df_time_temp = pd.DataFrame(index=time_index)
+    # If multi-columns is used, first get the old index and make it empty:
+    multi_cols = df.columns
+    if isinstance(multi_cols, pd.MultiIndex):
+        empty_multi_cols = pd.MultiIndex.from_product([[] for _ in range(multi_cols.nlevels)],
+                                                      names=multi_cols.names)
+        df_time_temp = pd.DataFrame(index=time_index, columns=empty_multi_cols)
+    else:
+        df_time_temp = pd.DataFrame(index=time_index)
 
     # Insert temporary time_index into df. fill_value = 0 can only be used,
     # since all NaNs should be eliminated prior
@@ -211,6 +292,12 @@ def low_pass_filter(data, crit_freq, filter_order):
     >>> plt.show()
 
     """
+    if len(data.shape) > 1: # Check if given data has multiple dimensions
+        if data.shape[1] == 1:
+            data = data[:, 0]  # Resize to 1D-Array
+        else:
+            raise ValueError("Given data has multiple dimensions. "
+                             "Only one-dimensional arrays are supported in this function.")
     _filter_order = int(filter_order)
     numerator, denominator = signal.butter(N=_filter_order, Wn=crit_freq,
                                            btype='low', analog=False, output='ba')
@@ -218,7 +305,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     return output
 
 
-def moving_average(values, window):
+def moving_average(data, window):
     """
     Creates a pandas Series as moving average of the input series.
 
@@ -243,31 +330,47 @@ def moving_average(values, window):
     >>> plt.show()
 
     """
+    if len(data.shape) > 1: # Check if given data has multiple dimensions
+        if data.shape[1] == 1:
+            data = data[:, 0]  # Resize to 1D-Array
+        else:
+            raise ValueError("Given data has multiple dimensions. "
+                             "Only one-dimensional arrays are supported in this function.")
     window = int(window)
     weights = np.repeat(1.0, window) / window
-    sma = np.convolve(values, weights, 'valid')
+    sma = np.convolve(data, weights, 'valid')
     # Create array with first entries and window/2 elements
     fill_start = np.full((int(np.floor(window/2)), 1), sma[0])
-    # Same with last value of -values-
-    fill_end = np.full((int(np.ceil(window/2)), 1), sma[-1])
+    # Same with last value of -data-
+    fill_end = np.full((int(np.ceil(window/2)) - 1, 1), sma[-1])
     # Stack the arrays
     sma = np.concatenate((fill_start[:, 0], sma, fill_end[:, 0]), axis=0)
     return sma
 
 
-def create_on_off_signal(df, col_names, threshold, col_names_new):
+def create_on_off_signal(df, col_names, threshold, col_names_new,
+                         tags="raw", new_tag="converted_signal"):
     """
     Create on and off signals based on the given threshold for all column names.
 
     :param pd.DataFame df:
         DataFrame with the data to process
     :param list col_names:
-        Column names to convert to signals
+        Column names of variables to convert to signals
     :param float,list threshold:
         Threshold for all column-names (single float) or
         a list with specific thresholds for specific columns.
     :param list col_names_new:
         New name for the signal-column
+    :param str,list tags:
+        If a 2-Level DataFrame for TimeSeriesData is used, one has to
+        specify the tag of the variables. Default value is to use the "raw"
+        tag set in the TimeSeriesClass. However one can specify a list
+        (Different tag for each variable), or on can pass a string
+        (same tags for all given variables)
+    :param str new_tag:
+        The tag the newly created variable will hold. This can be used to
+        indicate where the signal was converted from.
     :return: pd.DataFrame
         Now with the created signals.
 
@@ -291,11 +394,22 @@ def create_on_off_signal(df, col_names, threshold, col_names_new):
     else:
         threshold = [threshold for _ in enumerate(col_names)]
     # Do on_off signal creation for all desired columns
-    for i, _ in enumerate(col_names):
-        # Create zero-array
-        df[col_names_new[i]] = 0.0
-        # Change all values to 1.0 according to threshold
-        df.loc[df[col_names[i]] >= threshold[i], col_names_new[i]] = 1.0
+    if isinstance(df.columns, pd.MultiIndex):
+        # Convert given tags to a list
+        if isinstance(tags, str):
+            tags = [tags for _ in enumerate(col_names)]
+
+        for i, _ in enumerate(col_names):
+            # Create zero-array
+            df.loc[:, (col_names_new[i], new_tag)] = 0.0
+            # Change all values to 1.0 according to threshold
+            df.loc[df[col_names[i], tags[i]] >= threshold[i], (col_names_new[i], new_tag)] = 1.0
+    else:
+        for i, _ in enumerate(col_names):
+            # Create zero-array
+            df.loc[:, col_names_new[i]] = 0.0
+            # Change all values to 1.0 according to threshold
+            df.loc[df[col_names[i]] >= threshold[i], col_names_new[i]] = 1.0
     return df
 
 
