@@ -24,7 +24,7 @@ You may switch branches to `development` for newly available features.
 # How to get started?
 We recommend running our jupyter-notebook. For this, run the following code:
 ```
-# If not jupyter is not already installed:
+# If jupyter is not already installed:
 pip install jupyter
 # Go into your ebcpy-folder (cd \path_to_\ebcpy) or change the path to tutorial.ipynb and run:
 jupyter notebook ebcpy\examples\tutorial.ipynb
