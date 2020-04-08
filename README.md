@@ -36,9 +36,6 @@ pip install jupyter
 jupyter notebook ebcpy\examples\tutorial.ipynb
 ```
 
-If you have any questions, please contact us or raise an issue.
-Additionally we refer to the official [Documentation](#Documentation).
-
 # Documentation
 Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/docs).
 
