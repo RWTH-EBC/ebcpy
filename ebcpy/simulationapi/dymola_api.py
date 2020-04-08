@@ -112,7 +112,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface(self.show_window)
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files=""):
+    def simulate(self, savepath_files="", show_eventlog = False):
         """
         Simulate the current setup.
         If simulation terminates without an error and the files should be saved,
@@ -125,6 +125,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
         :return: str,os.path.normpath filepath:
             Filepath of the result file.
         """
+        if show_eventlog:
+            self.dymola.experimentSetupOutput(events=True)
+            self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
+            self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
+
         if self._structural_params:
             warnings.warn("Warning: Currently, the model is re-translating for each simulation.\n"
                           "Check for these parameters: %s" % ", ".join(self._structural_params))
