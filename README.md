@@ -1,5 +1,7 @@
 [![pylint](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/pylint/pylint.svg )](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/pylint/pylint.html)
-[![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/coverage.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/coverage)
+[![documentation](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/docs/doc.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/docs/index.html)
+[![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/coverage/badge.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/coverage)
+
 
 # ebcpy
 
