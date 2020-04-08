@@ -10,7 +10,6 @@ IPython
 pydot
 psutil
 xlrd
-PyQt5
 sklearn
 tables
 cmake

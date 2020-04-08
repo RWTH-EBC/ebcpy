@@ -10,22 +10,18 @@ from ebcpy.utils import visualizer
 
 class Optimizer:
     """
-    # TODO Enhance DocString using a longer text.
     Base class for optimization in ebcpy. All classes
     performing optimization tasks must inherit from this
     class.
+    The main feature of this class is the common interface
+    for different available solvers in python. This makes the
+    testing of different solvers and methods more easy.
+    For available frameworks/solvers, check the function
+    self.optimize().
 
-    :param str framework:
-        The framework (python module) you want to use to perform the optimization.
-        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
-        are supported options. To further inform yourself about these frameworks, please see:
-            - `dlib <http://dlib.net/python/index.html>`_
-            - `scipy minimize <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.minimize.html>`_
-            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.differential_evolution.html>`_
+
     :param str,os.path.normpath cd:
-        Directory for storing all output of optimization.
+        Directory for storing all output of optimization via a logger.
     :param dict kwargs:
         Keyword arguments can be used to further tune the optimization to your need.
         All keywords used in different optimization frameworks will be passed automatically
@@ -84,12 +80,10 @@ class Optimizer:
                          "popsize", "mutation", "recombination", "seed",
                          "polish", "init", "atol"] + _dlib_kwargs
 
-    def __init__(self, framework, cd, **kwargs):
+    def __init__(self, cd, **kwargs):
         """Instantiate class parameters"""
         self.cd = cd
         self.logger = visualizer.Logger(self.cd, "Optimization")
-        # Select the framework to work with while optimizing.
-        self._choose_framework(framework)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -122,10 +116,19 @@ class Optimizer:
         """
         raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
 
-    def optimize(self, method=None, framework=None):
+    def optimize(self, framework, method=None):
         """
         Perform the optimization based on the given method and framework.
 
+    :param str framework:
+        The framework (python module) you want to use to perform the optimization.
+        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
+        are supported options. To further inform yourself about these frameworks, please see:
+            - `dlib <http://dlib.net/python/index.html>`_
+            - `scipy minimize <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.minimize.html>`_
+            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.differential_evolution.html>`_
         :param str method:
             The method you pass depends on the methods available in the framework
             you chose when setting up the class. Some frameworks don't require a
@@ -133,18 +136,15 @@ class Optimizer:
             with different methods, you must provide one.
             For the scipy.differential_evolution function, method is equal to the
             strategy.
-        :param str framework:
-            If you want to alter the frameworks within the same script,
-            pass one of the supported frameworks as an optional argument here.
         :return: res
             Optimization result.
         """
-        if framework:
-            self._choose_framework(framework)
+        # Chosse the framework
+        self._choose_framework(framework)
         if method:
             self.method = method
         if self.method is None and self._framework_requires_method:
-            raise ValueError(f"{self.framework} requires a method, but None is "
+            raise ValueError(f"{framework} requires a method, but None is "
                              f"provided. Please choose one.")
         # Perform minimization
         res = self._minimize_func(self.method)
@@ -172,8 +172,6 @@ class Optimizer:
             self._framework_requires_method = True
         else:
             raise TypeError("Given framework {} is currently not supported.".format(framework))
-        # Update the class-parameter
-        self.framework = framework.lower()
 
     def _scipy_minimize(self, method):
         try:

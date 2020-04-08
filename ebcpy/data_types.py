@@ -9,7 +9,6 @@ optimization etc.
 
 import os
 import warnings
-from PyQt5 import QtWidgets
 import modelicares.simres as sr
 import numpy as np
 import pandas as pd
@@ -281,25 +280,6 @@ class TunerParas:
             List with names inside of the TunerParas-dataframe
         """
         self._df = self._df.loc[~self._df.index.isin(names)]
-
-    def show(self):
-        """
-        Shows the tuner parameters and stores the altered values to
-        the object if wanted.
-        """
-        import sys
-        from ebcpy._io import tuner_paras_gui
-        try:
-            app = QtWidgets.QApplication(sys.argv)
-            main_window = QtWidgets.QMainWindow()
-            gui = tuner_paras_gui.TunerParasUI(main_window)
-            gui.set_data(self._df[["initial_value", "min", "max"]])
-            main_window.show()
-            sys.exit(app.exec_())
-        except SystemExit:
-            tuner_paras = gui.tuner_paras
-            if tuner_paras is not None:
-                self._df = tuner_paras._df.copy()
 
     def _set_scale(self):
         self._df["scale"] = self._df["max"] - self._df["min"]

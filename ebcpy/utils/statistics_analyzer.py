@@ -9,7 +9,8 @@ class StatisticsAnalyzer:
     """Class for calculation of the statistical measure based on the
     given method. Either instantiate the class and run
     StatisticsAnalyzer.calc(meas, sim), or go for direct calculation with
-    StatisticsAnalyzer.calc_METHOD(meas, sim).
+    StatisticsAnalyzer.calc_METHOD(meas, sim). Where METHOD stands for one
+    of the available methods (see below).
 
     :param str method:
         One of the following:

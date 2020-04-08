@@ -11,8 +11,7 @@ from ebcpy.simulationapi import dymola_api
 def example_dymola_api(dym_api):
     """
     Function to show the usage of the function
-    get_all_tuner_parameters() of the DymolAPI. The user
-    can alter the values of the parameters if needed.
+    get_all_tuner_parameters() of the DymolAPI.
 
     :param dymola_api.DymolaAPI dym_api:
         DymolaAPI that can be generated using :meth:` this function<setup_dymola_api>`
@@ -20,7 +19,6 @@ def example_dymola_api(dym_api):
     :rtype: ebcpy.data_types.TunerParas
     """
     tuner_paras = dym_api.get_all_tuner_parameters()
-    tuner_paras.show()
     return tuner_paras
 
 
@@ -51,7 +49,8 @@ def setup_dymola_api(cd=None, show_window=True):
     >>> DYM_API.close()
     """
     # Define path in which you want ot work:
-    cd = os.path.normpath(os.path.join(os.getcwd(), "testzone"))
+    if cd is None:
+        cd = os.path.normpath(os.path.join(os.getcwd(), "testzone"))
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice
