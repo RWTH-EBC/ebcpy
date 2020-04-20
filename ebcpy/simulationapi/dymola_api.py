@@ -50,7 +50,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'resultFile': 'resultFile',
                  'autoLoad': False,
                  'initialNames': [],
-                 'initialValues': []}
+                 'initialValues': [],
+                 'finalNames': []}
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -146,7 +147,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                                 fixedstepsize=self.sim_setup['fixedstepsize'],
                                                 resultFile=self.sim_setup['resultFile'],
                                                 initialNames=self.sim_setup['initialNames'],
-                                                initialValues=self.sim_setup['initialValues'])
+                                                initialValues=self.sim_setup['initialValues'],
+                                                finalNames=self.sim_setup['finalNames'])
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
