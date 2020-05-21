@@ -132,6 +132,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         if self._structural_params:
             warnings.warn("Warning: Currently, the model is re-translating for each simulation.\n"
+                          "You should add to your Modelica tuner parameters \"annotation(Evaluate=false)\".\n"
                           "Check for these parameters: %s" % ", ".join(self._structural_params))
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
@@ -152,7 +153,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.logger.log("The last error log from Dymola:")
             self.logger.log(self.dymola.getLastErrorLog())
             raise Exception("Simulation failed: Look into dslog.txt at {} of the "
-                            "simulation.".format(os.path.join(self.cd + "dslog.txt")))
+                            "simulation.".format(os.path.join(self.cd, "dslog.txt")))
 
         _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
 
