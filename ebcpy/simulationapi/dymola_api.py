@@ -153,7 +153,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.logger.log("The last error log from Dymola:")
             self.logger.log(self.dymola.getLastErrorLog())
             raise Exception("Simulation failed: Look into dslog.txt at {} of the "
-                            "simulation.".format(os.path.join(self.cd + "dslog.txt")))
+                            "simulation.".format(os.path.join(self.cd, "dslog.txt")))
 
         _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
 
