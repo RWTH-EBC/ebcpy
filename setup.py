@@ -7,13 +7,10 @@ INSTALL_REQUIRES = ['numpy',
                     'pandas',
                     'matplotlib',
                     'h5py',
-                    'pydot',
                     'cmake',
                     'modelicares',
                     'sklearn',
-                    'xlrd',
                     'tables',
-                    'psutil'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 #INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source
