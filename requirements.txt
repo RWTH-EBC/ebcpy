@@ -2,13 +2,9 @@ numpy
 scipy
 pandas>=0.25
 matplotlib
-scikit-learn
 modelicares==0.12.2
 h5py
-seaborn
-IPython
 pydot
-psutil
 xlrd
 sklearn
 tables

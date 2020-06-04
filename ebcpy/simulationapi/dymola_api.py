@@ -5,7 +5,6 @@ import sys
 import os
 import warnings
 import atexit
-import psutil
 import pandas as pd
 from ebcpy import simulationapi
 from ebcpy import data_types
@@ -307,7 +306,15 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         Check how many dymola instances are running on the machine.
         Raise a warning if the number exceeds a certain amount.
+
+        You need to have psutil installed for this to work.
         """
+        # The option may be useful. However the explicit requirement leads to
+        # Problems on linux, therefore the feature is not worth the trouble.
+        try:
+            import psutil
+        except ImportError:
+            return
         counter = 0
         for proc in psutil.process_iter():
             try:
