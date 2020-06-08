@@ -28,7 +28,7 @@ class SimulationAPI:
                                   'defined'.format(self.__class__.__name__))
 
     @abstractmethod
-    def simulate(self, savepath_files):
+    def simulate(self):
         """Base function for simulating the simulation-model."""
         raise NotImplementedError('{}.simulate function is not '
                                   'defined'.format(self.__class__.__name__))

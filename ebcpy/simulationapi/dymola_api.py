@@ -69,7 +69,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         else:
             dymola_interface_path = None
 
-
         if "dymola_path" in kwargs:
             dymola_path = kwargs["dymola_path"]
             if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
@@ -113,7 +112,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface(self.show_window)
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files="", show_eventlog = False):
+    def simulate(self, savepath_files="", show_eventlog=False):
         """
         Simulate the current setup.
         If simulation terminates without an error and the files should be saved,
@@ -122,9 +121,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         :param str,os.path.normpath savepath_files:
             If path is provided, the relevant simulation results will be saved
-            in the given directory.
+            in the given directory. Else, the final values of the simulation
+            based on the setup parameter 'finalNames' will be returned, in the order
+            the finalNames are stored in the simulation setup.
+        :param Boolean show_eventlog:
+            If true, events during simulation will be stored in the result file.
         :return: str,os.path.normpath filepath:
             Filepath of the result file.
+
         """
         if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
@@ -137,6 +141,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
+
+        result_file = None
+        if savepath_files:
+            result_file = self.sim_setup['resultFile']
+
         res = self.dymola.simulateExtendedModel(self.model_name,
                                                 startTime=self.sim_setup['startTime'],
                                                 stopTime=self.sim_setup['stopTime'],
@@ -145,7 +154,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                                 method=self.sim_setup['method'],
                                                 tolerance=self.sim_setup['tolerance'],
                                                 fixedstepsize=self.sim_setup['fixedstepsize'],
-                                                resultFile=self.sim_setup['resultFile'],
+                                                resultFile=result_file,
                                                 initialNames=self.sim_setup['initialNames'],
                                                 initialValues=self.sim_setup['initialValues'],
                                                 finalNames=self.sim_setup['finalNames'])
@@ -153,12 +162,21 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
             self.logger.log(self.dymola.getLastErrorLog())
-            raise Exception("Simulation failed: Look into dslog.txt at {} of the "
-                            "simulation.".format(os.path.join(self.cd + "dslog.txt")))
+            raise Exception("Simulation failed: Look into logfile of the simulation api"
+                            " at: {} ".format(os.path.join(self.logger.filepath_log)))
 
-        _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
+        # Check for structural parameters
+        if self.get_structural_parameters:
+            # Get the structural parameters based on the error log
+            self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
 
+        # Either copy the files to the new savepath or return final values
         if savepath_files:
+            # If the given savepath is the current directory, no copy has to be made
+            if savepath_files==self.cd:
+                return self.cd
+            _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
+
             if not os.path.isdir(savepath_files):
                 os.mkdir(savepath_files)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
@@ -168,14 +186,25 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 # Move files
                 os.rename(os.path.join(self.cd, filepath),
                           os.path.join(savepath_files, filepath))
+            return os.path.join(savepath_files, _save_name_dsres)
+
         else:
-            savepath_files = self.cd
+            # Final values are always a list based on the finalNames given.
+            # TODO: Possible enhancement: Return a dict, with the key as the finalName:
+            # return {self.sim_setup['finalNames'][i]: value for i, value in enumerate(res[1])}
+            return res[1]
 
-        if self.get_structural_parameters:
-            # Get the structural parameters based on the error log
-            self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
-
-        return os.path.join(savepath_files, _save_name_dsres)
+    def translate(self):
+        """
+        Translates the current model using dymola.translateModel()
+        and checks if erros occur.
+        """
+        res = self.dymola.translateModel(self.model_name)
+        if not res:
+            self.logger.log("Translation failed!")
+            self.logger.log("The last error log from Dymola:")
+            self.logger.log(self.dymola.getLastErrorLog())
+            raise Exception("Translation failed - Aborting")
 
     def set_initial_values(self, initial_values):
         """
@@ -278,11 +307,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         res = self.dymola.SetDymolaCompiler(name.lower(),
                                             [f"CCompiler={_name_int[name]}",
-                                             f"{_name_int[name]}DIR={path}"],
-                                            f"DLL={int(dll)}",
-                                            f"DDE={int(dde)}",
-                                            f"OPC={int(opc)}")
-        # TODO: Check return value!
+                                             f"{_name_int[name]}DIR={path}",
+                                             f"DLL={int(dll)}",
+                                             f"DDE={int(dde)}",
+                                             f"OPC={int(opc)}"])
+
         return res
 
     def close(self):
@@ -570,3 +599,205 @@ class DymolaAPI(simulationapi.SimulationAPI):
                     return full_path
         # If still inside the function, no interface was found
         return None
+
+
+import multiprocessing as mp
+from functools import partial
+
+
+class MultiProcessingDymAPI(simulationapi.SimulationAPI):
+    """
+    Class to run multiple Dymola Instances in parallel.
+    It is based on:
+        - Multiprocessing.Pool
+        - DymolaAPI of this module
+    Each Process/Worker will hold one instance of dymola.
+    All methods of this class apply the given tasks on all
+    instances simultaneously.
+    General settings like model_name, packages, sim_setup etc.
+    are equivalent to the DymolaAPI class. Mainly the simulate() function
+    takes a list of multiple values to be simulated.
+    All parameters and functions are the same as in DymolaAPI,
+    with the exception of:
+        :param int n_cpu:
+            Number of cpus to use. Default is the number of cpu's
+            returned by multiprocessing.cpu_count()
+        Function simulate(): Instead of a single element, you have to
+        pass multiple elements.
+    """
+    _mp_dict = {}
+
+    def __init__(self, cd, model_name, packages, n_cpu=None, **kwargs):
+        """Instance attributes and parent class."""
+        super().__init__(cd, model_name)
+
+        self.packages = packages
+        self.kwargs = kwargs
+
+        if n_cpu:
+            self.n_cpu = n_cpu
+        else:
+            self.n_cpu = mp.cpu_count()
+
+        self._setup_mp_dict()
+        atexit.register(self.close)
+
+    def simulate(self, sim_setups, savepath_files="", show_eventlog=False):
+        # Setup the dict:
+        results = self.pool.map(partial(self._simulate_single,
+                                        savepath_files=savepath_files,
+                                        show_eventlog=show_eventlog),
+                                sim_setups)
+        return results
+
+    def _simulate_single(self, sim_setup, savepath_files="", show_eventlog=False):
+        """Call the single process function of class DymolaAPI"""
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.set_sim_setup(sim_setup)
+        res = _curr_dym_api.simulate(savepath_files=savepath_files,
+                                     show_eventlog=show_eventlog)
+        return res
+
+    def translate(self):
+        """
+        Translates the current model for all instances.
+        """
+        self.pool.map(self._translate_single, [_ for _ in range(self.n_cpu)])
+
+    def _translate_single(self, dummy):
+        """Call the single process function of class DymolaAPI"""
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.dymola.translateModel(self.model_name)
+
+    def set_compiler(self, name, path, dll=False, dde=False, opc=False):
+        """
+        Set compiler settings for all instances of Dymola.
+        See DymolaAPI.set_compiler for more information.
+        """
+        self.pool.map(self._set_single_compiler, [(name, path, dll, dde, opc) for _ in range(self.n_cpu)])
+
+    def _set_single_compiler(self, input_params):
+        """Call the single process function of class DymolaAPI"""
+        # Unpack multiple parameters
+        name, path, dll, dde, opc = input_params
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.set_compiler(name, path, dll=dll, dde=dde, opc=opc)
+
+    def close(self):
+        """
+        Close all instances as well as the pool of multiprocessing.
+        :return:
+        """
+        self.pool.map(self._close_single, [_ for _ in range(self.n_cpu)])
+        # Close the pool
+        self.pool.close()
+        self.pool.join()
+
+    def _close_single(self, dummy):
+        """Call the single process function of class DymolaAPI"""
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.close()
+
+    def set_sim_setup(self, sim_setup):
+        """
+        Set one simulation setup for all instances. This may be used
+        for general settings, like time intervals, solver etc.
+        See DymolaAPI.set_sim_setup for more information about the function
+        """
+        self.pool.map(self._set_sim_setup_single, [sim_setup for _ in range(self.n_cpu)])
+
+    def _set_sim_setup_single(self, sim_setup):
+        """Call the single process function of class DymolaAPI"""
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.set_sim_setup(sim_setup)
+
+    def set_cd(self, cd):
+        """
+        Set the current working directory for all instances.
+        As multiple instances can't share the same folder,
+        each instance will get one folder in the given directory with
+        the name "Worker_i" where i is the index of the worker.
+
+        See DymolaAPI.set_cd for more information on the function.
+        """
+        self.pool.map(self._set_cd_single, [cd for _ in range(self.n_cpu)])
+
+    def _set_cd_single(self, cd):
+        """Call the single process function of class DymolaAPI"""
+        """Set worker specific working directories"""
+        worker_idx = mp.current_process()._identity[0]
+        _curr_dym_api = self._mp_dict[worker_idx]
+        _curr_dym_api.set_cd(os.path.join(cd, f"Worker_{worker_idx}"))
+
+    def __getstate__(self):
+        """
+        Necessary to use mp.pool inside a function, as the object is not pickle-able
+        """
+        self_dict = self.__dict__.copy()
+        del self_dict['pool']
+        return self_dict
+
+    def __setstate__(self, state):
+        """
+        Necessary to use mp.pool inside a function, as the object is not pickle-able
+        """
+        self.__dict__.update(state)
+
+    def _setup_mp_dict(self):
+        """
+        Function to
+        :param dummy:
+            This value is not used, it is only relevant for multiprocessing.pool
+        :return: None
+        """
+        self.pool = mp.Pool(processes=self.n_cpu)
+        # Run the map, the function _get_worker_indices fills the dict with data:
+        self.pool.map(self._get_worker_indices, [_ for _ in range(self.n_cpu)])
+
+    def _get_worker_indices(self, dummy):
+        """
+        :param dummy:
+            This value is not used, it is only relevant for multiprocessing.pool
+        :return: None
+        """
+        idx_worker = mp.current_process()._identity[0]
+
+        _dym_api = DymolaAPI(cd=os.path.join(self.cd, f"Worker_{idx_worker}"),
+                             model_name=self.model_name,
+                             packages=self.packages,
+                             **self.kwargs)
+
+        self._mp_dict.update({idx_worker: _dym_api})
+        return None
+
+if __name__ == '__main__':
+    # Setup the dict:
+    PACKAGES = [r"D:\pme-fwu\02_modelica_git\ModelDevelopment\IntegratedHeatPumpSystemDesign\package.mo",
+                r"D:\pme-fwu\02_modelica_git\AixLib_v10.0.1\AixLib\package.mo"]
+    MODEL_NAME = "IntegratedHeatPumpSystemDesign.Superstructures.IntHPSDes_TwoStageTest.StandardFlowsheet_R290"
+
+    # Setup the class, just like the normal api
+    mp_dym_api = MultiProcessingDymAPI(cd=r"D:\pme-fwu\00_testzone\00_dymola",
+                                       model_name=MODEL_NAME,
+                                       packages=PACKAGES,
+                                       n_cpu=None,
+                                       show_window=True,
+                                       )
+
+    # Set general simulation settings
+    mp_dym_api.set_sim_setup({"stopTime": 86400*365,
+                              "outputInterval": 3600,
+                              "finalNames": ["W_el"],
+                              "initialNames": ["optimizationVariables.P"]})
+
+    # Perform a simulation study:
+    result = mp_dym_api.simulate([{"initialValues": [0.01 + i*0.001]} for i in range(100)])
+    import matplotlib.pyplot as plt
+    plt.plot([0.01 + i*0.001 for i in range(100)], result)
+    plt.show()
+    print(result)
