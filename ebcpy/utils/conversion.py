@@ -108,7 +108,8 @@ def convert_hdf_to_clustering_txt(filepath, save_path_file, columns=None, key=No
 
 
 def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
-                                columns=None, key=None, offset=0, sep="\t"):
+                                columns=None, key=None, offset=0, sep="\t",
+                                with_tag=True):
     """
     Convert a hdf file to modelica readable text. This is especially useful
     for generating input data for a modelica simulation.
@@ -133,6 +134,9 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
         Offset for time in seconds, default 0
     :param str sep:
         Separator used to separate values between columns
+    :param Boolean with_tag:
+        Use True each variable and tag is written to the file
+        If False, only the variable name is written to the file.
     :return:
 
     Examples:
@@ -162,10 +166,19 @@ def convert_hdf_to_modelica_txt(filepath, table_name, save_path_file=None,
     n_cols = len(headers)
     n_rows = len(df_sub.index)
     # Comment header line
-    # Convert ("variable", "tag") to "variable_tag" for better display
-    content_as_lines = ["#"
-                        + sep.join(["_".join(variable_tag) for variable_tag in headers])
-                        + "\n"]
+    _temp_str = ""
+    if with_tag:
+        # Convert ("variable", "tag") to "variable_tag"
+        _temp_str = sep.join(["_".join(variable_tag) for variable_tag in headers])
+    else:
+        for idx, var in enumerate(headers):
+            if idx == 0:
+                # Convert time with tag to one string as unit is important
+                _temp_str += "_".join(var)
+            else:
+                # Convert ("variable", "tag") to "variable"
+                _temp_str += sep + var[0]
+    content_as_lines = [f"#{_temp_str}\n"]
     content_as_lines.insert(0, f"double {table_name}({n_rows}, {n_cols})\n")
     content_as_lines.insert(0, "#1\n")  # Print Modelica table no
 
