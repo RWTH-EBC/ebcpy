@@ -9,10 +9,12 @@ optimization etc.
 
 import os
 import warnings
+from datetime import datetime
 import modelicares.simres as sr
 import numpy as np
 import pandas as pd
 import ebcpy.modelica.simres as ebc_sr
+from ebcpy import preprocessing
 # pylint: disable=I1101
 
 
@@ -42,6 +44,16 @@ class TimeSeriesData(pd.DataFrame):
 
     def __init__(self, filepath, **kwargs):
         """Initialize class-objects and check correct input."""
+        # Two possibles inputs. first argument is actually data provided by pandas
+        # and kwargs hold further information or is it an actual filepath.
+        if not isinstance(filepath, str):
+            super().__init__(data=filepath,
+                             index=kwargs.get("index", None),
+                             columns=kwargs.get("columns", None),
+                             dtype=kwargs.get("dtype", None),
+                             copy=kwargs.get("copy", False))
+            # Already return as everything is set up
+            return
         # Check whether the file exists
         if not os.path.isfile(filepath):
             raise FileNotFoundError(
@@ -97,6 +109,12 @@ class TimeSeriesData(pd.DataFrame):
                             "Levels are supported by this class.")
 
         super().__init__(_df_loaded)
+
+    @property
+    def _constructor(self):
+        """Overwrite constructor method according to:
+        https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-subclassing-pandas"""
+        return TimeSeriesData
 
     def save(self, filepath, **kwargs):
         """
@@ -156,6 +174,53 @@ class TimeSeriesData(pd.DataFrame):
         :return:
         """
         self.loc[:, (variables, tag)] = data
+
+    def to_datetime_index(self, unit_of_index="s", origin=datetime.now()):
+        """
+        Convert the current index to a float based index using
+        ebcpy.preprocessing.convert_index_to_datetime_index()
+
+        :param str unit_of_index: default 's'
+            The unit of the given index. Used to convert to
+            total_seconds later on.
+        :param datetime.datetime origin:
+            The reference datetime object for the first index.
+            Default is the current system time.
+        """
+        preprocessing.convert_index_to_datetime_index(df=self,
+                                                      unit_of_index=unit_of_index,
+                                                      origin=origin)
+
+    def to_float_index(self, offset=0):
+        """
+        Convert the current index to a float based index using
+        ebcpy.preprocessing.convert_datetime_index_to_float_index()
+
+        :param float offset:
+            Offset in seconds
+        """
+        if not isinstance(self.index, pd.DatetimeIndex):
+            return
+        preprocessing.convert_datetime_index_to_float_index(df=self,
+                                                            offset=offset)
+
+    def clean_and_space_equally(self, desired_freq):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.clean_and_space_equally_time_series()
+        See the docstring of this function to know what is happening.
+
+        :param str desired_freq:
+            Frequency to determine number of elements in processed dataframe.
+            Options are for example:
+            - s: second-based
+            - 5s: Every 5 seconds
+            - 6min: Every 6 minutes
+            This also works for h, d, m, y, ms etc.
+        """
+        df = preprocessing.clean_and_space_equally_time_series(df=self,
+                                                               desired_freq=desired_freq)
+        super().__init__(df)
 
 
 class TunerParas:
