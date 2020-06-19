@@ -213,6 +213,11 @@ def _convert_hdf_to_df_subset(filepath, key, columns, offset):
     # Avoid 1e-8 errors in timedelta calculation.
     df[_time_header] = df[_time_header].round(4)
 
+    # Check if nan values occur
+    if df.loc[:, headers].isnull().values.sum() > 0:
+        raise ValueError("Selected columns contain NaN values. This would lead to errors"
+                         "in the simulation environment.")
+
     return df.loc[:, headers], headers
 
 

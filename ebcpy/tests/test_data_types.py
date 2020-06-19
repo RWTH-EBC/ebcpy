@@ -55,6 +55,16 @@ class TestDataTypes(unittest.TestCase):
         self.assertIsInstance(
             df,
             type(pd.DataFrame()))
+        # Test converters:
+        tsd = data_types.TimeSeriesData(self.example_data_hdf_path, key="parameters")
+        tsd.to_datetime_index()
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.to_float_index()
+        self.assertIsInstance(tsd.index, pd.Float64Index)
+        tsd.to_datetime_index()
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.clean_and_space_equally(desired_freq="1s")
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
 
     def test_tuner_paras(self):
         """Test the class TunerParas"""
