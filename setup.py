@@ -13,7 +13,7 @@ INSTALL_REQUIRES = ['numpy',
                     'sklearn',
                     'xlrd',
                     'tables',
-                    'psutil'
+                    'psutil',
                     'pyyaml'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
