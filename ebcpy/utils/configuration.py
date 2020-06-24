@@ -5,6 +5,8 @@ files for objects in this and other repositories.
 import os
 import yaml
 import collections
+from ebcpy.simulationapi.dymola_api import DymolaAPI
+
 # TODO: Add unit tests
 # Specify solver-specific keyword-arguments depending on the solver and method you will use
 kwargs_scipy_dif_evo = {"maxiter": 30,
@@ -28,8 +30,13 @@ kwargs_scipy_min = {"tol": None,
 
 default_sim_config = {"packages": None,
                       "model_name": None,
-                      "type": "DymolaAPI"}
-
+                      "type": "DymolaAPI",
+                      "dymola_path": None,
+                      "dymola_interface_path": None,
+                      "equidistant_output": True,
+                      "show_window": False,
+                      "get_structural_parameters": True
+                      }
 
 
 default_optimization_config = {"framework": "TODO: Choose the framework for calibration",
@@ -45,6 +52,25 @@ default_config = {
     "SimulationAPI": default_sim_config,
     "Optimization": default_optimization_config
     }
+
+
+def get_simulation_api_from_config(config):
+    """
+    Read the data for a SimulationAPI object.
+
+    :param dict config:
+        Config holding the following keys for
+        - type: Type of the simulation API (e.g. DymolaAPI)
+        - Further parameters as defined by the selected simulation api
+    :return: SimulationAPI sim_api
+        Loaded SimulationAPI
+    """
+    sim_type = config["type"]
+    config.pop("type")
+    if sim_type.lower() == "dymolaapi":
+        return DymolaAPI(**config)
+    else:
+        raise KeyError(f"Given simulation type {sim_type} not supported.")
 
 
 def write_config(filepath, config):

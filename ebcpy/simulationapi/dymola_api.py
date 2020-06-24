@@ -24,6 +24,21 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Name of the model to be simulated
     :param list packages:
         List with path's to the packages needed to simulate the model
+    :keyword Boolean show_window:
+        True to show the Dymola window. Default is False
+    :keyword Boolean get_structural_parameters:
+        True to automatically read the structural paramters of the 
+        simulation model and set them via Modelica modifiers. Default 
+        is True
+    :keyword Boolean equidistant_output:
+        If True (Default), Dymola stores variables in an 
+        equisdistant output and does not store variables at events.
+    :keyword str dymola_path:
+         Path to the dymola installation on the device. Necessary 
+         e.g. on linux, if we can't find the path automatically.
+    :keyword str dymola_interface_path:
+        Same as for dymola_path. If we can't find the dymola installation,
+        you can pass the path to your dymola.egg via this parameter.
     """
 
     show_window = False
@@ -82,19 +97,20 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # First get the dymola-install-path:
             _dym_install = self.get_dymola_install_path()
             if _dym_install:
-                if dymola_path:
-                    self.dymola_path = dymola_path
-                else:
-                    self.dymola_path = self.get_dymola_path(_dym_install)
-                if "bin64" not in self.dymola_path:
-                    self._bit_64 = False
+                if not dymola_path:
+                    dymola_path = self.get_dymola_path(_dym_install)
                 if not dymola_interface_path:
                     dymola_interface_path = self.get_dymola_interface_path(_dym_install)
             else:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
 
+        # Set the path variables:
+        self.dymola_interface_path = dymola_interface_path
+        self.dymola_path = dymola_path
+        if "bin64" not in self.dymola_path:
+            self._bit_64 = False
 
-        self._global_import_dymola(dymola_interface_path)
+        self._global_import_dymola()
         self.packages = packages
 
         # Update kwargs with regard to what kwargs are supported.
@@ -377,91 +393,28 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Events can also cause errors in the shape.
             self.dymola.experimentSetupOutput(equidistant=True,
                                               events=False)
+        if not self.dymola.RequestOption("Standard"):
+            warnings.warn("You have no licence to use Dymola. "
+                          "Hence you can only simulate models with 8 or less equations.")
 
-    def _check_dymola_instances(self):
+    def to_dict(self):
         """
-        Check how many dymola instances are running on the machine.
-        Raise a warning if the number exceeds a certain amount.
-        """
-        counter = 0
-        for proc in psutil.process_iter():
-            try:
-                if "Dymola" in proc.name():
-                    counter += 1
-            except psutil.AccessDenied:
-                continue
-        if counter >= self._critical_number_instances:
-            warnings.warn("There are currently %s Dymola-Instances "
-                          "running on your machine!" % counter)
+        Store the most relevant information of this class
+        into a dictionary. This may be used for future configuration.
 
-    @staticmethod
-    def _alter_model_name(sim_setup, model_name, structural_params):
+        :return: dict config:
+            Dictionary with keys to re-init this class.
         """
-        Creates a modifier for all structural parameters,
-        based on the modelname and the initalNames and values.
+        config = {"cd": self.cd,
+                  "packages": self.packages,
+                  "model_name": self.model_name,
+                  "type": "DymolaAPI",
+                  }
+        # Update kwargs
+        config.update({kwarg: self.__dict__.get(kwarg, None)
+                       for kwarg in self._supported_kwargs})
 
-        :param dict sim_setup:
-            Simulation setup dictionary
-        :param str model_name:
-            Name of the model to be modified
-        :param list structural_params:
-            List of strings with structural parameters
-        :return: str altered_modelName:
-            modified model name
-        """
-        initial_values = sim_setup["initialValues"]
-        initial_names = sim_setup["initialNames"]
-        model_name = model_name.split("(")[0] # Trim old modifier
-        if structural_params == [] or initial_names == []:
-            return model_name
-        all_modifiers = []
-        for structural_para in structural_params:
-            # Checks if the structural parameter is inside the initialNames to be altered
-            if structural_para in initial_names:
-                # Get the location of the parameter for
-                # extraction of the corresponding initial value
-                k = initial_names.index(structural_para)
-                all_modifiers.append("%s = %s" % (structural_para, initial_values[k]))
-        altered_model_name = "%s(%s)" % (model_name, ",".join(all_modifiers))
-        return altered_model_name
-
-    @staticmethod
-    def _filter_error_log(error_log):
-        """
-        Filters the error log to detect recurring errors or structural parameters.
-        Each structural parameter will raise this warning:
-        'Warning: Setting n has no effect in model.\n
-        After translation you can only set literal start-values\n
-        and non-evaluated parameters.'
-        Filtering of this string will extract 'n' in the given case.
-
-        :param str error_log:
-            Error log from the dymola_interface.getLastErrorLog() function
-        :return: str filtered_log:
-        """
-        _trigger_string = "After translation you can only set " \
-                          "literal start-values and non-evaluated parameters"
-        structural_params = []
-        split_error = error_log.split("\n")
-        for i in range(1, len(split_error)):  # First line will never match the string
-            if _trigger_string in split_error[i]:
-                prev_line = split_error[i - 1]
-                prev_line = prev_line.replace("Warning: Setting ", "")
-                param = prev_line.replace(" has no effect in model.", "")
-                structural_params.append(param)
-        return structural_params
-
-    @staticmethod
-    def _global_import_dymola(dymola_interface_path):
-        sys.path.insert(0, dymola_interface_path)
-        global DymolaInterface
-        global DymolaConnectionException
-        try:
-            from dymola.dymola_interface import DymolaInterface
-            from dymola.dymola_exception import DymolaConnectionException
-        except ImportError:
-            raise ImportError("Given dymola-interface could "
-                              "not be loaded:\n %s" % dymola_interface_path)
+        return config
 
     @staticmethod
     def _make_modelica_normpath(path):
@@ -595,3 +548,87 @@ class DymolaAPI(simulationapi.SimulationAPI):
                     return full_path
         # If still inside the function, no interface was found
         return None
+
+    def _check_dymola_instances(self):
+        """
+        Check how many dymola instances are running on the machine.
+        Raise a warning if the number exceeds a certain amount.
+        """
+        counter = 0
+        for proc in psutil.process_iter():
+            try:
+                if "Dymola" in proc.name():
+                    counter += 1
+            except psutil.AccessDenied:
+                continue
+        if counter >= self._critical_number_instances:
+            warnings.warn("There are currently %s Dymola-Instances "
+                          "running on your machine!" % counter)
+
+    @staticmethod
+    def _alter_model_name(sim_setup, model_name, structural_params):
+        """
+        Creates a modifier for all structural parameters,
+        based on the modelname and the initalNames and values.
+
+        :param dict sim_setup:
+            Simulation setup dictionary
+        :param str model_name:
+            Name of the model to be modified
+        :param list structural_params:
+            List of strings with structural parameters
+        :return: str altered_modelName:
+            modified model name
+        """
+        initial_values = sim_setup["initialValues"]
+        initial_names = sim_setup["initialNames"]
+        model_name = model_name.split("(")[0] # Trim old modifier
+        if structural_params == [] or initial_names == []:
+            return model_name
+        all_modifiers = []
+        for structural_para in structural_params:
+            # Checks if the structural parameter is inside the initialNames to be altered
+            if structural_para in initial_names:
+                # Get the location of the parameter for
+                # extraction of the corresponding initial value
+                k = initial_names.index(structural_para)
+                all_modifiers.append("%s = %s" % (structural_para, initial_values[k]))
+        altered_model_name = "%s(%s)" % (model_name, ",".join(all_modifiers))
+        return altered_model_name
+
+    @staticmethod
+    def _filter_error_log(error_log):
+        """
+        Filters the error log to detect recurring errors or structural parameters.
+        Each structural parameter will raise this warning:
+        'Warning: Setting n has no effect in model.\n
+        After translation you can only set literal start-values\n
+        and non-evaluated parameters.'
+        Filtering of this string will extract 'n' in the given case.
+
+        :param str error_log:
+            Error log from the dymola_interface.getLastErrorLog() function
+        :return: str filtered_log:
+        """
+        _trigger_string = "After translation you can only set " \
+                          "literal start-values and non-evaluated parameters"
+        structural_params = []
+        split_error = error_log.split("\n")
+        for i in range(1, len(split_error)):  # First line will never match the string
+            if _trigger_string in split_error[i]:
+                prev_line = split_error[i - 1]
+                prev_line = prev_line.replace("Warning: Setting ", "")
+                param = prev_line.replace(" has no effect in model.", "")
+                structural_params.append(param)
+        return structural_params
+
+    def _global_import_dymola(self):
+        sys.path.insert(0, self.dymola_interface_path)
+        global DymolaInterface
+        global DymolaConnectionException
+        try:
+            from dymola.dymola_interface import DymolaInterface
+            from dymola.dymola_exception import DymolaConnectionException
+        except ImportError:
+            raise ImportError("Given dymola-interface could "
+                              "not be loaded:\n %s" % self.dymola_interface_path)
