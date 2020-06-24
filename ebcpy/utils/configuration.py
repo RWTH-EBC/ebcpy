@@ -6,6 +6,45 @@ import os
 import yaml
 import collections
 # TODO: Add unit tests
+# Specify solver-specific keyword-arguments depending on the solver and method you will use
+kwargs_scipy_dif_evo = {"maxiter": 30,
+                        "popsize": 5,
+                        "mutation": (0.5, 1),
+                        "recombination": 0.7,
+                        "seed": None,
+                        "polish": True,
+                        "init": 'latinhypercube',
+                        "atol": 0}
+
+kwargs_dlib_min = {"num_function_calls": int(1e9),
+                   "solver_epsilon": 0}
+
+kwargs_scipy_min = {"tol": None,
+                    "options": {"maxfun": 1},
+                    "constraints": None,
+                    "jac": None,
+                    "hess": None,
+                    "hessp": None}
+
+default_sim_config = {"packages": None,
+                      "model_name": None,
+                      "type": "DymolaAPI"}
+
+
+
+default_optimization_config = {"framework": "TODO: Choose the framework for calibration",
+                               "method": "TODO: Choose the method of the framework",
+                               "settings": {
+                                   "scipy_differential_evolution": kwargs_scipy_dif_evo,
+                                   "dlib_minimize": kwargs_dlib_min,
+                                   "scipy_minimize": kwargs_scipy_min}
+                               }
+
+default_config = {
+    "Working Directory": "TODO: Add the path where you want to work here",
+    "SimulationAPI": default_sim_config,
+    "Optimization": default_optimization_config
+    }
 
 
 def write_config(filepath, config):
