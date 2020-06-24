@@ -595,17 +595,3 @@ class DymolaAPI(simulationapi.SimulationAPI):
                     return full_path
         # If still inside the function, no interface was found
         return None
-
-
-if __name__=="__main__":
-    dym = DymolaAPI(cd=r"D:\pme-fwu\00_testzone\00_dymola",
-                    model_name="Modelica.Blocks.Examples.Filter",
-                    packages=[],
-                    show_window=True)
-    dym.set_sim_setup({"resultNames": ["CriticalDamping.y"],
-                       "stopTime": 100,
-                       "initialNames": ['f_cut'],
-                       "initialValues": [2]}
-                      )
-    df = dym.simulate(squeeze=False)
-    print(df)
