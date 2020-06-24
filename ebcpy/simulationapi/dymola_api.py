@@ -50,7 +50,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'resultFile': 'resultFile',
                  'autoLoad': False,
                  'initialNames': [],
-                 'initialValues': []}
+                 'initialValues': [],
+                 'resultNames': []}
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -112,18 +113,52 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface(self.show_window)
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files="", show_eventlog = False):
+    def simulate(self, savepath_files="", show_eventlog = False, squeeze=True):
         """
         Simulate the current setup.
-        If simulation terminates without an error and the files should be saved,
-        the files are moved to a folder based on the current datetime.
-        Returns the filepath of the result-matfile.
+        If simulation terminates without an error, you can either
+         - save the files in a given savepath (savepath_files) or
+         - get the trajectories specified by `resultNames` returned.
+
+         Some Notes on using `resultNames`:
+        - You can't use `outputInterval`. Instead you have to use `numberOfIntervals`.
+          An attempt is made to convert it internally. For this to work,
+          `outputInterval` has to be an even divisor of the interval given
+          by`stopTime-startTime`. In the case of `startTime=0, stopTime=100`,
+          `outputInterval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
+          :raises ValueError if `outputInterval` is wrong
+        - You have to pass an `initialName` and `initialValue`.
+          Else the result is always empty
+        - If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
+          It has to be 2D list (e.g. [[1, 2]]). As we normally use only
+          one parameter at a time, we automatically convert any 1D list
+          to a 2D list. Passing a 2D list to the `sim_setup` also works.
+        - The resulting dataframe has size `numberOfIntervals + 1` this is
+          due to the structure in Modelica.
 
         :param str,os.path.normpath savepath_files:
             If path is provided, the relevant simulation results will be saved
             in the given directory.
-        :return: str,os.path.normpath filepath:
-            Filepath of the result file.
+            If not, the simulation setting `resultNames` is used to store the
+            trajectories of the simulation and return them (See also: returns)
+        :param Boolean show_eventlog:
+            Default False. True to show evenlog of simulation (advanced)
+        :param Boolean squeeze:
+            Default True. If only one set of initialValues is provided,
+            a DataFrame is returned directly instead of a list.
+
+        Returns:
+        if savepath_files:
+            :return str,os.path.normpath filepath:
+                Filepath of the result file.
+        else
+            :return pd.DataFrame,list dfs:
+                If len(sim_setup['initialValues']) is one and squeeze=True,
+                a DataFrame with the columns being equal to
+                sim_setup['resultNames'] and an index of length
+                sim_setup['numberOfIntervals'] + 1
+                If multiple set's of initial values are given, one
+                dataframe for each set is returned in a list
         """
         if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
@@ -136,17 +171,52 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
-        res = self.dymola.simulateExtendedModel(self.model_name,
-                                                startTime=self.sim_setup['startTime'],
-                                                stopTime=self.sim_setup['stopTime'],
-                                                numberOfIntervals=self.sim_setup['numberOfIntervals'],
-                                                outputInterval=self.sim_setup['outputInterval'],
-                                                method=self.sim_setup['method'],
-                                                tolerance=self.sim_setup['tolerance'],
-                                                fixedstepsize=self.sim_setup['fixedstepsize'],
-                                                resultFile=self.sim_setup['resultFile'],
-                                                initialNames=self.sim_setup['initialNames'],
-                                                initialValues=self.sim_setup['initialValues'])
+
+        if savepath_files:
+            res = self.dymola.simulateExtendedModel(
+                self.model_name,
+                startTime=self.sim_setup['startTime'],
+                stopTime=self.sim_setup['stopTime'],
+                numberOfIntervals=self.sim_setup['numberOfIntervals'],
+                outputInterval=self.sim_setup['outputInterval'],
+                method=self.sim_setup['method'],
+                tolerance=self.sim_setup['tolerance'],
+                fixedstepsize=self.sim_setup['fixedstepsize'],
+                resultFile=self.sim_setup['resultFile'],
+                initialNames=self.sim_setup['initialNames'],
+                initialValues=self.sim_setup['initialValues'])
+        else:
+            # Internally convert output Interval to number of intervals
+            # (Required by function simulateMultiResultsModel
+            num_ints = self.sim_setup['numberOfIntervals']
+            if num_ints == 0:
+                generated_num_ints = (self.sim_setup['stopTime'] - self.sim_setup['startTime']) / \
+                                     self.sim_setup['outputInterval']
+                if int(generated_num_ints) != generated_num_ints:
+                    raise ValueError(
+                        "Given outputInterval and time interval did not yield an integer numberOfIntervals."
+                        "To use this functions without savepaths, you have to provide either a numberOfIntervals"
+                        "or a value for outputInterval which can be converted to numberOfIntervals.")
+                else:
+                    num_ints = generated_num_ints
+
+            initial_values = self.sim_setup['initialValues']
+            # Convert a 1D list to 2D list
+            if isinstance(initial_values[0], (float, int)):
+                initial_values = [initial_values]
+
+            res = self.dymola.simulateMultiResultsModel(
+                self.model_name,
+                startTime=self.sim_setup['startTime'],
+                stopTime=self.sim_setup['stopTime'],
+                numberOfIntervals=int(num_ints),
+                method=self.sim_setup['method'],
+                tolerance=self.sim_setup['tolerance'],
+                fixedstepsize=self.sim_setup['fixedstepsize'],
+                resultFile=None,
+                initialNames=self.sim_setup['initialNames'],
+                initialValues=initial_values,
+                resultNames=self.sim_setup['resultNames'])
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
@@ -154,9 +224,12 @@ class DymolaAPI(simulationapi.SimulationAPI):
             raise Exception("Simulation failed: Look into dslog.txt at {} of the "
                             "simulation.".format(os.path.join(self.cd + "dslog.txt")))
 
-        _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
+        if self.get_structural_parameters:
+            # Get the structural parameters based on the error log
+            self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
 
         if savepath_files:
+            _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
             if not os.path.isdir(savepath_files):
                 os.mkdir(savepath_files)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
@@ -166,14 +239,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 # Move files
                 os.rename(os.path.join(self.cd, filepath),
                           os.path.join(savepath_files, filepath))
+            return os.path.join(savepath_files, _save_name_dsres)
         else:
-            savepath_files = self.cd
-
-        if self.get_structural_parameters:
-            # Get the structural parameters based on the error log
-            self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
-
-        return os.path.join(savepath_files, _save_name_dsres)
+            data = res[1]
+            dfs = []
+            for ini_val_set in data:
+                dfs.append(pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
+                                         in enumerate(self.sim_setup['resultNames'])}))
+            # Most of the cases, only one set is provided. In that case, avoid
+            if len(dfs) == 1 and squeeze:
+                dfs = dfs[0]
+            return dfs
 
     def set_initial_values(self, initial_values):
         """
@@ -519,3 +595,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
                     return full_path
         # If still inside the function, no interface was found
         return None
+
+
+if __name__=="__main__":
+    dym = DymolaAPI(cd=r"D:\pme-fwu\00_testzone\00_dymola",
+                    model_name="Modelica.Blocks.Examples.Filter",
+                    packages=[],
+                    show_window=True)
+    dym.set_sim_setup({"resultNames": ["CriticalDamping.y"],
+                       "stopTime": 100,
+                       "initialNames": ['f_cut'],
+                       "initialValues": [2]}
+                      )
+    df = dym.simulate(squeeze=False)
+    print(df)

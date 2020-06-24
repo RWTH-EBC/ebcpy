@@ -82,6 +82,7 @@ v0.1
    - Issue24: Add converters and correctly inherit from pd.DataFame in TimeSeriesData
    - Add functions for configuration using yaml
    - Add regex functions for extraction of modelica variables
+   - Add option to directly return results as a dataframe using simulateMultiResultsModel.
 
 Indices and tables
 ==================
