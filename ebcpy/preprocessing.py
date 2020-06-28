@@ -6,8 +6,8 @@ from scipy import signal
 from sklearn import model_selection
 import numpy as np
 import pandas as pd
+from ebcpy import data_types
 import scipy.stats as st
-
 
 def build_average_on_duplicate_rows(df):
     """
@@ -227,9 +227,14 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     """
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
-        raise TypeError("DataFrame needs a DateTimeIndex for executing this function."
-                        "Call convert_index_to_datetime_index() to convert any index to "
-                        "a DateTimeIndex")
+        if isinstance(df, data_types.TimeSeriesData):
+            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                            "Call to_datetime_index() to convert any index to "
+                            "a DateTimeIndex")
+        else:
+            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                            "Call convert_index_to_datetime_index() to convert any index to "
+                            "a DateTimeIndex")
     #%% Check DataFrame for NANs
     # Create a pandas Series with number of invalid values for each column of df
     series_with_na = df.isnull().sum()
@@ -304,7 +309,13 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
-    df = df.resample(rule=desired_freq, loffset=delta_time).first()
+
+    # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
+    if isinstance(df, data_types.TimeSeriesData):
+        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = data_types.TimeSeriesData(df)
+    else:
+        df = df.resample(rule=desired_freq, loffset=delta_time).first()
     del delta_time
 
     return df

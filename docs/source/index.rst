@@ -77,7 +77,12 @@ v0.1
 - v0.1.5:
    - Remove dlib and PyQt5 from setup.py and delete TunerParas.show()
    - Refactor Optimizer so the framework parameter is only necessary to call optimize()
-
+- v0.1.6:
+   - Issue23: Change conversion functions to correctly handle multiheaders
+   - Issue24: Add converters and correctly inherit from pd.DataFame in TimeSeriesData
+   - Add functions for configuration using yaml
+   - Add regex functions for extraction of modelica variables
+   - Add option to directly return results as a dataframe using simulateMultiResultsModel.
 
 Indices and tables
 ==================

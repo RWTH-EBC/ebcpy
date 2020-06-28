@@ -4,8 +4,10 @@ pandas>=0.25
 matplotlib
 modelicares==0.12.2
 h5py
+IPython
 pydot
 xlrd
 sklearn
 tables
 cmake
+pyyaml
