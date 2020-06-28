@@ -568,6 +568,12 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Check how many dymola instances are running on the machine.
         Raise a warning if the number exceeds a certain amount.
         """
+        # The option may be useful. However the explicit requirement leads to
+        # Problems on linux, therefore the feature is not worth the trouble.
+        try:
+            import psutil
+        except ImportError:
+            return
         counter = 0
         for proc in psutil.process_iter():
             try:
