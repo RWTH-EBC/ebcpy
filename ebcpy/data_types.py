@@ -91,7 +91,7 @@ class TimeSeriesData(pd.DataFrame):
                                "of the sheet you want to load.")
             _df_loaded = pd.read_excel(io=filepath, sheet_name=sheet_name)
         else:
-            raise TypeError("Only .hdf, .csv and .mat are supported!")
+            raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
 
         _multi_col_names = ["Variables", "Tags"]
         _default_tag = ["raw"]

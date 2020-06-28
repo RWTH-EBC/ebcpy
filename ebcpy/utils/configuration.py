@@ -38,6 +38,11 @@ default_sim_config = {"packages": None,
                       "get_structural_parameters": True
                       }
 
+tsd_config = {"filepath": "TODO: Specify the path to the target values measured",
+              "key": None,
+              "sheet_name": None,
+              "sep": ","}
+
 
 default_optimization_config = {"framework": "TODO: Choose the framework for calibration",
                                "method": "TODO: Choose the method of the framework",

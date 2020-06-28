@@ -215,12 +215,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
                         "or a value for outputInterval which can be converted to numberOfIntervals.")
                 else:
                     num_ints = generated_num_ints
-
+            # Handle 1 and 2 D initial names
             initial_values = self.sim_setup['initialValues']
             # Convert a 1D list to 2D list
             if isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
 
+            # Handle the time of the simulation:
+            res_names = self.sim_setup['resultNames']
+            if "Time" not in res_names:
+                res_names.append("Time")
             res = self.dymola.simulateMultiResultsModel(
                 self.model_name,
                 startTime=self.sim_setup['startTime'],
@@ -232,7 +236,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 resultFile=None,
                 initialNames=self.sim_setup['initialNames'],
                 initialValues=initial_values,
-                resultNames=self.sim_setup['resultNames'])
+                resultNames=res_names)
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
@@ -260,8 +264,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
             data = res[1]
             dfs = []
             for ini_val_set in data:
-                dfs.append(pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
-                                         in enumerate(self.sim_setup['resultNames'])}))
+                df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
+                                   in enumerate(res_names)})
+                # Set time index
+                df = df.set_index("Time")
+                # Convert it to float
+                df.index = df.index.astype("float64")
+                dfs.append(df)
             # Most of the cases, only one set is provided. In that case, avoid
             if len(dfs) == 1 and squeeze:
                 dfs = dfs[0]
