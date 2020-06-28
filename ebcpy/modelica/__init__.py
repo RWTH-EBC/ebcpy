@@ -120,10 +120,12 @@ def get_names_and_values_of_lines(codelines):
         # If a value is present (e.g. for parameters, one = sign is still present (always)
         if line.find("=") >= 0:
             name_str, val_str = line.split("=")
+            name_str = name_str.strip()
             name = name_str.split(" ")[-1].replace(" ", "")
             value = float(val_str.replace(" ", ""))
         # else no value is stored in the line
         else:
+            line = line.strip()
             name = line.split(" ")[-1].replace(" ", "")
             value = None
         res.append({"name": name, "value": value})

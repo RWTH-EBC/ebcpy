@@ -429,14 +429,19 @@ class DymolaAPI(simulationapi.SimulationAPI):
     def _make_modelica_normpath(path):
         """
         Convert given path to a path readable in dymola.
-        If the path does not exist, create it.
+        If the base path does not exist, create it.
 
         :param str,os.path.normpath path:
+            Either a file or a folder path. The base to this
+            path is created in non existent.
         :return: str
-        Path readable in dymola
+            Path readable in dymola
         """
-        if not os.path.isdir(path):
-            os.makedirs(path)
+        # Create base directory:
+        _basedir = os.path.dirname(path)
+        if not os.path.isdir(_basedir):
+            os.makedirs(_basedir)
+
         path = path.replace("\\", "/")
         # Search for e.g. "D:testzone" and replace it with D:/testzone
         loc = path.find(":")
