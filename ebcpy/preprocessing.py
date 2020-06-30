@@ -1,11 +1,13 @@
 """Module with static functions used to preprocess or alter
 data, maily in the format of datafames or np.arrays."""
+import warnings
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
 import numpy as np
 import pandas as pd
-
+from ebcpy import data_types
+import scipy.stats as st
 
 def build_average_on_duplicate_rows(df):
     """
@@ -186,7 +188,7 @@ def time_based_weighted_mean(df):
     return res
 
 
-def clean_and_space_equally_time_series(df, desired_freq):
+def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.95):
     """
     Function for cleaning of the given dataFrame and interpolating
     based on the the given desired frequency. Linear interpolation
@@ -201,25 +203,38 @@ def clean_and_space_equally_time_series(df, desired_freq):
         - 5s: Every 5 seconds
         - 6min: Every 6 minutes
         This also works for h, d, m, y, ms etc.
+    :param float confidence_warning:
+        Value to check the confidence interval of input data without
+        a defined frequency. If the desired frequency is outside of
+        the resulting confidence interval, a warning is issued.
     :return: pd.DataFrame
         Cleaned and equally spaced data-frame
 
     Examples:
-    **Note:** As this function works best with some random
-    data, we will leave it up to you to see the structure of the
-    dataframe in every step.
+    **Note:** The example is for random data. Try out different sampling
+    frequencys. You will be warned if the samping rate is to high or to low.
 
     >>> df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)),
     >>>                   columns=list('ABCD')).set_index("A").sort_index()
     >>> df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
     >>> clean_and_space_equally_time_series(df, "30s")
-
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(df["B"], label="Raw data")
+    >>> df = clean_and_space_equally_time_series(df.copy(), "1500ms")
+    >>> plt.plot(df["B"], label="Clead and spaced equally")
+    >>> plt.legend()
+    >>> plt.show()
     """
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
-        raise TypeError("DataFrame needs a DateTimeIndex for executing this function."
-                        "Call convert_index_to_datetime_index() to convert any index to "
-                        "a DateTimeIndex")
+        if isinstance(df, data_types.TimeSeriesData):
+            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                            "Call to_datetime_index() to convert any index to "
+                            "a DateTimeIndex")
+        else:
+            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                            "Call convert_index_to_datetime_index() to convert any index to "
+                            "a DateTimeIndex")
     #%% Check DataFrame for NANs
     # Create a pandas Series with number of invalid values for each column of df
     series_with_na = df.isnull().sum()
@@ -238,9 +253,38 @@ def clean_and_space_equally_time_series(df, desired_freq):
     # Merge duplicate rows using mean.
     df = build_average_on_duplicate_rows(df)
 
+    # Make user warning for two cases: Upsampling and data input without a freq:
+    confidence = 0.95
+    # Check if the frequency differs
+    old_freq = df.index.freq
+    if old_freq is None:
+        # Construct a frequency by converting it first to int, then to timedelta back again:
+        _artificial_freq = df.index.to_series().diff().dropna().values.astype(np.int64)
+        cfd_int = st.t.interval(confidence,
+                                len(_artificial_freq)-1,
+                                loc=np.mean(_artificial_freq),
+                                scale=st.sem(_artificial_freq))
+        # Convert back to timedelta
+        cfd_int = pd.to_timedelta(cfd_int)
+        if pd.to_timedelta(desired_freq) < cfd_int[0]:
+            warnings.warn("Input data has no frequency, but the desired frequency "
+                          f"is lower than the given confidence interval ({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you introduced errors to the data.")
+        if pd.to_timedelta(desired_freq) > cfd_int[1]:
+            warnings.warn("Input data has no frequency, but the desired frequency "
+                          f"is higher than the given confidence interval ({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you introduced errors to the data.")
+
     #%% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
     time_index = pd.date_range(start=df.index[0], end=df.index[-1], freq=desired_freq)
+
+    # Check if the user is trying to upsample the data:
+    if old_freq:
+        if time_index.freq > old_freq:
+            warnings.warn("You are upsampling your data. This may be dangerous. "
+                          "Carefully check the result to see if you introduced errors to the data.")
+
     # Create an empty data frame
     # If multi-columns is used, first get the old index and make it empty:
     multi_cols = df.columns
@@ -265,7 +309,13 @@ def clean_and_space_equally_time_series(df, desired_freq):
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
-    df = df.resample(rule=desired_freq, loffset=delta_time).first()
+
+    # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
+    if isinstance(df, data_types.TimeSeriesData):
+        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = data_types.TimeSeriesData(df)
+    else:
+        df = df.resample(rule=desired_freq, loffset=delta_time).first()
     del delta_time
 
     return df
