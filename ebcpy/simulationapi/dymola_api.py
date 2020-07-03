@@ -41,7 +41,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
-        below 0 Dymola does not restart.
+        below 1 Dymola does not restart.
     """
 
     show_window = False
@@ -120,21 +120,21 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.packages = packages
 
         # Import n_restart
+        self.sim_counter = 0
         if "n_restart" in kwargs:
             if type(kwargs['n_restart']) is not int:
                 raise TypeError("n_restart has to be type int but is of type {}".format(type(kwargs['n_restart'])))
             elif kwargs['n_restart'] <= 0:
-                self.sim_setup['n_restart'] = kwargs['n_restart']
-                self.sim_counter = 1
+                pass
             else:
-                self.logger.log("Open Dymola to ensure a licence during Dymola restarts")
+                self.logger.log("Open blank placeholder Dymola instance to ensure a licence during Dymola restarts")
                 try:
                     self.dymola = DymolaInterface(showwindow=True,
                                                   dymolapath=self.dymola_path)
                 except DymolaConnectionException as error:
                     raise ConnectionError(error)
                 self.sim_setup['n_restart'] = kwargs['n_restart']
-                self.sim_counter = 0
+
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
