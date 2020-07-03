@@ -48,7 +48,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
                          "get_structural_parameters",
                          "dymola_path",
                          "dymola_interface_path",
-                         "equidistant_output"]
+                         "equidistant_output",
+                         "n_restart"]
     dymola_path = ""
     _bit_64 = True  # Whether to use 32 bit or not.
 
@@ -65,7 +66,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'autoLoad': False,
                  'initialNames': [],
                  'initialValues': [],
-                 'resultNames': []}
+                 'resultNames': [],
+                 'n_restart':-1,
+                 'sim_counter':0}
+
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -111,6 +115,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         self._global_import_dymola()
         self.packages = packages
+
+        if "n_restart" in kwargs:
+            self.sim_setup['n_restart'] = kwargs['n_restart']
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -204,6 +211,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         else:
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
+
+            self._check_restart(self)
+
             num_ints = self.sim_setup['numberOfIntervals']
             if num_ints == 0:
                 generated_num_ints = (self.sim_setup['stopTime'] - self.sim_setup['startTime']) / \
@@ -237,6 +247,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 initialNames=self.sim_setup['initialNames'],
                 initialValues=initial_values,
                 resultNames=res_names)
+
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
@@ -391,11 +402,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
-            self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            if self.sim_setup['sim_counter']==0:
+                self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
             res = self.dymola.openModel(package, changeDirectory=False)
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
-        self.logger.log("Loaded modules")
+        if self.sim_setup['sim_counter'] == 0:
+            self.logger.log("Loaded modules")
         if self.equidistant_output:
             # Change the Simulation Output, to ensure all
             # simulation results have the same array shape.
@@ -652,3 +665,20 @@ class DymolaAPI(simulationapi.SimulationAPI):
         except ImportError:
             raise ImportError("Given dymola-interface could "
                               "not be loaded:\n %s" % self.dymola_interface_path)
+
+    @staticmethod
+
+    def _check_restart(self):
+        n_restart = self.sim_setup['n_restart']
+        sim_counter = self.sim_setup['sim_counter']
+
+        if sim_counter == n_restart:
+            self.close()
+            self._setup_dymola_interface(self.show_window)
+            self.sim_setup['sim_counter'] = 0
+        else:
+            sim_counter += 1
+            self.sim_setup['sim_counter'] = sim_counter
+
+
+
