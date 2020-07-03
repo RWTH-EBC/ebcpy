@@ -38,6 +38,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
     :keyword str dymola_interface_path:
         Same as for dymola_path. If we can't find the dymola installation,
         you can pass the path to your dymola.egg via this parameter.
+    :keyword int n_restart:
+        Number of iterations after which Dymola should restart.
+        This is done to free memory. Default value -1. For values
+        below 0 Dymola does not restart.
     """
 
     show_window = False
@@ -119,8 +123,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if "n_restart" in kwargs:
             if type(kwargs['n_restart']) is not int:
                 raise TypeError("n_restart has to be type int but is of type {}".format(type(kwargs['n_restart'])))
-            elif kwargs['n_restart'] < 0:
-                pass
+            elif kwargs['n_restart'] <= 0:
+                self.sim_setup['n_restart'] = kwargs['n_restart']
+                self.sim_counter = 1
             else:
                 self.logger.log("Open Dymola to ensure a licence during Dymola restarts")
                 try:
