@@ -123,11 +123,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.sim_counter = 0
         if "n_restart" in kwargs:
             if type(kwargs['n_restart']) is not int:
-                raise TypeError("n_restart has to be type int but is of type {}".format(type(kwargs['n_restart'])))
+                raise TypeError("n_restart has to be type int but is of type {}"
+                                .format(type(kwargs['n_restart'])))
             elif kwargs['n_restart'] <= 0:
                 pass
             else:
-                self.logger.log("Open blank placeholder Dymola instance to ensure a licence during Dymola restarts")
+                self.logger.log("Open blank placeholder Dymola instance to ensure"
+                                " a licence during Dymola restarts")
                 try:
                     self.dymola = DymolaInterface(showwindow=True,
                                                   dymolapath=self.dymola_path)
