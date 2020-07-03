@@ -67,8 +67,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'initialNames': [],
                  'initialValues': [],
                  'resultNames': [],
-                 'n_restart':-1,
-                 'sim_counter':0}
+                 'n_restart':-1}
 
 
     def __init__(self, cd, model_name, packages, **kwargs):
@@ -116,8 +115,21 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._global_import_dymola()
         self.packages = packages
 
+        # Import n_restart
         if "n_restart" in kwargs:
-            self.sim_setup['n_restart'] = kwargs['n_restart']
+            if type(kwargs['n_restart']) is not int:
+                raise TypeError("n_restart has to be type int but is of type {}".format(type(kwargs['n_restart'])))
+            elif kwargs['n_restart'] < 0:
+                pass
+            else:
+                self.logger.log("Open Dymola to ensure a licence during Dymola restarts")
+                try:
+                    self.dymola = DymolaInterface(showwindow=True,
+                                                  dymolapath=self.dymola_path)
+                except DymolaConnectionException as error:
+                    raise ConnectionError(error)
+                self.sim_setup['n_restart'] = kwargs['n_restart']
+                self.sim_counter = 0
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -195,6 +207,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
 
+        #Restart Dymola after n_restart iterations
+        self._check_restart()
+
         if savepath_files:
             res = self.dymola.simulateExtendedModel(
                 self.model_name,
@@ -212,7 +227,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
 
-            self._check_restart(self)
+
 
             num_ints = self.sim_setup['numberOfIntervals']
             if num_ints == 0:
@@ -402,13 +417,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
-            if self.sim_setup['sim_counter']==0:
-                self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
             res = self.dymola.openModel(package, changeDirectory=False)
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
-        if self.sim_setup['sim_counter'] == 0:
-            self.logger.log("Loaded modules")
+        self.logger.log("Loaded modules")
         if self.equidistant_output:
             # Change the Simulation Output, to ensure all
             # simulation results have the same array shape.
@@ -666,19 +679,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
             raise ImportError("Given dymola-interface could "
                               "not be loaded:\n %s" % self.dymola_interface_path)
 
-    @staticmethod
-
     def _check_restart(self):
-        n_restart = self.sim_setup['n_restart']
-        sim_counter = self.sim_setup['sim_counter']
+        '''restart Dymola every n_restart iterations in order to free memory'''
 
-        if sim_counter == n_restart:
+        if self.sim_counter == self.sim_setup['n_restart']:
+            self.logger.log("Closing and restarting Dymola to free memory")
             self.close()
             self._setup_dymola_interface(self.show_window)
-            self.sim_setup['sim_counter'] = 0
+            self.sim_counter = 1
         else:
-            sim_counter += 1
-            self.sim_setup['sim_counter'] = sim_counter
+            self.sim_counter += 1
 
 
 
