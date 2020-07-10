@@ -235,7 +235,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 else:
                     num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
-            initial_values = self.sim_setup['initialValues']
+            initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
             if isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
