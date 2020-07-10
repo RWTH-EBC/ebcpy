@@ -116,17 +116,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._global_import_dymola()
         self.packages = packages
 
-        # Import n_restart
-        self.sim_counter = 0
-        self.n_restart = kwargs.get("n_restart", -1)
-        if not isinstance(self.n_restart, int):
-            raise TypeError("n_restart has to be type int but is of type {}"
-                            .format(type(kwargs['n_restart'])))
-        if self.n_restart > 0:
-            self.logger.log("Open blank placeholder Dymola instance to ensure"
-                            " a licence during Dymola restarts")
-            self._open_dymola_interface()
-
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
         if _not_supported:
@@ -135,6 +124,20 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
+
+        # Import n_restart
+        self.sim_counter = 0
+        self.n_restart = kwargs.get("n_restart", -1)
+        if not isinstance(self.n_restart, int):
+            raise TypeError("n_restart has to be type int but is of type {}"
+                            .format(type(kwargs['n_restart'])))
+
+        self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
+        if self.n_restart > 0:
+            self.logger.log("Open blank placeholder Dymola instance to ensure"
+                            " a licence during Dymola restarts")
+            self._dummy_dymola_instance = self._open_dymola_interface()
+            atexit.register(self._close_dummy)
 
         # List storing structural parameters for later modifying the simulation-name.
         self._structural_params = []
@@ -366,6 +369,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.dymola.close()
         # Set dymola object to None to avoid further access to it.
         self.dymola = None
+
+    def _close_dummy(self):
+        """
+        Closes dummy instance at the end of the execution
+        """
+        if self._dummy_dymola_instance is not None:
+            self._dummy_dymola_instance.close()
 
     def get_all_tuner_parameters(self):
         """Get all tuner-parameters of the model by
