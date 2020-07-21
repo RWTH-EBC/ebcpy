@@ -72,6 +72,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
                  'initialValues': [],
                  'resultNames': []}
 
+    # Dynamic setup of simulation setup
+    number_values = [key for key, value in sim_setup.items() if
+                     (isinstance(value, (int, float)) and not isinstance(value, bool))]
+
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
         super().__init__(cd, model_name)
@@ -146,7 +150,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface()
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files="", show_eventlog = False, squeeze=True):
+    def simulate(self, savepath_files="", **kwargs):
         """
         Simulate the current setup.
         If simulation terminates without an error, you can either
@@ -174,9 +178,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
             in the given directory.
             If not, the simulation setting `resultNames` is used to store the
             trajectories of the simulation and return them (See also: returns)
-        :param Boolean show_eventlog:
+        :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
-        :param Boolean squeeze:
+        :keyword Boolean squeeze:
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
 
@@ -193,7 +197,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 If multiple set's of initial values are given, one
                 dataframe for each set is returned in a list
         """
-        if show_eventlog:
+        if kwargs.get("show_eventlog", False):
             self.dymola.experimentSetupOutput(events=True)
             self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
@@ -295,7 +299,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 df.index = df.index.astype("float64")
                 dfs.append(df)
             # Most of the cases, only one set is provided. In that case, avoid
-            if len(dfs) == 1 and squeeze:
+            if len(dfs) == 1 and kwargs.get("squeeze", True):
                 dfs = dfs[0]
             return dfs
 
@@ -307,30 +311,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
             List containing initial values for the dymola interface
         """
         self.sim_setup["initialValues"] = list(initial_values)
-
-    def set_sim_setup(self, sim_setup):
-        """
-        Overwrites multiple entries in the simulation setup dictionary
-
-        :param dict sim_setup:
-            Dictionary object with the same keys as this class's sim_setup dictionary
-        """
-        _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
-        if _diff:
-            raise KeyError("The given sim_setup contains the following keys ({}) which are "
-                           "not part of the dymola sim_setup.".format(" ,".join(list(_diff))))
-        _number_values = ["startTime", "stopTime", "numberOfIntervals",
-                          "outputInterval", "tolerance", "fixedstepsize"]
-        for key, value in sim_setup.items():
-            if key in _number_values:
-                _ref = (float, int)
-            else:
-                _ref = type(self.sim_setup[key])
-            if isinstance(value, _ref):
-                self.sim_setup[key] = value
-            else:
-                raise TypeError("{} is of type {} but should be"
-                                " type {}".format(key, type(value).__name__, _ref))
 
     def import_initial(self, filepath):
         """

@@ -3,7 +3,7 @@ simulate models."""
 
 from ebcpy import simulationapi
 import fmpy
-import shutil
+import pandas as pd
 import os
 
 
@@ -20,7 +20,11 @@ class FMU_API(simulationapi.SimulationAPI):
                  'solver': 'CVode',
                  'initialNames': [],
                  'initialValues': [],
-                 'finalNames': []}
+                 'resultNames': []}
+
+    # Dynamic setup of simulation setup
+    number_values = [key for key, value in sim_setup.items() if
+                     (isinstance(value, (int, float)) and not isinstance(value, bool))]
 
     def __init__(self, cd, model_name):
         """Instantiate class parameters"""
@@ -34,7 +38,7 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             True on success
         """
-        raise NotImplementedError
+        print("What to close??")
 
     def set_cd(self, cd):
         """
@@ -43,14 +47,18 @@ class FMU_API(simulationapi.SimulationAPI):
             New working directory
         :return:
         """
+        os.makedirs(cd, exist_ok=True)
         self.cd = cd
 
-    def simulate(self, fail_on_error=True):
+    def simulate(self, **kwargs):
         """
         Simulate current simulation-setup.
 
         :param str,os.path.normpath savepath_files:
             Savepath were to store result files of the simulation.
+        :keyword Boolean fail_on_error:
+            If True, an error in fmpy will trigger an error in this script.
+            Default is false
         :return:
             Filepath of the mat-file.
         """
@@ -71,7 +79,7 @@ class FMU_API(simulationapi.SimulationAPI):
                      start_values=start_values,
                      apply_default_start_values=False,
                      input=None,
-                     output=self.sim_setup["finalNames"],
+                     output=self.sim_setup["resultNames"],
                      timeout=None,
                      debug_logging=False,
                      visible=False,
@@ -81,51 +89,43 @@ class FMU_API(simulationapi.SimulationAPI):
                      model_description=None,
                      fmu_instance=None)
         except Exception as error:
-            res = None
             print(f"[SIMULATION ERROR] Error occured while running FMU: \n {error}")
-            if fail_on_error:
+            if kwargs.get("fail_on_error", False):
                 raise error
+            return None
 
-        return res
+        # Reshape result:
+        _cols = ["Time"] + self.sim_setup["resultNames"]
+        df = pd.DataFrame(res.tolist(), columns=_cols).set_index("Time")
+        df.index = df.index.astype("float64")
+        return df
 
-    def set_sim_setup(self, sim_setup):
+    def setup_fmu_instance(self):
+        pass
+
+    def set_initial_values(self, initial_values):
         """
-        Alter the simulation setup by changing the setup-dict.
+        Overwrite inital values
 
-        :param sim_setup:
+        :param list initial_values:
+            List containing initial values for the dymola interface
         """
-        _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
-        if _diff:
-            raise KeyError("The given sim_setup contains the following keys ({}) which are "
-                           "not part of the fmu sim_setup.".format(" ,".join(list(_diff))))
-        _number_values = ["startTime", "stopTime", "numberOfIntervals",
-                          "outputInterval"]
-        for key, value in sim_setup.items():
-            if key in _number_values:
-                _ref = (float, int)
-            else:
-                _ref = type(self.sim_setup[key])
-            if isinstance(value, _ref):
-                self.sim_setup[key] = value
-            else:
-                raise TypeError("{} is of type {} but should be"
-                                " type {}".format(key, type(value).__name__, _ref))
-
+        self.sim_setup["initialValues"] = list(initial_values)
 
 if __name__=="__main__":
-    path = r"D:\pme-fwu\00_testzone\test_model.fmu"
+    import numpy as np
+    path = r"D:\pme-fwu\00_testzone\00_dymola\StandardFlowsheet_Propane.fmu"
     p = FMU_API(cd=os.path.dirname(path), model_name=path)
-    INP_PARAM_NAMES = ["optimizationVariables.V_PS",
-                       "optimizationVariables.V_TWWS",
-                       "optimizationVariables.Q_HR_Nom",
-                       "optimizationVariables.Q_HP_Nom"]
-    p.set_sim_setup({"stopTime": 1000000,
-                     "finalNames": ["W_el"],
-                     "initialNames": INP_PARAM_NAMES,
-                     "initialValues": [3000, 100, 100, 3000],
-                     "outputInterval": 3600})
-    res = p.simulate()
-    print(res.shape)
+    for q_hp in np.linspace(10000, 20000, 1000):
+        print(f"Simulation {q_hp}")
+        p.set_sim_setup({"stopTime": 86400,
+                         "resultNames": ["W_el", "Demand.thermalZoneOneElement.volAir.T"],
+                         "initialNames": ["optimizationVariables.Q_HP_Nom"],
+                         "initialValues": [q_hp],
+                         "outputInterval": 500})
+        res = p.simulate()
     import matplotlib.pyplot as plt
-    plt.plot([e[1] for e in res])
+    fig, ax = plt.subplots(nrows=2, ncols=1)
+    ax[0].plot(res["Demand.thermalZoneOneElement.volAir.T"])
+    ax[1].plot(res["W_el"])
     plt.show()
