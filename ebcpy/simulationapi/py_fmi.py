@@ -38,7 +38,8 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             True on success
         """
-        print("What to close??")
+        pass
+        #print("What to close??")
 
     def set_cd(self, cd):
         """
