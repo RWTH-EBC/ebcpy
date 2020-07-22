@@ -96,8 +96,7 @@ class FMU_API(simulationapi.SimulationAPI):
             return None
 
         # Reshape result:
-        _cols = ["Time"] + self.sim_setup["resultNames"]
-        df = pd.DataFrame(res.tolist(), columns=_cols).set_index("Time")
+        df = pd.DataFrame(res).set_index("time")
         df.index = df.index.astype("float64")
         return df
 
