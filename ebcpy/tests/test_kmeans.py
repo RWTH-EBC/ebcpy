@@ -3,7 +3,7 @@ ebcpy.tsa.segmentation.kmeans"""
 import unittest
 import os
 import shutil
-from ebcpy.tsa.segmentation import kmeans
+from ebcpy.tsa import KmeansClusterer
 from ebcpy import data_types
 from sklearn.cluster import MiniBatchKMeans
 import numpy as np
@@ -34,11 +34,11 @@ class TestClustering(unittest.TestCase):
         _test_size = np.random.randint(1, 100)
         _test_clusters_n = 3
         # Instantiate class
-        KmeansCluster = kmeans.KmeansClusterer(self.example_dir,
-                                               n_clusters=_test_clusters_n,
-                                               time_series_data=self.tsd,
-                                               variable_list=self.variable_names,
-                                               batch_size=_test_size)
+        KmeansCluster = KmeansClusterer(self.example_dir,
+                                        n_clusters=_test_clusters_n,
+                                        time_series_data=self.tsd,
+                                        variable_list=self.variable_names,
+                                        batch_size=_test_size)
         KmeansCluster.save_image = True
         mini_batch_kmeans = KmeansCluster.create_mini_batch_kmeans()
 
@@ -57,9 +57,9 @@ class TestClustering(unittest.TestCase):
         # Test-load of kmeans:
         kmeans_loaded, _ = KmeansCluster.load_mini_batch_kmeans_from_pickle(filepath)
         # Create new classifier-object with loaded tree:
-        KmeansCluster_loaded = kmeans.KmeansClusterer(self.example_clas_dir,
-                                                      n_clusters=_test_clusters_n,
-                                                      mini_kmeans=kmeans_loaded)
+        KmeansCluster_loaded = KmeansClusterer(self.example_clas_dir,
+                                               n_clusters=_test_clusters_n,
+                                               mini_kmeans=kmeans_loaded)
         # Classify again with loaded tree and check if the output is still the same.
         classes_loaded = KmeansCluster_loaded.cluster(self.tsd.df[self.variable_names])
 
