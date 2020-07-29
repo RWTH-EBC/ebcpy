@@ -12,7 +12,13 @@ INSTALL_REQUIRES = ['numpy',
                     'sklearn',
                     'tables',
                     'psutil',
-                    'pyyaml'
+                    'pyyaml',
+                    'seaborn',
+                    'psutil',
+                    'plotly',
+                    'pyclustering',
+                    'ticc',
+                    'statsmodels'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 #INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source

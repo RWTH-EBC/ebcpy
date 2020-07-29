@@ -11,3 +11,9 @@ sklearn
 tables
 cmake
 pyyaml
+seaborn
+psutil
+plotly
+pyclustering
+ticc
+statsmodels
