@@ -3,7 +3,7 @@
 
 from abc import abstractmethod
 import os
-from enstats.utils import visualizer
+from ebcpy.tsa.utils import visualizer
 
 
 class Clusterer:
