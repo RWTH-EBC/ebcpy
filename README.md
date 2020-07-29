@@ -11,6 +11,7 @@ used at the Institute of Energy Efficient Buildings and Indoor Climate (**EBC**)
 Key features are:
 
 * Pre-/Postprocessing
+* Time Series Analyzer
 * Conversion
 * SimulationAPI
 * Optimization
