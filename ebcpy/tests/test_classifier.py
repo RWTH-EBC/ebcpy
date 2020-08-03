@@ -29,7 +29,7 @@ class TestClassifier(unittest.TestCase):
         self.variable_names = ['VDot', 'T_RL', 'T_VL', 'T_Amb', 'MassFlow', 'TempDiff']
         self.class_names = 'class'  # Column name where classes are listed
 
-    def test_decision_tree_classifier(self):
+    def test_DecisionTreeClassifier(self):
         """Test class DecisionTreeClassifier and all it's main methods"""
         # Use a random sample-size between 0.1 and 0.9 to ensure all values will work
         _test_size = np.random.uniform(low=0.01, high=0.99)

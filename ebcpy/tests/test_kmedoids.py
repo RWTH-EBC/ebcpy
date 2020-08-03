@@ -28,7 +28,7 @@ class TestClustering(unittest.TestCase):
         # List with column names that should be part of the classifier analysis
         self.variable_names = ["T_sink / K", "T_source / K", "m_flow_sink / kg/s"]
 
-    def test_decision_tree_classifier(self):
+    def test_KmedoidsClusterer(self):
         """Test class DecisionTreeClassifier and all it's main methods"""
         # Use a random size between 1 and 100 to ensure all values will work
         _test_size = np.random.randint(1, 100)
