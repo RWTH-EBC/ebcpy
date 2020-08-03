@@ -11,7 +11,7 @@ sklearn
 tables
 cmake
 pyyaml
-seaborn
+seaborn>=0.10
 psutil
 plotly
 pyclustering
