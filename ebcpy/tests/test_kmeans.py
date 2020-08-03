@@ -47,7 +47,8 @@ class TestClustering(unittest.TestCase):
         #self.assertTrue(os.path.isfile(self.example_dir + "//KmeansPairPlot.png"))
 
         KmeansCluster.export_mini_batch_kmeans_to_pickle()
-        classes = KmeansCluster.cluster(self.tsd.df[self.variable_names])
+        variable_names_multi_index = list(map(tuple, [[var_name, 'raw'] for var_name in self.variable_names]))
+        classes = KmeansCluster.cluster(self.tsd[variable_names_multi_index])
         for temp_class in classes:
             self.assertIsInstance(temp_class, dict)
 
@@ -61,7 +62,7 @@ class TestClustering(unittest.TestCase):
                                                n_clusters=_test_clusters_n,
                                                mini_kmeans=kmeans_loaded)
         # Classify again with loaded tree and check if the output is still the same.
-        classes_loaded = KmeansCluster_loaded.cluster(self.tsd.df[self.variable_names])
+        classes_loaded = KmeansCluster_loaded.cluster(self.tsd[variable_names_multi_index])
 
         for (i, temp_class) in enumerate(classes):
             self.assertEqual(temp_class["name"], classes_loaded[i]["name"])

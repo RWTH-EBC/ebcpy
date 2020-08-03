@@ -37,10 +37,10 @@ class TestClustering(unittest.TestCase):
         _test_initial_index_medoids = [1, 100, 200]
         # Instantiate class
         KmedoidsCluster = KmedoidsClusterer(self.example_dir,
-                                                                   initial_index_medoids =_test_initial_index_medoids,
-                                                                   time_series_data=self.tsd,
-                                                                   variable_list=self.variable_names
-                                                                   )
+                                            initial_index_medoids =_test_initial_index_medoids,
+                                            time_series_data=self.tsd,
+                                            variable_list=self.variable_names
+                                            )
         KmedoidsCluster.save_image = True
         kmedoids_cluster = KmedoidsCluster.create_kmedoids()
 
@@ -49,7 +49,9 @@ class TestClustering(unittest.TestCase):
         #self.assertTrue(os.path.isfile(self.example_dir + "//kmedoidsPlot.png"))
 
         KmedoidsCluster.export_kmedoids_to_pickle()
-        classes = KmedoidsCluster.cluster(self.tsd.df[self.variable_names])
+        variable_names_multi_index = list(map(tuple, [[var_name, 'raw'] for var_name in self.variable_names]))
+        # return first element of output tuple (list of class dicts), second element of tuple are predictions
+        classes = KmedoidsCluster.cluster(self.tsd[variable_names_multi_index])[0]
         for temp_class in classes:
             self.assertIsInstance(temp_class, dict)
 

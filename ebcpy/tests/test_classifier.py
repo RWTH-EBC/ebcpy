@@ -44,7 +44,8 @@ class TestClassifier(unittest.TestCase):
         dtc.validate_decision_tree()
         self.assertTrue(os.path.isfile(self.example_clas_dir + "//pairplot.png"))
         dtc.export_decision_tree_to_pickle()
-        classes = dtc.classify(self.tsd.df[self.variable_names])
+        variable_names_multi_index = list(map(tuple, [[var_name, 'raw'] for var_name in self.variable_names]))
+        classes = dtc.classify(self.tsd[variable_names_multi_index])
         for temp_class in classes:
             self.assertIsInstance(temp_class, dict)
 
@@ -57,7 +58,7 @@ class TestClassifier(unittest.TestCase):
         dtc = DecisionTreeClassifier(self.example_clas_dir,
                                      dtree=dtree_loaded)
         # Classify again with loaded tree and check if the output is still the same.
-        classes_loaded = dtc.classify(self.tsd.df[self.variable_names])
+        classes_loaded = dtc.classify(self.tsd[variable_names_multi_index])
 
         for (i, temp_class) in enumerate(classes):
             self.assertEqual(temp_class["name"], classes_loaded[i]["name"])

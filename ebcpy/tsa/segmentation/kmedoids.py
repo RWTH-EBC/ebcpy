@@ -39,7 +39,7 @@ class KmedoidsClusterer(Clusterer):
     # kwarg for exporting the created image to a png or not.
     save_image = False
 
-    def __init__(self, cd, initial_index_medoids, weight_faktor, metric='euclidean', norm ='max', time_series_data=None, variable_list=None,
+    def __init__(self, cd, initial_index_medoids, weight_faktor=None, metric='euclidean', norm ='max', time_series_data=None, variable_list=None,
                  k_medoids=None ,**kwargs):
         """Instantiate instance attributes"""
         super().__init__(cd, **kwargs)
@@ -86,9 +86,10 @@ class KmedoidsClusterer(Clusterer):
                                  "Re-Instatiate the class with the necessary arguments.")
 
         # Create kmedoids instance. Fit the known classes to the known training-data
-        df_norm = self.normalize(self._X.values)
-        de_reweighted = reweight.reweight(df_norm, self.weight_faktor)
-        self._kmedoids = kmedoids(data=de_reweighted, initial_index_medoids=self.initial_index_medoids
+        df_input = self.normalize(self._X.values)
+        if self.weight_faktor:
+            df_input = reweight.reweight(df_input, self.weight_faktor)
+        self._kmedoids = kmedoids(data=df_input, initial_index_medoids=self.initial_index_medoids
                                          )
         # Run kmedoids to train the process
         self._kmedoids.process()
@@ -185,7 +186,7 @@ class KmedoidsClusterer(Clusterer):
                           "occur.".format(dumped_dict["version"], sk_version))
         return dumped_dict["kmedoids"], dumped_dict["info"]
 
-    def cluster(self, df, weight_faktor, **kwargs):
+    def cluster(self, df, weight_faktor=None, **kwargs):
         """
         Clustering of given data in dataframe with
         a k_medoids-clusterer of sklearn. If no k_medoids
@@ -220,9 +221,10 @@ class KmedoidsClusterer(Clusterer):
 
         classes = []
         # Predict classes for test data set
-        df_norm = self.normalize(df.values)
-        de_reweighted = reweight.reweight(df_norm, weight_faktor)
-        predictions = k_medoids.predict(de_reweighted)
+        df_input = self.normalize(df.values)
+        if self.weight_faktor:
+            df_input = reweight.reweight(df_input, weight_faktor)
+        predictions = k_medoids.predict(df_input)
 
         # Convert predictions to classes.
         pred_df = pd.DataFrame({"time": df.index, "pred": predictions}).set_index("time")
