@@ -1,10 +1,11 @@
 """Module for classes using a fmu to
 simulate models."""
 
-from ebcpy import simulationapi
-import fmpy
-import pandas as pd
 import os
+import fmpy
+import shutil
+import pandas as pd
+from ebcpy import simulationapi
 
 
 class FMU_API(simulationapi.SimulationAPI):
@@ -32,14 +33,17 @@ class FMU_API(simulationapi.SimulationAPI):
         if not model_name.lower().endswith(".fmu"):
             raise ValueError("{} is not a valid fmu file!".format(model_name))
 
+        # Setup the fmu instance
+        self.setup_fmu_instance()
+
     def close(self):
         """
         Closes the fmu.
         :return:
             True on success
         """
-        pass
-        #print("What to close??")
+        # Remove the extracted files
+        shutil.rmtree(self.unzipdir, ignore_errors=True)
 
     def set_cd(self, cd):
         """
@@ -67,8 +71,7 @@ class FMU_API(simulationapi.SimulationAPI):
                         for i, value in enumerate(self.sim_setup["initialValues"])}
         try:
             res = fmpy.simulate_fmu(
-                     self.model_name,
-                     validate=True,
+                     self.unzipdir,
                      start_time=self.sim_setup["startTime"],
                      stop_time=self.sim_setup["stopTime"],
                      solver=self.sim_setup["solver"],
@@ -76,16 +79,11 @@ class FMU_API(simulationapi.SimulationAPI):
                      relative_tolerance=None,
                      output_interval=self.sim_setup["outputInterval"],
                      record_events=False,
-                     fmi_type=None,
                      start_values=start_values,
                      apply_default_start_values=False,
                      input=None,
                      output=self.sim_setup["resultNames"],
                      timeout=None,
-                     debug_logging=False,
-                     visible=False,
-                     logger=None,
-                     fmi_call_logger=None,
                      step_finished=None,
                      model_description=None,
                      fmu_instance=None)
@@ -98,10 +96,24 @@ class FMU_API(simulationapi.SimulationAPI):
         # Reshape result:
         df = pd.DataFrame(res).set_index("time")
         df.index = df.index.astype("float64")
+
+        # Options if dll error occurs:
+        #self.fmu_instance.fmi2FreeInstance(fmu.component)
+        #fmpy.freeLibrary(self.fmu_instance.dll._handle)
+
         return df
 
     def setup_fmu_instance(self):
-        pass
+        """
+        Manually set up and extract the data to
+        avoid this step in the simulate function
+        :return:
+        """
+        self.unzipdir = fmpy.extract(self.model_name,
+                                     unzipdir=os.path.join(self.cd,
+                                                           os.path.basename(self.model_name)[:-4] + "_extracted")
+                                     )
+
 
     def set_initial_values(self, initial_values):
         """
@@ -111,6 +123,7 @@ class FMU_API(simulationapi.SimulationAPI):
             List containing initial values for the dymola interface
         """
         self.sim_setup["initialValues"] = list(initial_values)
+
 
 if __name__=="__main__":
     import numpy as np

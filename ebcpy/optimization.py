@@ -243,7 +243,8 @@ class Optimizer:
                                              disp=False,  # We have our own logging.
                                              polish=self.polish,
                                              init=self.init,
-                                             atol=self.atol)
+                                             atol=self.atol,
+                                             constraints=self.constraints)
             return res
         except (KeyboardInterrupt, Exception) as error:
             self._handle_error(error)
