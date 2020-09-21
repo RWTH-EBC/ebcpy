@@ -5,6 +5,7 @@ import os
 import fmpy
 import shutil
 import pandas as pd
+import numpy as np
 from ebcpy import simulationapi
 
 
@@ -21,7 +22,8 @@ class FMU_API(simulationapi.SimulationAPI):
                  'solver': 'CVode',
                  'initialNames': [],
                  'initialValues': [],
-                 'resultNames': []}
+                 'resultNames': [],
+                 'timeout': np.inf}
 
     # Dynamic setup of simulation setup
     number_values = [key for key, value in sim_setup.items() if
@@ -83,7 +85,7 @@ class FMU_API(simulationapi.SimulationAPI):
                      apply_default_start_values=False,
                      input=None,
                      output=self.sim_setup["resultNames"],
-                     timeout=None,
+                     timeout=self.sim_setup["timeout"],
                      step_finished=None,
                      model_description=None,
                      fmu_instance=None)
