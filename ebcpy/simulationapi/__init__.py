@@ -24,6 +24,18 @@ class SimulationAPI:
         self.model_name = model_name
         # Setup the logger
         self.logger = visualizer.Logger(cd, "simulation_api")
+        # Setup iteration counter
+        self.count = 0
+
+        # For extracting input-, output- & tuner-parameter
+        self.model_inp = []         # input_sim_names
+        self.model_out = []         # target_sim_names
+        self.model_tuner_names = []
+        self.model_tuner_initialvalues = []
+        self.model_tuner_bounds = []
+
+        # Current best tuner parameters of all recalibration steps (for penalty function)
+        self.current_best_tuners = []
 
     @abstractmethod
     def close(self):
@@ -35,6 +47,18 @@ class SimulationAPI:
     def simulate(self, **kwargs):
         """Base function for simulating the simulation-model."""
         raise NotImplementedError('{}.simulate function is not '
+                                  'defined'.format(self.__class__.__name__))
+
+    @abstractmethod
+    def do_step(self, **kwargs):
+        """Base function for simulating one timestep."""
+        raise NotImplementedError('{}.do_step function is not '
+                                  'defined'.format(self.__class__.__name__))
+
+    @abstractmethod
+    def overwrite_model(self):
+        """Base function for overwriting the model parameters."""
+        raise NotImplementedError('{}.overwrite_model function is not '
                                   'defined'.format(self.__class__.__name__))
 
     @abstractmethod
@@ -66,3 +90,13 @@ class SimulationAPI:
             else:
                 raise TypeError("{} is of type {} but should be"
                                 " type {}".format(key, type(value).__name__, _ref))
+
+    def set_initial_values(self, initial_values):
+        """
+        Overwrite inital values
+
+        :param list initial_values:
+            List containing initial values for the calibration
+        """
+
+        self.sim_setup["initialValues"] = list(initial_values)

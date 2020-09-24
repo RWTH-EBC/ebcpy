@@ -303,14 +303,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 dfs = dfs[0]
             return dfs
 
-    def set_initial_values(self, initial_values):
-        """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
-        """
-        self.sim_setup["initialValues"] = list(initial_values)
 
     def import_initial(self, filepath):
         """

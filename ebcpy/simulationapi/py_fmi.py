@@ -1,12 +1,12 @@
 """Module for classes using a fmu to
 simulate models."""
 
-import os
+from ebcpy import simulationapi
 import fmpy
-import shutil
 import pandas as pd
 import numpy as np
-from ebcpy import simulationapi
+import shutil
+import os
 
 
 class FMU_API(simulationapi.SimulationAPI):
@@ -22,21 +22,61 @@ class FMU_API(simulationapi.SimulationAPI):
                  'solver': 'CVode',
                  'initialNames': [],
                  'initialValues': [],
-                 'resultNames': [],
-                 'timeout': np.inf}
+                 'initialBoundaries': [],
+                 "inputNames": [],
+                 'resultNames': [],}
 
-    # Dynamic setup of simulation setup
+    # Dynamic setup of simulation setup         # Notwendig?
     number_values = [key for key, value in sim_setup.items() if
                      (isinstance(value, (int, float)) and not isinstance(value, bool))]
 
     def __init__(self, cd, model_name):
         """Instantiate class parameters"""
         super().__init__(cd, model_name)
-        if not model_name.lower().endswith(".fmu"):
+        if not model_name.suffix == ".fmu":
             raise ValueError("{} is not a valid fmu file!".format(model_name))
 
-        # Setup the fmu instance
-        self.setup_fmu_instance()
+        # Read model description
+        self.fmu_description = fmpy.read_model_description(model_name)
+
+        # Collect all variables
+        self.variables = {}
+        for variable in self.fmu_description.modelVariables:
+            self.variables[variable.name] = variable
+
+        # extract the FMU
+        self.unzipdir = fmpy.extract(self.model_name)
+
+        # create fmu obj
+        self.fmu = fmpy.fmi2.FMU2Slave(guid=self.fmu_description.guid,
+                                       unzipDirectory=self.unzipdir,
+                                       modelIdentifier=self.fmu_description.coSimulation.modelIdentifier,
+                                       #instanceName=self.instanceName
+                                       )
+
+        # instantiate fmu
+        self.fmu.instantiate()
+
+        # initialize
+        self.fmu.enterInitializationMode()
+        self.fmu.exitInitializationMode()
+
+        # Extract Inputs, Outputs & Tuner (lists from parent classes will be appended)
+        for v in self.fmu_description.modelVariables:
+            if v.causality == 'input':
+                self.model_inp.append(v.name)
+            if v.causality == 'output':
+                self.model_out.append(v.name)
+            if 'TunerParameter.' in v.name:
+                self.model_tuner_names.append(v.name)
+                self.model_tuner_initialvalues.append(float(v.start))
+                if not type(v.min) == None or type(v.max) == None:
+                    bounds_tuple = (float(v.min), float(v.max))
+                    self.model_tuner_bounds.append(bounds_tuple)
+                else:
+                    raise Exception("No boundaries defined for parameter {} in the fmu file."
+                                    " Please edit the model file".format(v))
+
 
     def close(self):
         """
@@ -44,8 +84,8 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             True on success
         """
-        # Remove the extracted files
-        shutil.rmtree(self.unzipdir, ignore_errors=True)
+        pass
+        #print("What to close??")
 
     def set_cd(self, cd):
         """
@@ -57,35 +97,52 @@ class FMU_API(simulationapi.SimulationAPI):
         os.makedirs(cd, exist_ok=True)
         self.cd = cd
 
-    def simulate(self, **kwargs):
+    def simulate(self, meas_input_data, **kwargs):              # %%%% TO-DO: Automatisieren. Anpassen auf InfluxDB.
         """
         Simulate current simulation-setup.
 
-        :param str,os.path.normpath savepath_files:
-            Savepath were to store result files of the simulation.
-        :keyword Boolean fail_on_error:
-            If True, an error in fmpy will trigger an error in this script.
-            Default is false
-        :return:
-            Filepath of the mat-file.
+        :param dataframe meas_input_data:
+            Pandas.Dataframe of the measured input data for simulating the FMU with fmpy
+        :return dataframe sim_target_data:
+            Pandas.Dataframe of simulated target values
         """
+        # Dict with all tunerparameternames & -values
         start_values = {self.sim_setup["initialNames"][i]: value
                         for i, value in enumerate(self.sim_setup["initialValues"])}
+
+        # Shift inputdata, because "simulate_fmu" gets an input at timestep x and calculates the related output for timestep x+1
+        shift_period = int(self.sim_setup["outputInterval"]/(meas_input_data.index[0]-meas_input_data.index[1]))
+        meas_input_data = meas_input_data.shift(periods=shift_period)
+        # drop NANs
+        meas_input_data = meas_input_data.dropna()
+
+        # Convert df to structured numpy array for simulate_fmu
+        meas_input_tuples = [tuple(columns) for columns in meas_input_data.to_numpy()]
+
+        dtype = [(i, np.double) for i in meas_input_data.columns]       # %%% TO-DO: implement more than "np.double" as type-possibilities
+        meas_input_fmpy = np.array(meas_input_tuples, dtype=dtype)
+
         try:
             res = fmpy.simulate_fmu(
-                     self.unzipdir,
+                     self.model_name,
+                     validate=True,
                      start_time=self.sim_setup["startTime"],
                      stop_time=self.sim_setup["stopTime"],
                      solver=self.sim_setup["solver"],
-                     step_size=self.sim_setup["numberOfIntervals"],
+                     step_size=self.sim_setup["numberOfIntervals"],      # !!Nur Einfluss, wenn Euler als Solver verwendet
                      relative_tolerance=None,
-                     output_interval=self.sim_setup["outputInterval"],
+                     output_interval=self.sim_setup["outputInterval"],      # Hat sehr großen Einfluss auf die Ergebnisse
                      record_events=False,
+                     fmi_type=None,
                      start_values=start_values,
                      apply_default_start_values=False,
-                     input=None,
+                     input=meas_input_fmpy,                             # Ob Zeitintervall der inputs mit "outputInterval" übereinstimmt ist irrelevant
                      output=self.sim_setup["resultNames"],
-                     timeout=self.sim_setup["timeout"],
+                     timeout=None,
+                     debug_logging=False,
+                     visible=False,
+                     logger=None,
+                     fmi_call_logger=None,
                      step_finished=None,
                      model_description=None,
                      fmu_instance=None)
@@ -96,51 +153,134 @@ class FMU_API(simulationapi.SimulationAPI):
             return None
 
         # Reshape result:
-        df = pd.DataFrame(res).set_index("time")
+        _cols = ["Time"] + self.sim_setup["resultNames"]
+        df = pd.DataFrame(res.tolist(), columns=_cols).set_index("Time")
         df.index = df.index.astype("float64")
-
-        # Options if dll error occurs:
-        #self.fmu_instance.fmi2FreeInstance(fmu.component)
-        #fmpy.freeLibrary(self.fmu_instance.dll._handle)
-
         return df
 
+    def overwrite_model(self):
+        """
+        Overwrites the simulation model after calibration.
+        First the all optimized parameters will be overwritten in the model.
+        Afterwards there will be an adjustment of the boundaries.
+
+        :param type param_name:
+            To add
+        :return type returnname:
+            To add
+        """
+
+        # To add if model can be permanently overwritten
+
+        pass
+
     def setup_fmu_instance(self):
+        pass
+
+
+    def setup(self):
+        # The current simulation time
+        self.current_time = self.sim_setup["startTime"]
+
+        # initialize model
+        self.fmu.reset()
+        self.fmu.setupExperiment(
+            startTime=self.start_time, stopTime=self.stop_time, tolerance=self.sim_tolerance)
+
+
+    def find_vars(self, start_str: str):
         """
-        Manually set up and extract the data to
-        avoid this step in the simulate function
-        :return:
+        Retruns all variables starting with start_str
         """
-        self.unzipdir = fmpy.extract(self.model_name,
-                                     unzipdir=os.path.join(self.cd,
-                                                           os.path.basename(self.model_name)[:-4] + "_extracted")
-                                     )
+        key = list(self.variables.keys())
+        key_list = []
+        for i in range(len(key)):
+            if key[i].startswith(start_str):
+                key_list.append(key[i])
+        return key_list
 
-
-    def set_initial_values(self, initial_values):
+    def get_value(self, var_name: str):
         """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
+        Get a single variable.
         """
-        self.sim_setup["initialValues"] = list(initial_values)
+
+        variable = self.variables[var_name]
+        vr = [variable.valueReference]
+
+        if variable.type == 'Real':
+            return self.fmu.getReal(vr)[0]
+        elif variable.type in ['Integer', 'Enumeration']:
+            return self.fmu.getInteger(vr)[0]
+        elif variable.type == 'Boolean':
+            value = self.fmu.getBoolean(vr)[0]
+            return value != 0
+        else:
+            raise Exception("Unsupported type: %s" % variable.type)
+
+    def set_value(self, var_name, value):
+        """
+        Set a single variable.
+        var_name: str
+        """
+
+        variable = self.variables[var_name]
+        vr = [variable.valueReference]
+
+        if variable.type == 'Real':
+            self.fmu.setReal(vr, [float(value)])
+        elif variable.type in ['Integer', 'Enumeration']:
+            self.fmu.setInteger(vr, [int(value)])
+        elif variable.type == 'Boolean':
+            self.fmu.setBoolean(vr, [value == 1.0 or value == True or value == "True"])
+        else:
+            raise Exception("Unsupported type: %s" % variable.type)
+
+    def do_step(self):
+        # check if stop time is reached
+        if self.current_time < self.stop_time:
+            # do simulation step
+            status = self.fmu.doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.step_size)
+            # augment current time step
+            self.current_time += self.step_size
+            finished = False
+        else:
+            print('Simulation finished')
+            finished = True
+
+        return finished
+
+    def close(self):
+        self.fmu.terminate()
+        self.fmu.freeInstance()
+        shutil.rmtree(self.unzipdir)
+        print('FMU released')
+
+    def read_variables(self, vrs_list: list):
+        """
+        Reads multiple variable values of FMU.
+        vrs_list as list of strings
+        Method retruns a dict with FMU variable names as key
+        """
+        res = {}
+        # read current variable values ans store in dict
+        for var in vrs_list:
+            res[var] = self.get_value(var)
+
+        # add current time to results
+        #res['SimTime'] = self.current_time
+
+        return res
+
+    def set_variables(self, var_dict: dict):
+        '''
+        Sets multiple variables.
+        var_dict is a dict with variable names in keys.
+        '''
+
+        for key in var_dict:
+            self.set_value(key, var_dict[key])
+        return "Variable set!!"
 
 
-if __name__=="__main__":
-    import numpy as np
-    path = r"D:\pme-fwu\00_testzone\00_dymola\StandardFlowsheet_Propane.fmu"
-    p = FMU_API(cd=os.path.dirname(path), model_name=path)
-    for q_hp in np.linspace(10000, 20000, 1000):
-        print(f"Simulation {q_hp}")
-        p.set_sim_setup({"stopTime": 86400,
-                         "resultNames": ["W_el", "Demand.thermalZoneOneElement.volAir.T"],
-                         "initialNames": ["optimizationVariables.Q_HP_Nom"],
-                         "initialValues": [q_hp],
-                         "outputInterval": 500})
-        res = p.simulate()
-    import matplotlib.pyplot as plt
-    fig, ax = plt.subplots(nrows=2, ncols=1)
-    ax[0].plot(res["Demand.thermalZoneOneElement.volAir.T"])
-    ax[1].plot(res["W_el"])
-    plt.show()

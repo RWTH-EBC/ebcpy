@@ -346,6 +346,15 @@ class TunerParas:
         """
         self._df = self._df.loc[~self._df.index.isin(names)]
 
+    # def remove_bounds(self, bounds):
+    #     """
+    #     Remove gives list of bounds from the Tuner-parameters
+    #
+    #     :param list bounds:
+    #         List with boundaries inside of the TunerParas-dataframe
+    #     """
+    #     self._df = self._df.loc[~self._df.index.isin(bounds)]
+
     def _set_scale(self):
         self._df["scale"] = self._df["max"] - self._df["min"]
         if not self._df[self._df["scale"] <= 0].empty:
