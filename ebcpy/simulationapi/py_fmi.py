@@ -110,15 +110,16 @@ class FMU_API(simulationapi.SimulationAPI):
         start_values = {self.sim_setup["initialNames"][i]: value
                         for i, value in enumerate(self.sim_setup["initialValues"])}
 
-        # Shift inputdata, because "simulate_fmu" gets an input at timestep x and calculates the related output for timestep x+1
+        # Shift all columns, because "simulate_fmu" gets an input at timestep x and calculates the related output for timestep x+1
         shift_period = int(self.sim_setup["outputInterval"]/(meas_input_data.index[0]-meas_input_data.index[1]))
         meas_input_data = meas_input_data.shift(periods=shift_period)
+        # Shift time column back
+        meas_input_data.time = meas_input_data.time.shift(1, fill_value=0)
         # drop NANs
         meas_input_data = meas_input_data.dropna()
 
         # Convert df to structured numpy array for simulate_fmu
         meas_input_tuples = [tuple(columns) for columns in meas_input_data.to_numpy()]
-
         dtype = [(i, np.double) for i in meas_input_data.columns]       # %%% TO-DO: implement more than "np.double" as type-possibilities
         meas_input_fmpy = np.array(meas_input_tuples, dtype=dtype)
 
