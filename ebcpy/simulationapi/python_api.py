@@ -10,6 +10,7 @@ class PYTHON_API(simulationapi.SimulationAPI):
     a functional mockup interface as a model input.
     """
 
+    # Default attributes
     sim_setup = {'startTime': 0.0,
                  'stopTime': 1.0,
                  'numberOfIntervals': 0,
@@ -40,15 +41,6 @@ class PYTHON_API(simulationapi.SimulationAPI):
         # self.model_tuner_bounds =         # add tuner bounds as tuple: [(min, max), (min, max),...]
         # self.model_tuner_initialvalues =
 
-    def close(self):
-        """
-        Closes the fmu.
-        :return:
-            True on success
-        """
-        pass
-        #print("What to close??")
-
     def set_cd(self, cd):
         """
         Set current working directory for storing files etc.
@@ -75,15 +67,19 @@ class PYTHON_API(simulationapi.SimulationAPI):
         start_values = {self.sim_setup["initialNames"][i]: value
                         for i, value in enumerate(self.sim_setup["initialValues"])}
 
-
         return df
 
+    def do_step(self):
+        # check if stop time is reached
+        if self.current_time < self.stop_time:
+            pass
+            #..to add...
 
-    def set_initial_values(self, initial_values):
+    def close(self):
         """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
+        Closes the fmu.
+        :return:
+            True on success
         """
-        self.sim_setup["initialValues"] = list(initial_values)
+        pass
+        #print("What to close??")

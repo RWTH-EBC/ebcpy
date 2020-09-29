@@ -10,6 +10,7 @@ class ANN_API(simulationapi.SimulationAPI):
     a functional mockup interface as a model input.
     """
 
+    # Default attributes
     sim_setup = {'startTime': 0.0,
                  'stopTime': 1.0,
                  'numberOfIntervals': 0,
@@ -30,15 +31,6 @@ class ANN_API(simulationapi.SimulationAPI):
         super().__init__(cd, model_name)
         if not model_name.lower().endswith(".py"):
             raise ValueError("{} is not a valid python file!".format(model_name))
-
-    def close(self):
-        """
-        Closes the fmu.
-        :return:
-            True on success
-        """
-        pass
-        #print("What to close??")
 
     def set_cd(self, cd):
         """
@@ -62,16 +54,19 @@ class ANN_API(simulationapi.SimulationAPI):
 
         # %%%% TO-DO: Add simulation of ANN model here %%%%%
 
-
-
         return df
 
+    def do_step(self):
+        # check if stop time is reached
+        if self.current_time < self.stop_time:
+            pass
+            #..to add...
 
-    def set_initial_values(self, initial_values):
+    def close(self):
         """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
+        Closes the fmu.
+        :return:
+            True on success
         """
-        self.sim_setup["initialValues"] = list(initial_values)
+        pass
+        #print("What to close??")

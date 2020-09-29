@@ -8,13 +8,14 @@ import numpy as np
 import shutil
 import os
 
-
+# Klasse vergleichbar mit Hannah's "ModelicaFMU" Klasse
 class FMU_API(simulationapi.SimulationAPI):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
     """
 
+    # Default attributes
     sim_setup = {'startTime': 0.0,
                  'stopTime': 1.0,
                  'numberOfIntervals': 0,
@@ -61,7 +62,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self.fmu.enterInitializationMode()
         self.fmu.exitInitializationMode()
 
-        # Extract Inputs, Outputs & Tuner (lists from parent classes will be appended)
+        # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for v in self.fmu_description.modelVariables:
             if v.causality == 'input':
                 self.model_inp.append(v.name)
@@ -77,15 +78,14 @@ class FMU_API(simulationapi.SimulationAPI):
                     raise Exception("No boundaries defined for parameter {} in the fmu file."
                                     " Please edit the model file".format(v))
 
-
-    def close(self):
-        """
-        Closes the fmu.
-        :return:
-            True on success
-        """
-        pass
-        #print("What to close??")
+        # Set inputs, outputs & tuner to simulation API
+        self.set_sim_setup({
+            "inputNames": self.model_inp,
+            "resultNames": self.model_out,
+            "initialNames": self.model_tuner_names,
+            "initialValues": self.model_tuner_initialvalues,
+            "initialBoundaries": self.model_tuner_bounds
+        })
 
     def set_cd(self, cd):
         """
@@ -106,7 +106,7 @@ class FMU_API(simulationapi.SimulationAPI):
         :return dataframe sim_target_data:
             Pandas.Dataframe of simulated target values
         """
-        # Dict with all tunerparameternames & -values
+        # Dictionary with all tuner parameter names & -values
         start_values = {self.sim_setup["initialNames"][i]: value
                         for i, value in enumerate(self.sim_setup["initialValues"])}
 
@@ -118,7 +118,7 @@ class FMU_API(simulationapi.SimulationAPI):
         # drop NANs
         meas_input_data = meas_input_data.dropna()
 
-        # Convert df to structured numpy array for simulate_fmu
+        # Convert df to structured numpy array for fmpy: simulate_fmu
         meas_input_tuples = [tuple(columns) for columns in meas_input_data.to_numpy()]
         dtype = [(i, np.double) for i in meas_input_data.columns]       # %%% TO-DO: implement more than "np.double" as type-possibilities
         meas_input_fmpy = np.array(meas_input_tuples, dtype=dtype)
@@ -159,6 +159,24 @@ class FMU_API(simulationapi.SimulationAPI):
         df.index = df.index.astype("float64")
         return df
 
+    def do_step(self):
+        # ...to add...
+
+        # check if stop time is reached
+        if self.current_time < self.stop_time:
+            # do simulation step
+            status = self.fmu.doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.step_size)
+            # augment current time step
+            self.current_time += self.step_size
+            finished = False
+        else:
+            print('Simulation finished')
+            finished = True
+
+        return finished
+
     def overwrite_model(self):
         """
         Overwrites the simulation model after calibration.
@@ -175,11 +193,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         pass
 
-    def setup_fmu_instance(self):
-        pass
-
-
-    def setup(self):
+    def setup(self):        # vielleicht noch hilfreich, bislang nicht genutzt
         # The current simulation time
         self.current_time = self.sim_setup["startTime"]
 
@@ -236,28 +250,6 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             raise Exception("Unsupported type: %s" % variable.type)
 
-    def do_step(self):
-        # check if stop time is reached
-        if self.current_time < self.stop_time:
-            # do simulation step
-            status = self.fmu.doStep(
-                currentCommunicationPoint=self.current_time,
-                communicationStepSize=self.step_size)
-            # augment current time step
-            self.current_time += self.step_size
-            finished = False
-        else:
-            print('Simulation finished')
-            finished = True
-
-        return finished
-
-    def close(self):
-        self.fmu.terminate()
-        self.fmu.freeInstance()
-        shutil.rmtree(self.unzipdir)
-        print('FMU released')
-
     def read_variables(self, vrs_list: list):
         """
         Reads multiple variable values of FMU.
@@ -284,4 +276,9 @@ class FMU_API(simulationapi.SimulationAPI):
             self.set_value(key, var_dict[key])
         return "Variable set!!"
 
+    def close(self):
+        self.fmu.terminate()
+        self.fmu.freeInstance()
+        shutil.rmtree(self.unzipdir)
+        print('FMU released')
 

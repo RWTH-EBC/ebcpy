@@ -231,7 +231,7 @@ class Optimizer:
                 # therefore this adjustment is necessary
                 self.tol = 0.01
 
-            res = opt.differential_evolution(func=self.obj,
+            res = opt.differential_evolution(func=self.obj,         # callable: calls def obj() in calibrator class
                                              bounds=self.bounds,
                                              strategy=method,
                                              maxiter=self.maxiter,

@@ -6,6 +6,7 @@ from abc import abstractmethod
 from ebcpy.utils import visualizer
 
 
+# Klasse vergleichbar mit Hannah's "BaseModel" Klasse
 class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
@@ -36,30 +37,6 @@ class SimulationAPI:
 
         # Current best tuner parameters of all recalibration steps (for penalty function)
         self.current_best_tuners = []
-
-    @abstractmethod
-    def close(self):
-        """Base function for closing the simulation-program."""
-        raise NotImplementedError('{}.close function is not '
-                                  'defined'.format(self.__class__.__name__))
-
-    @abstractmethod
-    def simulate(self, **kwargs):
-        """Base function for simulating the simulation-model."""
-        raise NotImplementedError('{}.simulate function is not '
-                                  'defined'.format(self.__class__.__name__))
-
-    @abstractmethod
-    def do_step(self, **kwargs):
-        """Base function for simulating one timestep."""
-        raise NotImplementedError('{}.do_step function is not '
-                                  'defined'.format(self.__class__.__name__))
-
-    @abstractmethod
-    def overwrite_model(self):
-        """Base function for overwriting the model parameters."""
-        raise NotImplementedError('{}.overwrite_model function is not '
-                                  'defined'.format(self.__class__.__name__))
 
     @abstractmethod
     def set_cd(self, cd):
@@ -100,3 +77,27 @@ class SimulationAPI:
         """
 
         self.sim_setup["initialValues"] = list(initial_values)
+
+    @abstractmethod
+    def simulate(self, **kwargs):
+        """Base function for simulating the simulation-model."""
+        raise NotImplementedError('{}.simulate function is not '
+                                  'defined'.format(self.__class__.__name__))
+
+    @abstractmethod
+    def do_step(self, **kwargs):
+        """Base function for simulating one timestep."""
+        raise NotImplementedError('{}.do_step function is not '
+                                  'defined'.format(self.__class__.__name__))
+
+    @abstractmethod
+    def overwrite_model(self):
+        """Base function for overwriting the model parameters."""
+        raise NotImplementedError('{}.overwrite_model function is not '
+                                  'defined'.format(self.__class__.__name__))
+
+    @abstractmethod
+    def close(self):
+        """Base function for closing the simulation-program."""
+        raise NotImplementedError('{}.close function is not '
+                                  'defined'.format(self.__class__.__name__))
