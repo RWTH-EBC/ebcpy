@@ -231,6 +231,8 @@ class Optimizer:
                 # therefore this adjustment is necessary
                 self.tol = 0.01
 
+            # Anmerkung: Beim initialisieren wird self.obj, welche abstrakte methode in Klasse Calibrator ist,
+            # welche wiederum Methode in ModelicaCalibrator Klasse ist, als callable class definiert.
             res = opt.differential_evolution(func=self.obj,         # callable: calls def obj() in calibrator class
                                              bounds=self.bounds,
                                              strategy=method,
