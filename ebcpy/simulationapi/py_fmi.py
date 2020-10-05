@@ -97,7 +97,7 @@ class FMU_API(simulationapi.SimulationAPI):
         os.makedirs(cd, exist_ok=True)
         self.cd = cd
 
-    def simulate(self, meas_input_data, **kwargs):              # %%%% TO-DO: Automatisieren. Anpassen auf InfluxDB.
+    def simulate(self, meas_input_data, **kwargs):
         """
         Simulate current simulation-setup.
 
@@ -137,7 +137,7 @@ class FMU_API(simulationapi.SimulationAPI):
                      fmi_type=None,
                      start_values=start_values,
                      apply_default_start_values=False,
-                     input=meas_input_fmpy,                             # Ob Zeitintervall der inputs mit "outputInterval" übereinstimmt ist irrelevant
+                     input=meas_input_fmpy,            # Ob Zeitintervall der inputs mit "outputInterval" übereinstimmt ist irrelevant
                      output=self.sim_setup["resultNames"],
                      timeout=None,
                      debug_logging=False,
