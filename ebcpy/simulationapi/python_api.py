@@ -1,5 +1,5 @@
 """Module for classes using a fmu to
-simulate models."""
+simulate models.."""
 
 from ebcpy import simulationapi
 
@@ -83,3 +83,6 @@ class PYTHON_API(simulationapi.SimulationAPI):
         """
         pass
         #print("What to close??")
+
+    def test(self):
+        pass

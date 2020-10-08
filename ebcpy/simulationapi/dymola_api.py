@@ -1,5 +1,5 @@
 """Module containing the DymolaAPI used for simulation
-of Modelica-Models."""
+of Modelica-Models.."""
 
 import sys
 import os
