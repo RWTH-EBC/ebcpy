@@ -4,6 +4,7 @@ may inherit classes of this module."""
 
 from abc import abstractmethod
 from ebcpy.utils import visualizer
+from ebcpy.data_types import TunerParas
 
 
 # Klasse vergleichbar mit Hannah's "BaseModel" Klasse
@@ -85,6 +86,21 @@ class SimulationAPI:
         """
         # Dictionary with all tuner parameters from model
         self.all_tuners_dict = dict(zip(self.model_tuner_names, self.model_tuner_initialvalues))
+
+    def scale_all_tuners_dict(self):
+        names = list(self.all_tuners_dict.keys())
+        values = list(self.all_tuners_dict.values())
+        bounds = self.model_tuner_bounds
+        all_tuners = TunerParas(names,values,bounds)
+        self.all_tuners_dict_scaled = dict(all_tuners.scale(values))
+        # bound_min, bound_max, scale = [], [], []
+        # for bound in bounds:
+        #     bound_min.append(bound[0])
+        #     bound_max.append(bound[1])
+        #     scale.append(bound_max - bound_min)
+        #
+        # scaled = (values - bound_min)/scale
+
 
     @abstractmethod
     def simulate(self, **kwargs):
