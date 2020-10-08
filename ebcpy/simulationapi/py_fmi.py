@@ -69,6 +69,8 @@ class FMU_API(simulationapi.SimulationAPI):
             if v.causality == 'output':
                 self.model_out.append(v.name)
             if 'TunerParameter.' in v.name:
+                # Remove name of record (modelica)
+                name = str(v.name).replace('TunerParameter.', '')
                 self.model_tuner_names.append(v.name)
                 self.model_tuner_initialvalues.append(float(v.start))
                 if not type(v.min) == None or type(v.max) == None:
