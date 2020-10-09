@@ -113,10 +113,10 @@ class FMU_API(simulationapi.SimulationAPI):
                         for i, value in enumerate(self.sim_setup["initialValues"])}
 
         # Shift all columns, because "simulate_fmu" gets an input at timestep x and calculates the related output for timestep x+1
-        shift_period = int(self.sim_setup["outputInterval"]/(meas_input_data.index[0]-meas_input_data.index[1]))
+        shift_period = int(2 * self.sim_setup["outputInterval"]/(meas_input_data.index[0]-meas_input_data.index[1]))
         meas_input_data = meas_input_data.shift(periods=shift_period)
         # Shift time column back
-        meas_input_data.time = meas_input_data.time.shift(1, fill_value=0)
+        meas_input_data.time = meas_input_data.time.shift(-shift_period, fill_value=0)
         # drop NANs
         meas_input_data = meas_input_data.dropna()
 
