@@ -7,19 +7,18 @@ INSTALL_REQUIRES = ['numpy',
                     'pandas',
                     'matplotlib',
                     'h5py',
-                    'pydot',
                     'cmake',
                     'modelicares',
                     'sklearn',
-                    'PyQt5',
-                    'xlrd',
-                    'tables'
+                    'tables',
+                    'psutil',
+                    'pyyaml'
                     ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
-# INSTALL_REQUIRES.append('dlib') # Disabled until this is open-source
+#INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source
 
 setuptools.setup(name='ebcpy',
-                 version='0.1.2',
+                 version='0.1.6',
                  description='EBC Python Library used as a collection of useful '
                              'functions for different python modules of the '
                              'E.On Insttitute for Energy Efficien Buildings and Indoor '

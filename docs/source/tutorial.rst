@@ -1,21 +1,9 @@
 How to use ebcpy
 =====================
 
+As said, ebcpy aims to consolidate functions and classes useful for various use-cases in the research of building energy systems.
+One mayor use-case is AixCaliBuHa, which build on this library, using it's data_types, optimizer and simulation_api.
 
-Data types
-----------
+The following tutorial shall run you through the most relevant functions and classes in the repo.
+The chosen example may not apply directly to you. If you have further good examples, please do not hesitate to provide them.
 
-As the interfaces between the different packages are quite important, we will start with some
-examples on how to setup the classes.
-
-.. automodule:: ebcpy.examples.data_types_example
-    :members:
-
-Pre-processing
-----------------
-This module can has different use-cases. Typical use-cases are mentioned in the
-documentation of the function.
-
-All functions in the pre-processing module should have a doctest. We refer to the example
-in this doctest for a better understanding of the functions. If you don't understand
-the behaviour of a function or the meaning, please raise an issue.

@@ -26,7 +26,7 @@ class TestOptimizer(unittest.TestCase):
 
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
-        opt = Optimizer("scipy_minimize", self.example_opt_dir)
+        opt = Optimizer(self.example_opt_dir)
         for _framework in self.supported_frameworks:
             if _framework == "scipy_minimize":
                 reference_function = opt._scipy_minimize
@@ -57,12 +57,13 @@ class TestOptimizer(unittest.TestCase):
                 # Return the MAE of the quadratic function.
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
-        my_custom_optimizer = CustomOptimizer("scipy_minimize", self.example_opt_dir)
+        my_custom_optimizer = CustomOptimizer(self.example_opt_dir)
         # Test value error if no method is supplied
         with self.assertRaises(ValueError):
-            my_custom_optimizer.optimize()
+            my_custom_optimizer.optimize(framework="scipy_minimize")
         # Test scipy minimize
-        res_min = my_custom_optimizer.optimize(method="L-BFGS-B")
+        res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
+                                               method="L-BFGS-B")
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # Test scipy differential evolution

@@ -38,46 +38,33 @@ class TestDataTypes(unittest.TestCase):
         # Correctly load the .hdf:
         time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path, key="parameters")
         self.assertIsInstance(
-            time_series_data.df,
+            time_series_data,
             type(pd.DataFrame()))
         # Correctly load the .csv:
         time_series_data = data_types.TimeSeriesData(self.example_data_csv_path, sep=",")
         self.assertIsInstance(
-            time_series_data.df,
+            time_series_data,
             type(pd.DataFrame()))
         # Correctly load the .mat:
         time_series_data = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertIsInstance(
-            time_series_data.df,
+            time_series_data,
             type(pd.DataFrame()))
         # Test load and set df functions:
-        df = time_series_data.get_df()
+        df = time_series_data
         self.assertIsInstance(
             df,
             type(pd.DataFrame()))
-        with self.assertRaises(TypeError):
-            time_series_data.set_df("not a df")
-        dummy_df = pd.DataFrame()
-        time_series_data.set_df(dummy_df)
-        self.assertTrue(time_series_data.df.empty)
-
-    def test_meas_target_data(self):
-        """Test the class MeasTargetData.
-        For a detailed test of this class, see base-class test_time_series_data()"""
-        meas_target_data = data_types.MeasTargetData(self.example_data_hdf_path, key="trajectories")
-        self.assertEqual(meas_target_data.data_type, "MeasTargetData")
-
-    def test_meas_input_data(self):
-        """Test the class MeasInputData.
-        For a detailed test of this class, see base-class test_time_series_data()"""
-        meas_input_data = data_types.MeasInputData(self.example_data_hdf_path, key="trajectories")
-        self.assertEqual(meas_input_data.data_type, "MeasInputData")
-
-    def test_sim_target_data(self):
-        """Test the class SimTargetData.
-        For a detailed test of this class, see base-class test_time_series_data()"""
-        sim_target_data = data_types.SimTargetData(self.example_data_hdf_path, key="trajectories")
-        self.assertEqual(sim_target_data.data_type, "SimTargetData")
+        # Test converters:
+        tsd = data_types.TimeSeriesData(self.example_data_hdf_path, key="parameters")
+        tsd.to_datetime_index()
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.to_float_index()
+        self.assertIsInstance(tsd.index, pd.Float64Index)
+        tsd.to_datetime_index()
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.clean_and_space_equally(desired_freq="1s")
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
 
     def test_tuner_paras(self):
         """Test the class TunerParas"""
@@ -138,50 +125,6 @@ class TestDataTypes(unittest.TestCase):
         tuner_paras.remove_names(["test_0"])
         with self.assertRaises(KeyError):
             tuner_paras.get_value("test_0", "min")
-
-    def test_goals(self):
-        """Test the class Goals"""
-        # Define some data.
-        sim_target_data = data_types.SimTargetData(self.example_data_hdf_path, key="parameters")
-        meas_target_data = data_types.MeasTargetData(self.example_data_hdf_path, key="parameters")
-        meas_columns = ["sine.amplitude / ", "sine.phase / rad"]
-        sim_columns = ["sine.freqHz / Hz", "sine.startTime / s"]
-        # Setup the goals class:
-        goals = data_types.Goals(meas_columns,
-                                 sim_columns,
-                                 meas_target_data,
-                                 sim_target_data=sim_target_data)
-        # Check different formats of setting up:
-        # First check if no columns are specified
-        with self.assertRaises(TypeError):
-            goals = data_types.Goals(meas_target_data,
-                                     sim_target_data)
-        # Now if passing of strings works:
-        goals = data_types.Goals(meas_columns[0],
-                                 sim_columns[1],
-                                 meas_target_data,
-                                 sim_target_data=sim_target_data)
-        self.assertIsInstance(goals, data_types.Goals)
-        # Check the eval_difference function:
-        self.assertIsInstance(goals.eval_difference("RMSE"), float)
-        # Try to alter the sim_target_data object with something wrong
-        with self.assertRaises(TypeError):
-            goals.set_sim_target_data(meas_target_data)
-        # Play around with wrong weightings:
-        with self.assertRaises(IndexError):
-            weightings = [1, 2, 4, 5, 6]
-            goals = data_types.Goals(meas_columns,
-                                     sim_columns,
-                                     meas_target_data,
-                                     sim_target_data=sim_target_data,
-                                     weightings=weightings)
-        with self.assertRaises(IndexError):
-            weightings = np.ones(100)/100
-            goals = data_types.Goals(meas_columns,
-                                     sim_columns,
-                                     meas_target_data,
-                                     sim_target_data=sim_target_data,
-                                     weightings=weightings)
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.

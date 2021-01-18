@@ -9,21 +9,19 @@ from ebcpy.utils import visualizer
 
 
 class Optimizer:
-    """Base class for optimization in ebcpy. All classes
+    """
+    Base class for optimization in ebcpy. All classes
     performing optimization tasks must inherit from this
     class.
+    The main feature of this class is the common interface
+    for different available solvers in python. This makes the
+    testing of different solvers and methods more easy.
+    For available frameworks/solvers, check the function
+    self.optimize().
 
-    :param str framework:
-        The framework (python module) you want to use to perform the optimization.
-        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
-        are supported options. To further inform yourself about these frameworks, please see:
-            - `dlib <http://dlib.net/python/index.html>`_
-            - `scipy minimize <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.minimize.html>`_
-            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.differential_evolution.html>`_
+
     :param str,os.path.normpath cd:
-        Directory for storing all output of optimization.
+        Directory for storing all output of optimization via a logger.
     :param dict kwargs:
         Keyword arguments can be used to further tune the optimization to your need.
         All keywords used in different optimization frameworks will be passed automatically
@@ -33,9 +31,12 @@ class Optimizer:
 
     # Used to display number of obj-function-calls
     _counter = 0
-    # Used to access the current parameter set if a optimization-step fails
+    # Used to access the current parameter set if an optimization-step fails
     _current_iterate = np.array([])
+    # Used to access the best iterate if an optimization step fails
+    _current_best_iterate = {"Objective": np.inf}
     # List storing every objective value for plotting and logging.
+    # Can be used, but will enlarge runtime
     _obj_his = []
     # Dummy variable for selected optimization function
     _minimize_func = None
@@ -63,7 +64,6 @@ class Optimizer:
     # The maximal number of function evaluations in dlib is 1e9.
     solver_epsilon = 0
     num_function_calls = int(1e9)
-    show_plot = True
     # scipy differential evolution
     maxiter = 1000
     popsize = 15
@@ -74,17 +74,16 @@ class Optimizer:
     init = 'latinhypercube'
     atol = 0
     # Define the list of supported kwargs:
-    _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
-                         "hessp", "is_integer_variable", "solver_epsilon",
-                         "num_function_calls", "show_plot", "method"]
     _dlib_kwargs = ["solver_epsilon", "num_function_calls"]
+    _supported_kwargs = ["tol", "options", "constraints", "jac", "hess",
+                         "hessp", "is_integer_variable", "method", "maxiter",
+                         "popsize", "mutation", "recombination", "seed",
+                         "polish", "init", "atol"] + _dlib_kwargs
 
-    def __init__(self, framework, cd, **kwargs):
+    def __init__(self, cd, **kwargs):
         """Instantiate class parameters"""
         self.cd = cd
         self.logger = visualizer.Logger(self.cd, "Optimization")
-        # Select the framework to work with while optimizing.
-        self._choose_framework(framework)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -117,10 +116,19 @@ class Optimizer:
         """
         raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
 
-    def optimize(self, method=None, framework=None):
+    def optimize(self, framework, method=None):
         """
         Perform the optimization based on the given method and framework.
 
+    :param str framework:
+        The framework (python module) you want to use to perform the optimization.
+        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
+        are supported options. To further inform yourself about these frameworks, please see:
+            - `dlib <http://dlib.net/python/index.html>`_
+            - `scipy minimize <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.minimize.html>`_
+            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
+            reference/generated/scipy.optimize.differential_evolution.html>`_
         :param str method:
             The method you pass depends on the methods available in the framework
             you chose when setting up the class. Some frameworks don't require a
@@ -128,18 +136,15 @@ class Optimizer:
             with different methods, you must provide one.
             For the scipy.differential_evolution function, method is equal to the
             strategy.
-        :param str framework:
-            If you want to alter the frameworks within the same script,
-            pass one of the supported frameworks as an optional argument here.
         :return: res
             Optimization result.
         """
-        if framework:
-            self._choose_framework(framework)
+        # Chosse the framework
+        self._choose_framework(framework)
         if method:
             self.method = method
         if self.method is None and self._framework_requires_method:
-            raise ValueError(f"{self.framework} requires a method, but None is "
+            raise ValueError(f"{framework} requires a method, but None is "
                              f"provided. Please choose one.")
         # Perform minimization
         res = self._minimize_func(self.method)
@@ -167,8 +172,6 @@ class Optimizer:
             self._framework_requires_method = True
         else:
             raise TypeError("Given framework {} is currently not supported.".format(framework))
-        # Update the class-parameter
-        self.framework = framework.lower()
 
     def _scipy_minimize(self, method):
         try:
@@ -188,10 +191,8 @@ class Optimizer:
                                tol=self.tol,
                                options=self.options)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(str(self._current_iterate))
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _dlib_minimize(self, _):
         try:
@@ -212,10 +213,8 @@ class Optimizer:
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=x_res, fun=f_res)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(self._current_iterate)
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _scipy_differential_evolution(self, method="best1bin"):
         try:
@@ -246,10 +245,8 @@ class Optimizer:
                                              init=self.init,
                                              atol=self.atol)
             return res
-        except Exception as error:
-            self.logger.log("Parameter set which caused the failure:")
-            self.logger.log(str(self._current_iterate))
-            raise error
+        except (KeyboardInterrupt, Exception) as error:
+            self._handle_error(error)
 
     def _dlib_obj(self, *args):
         """
@@ -258,3 +255,18 @@ class Optimizer:
         parameters
         """
         return self.obj(np.array(args))
+
+    def _handle_error(self, error):
+        """
+        Function to handle the case when an optimization step fails (e.g. simulation-fail).
+        The parameter set which caused the failure and the best iterate until this point
+        are of interest for the user in such case.
+        :param error:
+            Any Exception that may occur
+        """
+        self.logger.log("Parameter set which caused the failure:")
+        self.logger.log(str(self._current_iterate))
+        self.logger.log("Current best objective and parameter set:")
+        self.logger.log("\n".join(["{}: {}".format(key, value)
+                                   for key, value in self._current_best_iterate.items()]))
+        raise error

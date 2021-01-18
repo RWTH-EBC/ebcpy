@@ -4,46 +4,9 @@ import unittest
 import os
 import random
 from datetime import datetime
-import scipy.io as spio
 import numpy as np
 import pandas as pd
-from ebcpy.preprocessing import conversion
-from ebcpy.preprocessing import preprocessing
-
-
-class TestConversion(unittest.TestCase):
-    """Test-class for preprocessing."""
-
-    def setUp(self):
-        """Called before every test.
-        Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(self.framework_dir, "examples", "data"))
-        self.example_data_hdf_path = os.path.normpath(os.path.join(self.example_dir,
-                                                                   "example_data.hdf"))
-
-    def test_conversion_hdf_to_mat(self):
-        """Test function conversion.convert_hdf_to_mat().
-        For an example, see the doctest in the function."""
-        # First convert the file
-        save_path = os.path.normpath(os.path.join(self.example_dir, "example_data_converted.mat"))
-        columns = ["sine.y / "]
-        # Test both conversion with specification of columns and without passing the names.
-        for col in [columns, None]:
-            res, filepath_mat = conversion.convert_hdf_to_mat(self.example_data_hdf_path,
-                                                              save_path,
-                                                              columns=col,
-                                                              key="trajectories")
-            # Check if successfully converted
-            self.assertTrue(res)
-            # Check if converted file exists
-            self.assertTrue(os.path.isfile(filepath_mat))
-            # Check if converted filepath is provided filepath
-            self.assertEqual(filepath_mat, save_path)
-            # Now check if the created mat-file can be used.
-            self.assertIsInstance(spio.loadmat(save_path), dict)
-            # Remove converted file again
-            os.remove(save_path)
+from ebcpy import preprocessing
 
 
 class TestPreProcessing(unittest.TestCase):
@@ -90,6 +53,32 @@ class TestPreProcessing(unittest.TestCase):
         with self.assertRaises(ValueError):
             df_temp = preprocessing.convert_index_to_datetime_index(df,
                                                                     unit_of_index="not_a_unit")
+
+    def test_convert_datetime_index_to_float_index(self):
+        """Test function of preprocessing.convert_datetime_index_to_float_index().
+         For an example, see the doctest in the function."""
+        dim = np.random.randint(1, 10000)
+        df = pd.DataFrame(np.random.rand(dim, 4), columns=list('ABCD'))
+        df_temp = preprocessing.convert_index_to_datetime_index(df.copy())
+        df_temp = preprocessing.convert_datetime_index_to_float_index(df_temp.copy(), offset=0.0)
+        self.assertIsInstance(df_temp.index, pd.Float64Index)
+        self.assertTrue(all((df_temp-df) == 0))
+
+    def test_time_based_weighted_mean(self):
+        """Test function of preprocessing.time_based_weighted_mean().
+         For an example, see the doctest in the function."""
+        time_vec = [datetime(2007, 1, 1, 0, 0),
+                    datetime(2007, 1, 1, 0, 0),
+                    datetime(2007, 1, 1, 0, 5),
+                    datetime(2007, 1, 1, 0, 7),
+                    datetime(2007, 1, 1, 0, 10)]
+        df = pd.DataFrame({'A': [1, 2, 4, 3, 6],
+                           'B': [11, 12, 14, 13, 16]}, index=time_vec)
+        res = preprocessing.time_based_weighted_mean(df=df)
+        # Check correct return type
+        self.assertIsInstance(res, np.ndarray)
+        # Check correct values
+        self.assertEqual(0, np.mean(np.array([3.55, 13.55])-res))
 
     def test_clean_and_space_equally_time_series(self):
         """Test function of preprocessing.clean_and_space_equally_time_series().
