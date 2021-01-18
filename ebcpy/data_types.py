@@ -10,10 +10,9 @@ optimization etc.
 import os
 import warnings
 from datetime import datetime
-import modelicares.simres as sr
 import numpy as np
 import pandas as pd
-import ebcpy.modelica.simres as ebc_sr
+import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
 # pylint: disable=I1101
 
@@ -83,7 +82,7 @@ class TimeSeriesData(pd.DataFrame):
             _df_loaded = pd.read_csv(filepath, sep=sep)
         elif file_suffix == "mat":
             sim = sr.SimRes(filepath)
-            _df_loaded = ebc_sr.to_pandas(sim, with_unit=False)
+            _df_loaded = sim.to_pandas(with_unit=False)
         elif file_suffix == "xlsx":
             if sheet_name is None:
                 raise KeyError("sheet_name is a required keyword argument to load xlsx-files."
