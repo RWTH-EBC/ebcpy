@@ -11,3 +11,4 @@ sklearn
 tables
 cmake
 pyyaml
+fmpy
