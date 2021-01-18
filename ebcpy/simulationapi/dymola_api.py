@@ -26,7 +26,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
     :keyword Boolean get_structural_parameters:
-        True to automatically read the structural paramters of the 
+        True to automatically read the structural parameters of the
         simulation model and set them via Modelica modifiers. Default 
         is True
     :keyword Boolean equidistant_output:
@@ -181,9 +181,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
         if self._structural_params:
-            warnings.warn("Warning: Currently, the model is re-translating for each simulation.\n"
-                          "You should add to your Modelica tuner parameters \"annotation(Evaluate=false)\".\n"
-                          "Check for these parameters: %s" % ", ".join(self._structural_params))
+            warnings.warn(f"Warning: Currently, the model is re-translating for each simulation.\n"
+                          f"You should add to your Modelica tuner parameters \"annotation(Evaluate=false)\".\n"
+                          f"Check for these parameters: {', '.join(self._structural_params)}")
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
