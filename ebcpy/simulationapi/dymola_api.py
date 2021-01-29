@@ -38,6 +38,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
     :keyword str dymola_interface_path:
         Same as for dymola_path. If we can't find the dymola installation,
         you can pass the path to your dymola.egg via this parameter.
+    :keyword int n_restart:
+        Number of iterations after which Dymola should restart.
+        This is done to free memory. Default value -1. For values
+        below 1 Dymola does not restart.
     """
 
     show_window = False
@@ -48,7 +52,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
                          "get_structural_parameters",
                          "dymola_path",
                          "dymola_interface_path",
-                         "equidistant_output"]
+                         "equidistant_output",
+                         "n_restart"]
     dymola_path = ""
     _bit_64 = True  # Whether to use 32 bit or not.
 
@@ -82,7 +87,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                         "your machine.".format(dymola_interface_path))
         else:
             dymola_interface_path = None
-
 
         if "dymola_path" in kwargs:
             dymola_path = kwargs["dymola_path"]
@@ -121,11 +125,25 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
 
+        # Import n_restart
+        self.sim_counter = 0
+        self.n_restart = kwargs.get("n_restart", -1)
+        if not isinstance(self.n_restart, int):
+            raise TypeError("n_restart has to be type int but is of type {}"
+                            .format(type(kwargs['n_restart'])))
+
+        self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
+        if self.n_restart > 0:
+            self.logger.log("Open blank placeholder Dymola instance to ensure"
+                            " a licence during Dymola restarts")
+            self._dummy_dymola_instance = self._open_dymola_interface()
+            atexit.register(self._close_dummy)
+
         # List storing structural parameters for later modifying the simulation-name.
         self._structural_params = []
         # Parameter for raising a warning if to many dymola-instances are running
         self._critical_number_instances = 10
-        self._setup_dymola_interface(self.show_window)
+        self._setup_dymola_interface()
         # Register this class to the atexit module to always close dymola-instances
 
     def simulate(self, savepath_files="", show_eventlog = False, squeeze=True):
@@ -188,6 +206,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
 
+        # Restart Dymola after n_restart iterations
+        self._check_restart()
+
         if savepath_files:
             res = self.dymola.simulateExtendedModel(
                 self.model_name,
@@ -204,6 +225,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         else:
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
+
             num_ints = self.sim_setup['numberOfIntervals']
             if num_ints == 0:
                 generated_num_ints = (self.sim_setup['stopTime'] - self.sim_setup['startTime']) / \
@@ -216,7 +238,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 else:
                     num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
-            initial_values = self.sim_setup['initialValues']
+            initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
             if isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
@@ -237,6 +259,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 initialNames=self.sim_setup['initialNames'],
                 initialValues=initial_values,
                 resultNames=res_names)
+
         if not res[0]:
             self.logger.log("Simulation failed!")
             self.logger.log("The last error log from Dymola:")
@@ -347,6 +370,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Set dymola object to None to avoid further access to it.
         self.dymola = None
 
+    def _close_dummy(self):
+        """
+        Closes dummy instance at the end of the execution
+        """
+        if self._dummy_dymola_instance is not None:
+            self._dummy_dymola_instance.close()
+
     def get_all_tuner_parameters(self):
         """Get all tuner-parameters of the model by
         translating it and then processing the dsin
@@ -379,13 +409,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                                 bounds=None)
         return tuner_paras
 
-    def _setup_dymola_interface(self, show_window):
+    def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
-        try:
-            self.dymola = DymolaInterface(showwindow=show_window,
-                                          dymolapath=self.dymola_path)
-        except DymolaConnectionException as error:
-            raise ConnectionError(error)
+        self.dymola = self._open_dymola_interface()
         # Register the function now in case of an error.
         atexit.register(self.close)
         self._check_dymola_instances()
@@ -405,6 +431,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if not self.dymola.RequestOption("Standard"):
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
+
+    def _open_dymola_interface(self):
+        """Open an instance of dymola and return the API-Object"""
+        try:
+            return DymolaInterface(showwindow=self.show_window,
+                                   dymolapath=self.dymola_path)
+        except DymolaConnectionException as error:
+            raise ConnectionError(error)
 
     def to_dict(self):
         """
@@ -568,6 +602,12 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Check how many dymola instances are running on the machine.
         Raise a warning if the number exceeds a certain amount.
         """
+        # The option may be useful. However the explicit requirement leads to
+        # Problems on linux, therefore the feature is not worth the trouble.
+        try:
+            import psutil
+        except ImportError:
+            return
         counter = 0
         for proc in psutil.process_iter():
             try:
@@ -646,3 +686,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
         except ImportError:
             raise ImportError("Given dymola-interface could "
                               "not be loaded:\n %s" % self.dymola_interface_path)
+
+    def _check_restart(self):
+        """Restart Dymola every n_restart iterations in order to free memory"""
+
+        if self.sim_counter == self.n_restart:
+            self.logger.log("Closing and restarting Dymola to free memory")
+            self.close()
+            self._setup_dymola_interface()
+            self.sim_counter = 1
+        else:
+            self.sim_counter += 1
+
+
+
