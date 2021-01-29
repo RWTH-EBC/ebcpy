@@ -29,7 +29,7 @@ if __name__ == "__main__":
     import matplotlib.pyplot as plt
     # Setup the dymola-api:
     FMU_API = setup_fmu_api()
-    FMU_API.set_sim_setup({"stopTime": 86400.0,
+    FMU_API.set_sim_setup({"stopTime": 86400,
                            "resultNames": ["heater1.heatPorts[1].T"]})
     res = FMU_API.simulate()
     plt.plot(res["heater1.heatPorts[1].T"])

@@ -27,8 +27,8 @@ class FMU_API(simulationapi.SimulationAPI):
                  'timeout': np.inf}
 
     # Dynamic setup of simulation setup
-    number_values = [key for key, value in sim_setup.items() if
-                     (isinstance(value, (int, float)) and not isinstance(value, bool))]
+    _number_values = [key for key, value in sim_setup.items() if
+                      (isinstance(value, (int, float)) and not isinstance(value, bool))]
     _unzip_dir = None
     _fmu_instance = None
     _model_description = None
