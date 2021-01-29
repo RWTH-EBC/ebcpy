@@ -98,6 +98,7 @@ class FMU_API(simulationapi.SimulationAPI):
                      validate=True,
                      fmi_type=self._fmi_type,
             )
+            self._fmu_instance.reset()
 
         except Exception as error:
             print(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
@@ -137,6 +138,7 @@ class FMU_API(simulationapi.SimulationAPI):
             fmi_call_logger=None,
             use_remoting=False
         )
+
 
     def set_initial_values(self, initial_values):
         """
