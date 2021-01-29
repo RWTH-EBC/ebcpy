@@ -86,17 +86,17 @@ class FMU_API(simulationapi.SimulationAPI):
                      step_size=self.sim_setup["numberOfIntervals"],
                      relative_tolerance=None,
                      output_interval=self.sim_setup["outputInterval"],
-                     record_events=False,
+                     record_events=False,  # Used for an equidistant output
                      start_values=start_values,
-                     apply_default_start_values=False,
-                     input=None,
+                     apply_default_start_values=False,  # As we pass start_values already
+                     input=None,   # TODO: Add custom input
                      output=self.sim_setup["resultNames"],
                      timeout=self.sim_setup["timeout"],
                      step_finished=None,
                      model_description=self._model_description,
-                     fmu_instance=None,
+                     fmu_instance=self._fmu_instance,
                      validate=True,
-                     fmi_type=None,
+                     fmi_type=self._fmi_type,
             )
 
         except Exception as error:
