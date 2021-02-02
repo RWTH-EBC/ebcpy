@@ -95,7 +95,6 @@ class FMU_API(simulationapi.SimulationAPI):
                      step_finished=None,
                      model_description=self._model_description,
                      fmu_instance=self._fmu_instance,
-                     validate=True,
                      fmi_type=self._fmi_type,
             )
             self._fmu_instance.reset()
@@ -138,7 +137,6 @@ class FMU_API(simulationapi.SimulationAPI):
             fmi_call_logger=None,
             use_remoting=False
         )
-
 
     def set_initial_values(self, initial_values):
         """
