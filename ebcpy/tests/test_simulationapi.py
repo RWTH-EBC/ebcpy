@@ -4,6 +4,7 @@ ebcpy.simulationapi."""
 import unittest
 import os
 import shutil
+import pandas as pd
 from ebcpy.simulationapi import dymola_api
 
 
@@ -29,33 +30,31 @@ class TestDymolaAPI(unittest.TestCase):
                               "heatConv_b",
                               "heatConv_a"]
         self.initial_values = [2000, 5, 5]
+        try:
+            self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
+                                                model_name,
+                                                packages)
+        except (FileNotFoundError, ImportError, ConnectionError) as e:
+            self.skipTest("Could not load the dymola interface on this machine. Error message: {}".format(e))
 
-        self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
-                                            model_name,
-                                            packages)
-
-    @unittest.skip("Simulation does not work so far in ci.")
     def test_close(self):
         """Test close functionality of dymola api"""
         self.dym_api.close()
         self.assertIsNone(self.dym_api.dymola)
 
-    @unittest.skip("Simulation does not work so far in ci.")
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
         self.dym_api.set_sim_setup({"startTime": 0.0,
                                     "stopTime": 10.0})
-        _filepath_dsres = self.dym_api.simulate()
-        self.assertTrue(os.path.isfile(_filepath_dsres))
+        res = self.dym_api.simulate()
+        self.assertIsInstance(res, pd.DataFrame)
 
-    @unittest.skip("Simulation does not work so far in ci.")
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
         # Test the setting of the function
         self.dym_api.set_cd(self.example_dir)
         self.assertEqual(self.example_dir, self.dym_api.cd)
 
-    @unittest.skip("Simulation does not work so far in ci.")
     def test_set_sim_setup(self):
         """Test set_sim_setup functionality of dymola api"""
         new_sim_setup = {'initialNames': self.initial_names,
