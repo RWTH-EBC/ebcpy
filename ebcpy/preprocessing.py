@@ -4,10 +4,12 @@ import warnings
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
+from pandas.tseries.frequencies import to_offset
 import numpy as np
 import pandas as pd
 from ebcpy import data_types
 import scipy.stats as st
+
 
 def build_average_on_duplicate_rows(df):
     """
@@ -312,10 +314,12 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
 
     # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
     if isinstance(df, data_types.TimeSeriesData):
-        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
         df = data_types.TimeSeriesData(df)
     else:
-        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
     del delta_time
 
     return df
@@ -607,3 +611,17 @@ def cross_validation(x, y, test_size=0.3):
     4
     """
     return model_selection.train_test_split(x, y, test_size=test_size)
+
+
+if __name__=="__main__":
+    df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)),
+                      columns=list('ABCD')).set_index("A").sort_index()
+    df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
+    clean_and_space_equally_time_series(df, "30s")
+    import matplotlib.pyplot as plt
+
+    plt.plot(df["B"], label="Raw data")
+    df = clean_and_space_equally_time_series(df.copy(), "1500ms")
+    plt.plot(df["B"], label="Clead and spaced equally")
+    plt.legend()
+    plt.show()
