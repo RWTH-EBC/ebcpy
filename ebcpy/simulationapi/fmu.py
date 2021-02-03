@@ -29,17 +29,18 @@ class FMU_API(simulationapi.SimulationAPI):
     # Dynamic setup of simulation setup
     _number_values = [key for key, value in sim_setup.items() if
                       (isinstance(value, (int, float)) and not isinstance(value, bool))]
-    _unzip_dir = None
-    _fmu_instance = None
-    _model_description = None
-    _fmi_type = None
-    log_fmu = True
 
     def __init__(self, cd, model_name):
         """Instantiate class parameters"""
         super().__init__(cd, model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError("{} is not a valid fmu file!".format(model_name))
+        # Init instance attributes
+        self._unzip_dir = None
+        self._fmu_instance = None
+        self._model_description = None
+        self._fmi_type = None
+        self.log_fmu = True
 
         # Setup the fmu instance
         self.setup_fmu_instance()
@@ -50,8 +51,17 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             True on success
         """
+        try:
+            self._fmu_instance.terminate()
+        except Exception:  # This is due to fmpy which does not yield a narrow error
+            pass
+        try:
+            self._fmu_instance.freeInstance()
+        except OSError:
+            pass
         # Remove the extracted files
-        shutil.rmtree(self._unzip_dir, ignore_errors=True)
+        shutil.rmtree(self._unzip_dir)
+        self._unzip_dir = None
 
     def set_cd(self, cd):
         """
@@ -117,11 +127,11 @@ class FMU_API(simulationapi.SimulationAPI):
         avoid this step in the simulate function
         :return:
         """
+        _unzipdir = os.path.join(self.cd,
+                                 os.path.basename(self.model_name)[:-4] + "_extracted")
+        os.makedirs(_unzipdir, exist_ok=True)
         self._unzip_dir = fmpy.extract(self.model_name,
-                                       unzipdir=os.path.join(
-                                           self.cd,
-                                           os.path.basename(self.model_name)[:-4] + "_extracted")
-                                       )
+                                       unzipdir=_unzipdir)
         self._model_description = read_model_description(self._unzip_dir,
                                                          validate=True)
 

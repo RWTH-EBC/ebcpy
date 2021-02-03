@@ -88,15 +88,15 @@ class TestFMUAPI(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(framework_dir, "examples", "data"))
+        self.example_dir = os.path.normpath(os.path.join(framework_dir, "examples"))
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
 
         model_name = os.path.normpath(os.path.join(framework_dir,
-                                                               "examples",
-                                                               "Modelica",
-                                                               "TestModel.fmu"))
+                                                   "examples",
+                                                   "Modelica",
+                                                   "TestModel.fmu"))
         self.initial_names = ["C",
                               "heatConv_b",
                               "heatConv_a"]
@@ -108,43 +108,43 @@ class TestFMUAPI(unittest.TestCase):
             self.skipTest("Could not instantiate the fmu. Error message: {}".format(e))
 
     def test_close(self):
-        """Test close functionality of dymola api"""
-        self.dym_api.close()
-        self.assertIsNone(self.dym_api.dymola)
+        """Test close functionality of fmu api"""
+        self.fmu_api.close()
+        self.assertIsNone(self.fmu_api._unzip_dir)
 
     def test_simulate(self):
-        """Test simulate functionality of dymola api"""
-        self.dym_api.set_sim_setup({"startTime": 0.0,
+        """Test simulate functionality of fmu api"""
+        self.fmu_api.set_sim_setup({"startTime": 0.0,
                                     "stopTime": 10.0})
-        res = self.dym_api.simulate()
+        res = self.fmu_api.simulate()
         self.assertIsInstance(res, pd.DataFrame)
 
     def test_set_cd(self):
-        """Test set_cd functionality of dymola api"""
+        """Test set_cd functionality of fmu api"""
         # Test the setting of the function
-        self.dym_api.set_cd(self.example_dir)
-        self.assertEqual(self.example_dir, self.dym_api.cd)
+        self.fmu_api.set_cd(self.example_dir)
+        self.assertEqual(self.example_dir, self.fmu_api.cd)
 
     def test_set_sim_setup(self):
-        """Test set_sim_setup functionality of dymola api"""
+        """Test set_sim_setup functionality of fmu api"""
         new_sim_setup = {'initialNames': self.initial_names,
                          'initialValues': self.initial_values}
-        self.dym_api.set_sim_setup(new_sim_setup)
-        self.assertEqual(self.dym_api.sim_setup['initialNames'],
+        self.fmu_api.set_sim_setup(new_sim_setup)
+        self.assertEqual(self.fmu_api.sim_setup['initialNames'],
                          new_sim_setup['initialNames'])
-        self.assertEqual(self.dym_api.sim_setup['initialValues'],
+        self.assertEqual(self.fmu_api.sim_setup['initialValues'],
                          new_sim_setup['initialValues'])
         with self.assertRaises(KeyError):
-            self.dym_api.set_sim_setup({"NotAValidKey": None})
+            self.fmu_api.set_sim_setup({"NotAValidKey": None})
         with self.assertRaises(TypeError):
-            self.dym_api.set_sim_setup({"stopTime": "not_a_float_or_int"})
+            self.fmu_api.set_sim_setup({"stopTime": "not_a_float_or_int"})
 
     def tearDown(self):
         """Delete all files created while testing"""
 
         try:
-            self.dym_api.close()
-        except AttributeError:
+            self.fmu_api.close()
+        except TypeError:
             pass
         try:
             shutil.rmtree(self.example_sim_dir)
