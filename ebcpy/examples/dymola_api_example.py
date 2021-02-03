@@ -54,11 +54,10 @@ def setup_dymola_api(cd=None, show_window=True):
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice
-    model_name = "AixCalTest.TestModel"
+    model_name = "AixCalTest_TestModel"
     packages = [os.path.normpath(os.path.join(os.path.dirname(__file__),
                                               "Modelica",
-                                              "AixCalTest",
-                                              "package.mo"))]
+                                              "TestModel.mo"))]
     # Setup the dymola api
     dym_api = dymola_api.DymolaAPI(cd,
                                    model_name,

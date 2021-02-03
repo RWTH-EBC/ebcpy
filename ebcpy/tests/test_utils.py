@@ -104,6 +104,11 @@ class TestStatisticsAnalyzer(unittest.TestCase):
                                   float)
         with self.assertRaises(ValueError):
             stat_analyzer = statistics_analyzer.StatisticsAnalyzer("not_supported_method")
+        # Test factor:
+        stat_analyzer_min = statistics_analyzer.StatisticsAnalyzer("R2")
+        stat_analyzer_max = statistics_analyzer.StatisticsAnalyzer("R2", for_minimization=False)
+        self.assertEqual(-1 * stat_analyzer_min.calc(self.meas_ex, self.sim_ex),
+                         stat_analyzer_max.calc(self.meas_ex, self.sim_ex))
 
     def test_calc_rmse(self):
         """Test static function calc_rmse"""
