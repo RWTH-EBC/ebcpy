@@ -134,8 +134,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
         if self.n_restart > 0:
-            self.logger.log("Open blank placeholder Dymola instance to ensure"
-                            " a licence during Dymola restarts")
+            self.logger.info("Open blank placeholder Dymola instance to ensure"
+                             " a licence during Dymola restarts")
             self._dummy_dymola_instance = self._open_dymola_interface()
             atexit.register(self._close_dummy)
 
@@ -261,9 +261,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 resultNames=res_names)
 
         if not res[0]:
-            self.logger.log("Simulation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
+            self.logger.error("Simulation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
             raise Exception("Simulation failed: Look into dslog.txt at {} of the "
                             "simulation.".format(os.path.join(self.cd, "dslog.txt")))
 
@@ -345,37 +345,37 @@ class DymolaAPI(simulationapi.SimulationAPI):
             raise TypeError('File is not of type .txt')
         res = self.dymola.importInitial(dsName=filepath)
         if res:
-            self.logger.log("\nSuccessfully loaded dsfinal.txt")
+            self.logger.info("\nSuccessfully loaded dsfinal.txt")
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
     def set_cd(self, cd):
         """Set the working directory to the given path"""
+        super().set_cd(cd)
+        # Also set the cd in the dymola api
         modelica_normpath = self._make_modelica_normpath(cd)
-        # Check if path exists, if not create it.
-        if not os.path.exists(modelica_normpath):
-            os.mkdir(modelica_normpath)
         res = self.dymola.cd(modelica_normpath)
-        if res:
-            self.cd = cd
-        else:
+        if not res:
             raise OSError("Could not change working directory to {}".format(cd))
 
     def close(self):
         """Closes dymola."""
-
+        self.logger.info('Closing Dymola')
         # Change so the atexit function works without an error.
         if self.dymola is not None:
             self.dymola.close()
         # Set dymola object to None to avoid further access to it.
         self.dymola = None
+        self.logger.info('Successfully closed Dymola')
 
     def _close_dummy(self):
         """
         Closes dummy instance at the end of the execution
         """
         if self._dummy_dymola_instance is not None:
+            self.logger.info('Closing dummy Dymola instance')
             self._dummy_dymola_instance.close()
+            self.logger.info('Successfully closed dummy Dymola instance')
 
     def get_all_tuner_parameters(self):
         """Get all tuner-parameters of the model by
@@ -384,9 +384,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Translate model
         res = self.dymola.translateModel(self.model_name)
         if not res:
-            self.logger.log("Translation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
+            self.logger.error("Translation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
             raise Exception("Translation failed!")
         # Get path to dsin:
         dsin_path = os.path.join(self.cd, "dsin.txt")
@@ -417,11 +417,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
-            self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            self.logger.info("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
             res = self.dymola.openModel(package, changeDirectory=False)
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
-        self.logger.log("Loaded modules")
+        self.logger.info("Loaded modules")
         if self.equidistant_output:
             # Change the Simulation Output, to ensure all
             # simulation results have the same array shape.
@@ -691,7 +691,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """Restart Dymola every n_restart iterations in order to free memory"""
 
         if self.sim_counter == self.n_restart:
-            self.logger.log("Closing and restarting Dymola to free memory")
+            self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
             self._setup_dymola_interface()
             self.sim_counter = 1

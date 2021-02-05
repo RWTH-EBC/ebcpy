@@ -63,16 +63,6 @@ class FMU_API(simulationapi.SimulationAPI):
         shutil.rmtree(self._unzip_dir)
         self._unzip_dir = None
 
-    def set_cd(self, cd):
-        """
-        Set current working directory for storing files etc.
-        :param str,os.path.normpath cd:
-            New working directory
-        :return:
-        """
-        os.makedirs(cd, exist_ok=True)
-        self.cd = cd
-
     def simulate(self, **kwargs):
         """
         Simulate current simulation-setup.
@@ -161,4 +151,4 @@ class FMU_API(simulationapi.SimulationAPI):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
         label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
         if self.log_fmu:
-            self.logger.log("[%s] %s" % (label, message.decode("utf-8")))
+            self.logger.info("[%s] %s" % (label, message.decode("utf-8")))

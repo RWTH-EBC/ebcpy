@@ -2,8 +2,9 @@
 Different simulation modules like dymola_api or py_fmi
 may inherit classes of this module."""
 
+import os
 from abc import abstractmethod
-from ebcpy.utils import visualizer
+from ebcpy.utils import setup_logger
 
 
 class SimulationAPI:
@@ -22,7 +23,8 @@ class SimulationAPI:
         self.cd = cd
         self.model_name = model_name
         # Setup the logger
-        self.logger = visualizer.Logger(cd, "simulation_api")
+        self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
+        self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
 
     @abstractmethod
     def close(self):
@@ -62,8 +64,15 @@ class SimulationAPI:
                 raise TypeError("{} is of type {} but should be"
                                 " type {}".format(key, type(value).__name__, _ref))
 
-    @abstractmethod
     def set_cd(self, cd):
         """Base function for changing the current working directory."""
-        raise NotImplementedError('{}.set_cd function is not '
-                                  'defined'.format(self.__class__.__name__))
+        self.cd = cd
+
+    @property
+    def cd(self) -> str:
+        return self._cd
+
+    @cd.setter
+    def cd(self, cd: str):
+        os.makedirs(cd, exist_ok=True)
+        self._cd = cd

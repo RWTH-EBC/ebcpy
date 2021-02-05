@@ -2,10 +2,11 @@
 Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
+import os
 from collections import namedtuple
 from abc import abstractmethod
 import numpy as np
-from ebcpy.utils import visualizer
+from ebcpy.utils import setup_logger
 
 
 class Optimizer:
@@ -80,10 +81,13 @@ class Optimizer:
                          "popsize", "mutation", "recombination", "seed",
                          "polish", "init", "atol"] + _dlib_kwargs
 
-    def __init__(self, cd, **kwargs):
+    def __init__(self, cd=None, **kwargs):
         """Instantiate class parameters"""
-        self.cd = cd
-        self.logger = visualizer.Logger(self.cd, "Optimization")
+        if cd is None:
+            self.cd = os.getcwd()
+        else:
+            self.cd = cd
+        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -116,11 +120,20 @@ class Optimizer:
         """
         raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
 
+    @property
+    def cd(self) -> str:
+        return self._cd
+
+    @cd.setter
+    def cd(self, cd: str):
+        os.makedirs(cd, exist_ok=True)
+        self._cd = cd
+
     def optimize(self, framework, method=None):
         """
         Perform the optimization based on the given method and framework.
 
-    :param str framework:
+        :param str framework:
         The framework (python module) you want to use to perform the optimization.
         Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
         are supported options. To further inform yourself about these frameworks, please see:
@@ -264,9 +277,9 @@ class Optimizer:
         :param error:
             Any Exception that may occur
         """
-        self.logger.log("Parameter set which caused the failure:")
-        self.logger.log(str(self._current_iterate))
-        self.logger.log("Current best objective and parameter set:")
-        self.logger.log("\n".join(["{}: {}".format(key, value)
-                                   for key, value in self._current_best_iterate.items()]))
+        self.logger.error("Parameter set which caused the failure:")
+        self.logger.error(str(self._current_iterate))
+        self.logger.error("Current best objective and parameter set:")
+        self.logger.error("\n".join(["{}: {}".format(key, value)
+                                     for key, value in self._current_best_iterate.items()]))
         raise error
