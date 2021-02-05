@@ -377,10 +377,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if self._dummy_dymola_instance is not None:
             self._dummy_dymola_instance.close()
 
-    def get_all_tuner_parameters(self):
-        """Get all tuner-parameters of the model by
+    def get_all_parameters(self):
+        """Get all parameters of the model by
         translating it and then processing the dsin
-        using modelicares."""
+        using modelicares.
+        Returns a dict with keys the following keys and values:
+            names: List of names
+            initial_values: List of initial values
+        """
         # Translate model
         res = self.dymola.translateModel(self.model_name)
         if not res:
@@ -391,23 +395,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Get path to dsin:
         dsin_path = os.path.join(self.cd, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
-        # Convert and return all parameters of dsin as a TunerParas-object.
+        # Convert and return all parameters of dsin to initial values and names
         df = df[df["5"] == "1"]
         names = df.index
         initial_values = pd.to_numeric(df["2"].values)
-        # Get min and max-values
-        bounds = [(float(df["3"][idx]), float(df["4"][idx])) for idx in df.index]
-        try:
-            tuner_paras = data_types.TunerParas(list(names),
-                                                initial_values,
-                                                bounds=bounds)
-        except ValueError:
-            # Sometimes, not all parameters have bounds. In this case, no bounds
-            # are specified.
-            tuner_paras = data_types.TunerParas(list(names),
-                                                initial_values,
-                                                bounds=None)
-        return tuner_paras
+        return {'names': names, 'initial_values': initial_value}
 
     def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
