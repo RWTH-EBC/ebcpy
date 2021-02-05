@@ -16,88 +16,63 @@ import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
 # pylint: disable=I1101
 
+__all__ = ['TimeSeries',
+           'TimeSeriesData']
+
 
 class TimeSeriesData(pd.DataFrame):
     """
-      Class for handling time series data using a pandas dataframe.
-      This class works file-based and makes the import of different
-      file-types into a pandas DataFrame more user-friendly.
-      Furthermore, functions to support multi-indexing are provided to
-      efficiently handle variable passed processing and provide easy
-      visualization access.
+    Class for handling time series data using a pandas dataframe.
+    This class works file-based and makes the import of different
+    file-types into a pandas DataFrame more user-friendly.
+    Furthermore, functions to support multi-indexing are provided to
+    efficiently handle variable passed processing and provide easy
+    visualization access.
 
-      :param str,os.path.normpath filepath:
-          Filepath ending with either .hdf, .mat or .csv containing
-          time-dependent data to be loaded as a pandas.DataFrame
-      :keyword str key:
-          Name of the table in a .hdf-file if the file
-          contains multiple tables.
-      :keyword str sep:
-          separator for the use of a csv file. If none is provided,
-          a comma (",") is used as a default value.
-      :keyword str sheet_name:
-          Name of the sheet you want to load data from. Required keyword
-          argument when loading a xlsx-file.
-
+    :param str,os.path.normpath filepath:
+        Filepath ending with either .hdf, .mat or .csv containing
+        time-dependent data to be loaded as a pandas.DataFrame
+    :keyword str key:
+        Name of the table in a .hdf-file if the file
+        contains multiple tables.
+    :keyword str sep:
+        separator for the use of a csv file. If none is provided,
+        a comma (",") is used as a default value.
+    :keyword str sheet_name:
+        Name of the sheet you want to load data from. Required keyword
+        argument when loading a xlsx-file.
+    :keyword str default_tag:
+        Which value to use as tag. Default is 'raw'
     """
+
+    # normal properties
+    _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
 
     def __init__(self, filepath, **kwargs):
         """Initialize class-objects and check correct input."""
+        # Initialize as default
+        self._filepath = None
+        self._loader_kwargs = {}
+        _multi_col_names = ["Variables", "Tags"]
+        self._default_tag = kwargs.pop("default_tag", "raw")
+
         # Two possibles inputs. first argument is actually data provided by pandas
         # and kwargs hold further information or is it an actual filepath.
         if not isinstance(filepath, str):
-            super().__init__(data=filepath,
-                             index=kwargs.get("index", None),
-                             columns=kwargs.get("columns", None),
-                             dtype=kwargs.get("dtype", None),
-                             copy=kwargs.get("copy", False))
-            # Already return as everything is set up
-            return
-        # Check whether the file exists
-        if not os.path.isfile(filepath):
-            raise FileNotFoundError(
-                "The given filepath {} could not be opened".format(filepath))
+            _df_loaded = pd.DataFrame(data=filepath,
+                                      index=kwargs.get("index", None),
+                                      columns=kwargs.get("columns", None),
+                                      dtype=kwargs.get("dtype", None),
+                                      copy=kwargs.get("copy", False))
 
-        # Set the kwargs
-        key = kwargs.get("key")
-        if key == "":
-            key = None  # Avoid cryptic error in pandas by converting empty string to None
-        sep = kwargs.get("sep", ",")  # Set default to most common separator, the comma
-        sheet_name = kwargs.get("sheet_name")
-
-        # Open based on file suffix.
-        # Currently, hdf, csv, and Modelica result files (mat) are supported.
-        file_suffix = filepath.split(".")[-1].lower()
-        if file_suffix == "hdf":
-            # Load the current file as a hdf to a dataframe.
-            # As specifying the key can be a problem, the user will
-            # get all keys of the file if one is necessary but not provided.
-            try:
-                _df_loaded = pd.read_hdf(filepath, key=key)
-            except (ValueError, KeyError):
-                keys = ", ".join(get_keys_of_hdf_file(filepath))
-                raise KeyError("key must be provided when HDF5 file contains multiple datasets. "
-                               "Here are all keys in the given hdf-file: %s" % keys)
-        elif file_suffix == "csv":
-            _df_loaded = pd.read_csv(filepath, sep=sep)
-        elif file_suffix == "mat":
-            sim = sr.SimRes(filepath)
-            _df_loaded = sim.to_pandas(with_unit=False)
-        elif file_suffix == "xlsx":
-            if sheet_name is None:
-                raise KeyError("sheet_name is a required keyword argument to load xlsx-files."
-                               "Please pass a string to specify the name "
-                               "of the sheet you want to load.")
-            _df_loaded = pd.read_excel(io=filepath, sheet_name=sheet_name)
         else:
-            raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
-
-        _multi_col_names = ["Variables", "Tags"]
-        _default_tag = ["raw"]
+            self._filepath = filepath
+            self._loader_kwargs = kwargs.copy()
+            _df_loaded = self._load_df_from_file()
 
         if _df_loaded.columns.nlevels == 1:
             multi_col = pd.MultiIndex.from_product([[var_name for var_name in _df_loaded.columns],
-                                                    _default_tag], names=_multi_col_names)
+                                                    [self._default_tag]], names=_multi_col_names)
             _df_loaded.columns = multi_col
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
@@ -115,7 +90,33 @@ class TimeSeriesData(pd.DataFrame):
         https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-subclassing-pandas"""
         return TimeSeriesData
 
-    def save(self, filepath, **kwargs):
+    @property
+    def _constructor_sliced(self):
+        """Overwrite constructor method according to:
+        https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-subclassing-pandas"""
+        return TimeSeries
+
+    @property
+    def filepath(self) -> str:
+        """Get the filepath associated with the time series data"""
+        return self._filepath
+
+    @filepath.setter
+    def filepath(self, filepath: str):
+        """Set the filepath associated with the time series data"""
+        self._filepath = filepath
+
+    @property
+    def default_tag(self) -> str:
+        """Get the default tag used in the multi-index dataframe"""
+        return self._default_tag
+
+    @default_tag.setter
+    def default_tag(self, tag: str):
+        """Set the default tag used in the multi-index dataframe"""
+        self._default_tag = tag
+
+    def save(self, filepath: str = None, **kwargs) -> None:
         """
         Save the current time-series-data into the given file-format.
         Currently supported are .hdf (easy and fast storage) and
@@ -124,6 +125,7 @@ class TimeSeriesData(pd.DataFrame):
         :param str,os.path.normpath filepath:
             Filepath were to store the data. Either .hdf or .csv
             has to be the file-ending.
+            Default is current filepath of class.
         :keyword str key:
             Necessary keyword-argument for saving a .hdf-file.
             Specifies the key of the table in the .hdf-file.
@@ -131,14 +133,61 @@ class TimeSeriesData(pd.DataFrame):
             Separator used for saving as .csv. Default is ','.
         :return:
         """
-        _df_to_store = pd.DataFrame(self)
+        # If new settings are needed, update existing ones
+        self._loader_kwargs.update(kwargs)
+        # Set filepath if not given
+        if filepath is None:
+            filepath = self.filepath
+        # Check if filepath is still None (if no filepath was used in init)
+        if filepath is None:
+            raise ValueError("Current TimeSeriesData instance "
+                             "has no filepath, please specify one.")
+
+        # Save based on file suffix
         if filepath.lower().endswith(".hdf"):
-            _df_to_store.to_hdf(filepath, key=kwargs.get("key"))
+            self.to_hdf(filepath, key=kwargs.get("key"))
         elif filepath.lower().endswith(".csv"):
-            _df_to_store.to_csv(filepath, sep=kwargs.get("sep", ","))
+            self.to_csv(filepath, sep=kwargs.get("sep", ","))
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
+
+    def _load_df_from_file(self):
+        """Function to load a given filepath into a dataframe"""
+        # Check whether the file exists
+        if not os.path.isfile(self.filepath):
+            raise FileNotFoundError(
+                "The given filepath {} could not be opened".format(self.filepath))
+
+        # Open based on file suffix.
+        # Currently, hdf, csv, and Modelica result files (mat) are supported.
+        if self.filepath.endswith("hdf"):
+            # Load the current file as a hdf to a dataframe.
+            # As specifying the key can be a problem, the user will
+            # get all keys of the file if one is necessary but not provided.
+            key = self._loader_kwargs.get("key")
+            if key == "":
+                key = None  # Avoid cryptic error in pandas by converting empty string to None
+            try:
+                return pd.read_hdf(self.filepath, key=key)
+            except (ValueError, KeyError):
+                keys = ", ".join(get_keys_of_hdf_file(self.filepath))
+                raise KeyError("key must be provided when HDF5 file contains multiple datasets. "
+                               "Here are all keys in the given hdf-file: %s" % keys)
+        elif self.filepath.lower().endswith("csv"):
+            return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
+        elif self.filepath.lower().endswith("mat"):
+            sim = sr.SimRes(self.filepath)
+            return sim.to_pandas(with_unit=False)
+        elif self.filepath.lower().endswith("xlsx"):
+            sheet_name = self._loader_kwargs.get("sheet_name")
+            if sheet_name is None:
+                raise KeyError("sheet_name is a required keyword argument to load xlsx-files."
+                               "Please pass a string to specify the name "
+                               "of the sheet you want to load.")
+            return pd.read_excel(io=self.filepath, sheet_name=sheet_name)
+        else:
+            raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
 
     def get_columns_by_tag(self, tag, columns=None, return_type='pandas'):
         """
@@ -220,6 +269,23 @@ class TimeSeriesData(pd.DataFrame):
         df = preprocessing.clean_and_space_equally_time_series(df=self,
                                                                desired_freq=desired_freq)
         super().__init__(df)
+
+
+class TimeSeries(pd.Series):
+    """Overwrites pd.Series to enable correct slicing
+    and expansion in the TimeSeriesData class"""
+
+    @property
+    def _constructor(self):
+        """Overwrite constructor method according to:
+        https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-subclassing-pandas"""
+        return TimeSeries
+
+    @property
+    def _constructor_expanddim(self):
+        """Overwrite constructor method according to:
+        https://pandas.pydata.org/pandas-docs/stable/development/extending.html#extending-subclassing-pandas"""
+        return TimeSeriesData
 
 
 class TunerParas:
