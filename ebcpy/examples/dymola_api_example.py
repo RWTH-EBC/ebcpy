@@ -8,20 +8,6 @@ import os
 from ebcpy.simulationapi import dymola_api
 
 
-def example_dymola_api(dym_api):
-    """
-    Function to show the usage of the function
-    get_all_tuner_parameters() of the DymolAPI.
-
-    :param dymola_api.DymolaAPI dym_api:
-        DymolaAPI that can be generated using :meth:` this function<setup_dymola_api>`
-    :return: tuner parameters which can be used for other examples
-    :rtype: ebcpy.data_types.TunerParas
-    """
-    tuner_paras = dym_api.get_all_tuner_parameters()
-    return tuner_paras
-
-
 def setup_dymola_api(cd=None, show_window=True):
     """
     Function to show how to setup the DymolaAPI.
@@ -70,4 +56,4 @@ if __name__ == "__main__":
     # Setup the dymola-api:
     DYM_API = setup_dymola_api()
     # Run example:
-    example_dymola_api(DYM_API)
+    DYM_API.get_all_parameters()
