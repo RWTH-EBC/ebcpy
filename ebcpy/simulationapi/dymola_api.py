@@ -332,6 +332,53 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 raise TypeError("{} is of type {} but should be"
                                 " type {}".format(key, type(value).__name__, _ref))
 
+
+    def set_compiler(self, name, path, dll=False, dde=False, opc=False):
+        """
+        Set up the compiler and compiler options on Windows.
+        Optional: Specify if you want to enable dll, dde or opc.
+
+        :param str name:
+            Name of the compiler, avaiable options:
+            - 'vs': Visual Studio
+            - 'gcc': GCC
+        :param str,os.path.normpath path:
+            Path to the compiler files.
+            Example for name='vs': path='C:/Program Files (x86)/Microsoft Visual Studio 10.0/Vc'
+            Example for name='gcc': path='C:/MinGW/bin/gcc'
+        :param Boolean dll:
+            Set option for dll support. Check Dymolas Manual on what this exactly does.
+        :param Boolean dde:
+            Set option for dde support. Check Dymolas Manual on what this exactly does.
+        :param Boolean opc:
+            Set option for opc support. Check Dymolas Manual on what this exactly does.
+        :return: True, on success.
+        """
+        # Lookup dict for internal name of CCompiler-Variable
+        _name_int = {"vs": "MSVC",
+                     "gcc": "GCC"}
+
+        if "win" not in sys.platform:
+            raise OSError(f"set_compiler function only implemented "
+                          f"for windows systems, you are using {sys.platform}")
+        # Manually check correct input as Dymola's error are not a help
+        name = name.lower()
+        if name not in ["vs", "gcc"]:
+            raise ValueError(f"Given compiler name {name} not supported.")
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Given compiler path {path} does not exist on your machine.")
+        # Convert path for correct input
+        path = self._make_modelica_normpath(path)
+
+        res = self.dymola.SetDymolaCompiler(name.lower(),
+                                            [f"CCompiler={_name_int[name]}",
+                                             f"{_name_int[name]}DIR={path}",
+                                             f"DLL={int(dll)}",
+                                             f"DDE={int(dde)}",
+                                             f"OPC={int(opc)}"])
+
+        return res
+
     def import_initial(self, filepath):
         """
         Load given dsfinal.txt into dymola
