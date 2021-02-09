@@ -15,6 +15,7 @@ include:
     file: 'python/unit-tests/unittest.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/coverage.gitlab-ci.yml'
-  - remote: 'https://git-ce.rwth-aachen.de/ebc/ebc-general/templates/gitlab-ci/-/blob/master/python/unit-tests/dymola-coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/unit-tests/dymola-coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
