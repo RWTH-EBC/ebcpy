@@ -300,6 +300,9 @@ def get_keys_of_hdf_file(filepath):
     :return: list
         List with all keys in the given file.
     """
-    import h5py
-    hdf_file = h5py.File(filepath, 'r')
-    return list(hdf_file.keys())
+    try:
+        import h5py
+        hdf_file = h5py.File(filepath, 'r')
+        return list(hdf_file.keys())
+    except ImportError:
+        return ["ERROR: Could not obtain keys as h5py is not installed"]

@@ -2,18 +2,17 @@
 
 import setuptools
 
-INSTALL_REQUIRES = ['numpy',
-                    'scipy',
-                    'pandas',
-                    'matplotlib',
-                    'h5py',
-                    'cmake',
-                    'sklearn',
-                    'tables',
-                    'psutil',
-                    'pyyaml',
-                    'fmpy'
-                    ]
+INSTALL_REQUIRES = [
+    'numpy~=1.20.0',
+    'matplotlib~=3.3.4',
+    'scipy~=1.6.0',
+    'six~=1.15.0',
+    'pandas~=1.2.1',
+    'pyyaml~=5.4.1',
+    'sklearn~=0.0',
+    'fmpy~=0.2.27',
+    'cmake~=3.18.4.post1',
+]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 #INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source
 
