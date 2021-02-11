@@ -2,6 +2,7 @@
 ebcpy.simulationapi."""
 
 import unittest
+import sys
 import os
 import shutil
 import pandas as pd
@@ -29,10 +30,16 @@ class TestDymolaAPI(unittest.TestCase):
                               "heatConv_b",
                               "heatConv_a"]
         self.initial_values = [2000, 5, 5]
+        # Just for tests in the ci:
+        if "linux" in sys.platform:
+            dymola_path = "/usr/local/bin/dymola"
+        else:
+            dymola_path = None
         try:
-            self.dym_api = dymola_api.DymolaAPI(self.example_sim_dir,
-                                                model_name,
-                                                packages)
+            self.dym_api = dymola_api.DymolaAPI(cd=self.example_sim_dir,
+                                                model_name=model_name,
+                                                packages=packages,
+                                                dymola_path=dymola_path)
         except (FileNotFoundError, ImportError, ConnectionError) as e:
             self.skipTest(f"Could not load the dymola interface on this machine. Error message: {e}")
 
