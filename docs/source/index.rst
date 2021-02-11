@@ -83,6 +83,18 @@ v0.1
    - Add functions for configuration using yaml
    - Add regex functions for extraction of modelica variables
    - Add option to directly return results as a dataframe using simulateMultiResultsModel.
+- v0.1.7:
+   - Issue13: Add an FMU API as simulation api
+   - Issue36: Use Python Logging as default logger in all modules
+   - Issue38: Fix future warning in pandas loffset
+   - Issue39: Add simres from modelicares to avoid version errors with matplotlib.
+   - Issue41: Fix inheritance of `pd.DataFrame` in `TimeSeriesData`.
+              This also enables converting any single-index df to the required multi-index format (See #37).
+   - Issue42: Move `TunerParas` to `AixCaliBuHA`
+   - Add unit-tests for the dymola-api.
+   - Use f-strings only
+   - Update setup.py and requirements
+   - Use `TimeSeriesData` in classes as output in the simulation api
 
 Indices and tables
 ==================

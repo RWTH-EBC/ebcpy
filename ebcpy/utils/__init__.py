@@ -10,6 +10,8 @@ def setup_logger(cd, name, level=logging.DEBUG):
     """
     Setup an class or module specific logger instance
     to ensure readable output for users.
+
+    .. versionadded:: 0.1.7
     """
     logger = logging.getLogger(name=name)
     logger.setLevel(level=level)

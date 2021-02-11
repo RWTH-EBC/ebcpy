@@ -273,7 +273,10 @@ class TimeSeriesData(pd.DataFrame):
 
 class TimeSeries(pd.Series):
     """Overwrites pd.Series to enable correct slicing
-    and expansion in the TimeSeriesData class"""
+    and expansion in the TimeSeriesData class
+
+    .. versionadded:: 0.1.7
+    """
 
     @property
     def _constructor(self):

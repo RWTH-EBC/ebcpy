@@ -15,6 +15,8 @@ class FMU_API(simulationapi.SimulationAPI):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
+
+    .. versionadded:: 0.1.7
     """
 
     sim_setup = {'startTime': 0.0,

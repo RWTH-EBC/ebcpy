@@ -226,6 +226,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     >>> plt.plot(df["B"], label="Clead and spaced equally")
     >>> plt.legend()
     >>> plt.show()
+
+    .. versionchanged:: 0.1.7
     """
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):

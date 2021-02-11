@@ -6,6 +6,8 @@ Update 18.01.2021:
 As modelicares is no longer compatible with matplotlib > 3.3.2, we integrated all
 necessary functions from modelicares to still be able and use SimRes.to_pandas().
 # TODO: If we put this open-source, how do we cite this?!
+
+.. versionadded:: 0.1.7
 """
 import os
 from fnmatch import fnmatchcase
