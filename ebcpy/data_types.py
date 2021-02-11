@@ -157,7 +157,7 @@ class TimeSeriesData(pd.DataFrame):
         # Check whether the file exists
         if not os.path.isfile(self.filepath):
             raise FileNotFoundError(
-                "The given filepath {} could not be opened".format(self.filepath))
+                f"The given filepath {self.filepath} could not be opened")
 
         # Open based on file suffix.
         # Currently, hdf, csv, and Modelica result files (mat) are supported.
