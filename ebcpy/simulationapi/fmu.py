@@ -4,6 +4,7 @@ simulate models."""
 import os
 import fmpy
 import shutil
+import logging
 import pandas as pd
 import numpy as np
 from ebcpy import simulationapi
@@ -34,7 +35,7 @@ class FMU_API(simulationapi.SimulationAPI):
         """Instantiate class parameters"""
         super().__init__(cd, model_name)
         if not model_name.lower().endswith(".fmu"):
-            raise ValueError("{} is not a valid fmu file!".format(model_name))
+            raise ValueError(f"{model_name} is not a valid fmu file!")
         # Init instance attributes
         self._unzip_dir = None
         self._fmu_instance = None
@@ -62,16 +63,6 @@ class FMU_API(simulationapi.SimulationAPI):
         # Remove the extracted files
         shutil.rmtree(self._unzip_dir)
         self._unzip_dir = None
-
-    def set_cd(self, cd):
-        """
-        Set current working directory for storing files etc.
-        :param str,os.path.normpath cd:
-            New working directory
-        :return:
-        """
-        os.makedirs(cd, exist_ok=True)
-        self.cd = cd
 
     def simulate(self, **kwargs):
         """
@@ -110,7 +101,7 @@ class FMU_API(simulationapi.SimulationAPI):
             self._fmu_instance.reset()
 
         except Exception as error:
-            print(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
+            self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
             if kwargs.get("fail_on_error", False):
                 raise error
             return None
@@ -160,5 +151,11 @@ class FMU_API(simulationapi.SimulationAPI):
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
         label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
+        _level_map = {'OK': logging.INFO,
+                      'WARNING': logging.WARNING,
+                      'DISCARD': logging.WARNING,
+                      'ERROR': logging.ERROR,
+                      'FATAL': logging.FATAL,
+                      'PENDING': logging.FATAL}
         if self.log_fmu:
-            self.logger.log("[%s] %s" % (label, message.decode("utf-8")))
+            self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))

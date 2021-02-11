@@ -2,10 +2,11 @@
 Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
+import os
 from collections import namedtuple
 from abc import abstractmethod
 import numpy as np
-from ebcpy.utils import visualizer
+from ebcpy.utils import setup_logger
 
 
 class Optimizer:
@@ -80,16 +81,19 @@ class Optimizer:
                          "popsize", "mutation", "recombination", "seed",
                          "polish", "init", "atol"] + _dlib_kwargs
 
-    def __init__(self, cd, **kwargs):
+    def __init__(self, cd=None, **kwargs):
         """Instantiate class parameters"""
-        self.cd = cd
-        self.logger = visualizer.Logger(self.cd, "Optimization")
+        if cd is None:
+            self.cd = os.getcwd()
+        else:
+            self.cd = cd
+        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
         if _not_supported:
             raise KeyError("The following keyword-arguments are not "
-                           "supported: \n{}".format(", ".join(list(_not_supported))))
+                           f"supported: \n{', '.join(list(_not_supported))}")
 
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
@@ -99,8 +103,8 @@ class Optimizer:
         for key in self._dlib_kwargs:
             value = self.__getattribute__(key)
             if not isinstance(value, (float, int)):
-                raise TypeError("Given {} is of type {} but should be type float or "
-                                "int".format(key, type(value).__name__))
+                raise TypeError(f"Given {key} is of type {type(value).__name__} but "
+                                f"should be type float or int")
 
     @abstractmethod
     def obj(self, xk, *args):
@@ -114,13 +118,22 @@ class Optimizer:
         :returns float result
             A scalar (float/ 1d) value for the optimization framework.
         """
-        raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
+        raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
+
+    @property
+    def cd(self) -> str:
+        return self._cd
+
+    @cd.setter
+    def cd(self, cd: str):
+        os.makedirs(cd, exist_ok=True)
+        self._cd = cd
 
     def optimize(self, framework, method=None):
         """
         Perform the optimization based on the given method and framework.
 
-    :param str framework:
+        :param str framework:
         The framework (python module) you want to use to perform the optimization.
         Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
         are supported options. To further inform yourself about these frameworks, please see:
@@ -171,7 +184,7 @@ class Optimizer:
             self._minimize_func = self._scipy_differential_evolution
             self._framework_requires_method = True
         else:
-            raise TypeError("Given framework {} is currently not supported.".format(framework))
+            raise TypeError(f"Given framework {framework} is currently not supported.")
 
     def _scipy_minimize(self, method):
         try:
@@ -264,9 +277,7 @@ class Optimizer:
         :param error:
             Any Exception that may occur
         """
-        self.logger.log("Parameter set which caused the failure:")
-        self.logger.log(str(self._current_iterate))
-        self.logger.log("Current best objective and parameter set:")
-        self.logger.log("\n".join(["{}: {}".format(key, value)
-                                   for key, value in self._current_best_iterate.items()]))
+        self.logger.error(f"Parameter set which caused the failure: {self._current_iterate}")
+        self.logger.error("Current best objective and parameter set:")
+        self.logger.error("\n".join([f"{key}: {value}" for key, value in self._current_best_iterate.items()]))
         raise error

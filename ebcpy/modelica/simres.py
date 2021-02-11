@@ -211,8 +211,8 @@ def loadsim(fname, constants_only=False):
                               for i, name in enumerate(names)})
     else:
         assert version == '1.1', ('The version of the Dymola/OpenModelica '
-                                  'result file ({v}) is not '
-                                  'supported.'.format(v=version))
+                                  f'result file ({version}) is not '
+                                  'supported.')
         names = get_strings(mat['name'].T if transposed else mat['name'])
         descriptions = get_strings(mat['description'].T if transposed else
                                    mat['description'])
@@ -278,16 +278,16 @@ def read(fname, constants_only=False):
         else:
             mat = loadmat(fname, chars_as_strings=False, appendmat=False)
     except IOError:
-        raise IOError('"{f}" could not be opened.'
-                      '  Check that it exists.'.format(f=fname))
+        raise IOError(f'"{fname}" could not be opened.'
+                      '  Check that it exists.')
 
     # Check if the file contains the Aclass variable.
     try:
         Aclass = mat['Aclass']
     except KeyError:
-        raise TypeError('"{f}" does not appear to be a Dymola or OpenModelica '
+        raise TypeError(f'"{fname}" does not appear to be a Dymola or OpenModelica '
                         'result file.  The "Aclass" variable is '
-                        'missing.'.format(f=fname))
+                        'missing.')
 
     return mat, get_strings(Aclass)
 
@@ -404,8 +404,7 @@ class SimRes:
     def __repr__(self):
         """Return a formal description of an instance of this class.
         """
-        return "{Class}('{fname}')".format(Class=self.__class__.__name__,
-                                           fname=self.fname)
+        return f"{self.__class__.__name__}('{self.fname}')"
         # Note:  The class name is inquired so that this method will still be
         # correct if the class is extended.
 

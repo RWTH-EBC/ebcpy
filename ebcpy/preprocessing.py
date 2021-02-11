@@ -243,8 +243,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     for name in series_with_na.index:
         if series_with_na.loc[name] > 0:
             # Print only columns with invalid values
-            print("{} has following number of invalid "
-                  "values\n {}".format(name, str(series_with_na.loc[name])))
+            print(f"{name} has following number of invalid "
+                  f"values\n {series_with_na.loc[name]}")
     # Drop all rows where at least one NA exists
     df.dropna(how='any', inplace=True)
 
@@ -439,12 +439,12 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     >>> plt.show()
     """
     if len(col_names) != len(col_names_new):
-        raise IndexError("Given lists differ in length. col_names: {}, "
-                         "col_names_new: {}".format(len(col_names), len(col_names_new)))
+        raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                         f"col_names_new: {len(col_names_new)}")
     if isinstance(threshold, list):
         if len(col_names) != len(threshold):
-            raise IndexError("Given lists differ in length. col_names: {}, "
-                             "threshold: {}".format(len(col_names), len(threshold)))
+            raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                             f"threshold: {len(threshold)}")
     else:
         threshold = [threshold for _ in enumerate(col_names)]
     # Do on_off signal creation for all desired columns

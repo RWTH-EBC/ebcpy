@@ -83,16 +83,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dymola_interface_path = kwargs["dymola_interface_path"]
             if not (os.path.isfile(dymola_interface_path) and
                     os.path.exists(dymola_interface_path)):
-                raise FileNotFoundError("Given path {} can not be found on "
-                                        "your machine.".format(dymola_interface_path))
+                raise FileNotFoundError(f"Given path {dymola_interface_path} can not be found on "
+                                        "your machine.")
         else:
             dymola_interface_path = None
 
         if "dymola_path" in kwargs:
             dymola_path = kwargs["dymola_path"]
             if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
-                raise FileNotFoundError("Given path {} can not be found on "
-                                        "your machine.".format(dymola_path))
+                raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
+                                        "your machine.")
         else:
             dymola_path = None
 
@@ -120,7 +120,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
         if _not_supported:
             raise KeyError("The following keyword-arguments are not "
-                           "supported: \n{}".format(", ".join(list(_not_supported))))
+                           f"supported: \n{', '.join(list(_not_supported))}")
 
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
@@ -129,13 +129,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.sim_counter = 0
         self.n_restart = kwargs.get("n_restart", -1)
         if not isinstance(self.n_restart, int):
-            raise TypeError("n_restart has to be type int but is of type {}"
-                            .format(type(kwargs['n_restart'])))
+            raise TypeError(f"n_restart has to be type int but "
+                            f"is of type {type(kwargs['n_restart'])}")
 
         self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
         if self.n_restart > 0:
-            self.logger.log("Open blank placeholder Dymola instance to ensure"
-                            " a licence during Dymola restarts")
+            self.logger.info("Open blank placeholder Dymola instance to ensure"
+                             " a licence during Dymola restarts")
             self._dummy_dymola_instance = self._open_dymola_interface()
             atexit.register(self._close_dummy)
 
@@ -261,18 +261,18 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 resultNames=res_names)
 
         if not res[0]:
-            self.logger.log("Simulation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
-            raise Exception("Simulation failed: Look into dslog.txt at {} of the "
-                            "simulation.".format(os.path.join(self.cd, "dslog.txt")))
+            self.logger.error("Simulation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
+            raise Exception(f"Simulation failed: Look into dslog.txt "
+                            f"at {os.path.join(self.cd, 'dslog.txt')} of the simulation.")
 
         if self.get_structural_parameters:
             # Get the structural parameters based on the error log
             self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
 
         if savepath_files:
-            _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
+            _save_name_dsres = f"{self.sim_setup['resultFile']}.mat"
             if not os.path.isdir(savepath_files):
                 os.mkdir(savepath_files)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
@@ -317,8 +317,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
         if _diff:
-            raise KeyError("The given sim_setup contains the following keys ({}) which are "
-                           "not part of the dymola sim_setup.".format(" ,".join(list(_diff))))
+            raise KeyError(f"The given sim_setup contains the following keys "
+                           f"({' ,'.join(list(_diff))} which are not part of "
+                           f"the dymola sim_setup.")
         _number_values = ["startTime", "stopTime", "numberOfIntervals",
                           "outputInterval", "tolerance", "fixedstepsize"]
         for key, value in sim_setup.items():
@@ -329,8 +330,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
             if isinstance(value, _ref):
                 self.sim_setup[key] = value
             else:
-                raise TypeError("{} is of type {} but should be"
-                                " type {}".format(key, type(value).__name__, _ref))
+                raise TypeError(f"{key} is of type {type(value).__name__} but "
+                                f"should be type {_ref}")
 
 
     def set_compiler(self, name, path, dll=False, dde=False, opc=False):
@@ -387,42 +388,42 @@ class DymolaAPI(simulationapi.SimulationAPI):
             Path to the dsfinal.txt to be loaded
         """
         if not os.path.isfile(filepath):
-            raise FileNotFoundError("Given filepath {} does not exist".format(filepath))
+            raise FileNotFoundError(f"Given filepath {filepath} does not exist")
         if not os.path.splitext(filepath)[1] == ".txt":
             raise TypeError('File is not of type .txt')
         res = self.dymola.importInitial(dsName=filepath)
         if res:
-            self.logger.log("\nSuccessfully loaded dsfinal.txt")
+            self.logger.info("Successfully loaded dsfinal.txt")
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
     def set_cd(self, cd):
         """Set the working directory to the given path"""
+        super().set_cd(cd)
+        # Also set the cd in the dymola api
         modelica_normpath = self._make_modelica_normpath(cd)
-        # Check if path exists, if not create it.
-        if not os.path.exists(modelica_normpath):
-            os.mkdir(modelica_normpath)
         res = self.dymola.cd(modelica_normpath)
-        if res:
-            self.cd = cd
-        else:
-            raise OSError("Could not change working directory to {}".format(cd))
+        if not res:
+            raise OSError(f"Could not change working directory to {cd}")
 
     def close(self):
         """Closes dymola."""
-
+        self.logger.info('Closing Dymola')
         # Change so the atexit function works without an error.
         if self.dymola is not None:
             self.dymola.close()
         # Set dymola object to None to avoid further access to it.
         self.dymola = None
+        self.logger.info('Successfully closed Dymola')
 
     def _close_dummy(self):
         """
         Closes dummy instance at the end of the execution
         """
         if self._dummy_dymola_instance is not None:
+            self.logger.info('Closing dummy Dymola instance')
             self._dummy_dymola_instance.close()
+            self.logger.info('Successfully closed dummy Dymola instance')
 
     def get_all_parameters(self):
         """Get all parameters of the model by
@@ -435,9 +436,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Translate model
         res = self.dymola.translateModel(self.model_name)
         if not res:
-            self.logger.log("Translation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
+            self.logger.error("Translation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
             raise Exception("Translation failed!")
         # Get path to dsin:
         dsin_path = os.path.join(self.cd, "dsin.txt")
@@ -456,11 +457,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
-            self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            self.logger.info("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
             res = self.dymola.openModel(package, changeDirectory=False)
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
-        self.logger.log("Loaded modules")
+        self.logger.info("Loaded modules")
         if self.equidistant_output:
             # Change the Simulation Output, to ensure all
             # simulation results have the same array shape.
@@ -730,7 +731,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """Restart Dymola every n_restart iterations in order to free memory"""
 
         if self.sim_counter == self.n_restart:
-            self.logger.log("Closing and restarting Dymola to free memory")
+            self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
             self._setup_dymola_interface()
             self.sim_counter = 1
