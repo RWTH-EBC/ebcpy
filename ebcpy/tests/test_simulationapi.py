@@ -34,7 +34,7 @@ class TestDymolaAPI(unittest.TestCase):
                                                 model_name,
                                                 packages)
         except (FileNotFoundError, ImportError, ConnectionError) as e:
-            self.skipTest("Could not load the dymola interface on this machine. Error message: {}".format(e))
+            self.skipTest(f"Could not load the dymola interface on this machine. Error message: {e}")
 
     def test_close(self):
         """Test close functionality of dymola api"""
@@ -105,7 +105,7 @@ class TestFMUAPI(unittest.TestCase):
             self.fmu_api = fmu.FMU_API(self.example_sim_dir,
                                        model_name)
         except Exception as e:
-            self.skipTest("Could not instantiate the fmu. Error message: {}".format(e))
+            self.skipTest(f"Could not instantiate the fmu. Error message: {e}")
 
     def test_close(self):
         """Test close functionality of fmu api"""

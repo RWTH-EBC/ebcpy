@@ -93,7 +93,7 @@ class Optimizer:
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
         if _not_supported:
             raise KeyError("The following keyword-arguments are not "
-                           "supported: \n{}".format(", ".join(list(_not_supported))))
+                           f"supported: \n{', '.join(list(_not_supported))}")
 
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
@@ -103,8 +103,8 @@ class Optimizer:
         for key in self._dlib_kwargs:
             value = self.__getattribute__(key)
             if not isinstance(value, (float, int)):
-                raise TypeError("Given {} is of type {} but should be type float or "
-                                "int".format(key, type(value).__name__))
+                raise TypeError(f"Given {key} is of type {type(value).__name__} but "
+                                f"should be type float or int")
 
     @abstractmethod
     def obj(self, xk, *args):
@@ -118,7 +118,7 @@ class Optimizer:
         :returns float result
             A scalar (float/ 1d) value for the optimization framework.
         """
-        raise NotImplementedError('{}.obj function is not defined'.format(self.__class__.__name__))
+        raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
     @property
     def cd(self) -> str:
@@ -184,7 +184,7 @@ class Optimizer:
             self._minimize_func = self._scipy_differential_evolution
             self._framework_requires_method = True
         else:
-            raise TypeError("Given framework {} is currently not supported.".format(framework))
+            raise TypeError(f"Given framework {framework} is currently not supported.")
 
     def _scipy_minimize(self, method):
         try:
@@ -277,9 +277,7 @@ class Optimizer:
         :param error:
             Any Exception that may occur
         """
-        self.logger.error("Parameter set which caused the failure:")
-        self.logger.error(str(self._current_iterate))
+        self.logger.error(f"Parameter set which caused the failure: {self._current_iterate}")
         self.logger.error("Current best objective and parameter set:")
-        self.logger.error("\n".join(["{}: {}".format(key, value)
-                                     for key, value in self._current_best_iterate.items()]))
+        self.logger.error("\n".join([f"{key}: {value}" for key, value in self._current_best_iterate.items()]))
         raise error

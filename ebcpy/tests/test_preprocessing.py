@@ -85,7 +85,7 @@ class TestPreProcessing(unittest.TestCase):
         For an example, see the doctest in the function."""
         # Generate a random frequency
         supported_frequencys = ["s", "min", "h", "ms"]
-        freq = "{}{}".format(np.random.randint(1, 60), random.choice(supported_frequencys))
+        freq = f"{np.random.randint(1, 60)}{random.choice(supported_frequencys)}"
         dim = np.random.randint(1, 10000)
         df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
                           columns=list('ABCD')).set_index("A").sort_index()

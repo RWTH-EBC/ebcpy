@@ -55,8 +55,7 @@ class TimeSeriesData(pd.DataFrame):
             return
         # Check whether the file exists
         if not os.path.isfile(filepath):
-            raise FileNotFoundError(
-                "The given filepath {} could not be opened".format(filepath))
+            raise FileNotFoundError(f"The given filepath {filepath} could not be opened")
 
         # Set the kwargs
         key = kwargs.get("key")

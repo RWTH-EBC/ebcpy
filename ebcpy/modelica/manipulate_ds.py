@@ -39,7 +39,7 @@ def convert_ds_file_to_dataframe(filename):
             Converted DataFrame
         """
     if not os.path.isfile(filename):
-        raise FileNotFoundError("Given filename {} does not exists.".format(filename))
+        raise FileNotFoundError(f"Given filename {filename} does not exists.")
 
     # Define relevant parameters
     number_line_initial_name = 104  # Line where the string char initialName(,) is always stored
@@ -110,8 +110,8 @@ def eliminate_parameters_from_ds_file(filename, savepath, exclude_paras, del_aux
     if not savepath.endswith(".txt"):
         raise TypeError('File %s is not of type .txt' % savepath)
     if not isinstance(exclude_paras, list):
-        raise TypeError("Given exclude_paras is of type {} but should "
-                        "be of type list".format(type(exclude_paras).__name__))
+        raise TypeError(f"Given exclude_paras is of type {type(exclude_paras).__name__} "
+                        f"but should be of type list")
 
     df = convert_ds_file_to_dataframe(filename)
 
