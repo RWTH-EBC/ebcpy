@@ -145,9 +145,9 @@ class TimeSeriesData(pd.DataFrame):
 
         # Save based on file suffix
         if filepath.lower().endswith(".hdf"):
-            self.to_hdf(filepath, key=kwargs.get("key"))
+            pd.DataFrame(self).to_hdf(filepath, key=kwargs.get("key"))
         elif filepath.lower().endswith(".csv"):
-            self.to_csv(filepath, sep=kwargs.get("sep", ","))
+            pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
