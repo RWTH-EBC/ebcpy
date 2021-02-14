@@ -8,6 +8,7 @@ INSTALL_REQUIRES = [
     'scipy>=1.5.4',
     'six>=1.15.0',
     'pandas>=1.1.5',
+    'tables>=3.6.1',
     'pyyaml~=5.4.1',
     'sklearn~=0.0',
     'fmpy>=0.2.27',
