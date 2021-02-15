@@ -277,7 +277,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         if savepath_files:
             _save_name_dsres = f"{self.sim_setup['resultFile']}.mat"
-            os.makedirs(savepath_files, exist_ok=)
+            os.makedirs(savepath_files, exist_ok=True)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 if os.path.isfile(os.path.join(savepath_files, filepath)):
