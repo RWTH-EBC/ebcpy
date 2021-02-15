@@ -121,6 +121,7 @@ class TestFMUAPI(unittest.TestCase):
 
     def test_close(self):
         """Test close functionality of fmu api"""
+        # pylint: disable=protected-access
         self.fmu_api.close()
         self.assertIsNone(self.fmu_api._unzip_dir)
 

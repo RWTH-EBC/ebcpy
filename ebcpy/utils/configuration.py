@@ -116,7 +116,7 @@ def read_config(filepath):
 
 def _update(dic, new_dic):
     """Recursively update a given dictionary with a new one"""
-    for key, val in new_dict.items():
+    for key, val in new_dic.items():
         if isinstance(val, collections.abc.Mapping):
             dic[key] = _update(dic.get(key, {}), val)
         else:

@@ -282,13 +282,13 @@ def read(fname, constants_only=False):
 
     # Check if the file contains the Aclass variable.
     try:
-        Aclass = mat['Aclass']
+        aclass = mat['Aclass']
     except KeyError as error:
         raise TypeError(f'"{fname}" does not appear to be a Dymola or OpenModelica '
                         'result file.  The "Aclass" variable is '
                         'missing.') from error
 
-    return mat, get_strings(Aclass)
+    return mat, get_strings(aclass)
 
 
 def get_strings(str_arr):
@@ -318,6 +318,7 @@ class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit
         return -self.samples.values if self.samples.negated else self.samples.values
 
 
+# pylint: disable=line-too-long
 class SimRes:
     """Class to load, analyze, and plot results from a Modelica_ simulation
 

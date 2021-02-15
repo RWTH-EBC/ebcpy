@@ -8,8 +8,6 @@ import atexit
 import pandas as pd
 from ebcpy import simulationapi
 from ebcpy.modelica import manipulate_ds
-DymolaInterface = None  # Create dummy to later be used for global-import
-DymolaConnectionException = None  # Create dummy to later be used for global-import
 
 
 class DymolaAPI(simulationapi.SimulationAPI):
@@ -113,7 +111,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if "bin64" not in self.dymola_path:
             self._bit_64 = False
 
-        self._global_import_dymola()
         self.packages = packages
 
         # Update kwargs with regard to what kwargs are supported.
@@ -243,8 +240,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
                         "without savepaths, you have to provide either a "
                         "numberOfIntervals or a value for outputInterval "
                         "which can be converted to numberOfIntervals.")
-                else:
-                    num_ints = generated_num_ints
+                num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
             initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
@@ -281,8 +277,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         if savepath_files:
             _save_name_dsres = f"{self.sim_setup['resultFile']}.mat"
-            if not os.path.isdir(savepath_files):
-                os.mkdir(savepath_files)
+            os.makedirs(savepath_files, exist_ok=)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 if os.path.isfile(os.path.join(savepath_files, filepath)):
@@ -291,21 +286,19 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 os.rename(os.path.join(self.cd, filepath),
                           os.path.join(savepath_files, filepath))
             return os.path.join(savepath_files, _save_name_dsres)
-        else:
-            data = res[1]
-            dfs = []
-            for ini_val_set in data:
-                df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
-                                   in enumerate(res_names)})
-                # Set time index
-                df = df.set_index("Time")
-                # Convert it to float
-                df.index = df.index.astype("float64")
-                dfs.append(df)
-            # Most of the cases, only one set is provided. In that case, avoid
-            if len(dfs) == 1 and squeeze:
-                dfs = dfs[0]
-            return dfs
+        data = res[1]
+        dfs = []
+        for ini_val_set in data:
+            df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
+                               in enumerate(res_names)})
+            # Set time index
+            df = df.set_index("Time")
+            # Convert it to float
+            df.index = df.index.astype("float64")
+            dfs.append(df)
+        # Most of the cases, only one set is provided. In that case, avoid
+        if len(dfs) == 1 and squeeze:
+            dfs = dfs[0]
 
     def set_sim_setup(self, sim_setup):
         """
@@ -473,9 +466,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     def _open_dymola_interface(self):
         """Open an instance of dymola and return the API-Object"""
+        if self.dymola_interface_path not in sys.path:
+            sys.path.insert(0, self.dymola_interface_path)
         try:
+            from dymola.dymola_interface import DymolaInterface
+            from dymola.dymola_exception import DymolaConnectionException
             return DymolaInterface(showwindow=self.show_window,
                                    dymolapath=self.dymola_path)
+        except ImportError as error:
+            raise ImportError("Given dymola-interface could not be "
+                              "loaded:\n %s" % self.dymola_interface_path) from error
         except DymolaConnectionException as error:
             raise ConnectionError(error)
 
@@ -715,17 +715,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 param = prev_line.replace(" has no effect in model.", "")
                 structural_params.append(param)
         return structural_params
-
-    def _global_import_dymola(self):
-        sys.path.insert(0, self.dymola_interface_path)
-        global DymolaInterface
-        global DymolaConnectionException
-        try:
-            from dymola.dymola_interface import DymolaInterface
-            from dymola.dymola_exception import DymolaConnectionException
-        except ImportError as error:
-            raise ImportError("Given dymola-interface could not be "
-                              "loaded:\n %s" % self.dymola_interface_path) from error
 
     def _check_restart(self):
         """Restart Dymola every n_restart iterations in order to free memory"""

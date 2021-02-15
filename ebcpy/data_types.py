@@ -174,10 +174,10 @@ class TimeSeriesData(pd.DataFrame):
                 key = None  # Avoid cryptic error in pandas by converting empty string to None
             try:
                 return pd.read_hdf(self.filepath, key=key)
-            except (ValueError, KeyError):
+            except (ValueError, KeyError) as error:
                 keys = ", ".join(get_keys_of_hdf_file(self.filepath))
                 raise KeyError(f"key must be provided when HDF5 file contains multiple datasets. "
-                               f"Here are all keys in the given hdf-file: {keys}")
+                               f"Here are all keys in the given hdf-file: {keys}") from error
         elif self.filepath.lower().endswith("csv"):
             return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
         elif self.filepath.lower().endswith("mat"):
@@ -209,12 +209,11 @@ class TimeSeriesData(pd.DataFrame):
         # Return based on the given return_type
         if return_type.lower() == 'pandas':
             return _ret
-        elif return_type.lower() in ['numpy', 'scipy', 'sp', 'np']:
+        if return_type.lower() in ['numpy', 'scipy', 'sp', 'np']:
             return _ret.to_numpy()
-        elif return_type.lower() == 'control':
+        if return_type.lower() == 'control':
             return _ret.to_numpy().transpose()
-        else:
-            raise TypeError("Unknown return type")
+        raise TypeError("Unknown return type")
 
     def set_data_by_tag(self, data, tag, variables=None):
         """

@@ -144,7 +144,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
-        # pylint: disable=unused-argument
+        # pylint: disable=unused-argument, invalid-name
         label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
         _level_map = {'OK': logging.INFO,
                       'WARNING': logging.WARNING,
