@@ -71,6 +71,10 @@ class TestDataTypes(unittest.TestCase):
         Check the keys of the file with e.g. the SDFEditor and
         use those keys as a reference list.
         """
+        try:
+            import h5py
+        except ImportError:
+            self.skipTest("Test only makes sense if h5py is installed")
         reference_list = ['parameters', 'trajectories']
         return_val = data_types.get_keys_of_hdf_file(self.example_data_hdf_path)
         self.assertListEqual(return_val, reference_list)
