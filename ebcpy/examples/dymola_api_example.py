@@ -29,8 +29,8 @@ def setup_dymola_api(cd=None, show_window=True):
     Example:
     --------
     >>> DYM_API = setup_dymola_api(show_window=True)
-    >>> DYM_API.set_sim_setup({"startTime": 100,
-    >>>                        "stopTime": 200})
+    >>> DYM_API.sim_setup = {"startTime": 100,
+    >>>                      "stopTime": 200}
     >>> DYM_API.simulate()
     >>> DYM_API.close()
     """

@@ -59,18 +59,19 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     dymola = None
     # Default simulation setup
-    sim_setup = {'startTime': 0.0,
-                 'stopTime': 1.0,
-                 'numberOfIntervals': 0,
-                 'outputInterval': 1,
-                 'method': 'Dassl',
-                 'tolerance': 0.0001,
-                 'fixedstepsize': 0.0,
-                 'resultFile': 'resultFile',
-                 'autoLoad': False,
-                 'initialNames': [],
-                 'initialValues': [],
-                 'resultNames': []}
+    _default_sim_setup = {
+        'startTime': 0.0,
+        'stopTime': 1.0,
+        'numberOfIntervals': 0,
+        'outputInterval': 1,
+        'method': 'Dassl',
+        'tolerance': 0.0001,
+        'fixedstepsize': 0.0,
+        'resultFile': 'resultFile',
+        'autoLoad': False,
+        'initialNames': [],
+        'initialValues': [],
+        'resultNames': []}
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -88,7 +89,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         else:
             dymola_interface_path = None
 
-        if "dymola_path" in kwargs:
+        if kwargs.get("dymola_path", None) is not None:
             dymola_path = kwargs["dymola_path"]
             if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
                 raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
@@ -240,7 +241,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             # Handle 1 and 2 D initial names
             initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
-            if isinstance(initial_values[0], (float, int)):
+            if initial_values and isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
 
             # Handle the time of the simulation:
@@ -298,15 +299,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
             if len(dfs) == 1 and squeeze:
                 dfs = dfs[0]
             return dfs
-
-    def set_initial_values(self, initial_values):
-        """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
-        """
-        self.sim_setup["initialValues"] = list(initial_values)
 
     def set_sim_setup(self, sim_setup):
         """

@@ -53,7 +53,10 @@ class TestDymolaAPI(unittest.TestCase):
         self.dym_api.set_sim_setup({"startTime": 0.0,
                                     "stopTime": 10.0})
         res = self.dym_api.simulate()
-        self.assertIsInstance(res, pd.DataFrame)
+        if len(self.dym_api.sim_setup["resultNames"]) > 1:
+            self.assertIsInstance(res, pd.DataFrame)
+        else:
+            self.assertEqual(res, [])
 
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
@@ -136,15 +139,15 @@ class TestFMUAPI(unittest.TestCase):
         """Test set_sim_setup functionality of fmu api"""
         new_sim_setup = {'initialNames': self.initial_names,
                          'initialValues': self.initial_values}
-        self.fmu_api.set_sim_setup(new_sim_setup)
+        self.fmu_api.sim_setup = new_sim_setup
         self.assertEqual(self.fmu_api.sim_setup['initialNames'],
                          new_sim_setup['initialNames'])
         self.assertEqual(self.fmu_api.sim_setup['initialValues'],
                          new_sim_setup['initialValues'])
         with self.assertRaises(KeyError):
-            self.fmu_api.set_sim_setup({"NotAValidKey": None})
+            self.fmu_api.sim_setup = {"NotAValidKey": None}
         with self.assertRaises(TypeError):
-            self.fmu_api.set_sim_setup({"stopTime": "not_a_float_or_int"})
+            self.fmu_api.sim_setup = {"stopTime": "not_a_float_or_int"}
 
     def tearDown(self):
         """Delete all files created while testing"""

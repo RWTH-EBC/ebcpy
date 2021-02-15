@@ -71,9 +71,12 @@ class TimeSeriesData(pd.DataFrame):
             _df_loaded = self._load_df_from_file()
 
         if _df_loaded.columns.nlevels == 1:
-            multi_col = pd.MultiIndex.from_product([[var_name for var_name in _df_loaded.columns],
-                                                    [self._default_tag]], names=_multi_col_names)
-            _df_loaded.columns = multi_col
+            # Check if first level is named Tags.
+            # If so, don't create MultiIndex-DF as the method is called by the pd constructor
+            if _df_loaded.columns.name != _multi_col_names[1]:
+                multi_col = pd.MultiIndex.from_product([[var_name for var_name in _df_loaded.columns],
+                                                        [self._default_tag]], names=_multi_col_names)
+                _df_loaded.columns = multi_col
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
                 raise TypeError("Loaded dataframe has a different 2-Level header format than "

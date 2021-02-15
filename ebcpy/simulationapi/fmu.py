@@ -19,19 +19,16 @@ class FMU_API(simulationapi.SimulationAPI):
     .. versionadded:: 0.1.7
     """
 
-    sim_setup = {'startTime': 0.0,
-                 'stopTime': 1.0,
-                 'numberOfIntervals': 0,
-                 'outputInterval': 1,
-                 'solver': 'CVode',
-                 'initialNames': [],
-                 'initialValues': [],
-                 'resultNames': [],
-                 'timeout': np.inf}
-
-    # Dynamic setup of simulation setup
-    _number_values = [key for key, value in sim_setup.items() if
-                      (isinstance(value, (int, float)) and not isinstance(value, bool))]
+    _default_sim_setup = {
+        'startTime': 0.0,
+        'stopTime': 1.0,
+        'numberOfIntervals': 0,
+        'outputInterval': 1,
+        'solver': 'CVode',
+        'initialNames': [],
+        'initialValues': [],
+        'resultNames': [],
+        'timeout': np.inf}
 
     def __init__(self, cd, model_name):
         """Instantiate class parameters"""
@@ -140,15 +137,6 @@ class FMU_API(simulationapi.SimulationAPI):
             fmi_call_logger=None,
             use_remoting=False
         )
-
-    def set_initial_values(self, initial_values):
-        """
-        Overwrite inital values
-
-        :param list initial_values:
-            List containing initial values for the dymola interface
-        """
-        self.sim_setup["initialValues"] = list(initial_values)
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
