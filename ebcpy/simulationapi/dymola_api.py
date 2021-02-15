@@ -299,6 +299,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Most of the cases, only one set is provided. In that case, avoid
         if len(dfs) == 1 and squeeze:
             dfs = dfs[0]
+        return dfs
 
     def set_sim_setup(self, sim_setup):
         """
