@@ -236,8 +236,8 @@ class Optimizer:
     def _scipy_differential_evolution(self, method="best1bin"):
         try:
             import scipy.optimize as opt
-        except ImportError:
-            raise ImportError("Please install scipy to use the minimize_scipy function.")
+        except ImportError as error:
+            raise ImportError("Please install scipy to use the minimize_scipy function.") from error
 
         try:
             if self.bounds is None:

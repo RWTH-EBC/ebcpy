@@ -7,7 +7,6 @@ import warnings
 import atexit
 import pandas as pd
 from ebcpy import simulationapi
-from ebcpy import data_types
 from ebcpy.modelica import manipulate_ds
 DymolaInterface = None  # Create dummy to later be used for global-import
 DymolaConnectionException = None  # Create dummy to later be used for global-import
@@ -644,6 +643,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         # The option may be useful. However the explicit requirement leads to
         # Problems on linux, therefore the feature is not worth the trouble.
+        # pylint: disable=import-outside-toplevel
         try:
             import psutil
         except ImportError:

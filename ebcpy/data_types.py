@@ -11,7 +11,7 @@ import os
 from datetime import datetime
 import pandas as pd
 import ebcpy.modelica.simres as sr
-from ebcpy import preprocessing
+import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
 

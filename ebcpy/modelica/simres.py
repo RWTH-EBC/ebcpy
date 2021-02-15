@@ -13,25 +13,25 @@ import os
 from fnmatch import fnmatchcase
 from itertools import count
 from collections import namedtuple
+import re as regexp
 from scipy.io import loadmat
 from scipy.io.matlab.mio_utils import chars_to_strings
 from six import PY2
 import pandas as pd
 import numpy as np
-import re as regexp
 
 
 # Namedtuple to store the time and value information of each variable
 Samples = namedtuple('Samples', ['times', 'values', 'negated'])
 
 
-def flatten_list(l, ltypes=(list, tuple)):
+def flatten_list(lis, ltypes=(list, tuple)):
     """
     Flatten a nested list.
 
     **Arguments:**
 
-    - *l*: List (may be nested to an arbitrary depth)
+    - *lis*: List (may be nested to an arbitrary depth)
 
           If the type of *l* is not in ltypes, then it is placed in a list.
 
@@ -45,21 +45,21 @@ def flatten_list(l, ltypes=(list, tuple)):
     # Based on
     # http://rightfootin.blogspot.com/2006/09/more-on-python-flatten.html,
     # 10/28/2011
-    ltype = type(l)
+    ltype = type(lis)
     if ltype not in ltypes: # So that strings aren't split into characters
-        return [l]
-    l = list(l)
+        return [lis]
+    lis = lis(lis)
     i = 0
-    while i < len(l):
-        while isinstance(l[i], ltypes):
-            if l[i]:
-                l[i:i + 1] = l[i]
+    while i < len(lis):
+        while isinstance(lis[i], ltypes):
+            if lis[i]:
+                lis[i:i + 1] = lis[i]
             else:
-                l.pop(i)
+                lis.pop(i)
                 i -= 1
                 break
         i += 1
-    return ltype(l)
+    return ltype(lis)
 
 
 def match(strings, pattern=None, re=False):
@@ -116,12 +116,12 @@ def match(strings, pattern=None, re=False):
     if pattern is None or (pattern in ['.*', '.+', '.', '.?', ''] if re
                            else pattern == '*'):
         return list(strings) # Shortcut
+
+    if re:
+        matcher = regexp.compile(pattern).search
     else:
-        if re:
-            matcher = regexp.compile(pattern).search
-        else:
-            matcher = lambda name: fnmatchcase(name, pattern)
-        return list(filter(matcher, strings))
+        matcher = lambda name: fnmatchcase(name, pattern)
+    return list(filter(matcher, strings))
 
 
 def loadsim(fname, constants_only=False):
@@ -140,8 +140,7 @@ def loadsim(fname, constants_only=False):
          parameters, and variables that don't vary.  If only that information is
          needed, it may save resources to set *constants_only* to *True*.
 
-    **Returns:** An instance of :class:`~modelicares.simres._VarDict`, a
-    specialized dictionary of variables (instances of :class:`Variable`)
+    **Returns:** An instance of dict
 
     **Example:**
 
@@ -156,47 +155,45 @@ def loadsim(fname, constants_only=False):
         displayUnit.
         """
         description = description.rstrip(']')
-        displayUnit = ''
+        display_unit = ''
         try:
             description, unit = description.rsplit('[', 1)
         except ValueError:
             unit = ''
         else:
             try:
-                unit, displayUnit = unit.rsplit('|', 1)
+                unit, display_unit = unit.rsplit('|', 1)
             except ValueError:
                 pass # (displayUnit = '')
         description = description.rstrip()
         if PY2:
             description = description.decode('utf-8')
 
-        return description, unit, displayUnit
+        return description, unit, display_unit
 
     # Load the file.
-    mat, Aclass = read(fname, constants_only)
+    mat, aclass = read(fname, constants_only)
 
     # Check the type of results.
-    if Aclass[0] == 'AlinearSystem':
+    if aclass[0] == 'AlinearSystem':
         raise AssertionError(fname + ' is a linearization result.  Use LinRes '
                              'instead.')
-    else:
-
-        assert Aclass[0] == 'Atrajectory', (fname + ' is not a simulation or '
-                                            'linearization result.')
+    assert aclass[0] == 'Atrajectory', (fname + ' is not a simulation or '
+                                        'linearization result.')
 
     # Determine if the data is transposed.
     try:
-        transposed = Aclass[3] == 'binTrans'
+        transposed = aclass[3] == 'binTrans'
     except IndexError:
         transposed = False
     else:
-        assert transposed or Aclass[3] == 'binNormal', (
+        assert transposed or aclass[3] == 'binNormal', (
             'The orientation of the Dymola/OpenModelica results is not '
             'recognized.  The third line of the "Aclass" variable is "%s", but '
-            'it should be "binNormal" or "binTrans".' % Aclass[3])
+            'it should be "binNormal" or "binTrans".' % aclass[3])
 
     # Get the format version.
-    version = Aclass[1]
+    version = aclass[1]
 
     # Process the name, description, parts of dataInfo, and data_i variables.
     # This section has been optimized for speed.  All time and value data
@@ -208,9 +205,9 @@ def loadsim(fname, constants_only=False):
         data = mat['data'].T if transposed else mat['data']
         times = data[:, 0]
         names = get_strings(mat['names'].T if transposed else mat['names'])
-        variables = _VarDict({name: Variable(Samples(times, data[:, i], False),
-                                             '', '', '')
-                              for i, name in enumerate(names)})
+        variables = {name: Variable(Samples(times, data[:, i], False),
+                                            '', '', '')
+                             for i, name in enumerate(names)}
     else:
         assert version == '1.1', ('The version of the Dymola/OpenModelica '
                                   f'result file ({version}) is not '
@@ -218,10 +215,10 @@ def loadsim(fname, constants_only=False):
         names = get_strings(mat['name'].T if transposed else mat['name'])
         descriptions = get_strings(mat['description'].T if transposed else
                                    mat['description'])
-        dataInfo = mat['dataInfo'] if transposed else mat['dataInfo'].T
-        data_sets = dataInfo[0, :]
-        sign_cols = dataInfo[1, :]
-        variables = _VarDict()
+        data_info = mat['dataInfo'] if transposed else mat['dataInfo'].T
+        data_sets = data_info[0, :]
+        sign_cols = data_info[1, :]
+        variables = dict()
         for i in count(1):
             try:
                 data = (mat['data_%i' % i].T if transposed else
@@ -279,17 +276,17 @@ def read(fname, constants_only=False):
                                           'data_1', 'ABCD', 'nx', 'xuyName'])
         else:
             mat = loadmat(fname, chars_as_strings=False, appendmat=False)
-    except IOError:
+    except IOError as error:
         raise IOError(f'"{fname}" could not be opened.'
-                      '  Check that it exists.')
+                      '  Check that it exists.') from error
 
     # Check if the file contains the Aclass variable.
     try:
         Aclass = mat['Aclass']
-    except KeyError:
+    except KeyError as error:
         raise TypeError(f'"{fname}" does not appear to be a Dymola or OpenModelica '
                         'result file.  The "Aclass" variable is '
-                        'missing.')
+                        'missing.') from error
 
     return mat, get_strings(Aclass)
 
@@ -303,31 +300,6 @@ def get_strings(str_arr):
             for line in chars_to_strings(str_arr)]
 
 
-class _VarDict(dict):
-    """Special dictionary for simulation variables (instances of
-    :class:`Variable`)
-    """
-
-    def __getattr__(self, attr):
-        """Look up a property for each of the variables (e.g., n_constants).
-        """
-        return util.CallList([getattr(variable, attr)
-                              for variable in self.values()])
-
-    def __getitem__(self, key):
-        """Include suggestions in the error message if a variable is missing.
-        """
-        try:
-            return dict.__getitem__(self, key)
-        except KeyError:
-            msg = '%s is not a valid variable name.' % key
-            close_matches = get_close_matches(key, self.keys())
-            if close_matches:
-                msg += "\n       ".join(["\n\nDid you mean one of these?"]
-                                        + close_matches)
-            raise LookupError(msg)
-
-
 class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit', 'displayUnit'])):
     """Special namedtuple_ to represent a variable in a simulation, with
     methods to retrieve and perform calculations on its values
@@ -338,9 +310,11 @@ class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit
     """
 
     def times(self):
+        """Return sample times"""
         return self.samples.times
 
     def values(self):
+        """Return sample values"""
         return -self.samples.values if self.samples.negated else self.samples.values
 
 
@@ -388,8 +362,6 @@ class SimRes:
     .. _Python: http://www.python.org/
     .. _pandas DataFrame: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html?highlight=dataframe#pandas.DataFrame
     """
-
-    # pylint: disable=R0921
 
     def __init__(self, fname='dsres.mat', constants_only=False):
         """Upon initialization, load Modelica_ simulation results from a file.
@@ -500,7 +472,8 @@ class SimRes:
             if np.array_equal(self._variables[name].times(), times):
                 values = self._variables[name].values()  # Save computation.
             # Check if all values are constant to save resampling time
-            elif np.count_nonzero(self._variables[name].values() - np.max(self._variables[name].values())) == 0:
+            elif np.count_nonzero(self._variables[name].values() -
+                                  np.max(self._variables[name].values())) == 0:
                 # Passing a scalar converts automatically to an array.
                 values = np.max(self._variables[name].values())
             else:
@@ -548,7 +521,8 @@ class SimRes:
             if len(values) > 2:
                 trajectory_names.append(name)
             # Special Case: Only two time-steps are simulated.
-            # In that case, if the last value does not equal the first value, it is also a trajectory
+            # In that case, if the last value does not equal
+            # the first value, it is also a trajectory
             elif len(values) == 2 and values[0] != values[-1]:
                 trajectory_names.append(name)
         return trajectory_names
