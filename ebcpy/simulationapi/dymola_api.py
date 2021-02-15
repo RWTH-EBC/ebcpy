@@ -27,13 +27,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         True to show the Dymola window. Default is False
     :keyword Boolean get_structural_parameters:
         True to automatically read the structural parameters of the
-        simulation model and set them via Modelica modifiers. Default 
+        simulation model and set them via Modelica modifiers. Default
         is True
     :keyword Boolean equidistant_output:
-        If True (Default), Dymola stores variables in an 
+        If True (Default), Dymola stores variables in an
         equisdistant output and does not store variables at events.
     :keyword str dymola_path:
-         Path to the dymola installation on the device. Necessary 
+         Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
     :keyword str dymola_interface_path:
         Same as for dymola_path. If we can't find the dymola installation,
@@ -147,7 +147,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface()
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files="", show_eventlog = False, squeeze=True):
+    def simulate(self, **kwargs):
         """
         Simulate the current setup.
         If simulation terminates without an error, you can either
@@ -194,14 +194,20 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 If multiple set's of initial values are given, one
                 dataframe for each set is returned in a list
         """
+        # Unpack kwargs
+        savepath_files = kwargs.get("savepath_files", "")
+        show_eventlog = kwargs.get("show_eventlog", False)
+        squeeze = kwargs.get("squeeze", True)
+
         if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
             self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
         if self._structural_params:
-            warnings.warn(f"Warning: Currently, the model is re-translating for each simulation.\n"
-                          f"You should add to your Modelica tuner parameters \"annotation(Evaluate=false)\".\n"
+            warnings.warn(f"Warning: Currently, the model is re-translating "
+                          f"for each simulation. You should add to your Modelica "
+                          f"tuner parameters \"annotation(Evaluate=false)\".\n "
                           f"Check for these parameters: {', '.join(self._structural_params)}")
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
@@ -233,9 +239,11 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                      self.sim_setup['outputInterval']
                 if int(generated_num_ints) != generated_num_ints:
                     raise ValueError(
-                        "Given outputInterval and time interval did not yield an integer numberOfIntervals."
-                        "To use this functions without savepaths, you have to provide either a numberOfIntervals"
-                        "or a value for outputInterval which can be converted to numberOfIntervals.")
+                        "Given outputInterval and time interval did not yield "
+                        "an integer numberOfIntervals. To use this functions "
+                        "without savepaths, you have to provide either a "
+                        "numberOfIntervals or a value for outputInterval "
+                        "which can be converted to numberOfIntervals.")
                 else:
                     num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
@@ -439,7 +447,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         df = df[df["5"] == "1"]
         names = df.index
         initial_values = pd.to_numeric(df["2"].values)
-        return {'names': names, 'initial_values': initial_value}
+        return {'names': names, 'initial_values': initial_values}
 
     def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
@@ -715,9 +723,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         try:
             from dymola.dymola_interface import DymolaInterface
             from dymola.dymola_exception import DymolaConnectionException
-        except ImportError:
-            raise ImportError("Given dymola-interface could "
-                              "not be loaded:\n %s" % self.dymola_interface_path)
+        except ImportError as error:
+            raise ImportError("Given dymola-interface could not be "
+                              "loaded:\n %s" % self.dymola_interface_path) from error
 
     def _check_restart(self):
         """Restart Dymola every n_restart iterations in order to free memory"""
@@ -729,6 +737,3 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self.sim_counter = 1
         else:
             self.sim_counter += 1
-
-
-

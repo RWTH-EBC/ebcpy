@@ -7,6 +7,8 @@ from collections import namedtuple
 from abc import abstractmethod
 import numpy as np
 from ebcpy.utils import setup_logger
+# pylint: disable=import-outside-toplevel
+# pylint: disable=broad-except
 
 
 class Optimizer:
@@ -122,10 +124,12 @@ class Optimizer:
 
     @property
     def cd(self) -> str:
+        """Get current working directory"""
         return self._cd
 
     @cd.setter
     def cd(self, cd: str):
+        """Set current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
 
@@ -189,8 +193,8 @@ class Optimizer:
     def _scipy_minimize(self, method):
         try:
             import scipy.optimize as opt
-        except ImportError:
-            raise ImportError("Please install scipy to use the minimize_scipy function.")
+        except ImportError as error:
+            raise ImportError("Please install scipy to use the minimize_scipy function.") from error
 
         try:
             res = opt.minimize(fun=self.obj,
@@ -210,8 +214,8 @@ class Optimizer:
     def _dlib_minimize(self, _):
         try:
             import dlib
-        except ImportError:
-            raise ImportError("Please install dlib to use the minimize_dlib function.")
+        except ImportError as error:
+            raise ImportError("Please install dlib to use the minimize_dlib function.") from error
         try:
             _bounds_2d = np.array(self.bounds)
             self._bound_min = list(_bounds_2d[:, 0])
@@ -279,5 +283,6 @@ class Optimizer:
         """
         self.logger.error(f"Parameter set which caused the failure: {self._current_iterate}")
         self.logger.error("Current best objective and parameter set:")
-        self.logger.error("\n".join([f"{key}: {value}" for key, value in self._current_best_iterate.items()]))
+        self.logger.error("\n".join([f"{key}: {value}"
+                                     for key, value in self._current_best_iterate.items()]))
         raise error

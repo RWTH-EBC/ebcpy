@@ -8,13 +8,12 @@ optimization etc.
 """
 
 import os
-import warnings
 from datetime import datetime
-import numpy as np
 import pandas as pd
 import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
 # pylint: disable=I1101
+# pylint: disable=too-many-ancestors
 
 __all__ = ['TimeSeries',
            'TimeSeriesData']
@@ -74,8 +73,10 @@ class TimeSeriesData(pd.DataFrame):
             # Check if first level is named Tags.
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
             if _df_loaded.columns.name != _multi_col_names[1]:
-                multi_col = pd.MultiIndex.from_product([[var_name for var_name in _df_loaded.columns],
-                                                        [self._default_tag]], names=_multi_col_names)
+                multi_col = pd.MultiIndex.from_product(
+                    [_df_loaded.columns,
+                     [self._default_tag]], names=_multi_col_names
+                )
                 _df_loaded.columns = multi_col
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
@@ -175,8 +176,8 @@ class TimeSeriesData(pd.DataFrame):
                 return pd.read_hdf(self.filepath, key=key)
             except (ValueError, KeyError):
                 keys = ", ".join(get_keys_of_hdf_file(self.filepath))
-                raise KeyError("key must be provided when HDF5 file contains multiple datasets. "
-                               "Here are all keys in the given hdf-file: %s" % keys)
+                raise KeyError(f"key must be provided when HDF5 file contains multiple datasets. "
+                               f"Here are all keys in the given hdf-file: {keys}")
         elif self.filepath.lower().endswith("csv"):
             return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
         elif self.filepath.lower().endswith("mat"):
@@ -303,6 +304,7 @@ def get_keys_of_hdf_file(filepath):
     :return: list
         List with all keys in the given file.
     """
+    # pylint: disable=import-outside-toplevel
     try:
         import h5py
         hdf_file = h5py.File(filepath, 'r')

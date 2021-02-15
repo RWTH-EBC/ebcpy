@@ -7,8 +7,8 @@ from sklearn import model_selection
 from pandas.tseries.frequencies import to_offset
 import numpy as np
 import pandas as pd
-from ebcpy import data_types
 import scipy.stats as st
+from ebcpy import data_types
 
 
 def build_average_on_duplicate_rows(df):
@@ -272,12 +272,16 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         cfd_int = pd.to_timedelta(cfd_int)
         if pd.to_timedelta(desired_freq) < cfd_int[0]:
             warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is lower than the given confidence interval ({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you introduced errors to the data.")
+                          f"is lower than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
         if pd.to_timedelta(desired_freq) > cfd_int[1]:
             warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is higher than the given confidence interval ({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you introduced errors to the data.")
+                          f"is higher than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
 
     #%% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
@@ -613,17 +617,3 @@ def cross_validation(x, y, test_size=0.3):
     4
     """
     return model_selection.train_test_split(x, y, test_size=test_size)
-
-
-if __name__=="__main__":
-    df = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)),
-                      columns=list('ABCD')).set_index("A").sort_index()
-    df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
-    clean_and_space_equally_time_series(df, "30s")
-    import matplotlib.pyplot as plt
-
-    plt.plot(df["B"], label="Raw data")
-    df = clean_and_space_equally_time_series(df.copy(), "1500ms")
-    plt.plot(df["B"], label="Clead and spaced equally")
-    plt.legend()
-    plt.show()

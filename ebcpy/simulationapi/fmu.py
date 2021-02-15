@@ -2,13 +2,14 @@
 simulate models."""
 
 import os
-import fmpy
-import shutil
 import logging
+import shutil
+import fmpy
+from fmpy.model_description import read_model_description
 import pandas as pd
 import numpy as np
 from ebcpy import simulationapi
-from fmpy.model_description import read_model_description
+# pylint: disable=broad-except
 
 
 class FMU_API(simulationapi.SimulationAPI):
@@ -125,7 +126,10 @@ class FMU_API(simulationapi.SimulationAPI):
         self._model_description = read_model_description(self._unzip_dir,
                                                          validate=True)
 
-        self._fmi_type = 'CoSimulation' if self._model_description.coSimulation is not None else 'ModelExchange'
+        if self._model_description.coSimulation is None:
+            self._fmi_type = 'ModelExchange'
+        else:
+            self._fmi_type = 'CoSimulation'
 
         self._fmu_instance = fmpy.instantiate_fmu(
             unzipdir=self._unzip_dir,
@@ -140,6 +144,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
+        # pylint: disable=unused-argument
         label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
         _level_map = {'OK': logging.INFO,
                       'WARNING': logging.WARNING,

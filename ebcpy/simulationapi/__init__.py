@@ -33,7 +33,7 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}.close function is not defined')
 
     @abstractmethod
-    def simulate(self):
+    def simulate(self, **kwargs):
         """Base function for simulating the simulation-model."""
         raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
 
@@ -80,7 +80,7 @@ class SimulationAPI:
         warnings.warn("Function will be removed in future versions. "
                       "Use the property setter directly e.g. "
                       "sim_api.sim_setup = sim_setup", DeprecationWarning)
-
+        self.sim_setup = sim_setup
 
     def set_initial_values(self, initial_values: list):
         """
@@ -98,9 +98,11 @@ class SimulationAPI:
 
     @property
     def cd(self) -> str:
+        """Get the current working directory"""
         return self._cd
 
     @cd.setter
     def cd(self, cd: str):
+        """Set the current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd

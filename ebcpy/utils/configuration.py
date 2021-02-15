@@ -3,8 +3,8 @@ Module with functions to read and write config
 files for objects in this and other repositories.
 """
 import os
-import yaml
 import collections
+import yaml
 from ebcpy.simulationapi.dymola_api import DymolaAPI
 
 # TODO: Add unit tests
@@ -74,8 +74,8 @@ def get_simulation_api_from_config(config):
     config.pop("type")
     if sim_type.lower() == "dymolaapi":
         return DymolaAPI(**config)
-    else:
-        raise KeyError(f"Given simulation type {sim_type} not supported.")
+
+    raise KeyError(f"Given simulation type {sim_type} not supported.")
 
 
 def write_config(filepath, config):
@@ -114,11 +114,11 @@ def read_config(filepath):
     return config
 
 
-def _update(d, u):
+def _update(dic, new_dic):
     """Recursively update a given dictionary with a new one"""
-    for k, v in u.items():
-        if isinstance(v, collections.abc.Mapping):
-            d[k] = _update(d.get(k, {}), v)
+    for key, val in new_dict.items():
+        if isinstance(val, collections.abc.Mapping):
+            dic[key] = _update(dic.get(key, {}), val)
         else:
-            d[k] = v
-    return d
+            dic[key] = val
+    return dic

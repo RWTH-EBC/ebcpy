@@ -4,7 +4,6 @@ ebcpy.data_types."""
 import os
 import unittest
 import pandas as pd
-import numpy as np
 from ebcpy import data_types
 
 
@@ -71,6 +70,8 @@ class TestDataTypes(unittest.TestCase):
         Check the keys of the file with e.g. the SDFEditor and
         use those keys as a reference list.
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=unused-import
         try:
             import h5py
         except ImportError:
