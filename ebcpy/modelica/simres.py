@@ -1,3 +1,19 @@
+# Copyright (c) 2010-2014, Kevin Davies, Hawaii Natural Energy Institute (HNEI),
+# and Georgia Tech Research Corporation (GTRC).
+# All rights reserved.
+
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL GEORGIA TECH RESEARCH CORPORATION BE LIABLE FOR
+# ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
+# ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# TODO: Check if licence use is correct
+
 """
 Module based on the simres module of modelicares. As no new content is going to be
 merged upstream, this "fork" of the to_pandas() function is used.
@@ -5,7 +21,6 @@ merged upstream, this "fork" of the to_pandas() function is used.
 Update 18.01.2021:
 As modelicares is no longer compatible with matplotlib > 3.3.2, we integrated all
 necessary functions from modelicares to still be able and use SimRes.to_pandas().
-# TODO: If we put this open-source, how do we cite this?!
 
 .. versionadded:: 0.1.7
 """
@@ -178,8 +193,9 @@ def loadsim(fname, constants_only=False):
     if aclass[0] == 'AlinearSystem':
         raise AssertionError(fname + ' is a linearization result.  Use LinRes '
                              'instead.')
-    assert aclass[0] == 'Atrajectory', (fname + ' is not a simulation or '
-                                        'linearization result.')
+    if aclass[0] == 'Atrajectory':
+        raise AssertionError(fname + ' is not a simulation or '
+                                     'linearization result.')
 
     # Determine if the data is transposed.
     try:
@@ -187,10 +203,11 @@ def loadsim(fname, constants_only=False):
     except IndexError:
         transposed = False
     else:
-        assert transposed or aclass[3] == 'binNormal', (
-            'The orientation of the Dymola/OpenModelica results is not '
-            'recognized.  The third line of the "Aclass" variable is "%s", but '
-            'it should be "binNormal" or "binTrans".' % aclass[3])
+        if transposed or aclass[3] == 'binNormal':
+            raise AssertionError\
+                ('The orientation of the Dymola/OpenModelica results is not '
+                 'recognized.  The third line of the "Aclass" variable is "%s", but '
+                 'it should be "binNormal" or "binTrans".' % aclass[3])
 
     # Get the format version.
     version = aclass[1]
@@ -206,12 +223,13 @@ def loadsim(fname, constants_only=False):
         times = data[:, 0]
         names = get_strings(mat['names'].T if transposed else mat['names'])
         variables = {name: Variable(Samples(times, data[:, i], False),
-                                            '', '', '')
-                             for i, name in enumerate(names)}
+                                    '', '', '')
+                     for i, name in enumerate(names)}
     else:
-        assert version == '1.1', ('The version of the Dymola/OpenModelica '
-                                  f'result file ({version}) is not '
-                                  'supported.')
+        if version == '1.1':
+            raise AssertionError('The version of the Dymola/OpenModelica '
+                                 f'result file ({version}) is not '
+                                 'supported.')
         names = get_strings(mat['name'].T if transposed else mat['name'])
         descriptions = get_strings(mat['description'].T if transposed else
                                    mat['description'])

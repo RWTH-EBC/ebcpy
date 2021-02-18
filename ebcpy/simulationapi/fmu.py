@@ -54,12 +54,12 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         try:
             self._fmu_instance.terminate()
-        except Exception:  # This is due to fmpy which does not yield a narrow error
-            pass
+        except Exception as error:  # This is due to fmpy which does not yield a narrow error
+            self.logger.error(f"Could not terminate fmu instance: {error}")
         try:
             self._fmu_instance.freeInstance()
-        except OSError:
-            pass
+        except OSError as error:
+            self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
         shutil.rmtree(self._unzip_dir)
         self._unzip_dir = None
