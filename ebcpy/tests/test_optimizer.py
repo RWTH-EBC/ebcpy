@@ -26,6 +26,7 @@ class TestOptimizer(unittest.TestCase):
 
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
+        # pylint: disable=protected-access
         opt = Optimizer(self.example_opt_dir)
         for _framework in self.supported_frameworks:
             if _framework == "scipy_minimize":

@@ -4,7 +4,6 @@ ebcpy.data_types."""
 import os
 import unittest
 import pandas as pd
-import numpy as np
 from ebcpy import data_types
 
 
@@ -66,71 +65,17 @@ class TestDataTypes(unittest.TestCase):
         tsd.clean_and_space_equally(desired_freq="1s")
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
 
-    def test_tuner_paras(self):
-        """Test the class TunerParas"""
-        dim = np.random.randint(1, 100)
-        names = ["test_%s" % i for i in range(dim)]
-        initial_values = np.random.rand(dim) * 10  # Values between 0 and 10.
-        # Values between -100 and 110
-        bounds = [(float(np.random.rand(1))*-100,
-                   float(np.random.rand(1))*100 + 10) for i in range(dim)]
-        # Check for false input
-        with self.assertRaises(ValueError):
-            wrong_bounds = [(0, 100),
-                            (100, 0)]
-            tuner_paras = data_types.TunerParas(names,
-                                                initial_values,
-                                                wrong_bounds)
-        with self.assertRaises(ValueError):
-            wrong_bounds = [(0, 100) for i in range(dim+1)]
-            tuner_paras = data_types.TunerParas(names,
-                                                initial_values,
-                                                wrong_bounds)
-        with self.assertRaises(ValueError):
-            wrong_initial_values = np.random.rand(100)
-            tuner_paras = data_types.TunerParas(names,
-                                                wrong_initial_values)
-        with self.assertRaises(TypeError):
-            wrong_names = ["test_0", 123]
-            tuner_paras = data_types.TunerParas(wrong_names,
-                                                initial_values)
-        with self.assertRaises(TypeError):
-            wrong_initial_values = ["not an int", 123, 123]
-            tuner_paras = data_types.TunerParas(names,
-                                                wrong_initial_values)
-
-        # Check return values of functions:
-        tuner_paras = data_types.TunerParas(names,
-                                            initial_values,
-                                            bounds)
-        scaled = np.random.rand(dim)  # between 0 and 1
-        # Descale and scale again to check if the output is the almost (numeric precision) same
-        descaled = tuner_paras.descale(scaled)
-        scaled_return = tuner_paras.scale(descaled)
-        np.testing.assert_almost_equal(scaled, scaled_return)
-        self.assertEqual(names, tuner_paras.get_names())
-        np.testing.assert_equal(tuner_paras.get_initial_values(),
-                                initial_values)
-
-        tuner_paras.get_bounds()
-        val = tuner_paras.get_value("test_0", "min")
-        tuner_paras.set_value("test_0", "min", val)
-        with self.assertRaises(ValueError):
-            tuner_paras.set_value("test_0", "min", 10000)
-        with self.assertRaises(ValueError):
-            tuner_paras.set_value("test_0", "min", "not_an_int_or_float")
-        with self.assertRaises(KeyError):
-            tuner_paras.set_value("test_0", "not_a_key", val)
-        # Delete a name and check if the name is really gone.
-        tuner_paras.remove_names(["test_0"])
-        with self.assertRaises(KeyError):
-            tuner_paras.get_value("test_0", "min")
-
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.
         Check the keys of the file with e.g. the SDFEditor and
         use those keys as a reference list.
         """
+        # pylint: disable=import-outside-toplevel
+        # pylint: disable=unused-import
+        try:
+            import h5py
+        except ImportError:
+            self.skipTest("Test only makes sense if h5py is installed")
         reference_list = ['parameters', 'trajectories']
         return_val = data_types.get_keys_of_hdf_file(self.example_data_hdf_path)
         self.assertListEqual(return_val, reference_list)

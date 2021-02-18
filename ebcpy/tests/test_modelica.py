@@ -3,10 +3,9 @@ ebcpy.optimization."""
 
 import unittest
 import os
-from modelicares import SimRes
 import pandas as pd
 from ebcpy.modelica import manipulate_ds
-import ebcpy.modelica.simres as sr_ebc
+from ebcpy.modelica.simres import SimRes
 
 
 class TestSimRes(unittest.TestCase):
@@ -21,17 +20,17 @@ class TestSimRes(unittest.TestCase):
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
-        df = sr_ebc.to_pandas(self.sim)
+        df = self.sim.to_pandas()
         first_col_name = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
-        df = sr_ebc.to_pandas(self.sim, with_unit=False)
+        df = self.sim.to_pandas(with_unit=False)
         first_col_name_without_unit = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
         self.assertTrue(first_col_name.startswith(first_col_name_without_unit))
 
     def test_get_trajectories(self):
         """Test function for the function get_trajectories"""
-        trajectories = sr_ebc.get_trajectories(self.sim)
+        trajectories = self.sim.get_trajectories()
         self.assertEqual(39, len(trajectories))
 
 

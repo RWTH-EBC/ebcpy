@@ -5,7 +5,7 @@ import unittest
 import os
 import numpy as np
 import scipy.io as spio
-from ebcpy.utils import visualizer
+from ebcpy.utils import setup_logger
 from ebcpy.utils import conversion
 from ebcpy.utils import statistics_analyzer
 
@@ -153,27 +153,30 @@ class TestStatisticsAnalyzer(unittest.TestCase):
                               float)
 
 
-class TestVisualizer(unittest.TestCase):
-    """Test-class for the visualizer module."""
+class TestLogger(unittest.TestCase):
+    """Test-class for the logger function."""
 
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(self.framework_dir, "examples", "data"))
-        self.logger = visualizer.Logger(self.example_dir, "test_logger")
+        self.example_dir = os.path.normpath(
+            os.path.join(os.path.dirname(os.path.dirname(__file__)),
+                         "examples", "data"))
+        self.logger = setup_logger(cd=self.example_dir,
+                                   name="test_logger")
 
     def test_logging(self):
         """Test if logging works."""
         example_str = "This is a test"
-        self.logger.log(example_str)
-        with open(self.logger.filepath_log, "r") as logfile:
+        self.logger.info(example_str)
+        with open(self.logger.handlers[0].baseFilename, "r") as logfile:
             logfile.seek(0)
-            self.assertEqual(logfile.read()[-len(example_str):], example_str)
+            self.assertTrue(example_str in logfile.read())
 
     def tearDown(self):
         """Remove created files."""
-        os.remove(self.logger.filepath_log)
+        self.logger.handlers[0].close()
+        os.remove(self.logger.handlers[0].baseFilename)
 
 
 if __name__ == "__main__":

@@ -4,10 +4,12 @@ import warnings
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
+from pandas.tseries.frequencies import to_offset
 import numpy as np
 import pandas as pd
-from ebcpy import data_types
 import scipy.stats as st
+from ebcpy import data_types
+
 
 def build_average_on_duplicate_rows(df):
     """
@@ -224,6 +226,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     >>> plt.plot(df["B"], label="Clead and spaced equally")
     >>> plt.legend()
     >>> plt.show()
+
+    .. versionchanged:: 0.1.7
     """
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
@@ -241,8 +245,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     for name in series_with_na.index:
         if series_with_na.loc[name] > 0:
             # Print only columns with invalid values
-            print("{} has following number of invalid "
-                  "values\n {}".format(name, str(series_with_na.loc[name])))
+            print(f"{name} has following number of invalid "
+                  f"values\n {series_with_na.loc[name]}")
     # Drop all rows where at least one NA exists
     df.dropna(how='any', inplace=True)
 
@@ -268,12 +272,16 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         cfd_int = pd.to_timedelta(cfd_int)
         if pd.to_timedelta(desired_freq) < cfd_int[0]:
             warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is lower than the given confidence interval ({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you introduced errors to the data.")
+                          f"is lower than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
         if pd.to_timedelta(desired_freq) > cfd_int[1]:
             warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is higher than the given confidence interval ({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you introduced errors to the data.")
+                          f"is higher than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
 
     #%% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
@@ -312,10 +320,12 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
 
     # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
     if isinstance(df, data_types.TimeSeriesData):
-        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
         df = data_types.TimeSeriesData(df)
     else:
-        df = df.resample(rule=desired_freq, loffset=delta_time).first()
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
     del delta_time
 
     return df
@@ -435,12 +445,12 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     >>> plt.show()
     """
     if len(col_names) != len(col_names_new):
-        raise IndexError("Given lists differ in length. col_names: {}, "
-                         "col_names_new: {}".format(len(col_names), len(col_names_new)))
+        raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                         f"col_names_new: {len(col_names_new)}")
     if isinstance(threshold, list):
         if len(col_names) != len(threshold):
-            raise IndexError("Given lists differ in length. col_names: {}, "
-                             "threshold: {}".format(len(col_names), len(threshold)))
+            raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                             f"threshold: {len(threshold)}")
     else:
         threshold = [threshold for _ in enumerate(col_names)]
     # Do on_off signal creation for all desired columns

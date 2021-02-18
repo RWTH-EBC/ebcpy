@@ -46,8 +46,8 @@ class StatisticsAnalyzer:
         _method_internal = method.lower()
 
         if _method_internal not in _supported_methods:
-            raise ValueError("The given method {} is not supported.\n Choose one out of: "
-                             "{}".format(_method_internal, ", ".join(_supported_methods.keys())))
+            raise ValueError(f"The given method {_method_internal} is not supported.\n "
+                             f"Choose one out of: {', '.join(_supported_methods.keys())}")
         self._calc_internal = _supported_methods[_method_internal]
         self.for_minimization = for_minimization
         self._min_fac = _minimization_factors[_method_internal]
@@ -56,8 +56,8 @@ class StatisticsAnalyzer:
         """Placeholder class before instantiating the class correctly."""
         if self.for_minimization:
             return self._calc_internal(meas, sim) * self._min_fac
-        else:
-            return self._calc_internal(meas, sim)
+
+        return self._calc_internal(meas, sim)
 
     @staticmethod
     def calc_mae(meas, sim):
