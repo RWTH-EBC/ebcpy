@@ -193,7 +193,7 @@ def loadsim(fname, constants_only=False):
     if aclass[0] == 'AlinearSystem':
         raise AssertionError(fname + ' is a linearization result.  Use LinRes '
                              'instead.')
-    if aclass[0] == 'Atrajectory':
+    elif aclass[0] != 'Atrajectory':
         raise AssertionError(fname + ' is not a simulation or '
                                      'linearization result.')
 
@@ -203,7 +203,7 @@ def loadsim(fname, constants_only=False):
     except IndexError:
         transposed = False
     else:
-        if transposed or aclass[3] == 'binNormal':
+        if not (transposed or aclass[3] == 'binNormal'):
             raise AssertionError\
                 ('The orientation of the Dymola/OpenModelica results is not '
                  'recognized.  The third line of the "Aclass" variable is "%s", but '
@@ -225,11 +225,11 @@ def loadsim(fname, constants_only=False):
         variables = {name: Variable(Samples(times, data[:, i], False),
                                     '', '', '')
                      for i, name in enumerate(names)}
+    elif version != '1.1':
+        raise AssertionError('The version of the Dymola/OpenModelica '
+                             f'result file ({version}) is not '
+                             'supported.')
     else:
-        if version == '1.1':
-            raise AssertionError('The version of the Dymola/OpenModelica '
-                                 f'result file ({version}) is not '
-                                 'supported.')
         names = get_strings(mat['name'].T if transposed else mat['name'])
         descriptions = get_strings(mat['description'].T if transposed else
                                    mat['description'])
