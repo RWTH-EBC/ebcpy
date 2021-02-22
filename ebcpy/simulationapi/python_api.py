@@ -51,7 +51,7 @@ class PYTHON_API(simulationapi.SimulationAPI):
         os.makedirs(cd, exist_ok=True)
         self.cd = cd
 
-    def simulate(self, meas_input_data, **kwargs):              # %%%% TO-DO: Automatisieren. Anpassen auf InfluxDB.
+    def simulate(self, meas_input_data, **kwargs):
         """
         Simulate current simulation-setup.
 
@@ -81,8 +81,4 @@ class PYTHON_API(simulationapi.SimulationAPI):
         :return:
             True on success
         """
-        pass
-        #print("What to close??")
-
-    def test(self):
         pass

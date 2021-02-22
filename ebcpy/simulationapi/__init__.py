@@ -2,12 +2,12 @@
 Different simulation modules like dymola_api or py_fmi
 may inherit classes of this module."""
 
+#Import packages
 from abc import abstractmethod
 from ebcpy.utils import visualizer
 from ebcpy.data_types import TunerParas
 
 
-# Klasse vergleichbar mit Hannah's "BaseModel" Klasse
 class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
@@ -93,14 +93,6 @@ class SimulationAPI:
         bounds = self.model_tuner_bounds
         all_tuners = TunerParas(names,values,bounds)
         self.all_tuners_dict_scaled = dict(all_tuners.scale(values))
-        # bound_min, bound_max, scale = [], [], []
-        # for bound in bounds:
-        #     bound_min.append(bound[0])
-        #     bound_max.append(bound[1])
-        #     scale.append(bound_max - bound_min)
-        #
-        # scaled = (values - bound_min)/scale
-
 
     @abstractmethod
     def simulate(self, **kwargs):

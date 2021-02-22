@@ -1,6 +1,7 @@
 """Module for classes using a fmu to
 simulate models."""
 
+#Import packages
 from ebcpy import simulationapi
 import fmpy
 import pandas as pd
@@ -8,11 +9,11 @@ import numpy as np
 import shutil
 import os
 
-# Klasse vergleichbar mit Hannah's "ModelicaFMU" Klasse
 class FMU_API(simulationapi.SimulationAPI):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
+
     """
 
     # Default attributes
@@ -92,7 +93,6 @@ class FMU_API(simulationapi.SimulationAPI):
         Set current working directory for storing files etc.
         :param str,os.path.normpath cd:
             New working directory
-        :return:
         """
         os.makedirs(cd, exist_ok=True)
         self.cd = cd
@@ -103,7 +103,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         :param dataframe meas_input_data:
             Pandas.Dataframe of the measured input data for simulating the FMU with fmpy
-        :return dataframe sim_target_data:
+        :return dataframe df:
             Pandas.Dataframe of simulated target values
         """
         # Dictionary with all tuner parameter names & -values
@@ -159,8 +159,8 @@ class FMU_API(simulationapi.SimulationAPI):
         df.index = df.index.astype("float64")
         return df
 
-    def do_step(self):
-        # ...to add...
+    def do_step(self):  # currently not used
+
 
         # check if stop time is reached
         if self.current_time < self.stop_time:
@@ -192,93 +192,3 @@ class FMU_API(simulationapi.SimulationAPI):
         # To add if model can be permanently overwritten
 
         pass
-
-    def setup(self):        # vielleicht noch hilfreich, bislang nicht genutzt
-        # The current simulation time
-        self.current_time = self.sim_setup["startTime"]
-
-        # initialize model
-        self.fmu.reset()
-        self.fmu.setupExperiment(
-            startTime=self.start_time, stopTime=self.stop_time, tolerance=self.sim_tolerance)
-
-
-    def find_vars(self, start_str: str):
-        """
-        Retruns all variables starting with start_str
-        """
-        key = list(self.variables.keys())
-        key_list = []
-        for i in range(len(key)):
-            if key[i].startswith(start_str):
-                key_list.append(key[i])
-        return key_list
-
-    def get_value(self, var_name: str):
-        """
-        Get a single variable.
-        """
-
-        variable = self.variables[var_name]
-        vr = [variable.valueReference]
-
-        if variable.type == 'Real':
-            return self.fmu.getReal(vr)[0]
-        elif variable.type in ['Integer', 'Enumeration']:
-            return self.fmu.getInteger(vr)[0]
-        elif variable.type == 'Boolean':
-            value = self.fmu.getBoolean(vr)[0]
-            return value != 0
-        else:
-            raise Exception("Unsupported type: %s" % variable.type)
-
-    def set_value(self, var_name, value):
-        """
-        Set a single variable.
-        var_name: str
-        """
-
-        variable = self.variables[var_name]
-        vr = [variable.valueReference]
-
-        if variable.type == 'Real':
-            self.fmu.setReal(vr, [float(value)])
-        elif variable.type in ['Integer', 'Enumeration']:
-            self.fmu.setInteger(vr, [int(value)])
-        elif variable.type == 'Boolean':
-            self.fmu.setBoolean(vr, [value == 1.0 or value == True or value == "True"])
-        else:
-            raise Exception("Unsupported type: %s" % variable.type)
-
-    def read_variables(self, vrs_list: list):
-        """
-        Reads multiple variable values of FMU.
-        vrs_list as list of strings
-        Method retruns a dict with FMU variable names as key
-        """
-        res = {}
-        # read current variable values ans store in dict
-        for var in vrs_list:
-            res[var] = self.get_value(var)
-
-        # add current time to results
-        #res['SimTime'] = self.current_time
-
-        return res
-
-    def set_variables(self, var_dict: dict):
-        '''
-        Sets multiple variables.
-        var_dict is a dict with variable names in keys.
-        '''
-
-        for key in var_dict:
-            self.set_value(key, var_dict[key])
-        return "Variable set!!"
-
-    def close(self):
-        self.fmu.terminate()
-        self.fmu.freeInstance()
-        shutil.rmtree(self.unzipdir)
-        print('FMU released')
-

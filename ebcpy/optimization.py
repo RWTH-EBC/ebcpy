@@ -174,6 +174,7 @@ class Optimizer:
             raise TypeError("Given framework {} is currently not supported.".format(framework))
 
     def _scipy_minimize(self, method):
+
         try:
             import scipy.optimize as opt
         except ImportError:
