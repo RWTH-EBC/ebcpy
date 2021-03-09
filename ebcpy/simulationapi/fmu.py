@@ -68,35 +68,55 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         Simulate current simulation-setup.
 
-        :param str,os.path.normpath savepath_files:
-            Savepath were to store result files of the simulation.
+        :param dataframe inputs:
+            Pandas.Dataframe of the input data for simulating the FMU with fmpy
         :keyword Boolean fail_on_error:
             If True, an error in fmpy will trigger an error in this script.
             Default is false
         :return:
             Filepath of the mat-file.
         """
+        # Dictionary with all tuner parameter names & -values
         start_values = {self.sim_setup["initialNames"][i]: value
                         for i, value in enumerate(self.sim_setup["initialValues"])}
+
+        inputs = kwargs.get("inputs", None)
+        if inputs is not None:
+            inputs = inputs.copy() # Create save copy
+            # Shift all columns, because "simulate_fmu" gets an input at
+            # timestep x and calculates the related output for timestep x+1
+            shift_period = int(self.sim_setup["outputInterval"] / (inputs.index[0] - inputs.index[1]))
+            inputs = inputs.shift(periods=shift_period)
+            # Shift time column back
+            inputs.time = inputs.time.shift(-shift_period, fill_value=0)
+            # drop NANs
+            inputs = inputs.dropna()
+
+            # Convert df to structured numpy array for fmpy: simulate_fmu
+            inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
+            dtype = [(i, np.double) for i in
+                     inputs.columns]  # %%% TO-DO: implement more than "np.double" as type-possibilities
+            inputs = np.array(inputs_tuple, dtype=dtype)
+
         try:
             res = fmpy.simulate_fmu(
-                     self._unzip_dir,
-                     start_time=self.sim_setup["startTime"],
-                     stop_time=self.sim_setup["stopTime"],
-                     solver=self.sim_setup["solver"],
-                     step_size=self.sim_setup["numberOfIntervals"],
-                     relative_tolerance=None,
-                     output_interval=self.sim_setup["outputInterval"],
-                     record_events=False,  # Used for an equidistant output
-                     start_values=start_values,
-                     apply_default_start_values=False,  # As we pass start_values already
-                     input=None,   # TODO: Add custom input
-                     output=self.sim_setup["resultNames"],
-                     timeout=self.sim_setup["timeout"],
-                     step_finished=None,
-                     model_description=self._model_description,
-                     fmu_instance=self._fmu_instance,
-                     fmi_type=self._fmi_type,
+                self._unzip_dir,
+                start_time=self.sim_setup["startTime"],
+                stop_time=self.sim_setup["stopTime"],
+                solver=self.sim_setup["solver"],
+                step_size=self.sim_setup["numberOfIntervals"],
+                relative_tolerance=None,
+                output_interval=self.sim_setup["outputInterval"],
+                record_events=False,  # Used for an equidistant output
+                start_values=start_values,
+                apply_default_start_values=False,  # As we pass start_values already
+                input=inputs,   # TODO: Add custom input
+                output=self.sim_setup["resultNames"],
+                timeout=self.sim_setup["timeout"],
+                step_finished=None,
+                model_description=self._model_description,
+                fmu_instance=self._fmu_instance,
+                fmi_type=self._fmi_type,
             )
             self._fmu_instance.reset()
 
@@ -130,6 +150,15 @@ class FMU_API(simulationapi.SimulationAPI):
             self._fmi_type = 'ModelExchange'
         else:
             self._fmi_type = 'CoSimulation'
+
+        # Extract inputs, outputs & tuner (lists from parent classes will be appended)
+        for v in self._model_description.modelVariables:
+            if v.causality == 'input':
+                self.inputs.append(v)
+            if v.causality == 'output':
+                self.outputs.append(v)
+            if v.causality == 'parameter' or v.causality == 'calculatedParameter':
+                self.parameters.append(v)
 
         self._fmu_instance = fmpy.instantiate_fmu(
             unzipdir=self._unzip_dir,
