@@ -191,7 +191,6 @@ class Optimizer:
             raise TypeError(f"Given framework {framework} is currently not supported.")
 
     def _scipy_minimize(self, method):
-
         try:
             import scipy.optimize as opt
         except ImportError as error:
@@ -249,9 +248,7 @@ class Optimizer:
                 # therefore this adjustment is necessary
                 self.tol = 0.01
 
-            # Anmerkung: Beim initialisieren wird self.obj, welche abstrakte methode in Klasse Calibrator ist,
-            # welche wiederum Methode in ModelicaCalibrator Klasse ist, als callable class definiert.
-            res = opt.differential_evolution(func=self.obj,         # callable: calls def obj() in calibrator class
+            res = opt.differential_evolution(func=self.obj,
                                              bounds=self.bounds,
                                              strategy=method,
                                              maxiter=self.maxiter,

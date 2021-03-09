@@ -32,7 +32,7 @@ def setup_dymola_api(cd=None, show_window=True):
     >>> DYM_API.sim_setup = {"startTime": 100,
     >>>                      "stopTime": 200}
     >>> DYM_API.simulate()
-    #>>> DYM_API.close()
+    >>> DYM_API.close()
     """
     # Define path in which you want ot work:
     if cd is None:
