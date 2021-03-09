@@ -85,7 +85,7 @@ class TestPreProcessing(unittest.TestCase):
         For an example, see the doctest in the function."""
         # Generate a random frequency
         supported_frequencys = ["s", "min", "h", "ms"]
-        freq = "{}{}".format(np.random.randint(1, 60), random.choice(supported_frequencys))
+        freq = f"{np.random.randint(1, 60)}{random.choice(supported_frequencys)}"
         dim = np.random.randint(1, 10000)
         df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
                           columns=list('ABCD')).set_index("A").sort_index()
@@ -149,7 +149,7 @@ class TestPreProcessing(unittest.TestCase):
         For an example, see the doctest in the function."""
         dim = np.random.randint(100)
         nan_col = [np.NaN for i in range(dim)]
-        col = [i for i in range(dim)]
+        col = np.arange(dim)
         df_nan = pd.DataFrame({"col_1": nan_col, "col_2": nan_col})
         df_normal = pd.DataFrame({"col_1": nan_col, "col_2": col})
         self.assertEqual(preprocessing.number_lines_totally_na(df_nan), dim)

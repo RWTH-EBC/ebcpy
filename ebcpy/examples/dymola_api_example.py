@@ -8,20 +8,6 @@ import os
 from ebcpy.simulationapi import dymola_api
 
 
-def example_dymola_api(dym_api):
-    """
-    Function to show the usage of the function
-    get_all_tuner_parameters() of the DymolAPI.
-
-    :param dymola_api.DymolaAPI dym_api:
-        DymolaAPI that can be generated using :meth:` this function<setup_dymola_api>`
-    :return: tuner parameters which can be used for other examples
-    :rtype: ebcpy.data_types.TunerParas
-    """
-    tuner_paras = dym_api.get_all_tuner_parameters()
-    return tuner_paras
-
-
 def setup_dymola_api(cd=None, show_window=True):
     """
     Function to show how to setup the DymolaAPI.
@@ -43,8 +29,8 @@ def setup_dymola_api(cd=None, show_window=True):
     Example:
     --------
     >>> DYM_API = setup_dymola_api(show_window=True)
-    >>> DYM_API.set_sim_setup({"startTime": 100,
-    >>>                        "stopTime": 200})
+    >>> DYM_API.sim_setup = {"startTime": 100,
+    >>>                      "stopTime": 200}
     >>> DYM_API.simulate()
     #>>> DYM_API.close()
     """
@@ -54,11 +40,10 @@ def setup_dymola_api(cd=None, show_window=True):
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice
-    model_name = "AixCalTest.TestModel"
+    model_name = "AixCalTest_TestModel"
     packages = [os.path.normpath(os.path.join(os.path.dirname(__file__),
                                               "Modelica",
-                                              "AixCalTest",
-                                              "package.mo"))]
+                                              "TestModel.mo"))]
     # Setup the dymola api
     dym_api = dymola_api.DymolaAPI(cd,
                                    model_name,
@@ -71,4 +56,4 @@ if __name__ == "__main__":
     # Setup the dymola-api:
     DYM_API = setup_dymola_api()
     # Run example:
-    example_dymola_api(DYM_API)
+    DYM_API.get_all_parameters()

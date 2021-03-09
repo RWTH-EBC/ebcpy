@@ -1,6 +1,7 @@
 """Package for functions used to alter Modelicare simulation results and
 other files like dsfinal. This package builds upon the python module
 modelicares."""
+import re
 
 
 def get_expressions(filepath_model, get_protected=False, modelica_type="parameter", excludes=None):
@@ -11,9 +12,12 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
         Full path of modelica model on the given os
         e.g. path_model = "C://MyLibrary//TestModel.mo"
     :param str,list modelica_type:
-        Type you want to have matched. "parameters" and "variables" have a special regex pattern.
-        For other models, you can parse a string like: "replaceable package Medium" and it will yield all
-        afflicted lines. You can also five a list of strings if multiple strings are relevant to you.
+        Type you want to have matched. "parameters" and "variables"
+        have a special regex pattern.
+        For other models, you can parse a string like:
+        "replaceable package Medium" and it will yield all
+        afflicted lines. You can also five a list of strings if
+        multiple strings are relevant to you.
         Special cases:
         parameters:
             - include: ["parameter"]
@@ -30,7 +34,6 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
         List with all lines matching the given expression.
     """
     # TODO: Write Unit tests
-    import re
 
     if not excludes:
         excludes = []
@@ -44,7 +47,7 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
         _includes = [modelica_type]
         _excludes = excludes
     if _excludes:
-        _exclude_str = "(?<!" + "\s)(?<!".join(_excludes) + "\s)"
+        _exclude_str = r"(?<!" + r"\s)(?<!".join(_excludes) + r"\s)"
     else:  # Case if list is empty
         _exclude_str = ""
     _pattern = r'((?:\s.+)?{}({})(.|\n)*?;)'.format(_exclude_str,
@@ -100,7 +103,6 @@ def get_names_and_values_of_lines(codelines):
 
     :return:
     """
-    import re
     # TODO: Write Unit tests
     res = []
     for line in codelines:
@@ -116,7 +118,7 @@ def get_names_and_values_of_lines(codelines):
             if loc >= 0:
                 line = line[:loc]
         # Remove possible brackets, like "param(min=0, start=5)
-        line = re.sub("[\(\[].*?[\)\]]", "", line)
+        line = re.sub(r"[\(\[].*?[\)\]]", "", line)
         # If a value is present (e.g. for parameters, one = sign is still present (always)
         if line.find("=") >= 0:
             name_str, val_str = line.split("=")

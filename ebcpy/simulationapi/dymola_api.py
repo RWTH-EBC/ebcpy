@@ -1,5 +1,5 @@
 """Module containing the DymolaAPI used for simulation
-of Modelica-Models.."""
+of Modelica-Models."""
 
 import sys
 import os
@@ -7,10 +7,7 @@ import warnings
 import atexit
 import pandas as pd
 from ebcpy import simulationapi
-from ebcpy import data_types
 from ebcpy.modelica import manipulate_ds
-DymolaInterface = None  # Create dummy to later be used for global-import
-DymolaConnectionException = None  # Create dummy to later be used for global-import
 
 
 class DymolaAPI(simulationapi.SimulationAPI):
@@ -26,14 +23,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
     :keyword Boolean get_structural_parameters:
-        True to automatically read the structural paramters of the 
-        simulation model and set them via Modelica modifiers. Default 
+        True to automatically read the structural parameters of the
+        simulation model and set them via Modelica modifiers. Default
         is True
     :keyword Boolean equidistant_output:
-        If True (Default), Dymola stores variables in an 
+        If True (Default), Dymola stores variables in an
         equisdistant output and does not store variables at events.
     :keyword str dymola_path:
-         Path to the dymola installation on the device. Necessary 
+         Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
     :keyword str dymola_interface_path:
         Same as for dymola_path. If we can't find the dymola installation,
@@ -59,22 +56,19 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     dymola = None
     # Default simulation setup
-    sim_setup = {'startTime': 0.0,
-                 'stopTime': 1.0,
-                 'numberOfIntervals': 0,
-                 'outputInterval': 1,
-                 'method': 'Dassl',
-                 'tolerance': 0.0001,
-                 'fixedstepsize': 0.0,
-                 'resultFile': 'resultFile',
-                 'autoLoad': False,
-                 'initialNames': [],
-                 'initialValues': [],
-                 'resultNames': []}
-
-    # Dynamic setup of simulation setup
-    number_values = [key for key, value in sim_setup.items() if
-                     (isinstance(value, (int, float)) and not isinstance(value, bool))]
+    _default_sim_setup = {
+        'startTime': 0.0,
+        'stopTime': 1.0,
+        'numberOfIntervals': 0,
+        'outputInterval': 1,
+        'method': 'Dassl',
+        'tolerance': 0.0001,
+        'fixedstepsize': 0.0,
+        'resultFile': 'resultFile',
+        'autoLoad': False,
+        'initialNames': [],
+        'initialValues': [],
+        'resultNames': []}
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -87,16 +81,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dymola_interface_path = kwargs["dymola_interface_path"]
             if not (os.path.isfile(dymola_interface_path) and
                     os.path.exists(dymola_interface_path)):
-                raise FileNotFoundError("Given path {} can not be found on "
-                                        "your machine.".format(dymola_interface_path))
+                raise FileNotFoundError(f"Given path {dymola_interface_path} can not be found on "
+                                        "your machine.")
         else:
             dymola_interface_path = None
 
-        if "dymola_path" in kwargs:
+        if kwargs.get("dymola_path", None) is not None:
             dymola_path = kwargs["dymola_path"]
             if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
-                raise FileNotFoundError("Given path {} can not be found on "
-                                        "your machine.".format(dymola_path))
+                raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
+                                        "your machine.")
         else:
             dymola_path = None
 
@@ -117,14 +111,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if "bin64" not in self.dymola_path:
             self._bit_64 = False
 
-        self._global_import_dymola()
         self.packages = packages
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
         if _not_supported:
             raise KeyError("The following keyword-arguments are not "
-                           "supported: \n{}".format(", ".join(list(_not_supported))))
+                           f"supported: \n{', '.join(list(_not_supported))}")
 
         # By know only supported kwargs are in the dictionary.
         self.__dict__.update(kwargs)
@@ -133,13 +126,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.sim_counter = 0
         self.n_restart = kwargs.get("n_restart", -1)
         if not isinstance(self.n_restart, int):
-            raise TypeError("n_restart has to be type int but is of type {}"
-                            .format(type(kwargs['n_restart'])))
+            raise TypeError(f"n_restart has to be type int but "
+                            f"is of type {type(kwargs['n_restart'])}")
 
         self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
         if self.n_restart > 0:
-            self.logger.log("Open blank placeholder Dymola instance to ensure"
-                            " a licence during Dymola restarts")
+            self.logger.info("Open blank placeholder Dymola instance to ensure"
+                             " a licence during Dymola restarts")
             self._dummy_dymola_instance = self._open_dymola_interface()
             atexit.register(self._close_dummy)
 
@@ -150,7 +143,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface()
         # Register this class to the atexit module to always close dymola-instances
 
-    def simulate(self, savepath_files="", **kwargs):
+    def simulate(self, **kwargs):
         """
         Simulate the current setup.
         If simulation terminates without an error, you can either
@@ -178,9 +171,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
             in the given directory.
             If not, the simulation setting `resultNames` is used to store the
             trajectories of the simulation and return them (See also: returns)
-        :keyword Boolean show_eventlog:
+        :param Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
-        :keyword Boolean squeeze:
+        :param Boolean squeeze:
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
 
@@ -197,15 +190,21 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 If multiple set's of initial values are given, one
                 dataframe for each set is returned in a list
         """
-        if kwargs.get("show_eventlog", False):
+        # Unpack kwargs
+        savepath_files = kwargs.get("savepath_files", "")
+        show_eventlog = kwargs.get("show_eventlog", False)
+        squeeze = kwargs.get("squeeze", True)
+
+        if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
             self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
         if self._structural_params:
-            warnings.warn("Warning: Currently, the model is re-translating for each simulation.\n"
-                          "You should add to your Modelica tuner parameters \"annotation(Evaluate=false)\".\n"
-                          "Check for these parameters: %s" % ", ".join(self._structural_params))
+            warnings.warn(f"Warning: Currently, the model is re-translating "
+                          f"for each simulation. You should add to your Modelica "
+                          f"tuner parameters \"annotation(Evaluate=false)\".\n "
+                          f"Check for these parameters: {', '.join(self._structural_params)}")
             # Alter the model_name for the next simulation
             self.model_name = self._alter_model_name(self.sim_setup,
                                                      self.model_name, self._structural_params)
@@ -236,15 +235,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                      self.sim_setup['outputInterval']
                 if int(generated_num_ints) != generated_num_ints:
                     raise ValueError(
-                        "Given outputInterval and time interval did not yield an integer numberOfIntervals."
-                        "To use this functions without savepaths, you have to provide either a numberOfIntervals"
-                        "or a value for outputInterval which can be converted to numberOfIntervals.")
-                else:
-                    num_ints = generated_num_ints
+                        "Given outputInterval and time interval did not yield "
+                        "an integer numberOfIntervals. To use this functions "
+                        "without savepaths, you have to provide either a "
+                        "numberOfIntervals or a value for outputInterval "
+                        "which can be converted to numberOfIntervals.")
+                num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
             initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
-            if isinstance(initial_values[0], (float, int)):
+            if initial_values and isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
 
             # Handle the time of the simulation:
@@ -265,20 +265,19 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 resultNames=res_names)
 
         if not res[0]:
-            self.logger.log("Simulation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
-            raise Exception("Simulation failed: Look into dslog.txt at {} of the "
-                            "simulation.".format(os.path.join(self.cd, "dslog.txt")))
+            self.logger.error("Simulation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
+            raise Exception(f"Simulation failed: Look into dslog.txt "
+                            f"at {os.path.join(self.cd, 'dslog.txt')} of the simulation.")
 
         if self.get_structural_parameters:
             # Get the structural parameters based on the error log
             self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
 
         if savepath_files:
-            _save_name_dsres = "{}.mat".format(self.sim_setup["resultFile"])
-            if not os.path.isdir(savepath_files):
-                os.mkdir(savepath_files)
+            _save_name_dsres = f"{self.sim_setup['resultFile']}.mat"
+            os.makedirs(savepath_files, exist_ok=True)
             for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 if os.path.isfile(os.path.join(savepath_files, filepath)):
@@ -287,149 +286,46 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 os.rename(os.path.join(self.cd, filepath),
                           os.path.join(savepath_files, filepath))
             return os.path.join(savepath_files, _save_name_dsres)
-        else:
-            data = res[1]
-            dfs = []
-            for ini_val_set in data:
-                df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
-                                   in enumerate(res_names)})
-                # Set time index
-                df = df.set_index("Time")
-                # Convert it to float
-                df.index = df.index.astype("float64")
-                dfs.append(df)
-            # Most of the cases, only one set is provided. In that case, avoid
-            if len(dfs) == 1 and kwargs.get("squeeze", True):
-                dfs = dfs[0]
-            return dfs
+        data = res[1]
+        dfs = []
+        for ini_val_set in data:
+            df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
+                               in enumerate(res_names)})
+            # Set time index
+            df = df.set_index("Time")
+            # Convert it to float
+            df.index = df.index.astype("float64")
+            dfs.append(df)
+        # Most of the cases, only one set is provided. In that case, avoid
+        if len(dfs) == 1 and squeeze:
+            dfs = dfs[0]
+        return dfs
 
-
-    def import_initial(self, filepath):
+    def set_sim_setup(self, sim_setup):
         """
-        Load given dsfinal.txt into dymola
+        Overwrites multiple entries in the simulation setup dictionary
 
-        :param str,os.path.normpath filepath:
-            Path to the dsfinal.txt to be loaded
+        :param dict sim_setup:
+            Dictionary object with the same keys as this class's sim_setup dictionary
         """
-        if not os.path.isfile(filepath):
-            raise FileNotFoundError("Given filepath {} does not exist".format(filepath))
-        if not os.path.splitext(filepath)[1] == ".txt":
-            raise TypeError('File is not of type .txt')
-        res = self.dymola.importInitial(dsName=filepath)
-        if res:
-            self.logger.log("\nSuccessfully loaded dsfinal.txt")
-        else:
-            raise Exception("Could not load dsfinal into Dymola.")
+        _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
+        if _diff:
+            raise KeyError(f"The given sim_setup contains the following keys "
+                           f"({' ,'.join(list(_diff))} which are not part of "
+                           f"the dymola sim_setup.")
+        _number_values = ["startTime", "stopTime", "numberOfIntervals",
+                          "outputInterval", "tolerance", "fixedstepsize"]
+        for key, value in sim_setup.items():
+            if key in _number_values:
+                _ref = (float, int)
+            else:
+                _ref = type(self.sim_setup[key])
+            if isinstance(value, _ref):
+                self.sim_setup[key] = value
+            else:
+                raise TypeError(f"{key} is of type {type(value).__name__} but "
+                                f"should be type {_ref}")
 
-    def set_cd(self, cd):
-        """Set the working directory to the given path"""
-        modelica_normpath = self._make_modelica_normpath(cd)
-        # Check if path exists, if not create it.
-        if not os.path.exists(modelica_normpath):
-            os.mkdir(modelica_normpath)
-        res = self.dymola.cd(modelica_normpath)
-        if res:
-            self.cd = cd
-        else:
-            raise OSError("Could not change working directory to {}".format(cd))
-
-    def close(self):
-        """Closes dymola."""
-
-        # Change so the atexit function works without an error.
-        if self.dymola is not None:
-            self.dymola.close()
-        # Set dymola object to None to avoid further access to it.
-        self.dymola = None
-
-    def _close_dummy(self):
-        """
-        Closes dummy instance at the end of the execution
-        """
-        if self._dummy_dymola_instance is not None:
-            self._dummy_dymola_instance.close()
-
-    def get_all_tuner_parameters(self):
-        """Get all tuner-parameters of the model by
-        translating it and then processing the dsin
-        using modelicares."""
-        # Translate model
-        res = self.dymola.translateModel(self.model_name)
-        if not res:
-            self.logger.log("Translation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
-            raise Exception("Translation failed!")
-        # Get path to dsin:
-        dsin_path = os.path.join(self.cd, "dsin.txt")
-        df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
-        # Convert and return all parameters of dsin as a TunerParas-object.
-        df = df[df["5"] == "1"]
-        names = df.index
-        initial_values = pd.to_numeric(df["2"].values)
-        # Get min and max-values
-        bounds = [(float(df["3"][idx]), float(df["4"][idx])) for idx in df.index]
-        try:
-            tuner_paras = data_types.TunerParas(list(names),
-                                                initial_values,
-                                                bounds=bounds)
-        except ValueError:
-            # Sometimes, not all parameters have bounds. In this case, no bounds
-            # are specified.
-            tuner_paras = data_types.TunerParas(list(names),
-                                                initial_values,
-                                                bounds=None)
-        return tuner_paras
-
-    def _setup_dymola_interface(self):
-        """Load all packages and change the current working directory"""
-        self.dymola = self._open_dymola_interface()
-        # Register the function now in case of an error.
-        atexit.register(self.close)
-        self._check_dymola_instances()
-        self.set_cd(self.cd)
-        for package in self.packages:
-            self.logger.log("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
-            res = self.dymola.openModel(package, changeDirectory=False)
-            if not res:
-                raise ImportError(self.dymola.getLastErrorLog())
-        self.logger.log("Loaded modules")
-        if self.equidistant_output:
-            # Change the Simulation Output, to ensure all
-            # simulation results have the same array shape.
-            # Events can also cause errors in the shape.
-            self.dymola.experimentSetupOutput(equidistant=True,
-                                              events=False)
-        if not self.dymola.RequestOption("Standard"):
-            warnings.warn("You have no licence to use Dymola. "
-                          "Hence you can only simulate models with 8 or less equations.")
-
-    def _open_dymola_interface(self):
-        """Open an instance of dymola and return the API-Object"""
-        try:
-            return DymolaInterface(showwindow=self.show_window,
-                                   dymolapath=self.dymola_path)
-        except DymolaConnectionException as error:
-            raise ConnectionError(error)
-
-    def to_dict(self):
-        """
-        Store the most relevant information of this class
-        into a dictionary. This may be used for future configuration.
-
-        :return: dict config:
-            Dictionary with keys to re-init this class.
-        """
-        config = {"cd": self.cd,
-                  "packages": self.packages,
-                  "model_name": self.model_name,
-                  "type": "DymolaAPI",
-                  }
-        # Update kwargs
-        config.update({kwarg: self.__dict__.get(kwarg, None)
-                       for kwarg in self._supported_kwargs})
-
-        return config
 
     def set_compiler(self, name, path, dll=False, dde=False, opc=False):
         """
@@ -477,17 +373,131 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
         return res
 
-    def translate(self):
+    def import_initial(self, filepath):
         """
-        Translates the current model using dymola.translateModel()
-        and checks if erros occur.
+        Load given dsfinal.txt into dymola
+
+        :param str,os.path.normpath filepath:
+            Path to the dsfinal.txt to be loaded
         """
+        if not os.path.isfile(filepath):
+            raise FileNotFoundError(f"Given filepath {filepath} does not exist")
+        if not os.path.splitext(filepath)[1] == ".txt":
+            raise TypeError('File is not of type .txt')
+        res = self.dymola.importInitial(dsName=filepath)
+        if res:
+            self.logger.info("Successfully loaded dsfinal.txt")
+        else:
+            raise Exception("Could not load dsfinal into Dymola.")
+
+    def set_cd(self, cd):
+        """Set the working directory to the given path"""
+        super().set_cd(cd)
+        # Also set the cd in the dymola api
+        modelica_normpath = self._make_modelica_normpath(cd)
+        res = self.dymola.cd(modelica_normpath)
+        if not res:
+            raise OSError(f"Could not change working directory to {cd}")
+
+    def close(self):
+        """Closes dymola."""
+        self.logger.info('Closing Dymola')
+        # Change so the atexit function works without an error.
+        if self.dymola is not None:
+            self.dymola.close()
+        # Set dymola object to None to avoid further access to it.
+        self.dymola = None
+        self.logger.info('Successfully closed Dymola')
+
+    def _close_dummy(self):
+        """
+        Closes dummy instance at the end of the execution
+        """
+        if self._dummy_dymola_instance is not None:
+            self.logger.info('Closing dummy Dymola instance')
+            self._dummy_dymola_instance.close()
+            self.logger.info('Successfully closed dummy Dymola instance')
+
+    def get_all_parameters(self):
+        """Get all parameters of the model by
+        translating it and then processing the dsin
+        using modelicares.
+        Returns a dict with keys the following keys and values:
+            names: List of names
+            initial_values: List of initial values
+        """
+        # Translate model
         res = self.dymola.translateModel(self.model_name)
         if not res:
-            self.logger.log("Translation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
-            raise Exception("Translation failed - Aborting")
+            self.logger.error("Translation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
+            raise Exception("Translation failed!")
+        # Get path to dsin:
+        dsin_path = os.path.join(self.cd, "dsin.txt")
+        df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
+        # Convert and return all parameters of dsin to initial values and names
+        df = df[df["5"] == "1"]
+        names = df.index
+        initial_values = pd.to_numeric(df["2"].values)
+        return {'names': names, 'initial_values': initial_values}
+
+    def _setup_dymola_interface(self):
+        """Load all packages and change the current working directory"""
+        self.dymola = self._open_dymola_interface()
+        # Register the function now in case of an error.
+        atexit.register(self.close)
+        self._check_dymola_instances()
+        self.set_cd(self.cd)
+        for package in self.packages:
+            self.logger.info("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            res = self.dymola.openModel(package, changeDirectory=False)
+            if not res:
+                raise ImportError(self.dymola.getLastErrorLog())
+        self.logger.info("Loaded modules")
+        if self.equidistant_output:
+            # Change the Simulation Output, to ensure all
+            # simulation results have the same array shape.
+            # Events can also cause errors in the shape.
+            self.dymola.experimentSetupOutput(equidistant=True,
+                                              events=False)
+        if not self.dymola.RequestOption("Standard"):
+            warnings.warn("You have no licence to use Dymola. "
+                          "Hence you can only simulate models with 8 or less equations.")
+
+    def _open_dymola_interface(self):
+        """Open an instance of dymola and return the API-Object"""
+        if self.dymola_interface_path not in sys.path:
+            sys.path.insert(0, self.dymola_interface_path)
+        try:
+            from dymola.dymola_interface import DymolaInterface
+            from dymola.dymola_exception import DymolaConnectionException
+            return DymolaInterface(showwindow=self.show_window,
+                                   dymolapath=self.dymola_path)
+        except ImportError as error:
+            raise ImportError("Given dymola-interface could not be "
+                              "loaded:\n %s" % self.dymola_interface_path) from error
+        except DymolaConnectionException as error:
+            raise ConnectionError(error)
+
+    def to_dict(self):
+        """
+        Store the most relevant information of this class
+        into a dictionary. This may be used for future configuration.
+
+        :return: dict config:
+            Dictionary with keys to re-init this class.
+        """
+        config = {"cd": self.cd,
+                  "packages": self.packages,
+                  "model_name": self.model_name,
+                  "type": "DymolaAPI",
+                  }
+        # Update kwargs
+        config.update({kwarg: self.__dict__.get(kwarg, None)
+                       for kwarg in self._supported_kwargs})
+
+        return config
 
     @staticmethod
     def _make_modelica_normpath(path):
@@ -634,6 +644,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         # The option may be useful. However the explicit requirement leads to
         # Problems on linux, therefore the feature is not worth the trouble.
+        # pylint: disable=import-outside-toplevel
         try:
             import psutil
         except ImportError:
@@ -706,227 +717,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 structural_params.append(param)
         return structural_params
 
-    def _global_import_dymola(self):
-        sys.path.insert(0, self.dymola_interface_path)
-        global DymolaInterface
-        global DymolaConnectionException
-        try:
-            from dymola.dymola_interface import DymolaInterface
-            from dymola.dymola_exception import DymolaConnectionException
-        except ImportError:
-            raise ImportError("Given dymola-interface could "
-                              "not be loaded:\n %s" % self.dymola_interface_path)
-
     def _check_restart(self):
         """Restart Dymola every n_restart iterations in order to free memory"""
 
         if self.sim_counter == self.n_restart:
-            self.logger.log("Closing and restarting Dymola to free memory")
+            self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
             self._setup_dymola_interface()
             self.sim_counter = 1
         else:
             self.sim_counter += 1
-
-
-import multiprocessing as mp
-from functools import partial
-
-
-class MultiProcessingDymAPI(simulationapi.SimulationAPI):
-    """
-    Class to run multiple Dymola Instances in parallel.
-    It is based on:
-        - Multiprocessing.Pool
-        - DymolaAPI of this module
-    Each Process/Worker will hold one instance of dymola.
-    All methods of this class apply the given tasks on all
-    instances simultaneously.
-    General settings like model_name, packages, sim_setup etc.
-    are equivalent to the DymolaAPI class. Mainly the simulate() function
-    takes a list of multiple values to be simulated.
-    All parameters and functions are the same as in DymolaAPI,
-    with the exception of:
-        :param int n_cpu:
-            Number of cpus to use. Default is the number of cpu's
-            returned by multiprocessing.cpu_count()
-        Function simulate(): Instead of a single element, you have to
-        pass multiple elements.
-    """
-    _mp_dict = {}
-
-    def __init__(self, cd, model_name, packages, n_cpu=None, **kwargs):
-        """Instance attributes and parent class."""
-        super().__init__(cd, model_name)
-
-        self.packages = packages
-        self.kwargs = kwargs
-
-        if n_cpu:
-            self.n_cpu = n_cpu
-        else:
-            self.n_cpu = mp.cpu_count()
-
-        self._setup_mp_dict()
-        atexit.register(self.close)
-
-    def simulate(self, sim_setups, savepath_files="", show_eventlog=False):
-        # Setup the dict:
-        results = self.pool.map(partial(self._simulate_single,
-                                        savepath_files=savepath_files,
-                                        show_eventlog=show_eventlog),
-                                sim_setups)
-        return results
-
-    def _simulate_single(self, sim_setup, savepath_files="", show_eventlog=False):
-        """Call the single process function of class DymolaAPI"""
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.set_sim_setup(sim_setup)
-        res = _curr_dym_api.simulate(savepath_files=savepath_files,
-                                     show_eventlog=show_eventlog)
-        return res
-
-    def translate(self):
-        """
-        Translates the current model for all instances.
-        """
-        self.pool.map(self._translate_single, [_ for _ in range(self.n_cpu)])
-
-    def _translate_single(self, dummy):
-        """Call the single process function of class DymolaAPI"""
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.dymola.translateModel(self.model_name)
-
-    def set_compiler(self, name, path, dll=False, dde=False, opc=False):
-        """
-        Set compiler settings for all instances of Dymola.
-        See DymolaAPI.set_compiler for more information.
-        """
-        self.pool.map(self._set_single_compiler, [(name, path, dll, dde, opc) for _ in range(self.n_cpu)])
-
-    def _set_single_compiler(self, input_params):
-        """Call the single process function of class DymolaAPI"""
-        # Unpack multiple parameters
-        name, path, dll, dde, opc = input_params
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.set_compiler(name, path, dll=dll, dde=dde, opc=opc)
-
-    def close(self):
-        """
-        Close all instances as well as the pool of multiprocessing.
-        :return:
-        """
-        self.pool.map(self._close_single, [_ for _ in range(self.n_cpu)])
-        # Close the pool
-        self.pool.close()
-        self.pool.join()
-
-    def _close_single(self, dummy):
-        """Call the single process function of class DymolaAPI"""
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.close()
-
-    def set_sim_setup(self, sim_setup):
-        """
-        Set one simulation setup for all instances. This may be used
-        for general settings, like time intervals, solver etc.
-        See DymolaAPI.set_sim_setup for more information about the function
-        """
-        self.pool.map(self._set_sim_setup_single, [sim_setup for _ in range(self.n_cpu)])
-
-    def _set_sim_setup_single(self, sim_setup):
-        """Call the single process function of class DymolaAPI"""
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.set_sim_setup(sim_setup)
-
-    def set_cd(self, cd):
-        """
-        Set the current working directory for all instances.
-        As multiple instances can't share the same folder,
-        each instance will get one folder in the given directory with
-        the name "Worker_i" where i is the index of the worker.
-
-        See DymolaAPI.set_cd for more information on the function.
-        """
-        self.pool.map(self._set_cd_single, [cd for _ in range(self.n_cpu)])
-
-    def _set_cd_single(self, cd):
-        """Call the single process function of class DymolaAPI"""
-        """Set worker specific working directories"""
-        worker_idx = mp.current_process()._identity[0]
-        _curr_dym_api = self._mp_dict[worker_idx]
-        _curr_dym_api.set_cd(os.path.join(cd, f"Worker_{worker_idx}"))
-
-    def __getstate__(self):
-        """
-        Necessary to use mp.pool inside a function, as the object is not pickle-able
-        """
-        self_dict = self.__dict__.copy()
-        del self_dict['pool']
-        return self_dict
-
-    def __setstate__(self, state):
-        """
-        Necessary to use mp.pool inside a function, as the object is not pickle-able
-        """
-        self.__dict__.update(state)
-
-    def _setup_mp_dict(self):
-        """
-        Function to
-        :param dummy:
-            This value is not used, it is only relevant for multiprocessing.pool
-        :return: None
-        """
-        self.pool = mp.Pool(processes=self.n_cpu)
-        # Run the map, the function _get_worker_indices fills the dict with data:
-        self.pool.map(self._get_worker_indices, [_ for _ in range(self.n_cpu)])
-
-    def _get_worker_indices(self, dummy):
-        """
-        :param dummy:
-            This value is not used, it is only relevant for multiprocessing.pool
-        :return: None
-        """
-        idx_worker = mp.current_process()._identity[0]
-
-        _dym_api = DymolaAPI(cd=os.path.join(self.cd, f"Worker_{idx_worker}"),
-                             model_name=self.model_name,
-                             packages=self.packages,
-                             **self.kwargs)
-
-        self._mp_dict.update({idx_worker: _dym_api})
-        return None
-
-if __name__ == '__main__':
-    # Setup the dict:
-    PACKAGES = [r"D:\pme-fwu\02_modelica_git\ModelDevelopment\IntegratedHeatPumpSystemDesign\package.mo",
-                r"D:\pme-fwu\02_modelica_git\AixLib_v10.0.1\AixLib\package.mo"]
-    MODEL_NAME = "IntegratedHeatPumpSystemDesign.Superstructures.IntHPSDes_TwoStageTest.StandardFlowsheet_R290"
-
-    # Setup the class, just like the normal api
-    mp_dym_api = MultiProcessingDymAPI(cd=r"D:\pme-fwu\00_testzone\00_dymola",
-                                       model_name=MODEL_NAME,
-                                       packages=PACKAGES,
-                                       n_cpu=None,
-                                       show_window=True,
-                                       )
-
-    # Set general simulation settings
-    mp_dym_api.set_sim_setup({"stopTime": 86400*365,
-                              "outputInterval": 3600,
-                              "finalNames": ["W_el"],
-                              "initialNames": ["optimizationVariables.P"]})
-
-    # Perform a simulation study:
-    result = mp_dym_api.simulate([{"initialValues": [0.01 + i*0.001]} for i in range(100)])
-    import matplotlib.pyplot as plt
-    plt.plot([0.01 + i*0.001 for i in range(100)], result)
-    plt.show()
-    print(result)
-
