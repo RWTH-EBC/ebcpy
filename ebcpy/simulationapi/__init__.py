@@ -26,6 +26,10 @@ class SimulationAPI:
         # Setup the logger
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
+        # TODO: Future: For extracting input-, output- & tuner-parameter
+        self.inputs = []     # Inputs of model
+        self.outputs = []    # Outputs of model
+        self.parameters = [] # Parameter of model
 
     @abstractmethod
     def close(self):
@@ -106,3 +110,9 @@ class SimulationAPI:
         """Set the current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
+
+    @abstractmethod
+    def do_step(self, **kwargs):
+        """Base function for simulating one timestep."""
+        raise NotImplementedError('{}.do_step function is not '
+                                  'defined'.format(self.__class__.__name__))

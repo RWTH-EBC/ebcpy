@@ -326,6 +326,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 raise TypeError(f"{key} is of type {type(value).__name__} but "
                                 f"should be type {_ref}")
 
+    def translate(self):
+        """
+        Translates the current model using dymola.translateModel()
+        and checks if erros occur.
+        """
+        res = self.dymola.translateModel(self.model_name)
+        if not res:
+            self.logger.log("Translation failed!")
+            self.logger.log("The last error log from Dymola:")
+            self.logger.log(self.dymola.getLastErrorLog())
+            raise Exception("Translation failed - Aborting")
 
     def set_compiler(self, name, path, dll=False, dde=False, opc=False):
         """
