@@ -165,7 +165,8 @@ class TimeSeriesData(pd.DataFrame):
 
         # Open based on file suffix.
         # Currently, hdf, csv, and Modelica result files (mat) are supported.
-        if self.filepath.endswith("hdf"):
+        f_name = self.filepath.lower()
+        if f_name.endswith("hdf"):
             # Load the current file as a hdf to a dataframe.
             # As specifying the key can be a problem, the user will
             # get all keys of the file if one is necessary but not provided.
@@ -178,12 +179,12 @@ class TimeSeriesData(pd.DataFrame):
                 keys = ", ".join(get_keys_of_hdf_file(self.filepath))
                 raise KeyError(f"key must be provided when HDF5 file contains multiple datasets. "
                                f"Here are all keys in the given hdf-file: {keys}") from error
-        elif self.filepath.lower().endswith("csv"):
+        elif f_name.endswith("csv"):
             return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
-        elif self.filepath.lower().endswith("mat"):
+        elif f_name.endswith("mat"):
             sim = sr.SimRes(self.filepath)
             return sim.to_pandas(with_unit=False)
-        elif self.filepath.lower().endswith("xlsx"):
+        elif f_name.split(".")[-1] in ['xlsx', 'xls', 'odf', 'ods', 'odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:
                 raise KeyError("sheet_name is a required keyword argument to load xlsx-files."

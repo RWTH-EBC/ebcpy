@@ -8,3 +8,5 @@ pyyaml~=5.4.1
 sklearn~=0.0
 fmpy>=0.2.27
 cmake>=3.18.4.post1
+openpyxl>=3.0.5
+xlrd>=2.0.1
