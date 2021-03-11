@@ -53,20 +53,22 @@ v0.1
       - Breaking changes in pandas forces us to increase the version required
       - Pandas dropped the support for Python 3.6
 - v0.1.7:
-   - Issue13: Add an FMU API as simulation api
-   - Issue36: Use Python Logging as default logger in all modules
-   - Issue38: Fix future warning in pandas loffset
-   - Issue39: Add simres from modelicares to avoid version errors with matplotlib.
-   - Issue41: Fix inheritance of `pd.DataFrame` in `TimeSeriesData`.
+   - Issue #13: Add an FMU API as simulation api
+   - Issue #36: Use Python Logging as default logger in all modules
+   - Issue #38: Fix future warning in pandas loffset
+   - Issue #39: Add simres from modelicares to avoid version errors with
+matplotlib.
+   - Issue #41: Fix inheritance of `pd.DataFrame` in `TimeSeriesData`.
               This also enables converting any single-index df to the required multi-index format (See #37).
-   - Issue42: Move `TunerParas` to `AixCaliBuHA`
+   - Issue #42: Move `TunerParas` to `AixCaliBuHA`
    - Add unit-tests for the dymola-api.
    - Use f-strings only
    - Update setup.py and requirements
    - Use `TimeSeriesData` in classes as output in the simulation api
 - v0.1.6:
-   - Issue23: Change conversion functions to correctly handle multiheaders
-   - Issue24: Add converters and correctly inherit from pd.DataFame in TimeSeriesData
+   - Issue #23: Change conversion functions to correctly handle multiheaders
+   - Issue #24: Add converters and correctly inherit from pd.DataFame in
+TimeSeriesData
    - Add functions for configuration using yaml
    - Add regex functions for extraction of modelica variables
    - Add option to directly return results as a dataframe using simulateMultiResultsModel.
