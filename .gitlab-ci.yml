@@ -4,6 +4,9 @@ stages:
   - test
   - deploy
 
+variables:
+  EXLUDE_PYTHON: 36
+
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/pylint.gitlab-ci.yml'
