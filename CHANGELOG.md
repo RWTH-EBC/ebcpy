@@ -6,10 +6,9 @@
    - Issue #13: Add an FMU API as simulation api
    - Issue #36: Use Python Logging as default logger in all modules
    - Issue #38: Fix future warning in pandas loffset
-   - Issue #39: Add simres from modelicares to avoid version errors with 
-matplotlib.
+   - Issue #39: Add simres from modelicares to avoid version errors with matplotlib.
    - Issue #41: Fix inheritance of `pd.DataFrame` in `TimeSeriesData`.
-              This also enables converting any single-index df to the required multi-index format (See #37).
+     This also enables converting any single-index df to the required multi-index format (See #37).
    - Issue #42: Move `TunerParas` to `AixCaliBuHA`
    - Add unit-tests for the dymola-api.
    - Use f-strings only
