@@ -95,6 +95,11 @@ v0.1
    - Use f-strings only
    - Update setup.py and requirements
    - Use `TimeSeriesData` in classes as output in the simulation api
+- v0.1.8:
+   - Drop support for Python 3.6 (See #44)
+      - Breaking changes in pandas forces us to increase the version required
+      - Pandas dropped the support for Python 3.6
+
 
 Indices and tables
 ==================
