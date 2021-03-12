@@ -216,7 +216,7 @@ class TimeSeriesData(pd.DataFrame):
         """
         if isinstance(self.columns, pd.MultiIndex):
             if 'Variables' in self.columns.names:
-                return sorted(set([tag[0] for tag in self.columns]))
+                return sorted(self.columns.get_level_values(0).unique())
         raise KeyError
 
     def get_tags(self) -> List[str]:
@@ -226,7 +226,7 @@ class TimeSeriesData(pd.DataFrame):
         """
         if isinstance(self.columns, pd.MultiIndex):
             if 'Tags' in self.columns.names:
-                return sorted(set([tag[0] for tag in self.columns]))
+                return sorted(self.columns.get_level_values(1).unique())
         raise KeyError
 
     def filter(self: FrameOrSeries,

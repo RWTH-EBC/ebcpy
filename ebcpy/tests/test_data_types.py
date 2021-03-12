@@ -94,6 +94,7 @@ class TestDataTypes(unittest.TestCase):
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variables()), tsd.shape[1])
         self.assertIsNotNone(tsd.get_tags())
+        print(tsd.get_variables())
         self.assertLessEqual(len(tsd.get_variables()), tsd.shape[1])
         self.assertIsNotNone(tsd.filter(like='combiTimeTable.y'))
         with self.assertRaises(KeyError):
