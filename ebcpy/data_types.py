@@ -10,6 +10,7 @@ optimization etc.
 import os
 from datetime import datetime
 import pandas as pd
+from pandas.core.internals import BlockManager
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -31,6 +32,10 @@ class TimeSeriesData(pd.DataFrame):
     :param str,os.path.normpath filepath:
         Filepath ending with either .hdf, .mat or .csv containing
         time-dependent data to be loaded as a pandas.DataFrame
+    :param str tag:
+        Tag that will be added to the columns when class is initialized.
+        If you want to modify the tag for other operations, consider using
+        default_tag. 'tag' is preferred over default_tag.
     :keyword str key:
         Name of the table in a .hdf-file if the file
         contains multiple tables.
@@ -47,14 +52,19 @@ class TimeSeriesData(pd.DataFrame):
     # normal properties
     _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
 
-    def __init__(self, filepath, **kwargs):
+    def __init__(self, filepath, tag: str = None, **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
+
         self._filepath = None
         self._loader_kwargs = {}
         _multi_col_names = ["Variables", "Tags"]
         self._default_tag = kwargs.pop("default_tag", "raw")
-
+        assert isinstance(self._default_tag, str), "Invalid type for " \
+                                                   "default_tag!"
+        # check if tag was passed otherwise use default_tag
+        _tag = tag or self._default_tag
+        assert isinstance(_tag, str), "Invalid type for tag!"
         # Two possibles inputs. first argument is actually data provided by pandas
         # and kwargs hold further information or is it an actual filepath.
         if not isinstance(filepath, str):
@@ -63,7 +73,9 @@ class TimeSeriesData(pd.DataFrame):
                                       columns=kwargs.get("columns", None),
                                       dtype=kwargs.get("dtype", None),
                                       copy=kwargs.get("copy", False))
-
+            if isinstance(filepath, BlockManager):
+                super().__init__(data=filepath)
+                return
         else:
             self._filepath = filepath
             self._loader_kwargs = kwargs.copy()
@@ -74,8 +86,8 @@ class TimeSeriesData(pd.DataFrame):
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
             if _df_loaded.columns.name != _multi_col_names[1]:
                 multi_col = pd.MultiIndex.from_product(
-                    [_df_loaded.columns,
-                     [self._default_tag]], names=_multi_col_names
+                    [_df_loaded.columns, [_tag]],
+                    names=_multi_col_names
                 )
                 _df_loaded.columns = multi_col
         elif _df_loaded.columns.nlevels == 2:
@@ -118,6 +130,7 @@ class TimeSeriesData(pd.DataFrame):
     @default_tag.setter
     def default_tag(self, tag: str):
         """Set the default tag used in the multi-index dataframe"""
+        assert isinstance(tag, str), "Invalid type for default_tag!"
         self._default_tag = tag
 
     def save(self, filepath: str = None, **kwargs) -> None:
@@ -194,9 +207,13 @@ class TimeSeriesData(pd.DataFrame):
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
 
-    def get_columns_by_tag(self, tag, columns=None, return_type='pandas'):
+    def get_columns_by_tag(self, tag: str,
+                           columns=None,
+                           return_type='pandas',
+                           drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
+        :param boolean drop_level: if tag should be included in the response
         :return: ndarray of input signals
         """
         #Extract columns
@@ -205,7 +222,7 @@ class TimeSeriesData(pd.DataFrame):
         else:
             _ret = self
 
-        _ret = _ret.xs(tag, axis=1, level=1)
+        _ret = _ret.xs(tag, axis=1, level=1, drop_level=drop_level)
 
         # Return based on the given return_type
         if return_type.lower() == 'pandas':
@@ -216,7 +233,7 @@ class TimeSeriesData(pd.DataFrame):
             return _ret.to_numpy().transpose()
         raise TypeError("Unknown return type")
 
-    def set_data_by_tag(self, data, tag, variables=None):
+    def set_data_by_tag(self, data, tag: str, variables=None):
         """
         Data can be an array for single variables, or a dataframe itself.
         :param data:
