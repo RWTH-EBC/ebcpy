@@ -88,6 +88,16 @@ class TestDataTypes(unittest.TestCase):
                          tsd1.size + tsd2.size)
         self.assertEqual(tsd3.get_columns_by_tag('new_data').size,
                          tsd2.size)
+        print(tsd1.T)
+
+    def test_time_series_utils(self):
+        tsd = data_types.TimeSeriesData(self.example_data_mat_path)
+        self.assertEqual(len(tsd.get_variables()), tsd.shape[1])
+        self.assertIsNotNone(tsd.get_tags())
+        self.assertLessEqual(len(tsd.get_variables()), tsd.shape[1])
+        self.assertIsNotNone(tsd.filter(like='combiTimeTable.y'))
+        with self.assertRaises(KeyError):
+            tsd.filter(items='Not_existing_item')
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.

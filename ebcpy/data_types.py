@@ -8,9 +8,11 @@ optimization etc.
 """
 
 import os
-from datetime import datetime
 import pandas as pd
+from typing import Optional, List
+from pandas._typing import FrameOrSeries
 from pandas.core.internals import BlockManager
+from datetime import datetime
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -206,6 +208,45 @@ class TimeSeriesData(pd.DataFrame):
             return pd.read_excel(io=self.filepath, sheet_name=sheet_name)
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
+
+    def get_variables(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all variables
+        :return:
+        """
+        if isinstance(self.columns, pd.MultiIndex):
+            if 'Variables' in self.columns.names:
+                return sorted(set([tag[0] for tag in self.columns]))
+        raise KeyError
+
+    def get_tags(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all tags
+        :return:
+        """
+        if isinstance(self.columns, pd.MultiIndex):
+            if 'Tags' in self.columns.names:
+                return sorted(set([tag[0] for tag in self.columns]))
+        raise KeyError
+
+    def filter(self: FrameOrSeries,
+               items=None,
+               like: Optional[str] = None,
+               regex: Optional[str] = None,
+               axis=None,
+               ) -> FrameOrSeries:
+        """
+        Adds exception to pandas filter function
+        :param items:
+        :param like:
+        :param regex:
+        :param axis:
+        :return:
+        """
+        df = super().filter(items=items, like=like, regex=regex, axis=axis)
+        if df.empty:
+            raise KeyError("No matching data found!")
+        return df
 
     def get_columns_by_tag(self, tag: str,
                            columns=None,
