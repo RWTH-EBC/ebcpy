@@ -88,7 +88,6 @@ class TestDataTypes(unittest.TestCase):
                          tsd1.size + tsd2.size)
         self.assertEqual(tsd3.get_columns_by_tag('new_data').size,
                          tsd2.size)
-        print(tsd1.T)
 
     def test_time_series_utils(self):
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
