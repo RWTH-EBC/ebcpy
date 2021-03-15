@@ -16,9 +16,12 @@ class TestDataTypes(unittest.TestCase):
         """
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
         self.example_dir = os.path.join(self.framework_dir, "examples", "data")
-        self.example_data_hdf_path = os.path.join(self.example_dir, "example_data.hdf")
-        self.example_data_csv_path = os.path.join(self.example_dir, "example_data.CSV")
-        self.example_data_mat_path = os.path.join(self.example_dir, "example_data.mat")
+        self.example_data_hdf_path = os.path.join(self.example_dir,
+                                                  "example_data.hdf")
+        self.example_data_csv_path = os.path.join(self.example_dir,
+                                                  "example_data.CSV")
+        self.example_data_mat_path = os.path.join(self.example_dir,
+                                                  "example_data.mat")
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
@@ -33,14 +36,17 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(KeyError):
             data_types.TimeSeriesData(self.example_data_hdf_path)
         with self.assertRaises(KeyError):
-            data_types.TimeSeriesData(self.example_data_hdf_path, key="wrong_key")
+            data_types.TimeSeriesData(self.example_data_hdf_path,
+                                      key="wrong_key")
         # Correctly load the .hdf:
-        time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path, key="parameters")
+        time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path,
+                                                     key="parameters")
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
         # Correctly load the .csv:
-        time_series_data = data_types.TimeSeriesData(self.example_data_csv_path, sep=",")
+        time_series_data = data_types.TimeSeriesData(self.example_data_csv_path,
+                                                     sep=",")
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
@@ -68,36 +74,39 @@ class TestDataTypes(unittest.TestCase):
 
     def test_time_series_tagging(self):
         # Test tagging functions
-        with self.assertRaises(AssertionError):
-            data_types.TimeSeriesData(self.example_data_mat_path, tag=10)
-        with self.assertRaises(AssertionError):
+        with self.assertRaises(TypeError):
             data_types.TimeSeriesData(self.example_data_mat_path,
                                       default_tag=10)
         tsd1 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                        default_tag='other_default')
-        with self.assertRaises(AssertionError):
+                                         default_tag='other_default')
+        with self.assertRaises(TypeError):
             tsd1.default_tag = 10
         self.assertEqual(tsd1.get_columns_by_tag('other_default').size,
                          tsd1.size)
         with self.assertRaises(KeyError):
-            tsd1.get_columns_by_tag('this_is_never_tag')
+            tsd1.get_columns_by_tag('this_is_never_a:tag')
         tsd2 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                        tag='new_data')
+                                         default_tag='new_data')
         tsd3 = pd.concat([tsd1, tsd2], axis=1)
+        with self.assertRaises(KeyError):
+            tsd3.default_tag = 'new_default_tag'
         self.assertEqual(tsd3.size,
                          tsd1.size + tsd2.size)
         self.assertEqual(tsd3.get_columns_by_tag('new_data').size,
                          tsd2.size)
+        tsd4 = tsd3.get_columns_by_tag('new_data', drop_level=True)
+        tsd5 = data_types.TimeSeriesData(tsd3)
+        print(tsd5)
+        tsd5.droplevel(axis=1, level=1)
+        print(tsd5)
+
 
     def test_time_series_utils(self):
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
-        self.assertEqual(len(tsd.get_variables()), tsd.shape[1])
+        self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
         self.assertIsNotNone(tsd.get_tags())
-        print(tsd.get_variables())
-        self.assertLessEqual(len(tsd.get_variables()), tsd.shape[1])
-        self.assertIsNotNone(tsd.filter(like='combiTimeTable.y'))
-        with self.assertRaises(KeyError):
-            tsd.filter(items='Not_existing_item')
+        self.assertLessEqual(len(tsd.get_variable_names()), tsd.shape[1])
+
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.

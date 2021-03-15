@@ -9,7 +9,7 @@ optimization etc.
 
 import os
 import pandas as pd
-from typing import Optional, List
+from typing import Optional, List, Union, Any
 from pandas._typing import FrameOrSeries
 from pandas.core.internals import BlockManager
 from datetime import datetime
@@ -31,13 +31,9 @@ class TimeSeriesData(pd.DataFrame):
     efficiently handle variable passed processing and provide easy
     visualization access.
 
-    :param str,os.path.normpath filepath:
+    :param str,os.path.normpath data:
         Filepath ending with either .hdf, .mat or .csv containing
         time-dependent data to be loaded as a pandas.DataFrame
-    :param str tag:
-        Tag that will be added to the columns when class is initialized.
-        If you want to modify the tag for other operations, consider using
-        default_tag. 'tag' is preferred over default_tag.
     :keyword str key:
         Name of the table in a .hdf-file if the file
         contains multiple tables.
@@ -54,48 +50,49 @@ class TimeSeriesData(pd.DataFrame):
     # normal properties
     _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
 
-    def __init__(self, filepath, tag: str = None, **kwargs):
+    def __init__(self, data: Union[str, Any], **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
 
         self._filepath = None
         self._loader_kwargs = {}
         _multi_col_names = ["Variables", "Tags"]
+
         self._default_tag = kwargs.pop("default_tag", "raw")
-        assert isinstance(self._default_tag, str), "Invalid type for " \
-                                                   "default_tag!"
-        # check if tag was passed otherwise use default_tag
-        _tag = tag or self._default_tag
-        assert isinstance(_tag, str), "Invalid type for tag!"
+        if not isinstance(self._default_tag, str):
+            raise TypeError(f"Invalid type for default_tag! Expected 'str' but "
+                            f"received {type(self._default_tag)}")
+
         # Two possibles inputs. first argument is actually data provided by pandas
         # and kwargs hold further information or is it an actual filepath.
-        if not isinstance(filepath, str):
-            _df_loaded = pd.DataFrame(data=filepath,
+        if isinstance(data, BlockManager):
+            super().__init__(data=data)
+            return
+
+        if not isinstance(data, str):
+            _df_loaded = pd.DataFrame(data=data,
                                       index=kwargs.get("index", None),
                                       columns=kwargs.get("columns", None),
                                       dtype=kwargs.get("dtype", None),
                                       copy=kwargs.get("copy", False))
-            if isinstance(filepath, BlockManager):
-                super().__init__(data=filepath)
-                return
         else:
-            self._filepath = filepath
+            self._filepath = data
             self._loader_kwargs = kwargs.copy()
             _df_loaded = self._load_df_from_file()
 
         if _df_loaded.columns.nlevels == 1:
-            # Check if first level is named Tags.
-            # If so, don't create MultiIndex-DF as the method is called by the pd constructor
-            if _df_loaded.columns.name != _multi_col_names[1]:
-                multi_col = pd.MultiIndex.from_product(
-                    [_df_loaded.columns, [_tag]],
-                    names=_multi_col_names
-                )
-                _df_loaded.columns = multi_col
+            # Check if name of level 0 is in allowed names.
+            multi_col = pd.MultiIndex.from_product(
+                [_df_loaded.columns, [self._default_tag]],
+                names=_multi_col_names
+            )
+            _df_loaded.columns = multi_col
+
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
-                raise TypeError("Loaded dataframe has a different 2-Level header format than "
-                                "it is supported by this class. The names have to match.")
+                raise TypeError("Loaded dataframe has a different 2-Level "
+                                "header format than it is supported by this "
+                                "class. The names have to match.")
         else:
             raise TypeError("Only DataFrames with Multi-Columns with 2 "
                             "Levels are supported by this class.")
@@ -126,13 +123,21 @@ class TimeSeriesData(pd.DataFrame):
 
     @property
     def default_tag(self) -> str:
-        """Get the default tag used in the multi-index dataframe"""
+        """Get the default of time series data object"""
         return self._default_tag
-
+    
     @default_tag.setter
-    def default_tag(self, tag: str):
-        """Set the default tag used in the multi-index dataframe"""
-        assert isinstance(tag, str), "Invalid type for default_tag!"
+    def default_tag(self, tag: str) -> None:
+        """Set the default_tag of the time series data object
+        :param tag: new tag
+        :type tag: String
+        """
+        if not isinstance(tag, str):
+            raise TypeError(f"Invalid type for default_tag! Expected 'str' but "
+                            f"received {type(tag)}")
+        if tag not in self.get_tags():
+            raise KeyError(f"Tag '{tag}' does not exist for current data set!"
+                           f"\n Available tags: {self.get_tags()}")
         self._default_tag = tag
 
     def save(self, filepath: str = None, **kwargs) -> None:
@@ -209,44 +214,20 @@ class TimeSeriesData(pd.DataFrame):
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
 
-    def get_variables(self) -> List[str]:
+    def get_variable_names(self) -> List[str]:
         """
         Return an alphabetically sorted list of all variables
         :return:
         """
-        if isinstance(self.columns, pd.MultiIndex):
-            if 'Variables' in self.columns.names:
-                return sorted(self.columns.get_level_values(0).unique())
-        raise KeyError
+        return sorted(self.columns.get_level_values(0).unique())
+
 
     def get_tags(self) -> List[str]:
         """
         Return an alphabetically sorted list of all tags
         :return:
         """
-        if isinstance(self.columns, pd.MultiIndex):
-            if 'Tags' in self.columns.names:
-                return sorted(self.columns.get_level_values(1).unique())
-        raise KeyError
-
-    def filter(self: FrameOrSeries,
-               items=None,
-               like: Optional[str] = None,
-               regex: Optional[str] = None,
-               axis=None,
-               ) -> FrameOrSeries:
-        """
-        Adds exception to pandas filter function
-        :param items:
-        :param like:
-        :param regex:
-        :param axis:
-        :return:
-        """
-        df = super().filter(items=items, like=like, regex=regex, axis=axis)
-        if df.empty:
-            raise KeyError("No matching data found!")
-        return df
+        return sorted(self.columns.get_level_values(1).unique())
 
     def get_columns_by_tag(self, tag: str,
                            columns=None,
