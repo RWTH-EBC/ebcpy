@@ -12,7 +12,7 @@ def data_types_example():
     Example to show setup and usage of data_types class TimeSeriesData.
     """
     mat = os.path.join(os.path.dirname(__file__), "data", "measTargetData.mat")
-    tsd = TimeSeriesData(mat)
+    tsd = TimeSeriesData(mat, tag='sim')
     print(tsd)
     return tsd
 
