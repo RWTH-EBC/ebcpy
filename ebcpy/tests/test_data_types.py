@@ -94,19 +94,12 @@ class TestDataTypes(unittest.TestCase):
                          tsd1.size + tsd2.size)
         self.assertEqual(tsd3.get_columns_by_tag('new_data').size,
                          tsd2.size)
-        tsd4 = tsd3.get_columns_by_tag('new_data', drop_level=True)
-        tsd5 = data_types.TimeSeriesData(tsd3)
-        print(tsd5)
-        tsd5.droplevel(axis=1, level=1)
-        print(tsd5)
-
 
     def test_time_series_utils(self):
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
         self.assertIsNotNone(tsd.get_tags())
         self.assertLessEqual(len(tsd.get_variable_names()), tsd.shape[1])
-
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.
@@ -122,6 +115,7 @@ class TestDataTypes(unittest.TestCase):
         reference_list = ['parameters', 'trajectories']
         return_val = data_types.get_keys_of_hdf_file(self.example_data_hdf_path)
         self.assertListEqual(return_val, reference_list)
+
 
 if __name__ == "__main__":
     unittest.main()
