@@ -81,12 +81,14 @@ class TimeSeriesData(pd.DataFrame):
             _df_loaded = self._load_df_from_file()
 
         if _df_loaded.columns.nlevels == 1:
-            # Check if name of level 0 is in allowed names.
-            multi_col = pd.MultiIndex.from_product(
-                [_df_loaded.columns, [self._default_tag]],
-                names=_multi_col_names
-            )
-            _df_loaded.columns = multi_col
+            # Check if first level is named Tags.
+            # If so, don't create MultiIndex-DF as the method is called by the pd constructor
+            if _df_loaded.columns.name != _multi_col_names[1]:
+                multi_col = pd.MultiIndex.from_product(
+                    [_df_loaded.columns, [self._default_tag]],
+                    names=_multi_col_names
+                )
+                _df_loaded.columns = multi_col
 
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
@@ -221,7 +223,6 @@ class TimeSeriesData(pd.DataFrame):
         """
         return sorted(self.columns.get_level_values(0).unique())
 
-
     def get_tags(self) -> List[str]:
         """
         Return an alphabetically sorted list of all tags
@@ -229,7 +230,8 @@ class TimeSeriesData(pd.DataFrame):
         """
         return sorted(self.columns.get_level_values(1).unique())
 
-    def get_columns_by_tag(self, tag: str,
+    def get_columns_by_tag(self,
+                           tag: str,
                            columns=None,
                            return_type='pandas',
                            drop_level: bool = False):
@@ -238,7 +240,7 @@ class TimeSeriesData(pd.DataFrame):
         :param boolean drop_level: if tag should be included in the response
         :return: ndarray of input signals
         """
-        #Extract columns
+        # Extract columns
         if columns:
             _ret = self.loc[:, columns]
         else:
