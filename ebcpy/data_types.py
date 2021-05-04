@@ -8,6 +8,7 @@ optimization etc.
 """
 
 import os
+from pathlib import Path
 import pandas as pd
 from typing import Optional, List, Union, Any
 from pandas._typing import FrameOrSeries
@@ -69,14 +70,14 @@ class TimeSeriesData(pd.DataFrame):
             super().__init__(data=data)
             return
 
-        if not isinstance(data, str):
+        if not isinstance(data, (str, Path)):
             _df_loaded = pd.DataFrame(data=data,
                                       index=kwargs.get("index", None),
                                       columns=kwargs.get("columns", None),
                                       dtype=kwargs.get("dtype", None),
                                       copy=kwargs.get("copy", False))
         else:
-            self._filepath = data
+            self._filepath = str(data)
             self._loader_kwargs = kwargs.copy()
             _df_loaded = self._load_df_from_file()
 
