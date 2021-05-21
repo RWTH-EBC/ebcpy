@@ -9,11 +9,10 @@ optimization etc.
 
 import os
 from pathlib import Path
-import pandas as pd
-from typing import Optional, List, Union, Any
-from pandas._typing import FrameOrSeries
-from pandas.core.internals import BlockManager
+from typing import List, Union, Any
 from datetime import datetime
+from pandas.core.internals import BlockManager
+import pandas as pd
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -128,7 +127,7 @@ class TimeSeriesData(pd.DataFrame):
     def default_tag(self) -> str:
         """Get the default of time series data object"""
         return self._default_tag
-    
+
     @default_tag.setter
     def default_tag(self, tag: str) -> None:
         """Set the default_tag of the time series data object

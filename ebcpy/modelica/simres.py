@@ -193,7 +193,7 @@ def loadsim(fname, constants_only=False):
     if aclass[0] == 'AlinearSystem':
         raise AssertionError(fname + ' is a linearization result.  Use LinRes '
                              'instead.')
-    elif aclass[0] != 'Atrajectory':
+    if aclass[0] != 'Atrajectory':
         raise AssertionError(fname + ' is not a simulation or '
                                      'linearization result.')
 
