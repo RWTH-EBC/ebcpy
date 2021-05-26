@@ -5,6 +5,7 @@ certain format into other formats.
 import os
 import scipy.io as spio
 import numpy as np
+import pandas as pd
 from ebcpy import data_types
 
 
@@ -208,8 +209,11 @@ def _convert_hdf_to_df_subset(filepath, key, columns, offset):
     _time_header = ('time', 'in_s')
     headers.insert(0, _time_header)  # Ensure time will be at first place
 
-    df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
-    df[_time_header] = df.index.total_seconds() + offset
+    if isinstance(df.index, pd.DatetimeIndex):
+        df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
+        df[_time_header] = df.index.total_seconds() + offset
+    elif isinstance(df.index, pd.Float64Index):
+        df[_time_header] = df.index - df.iloc[0].name + offset
     # Avoid 1e-8 errors in timedelta calculation.
     df[_time_header] = df[_time_header].round(4)
 
