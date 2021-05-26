@@ -39,9 +39,12 @@ if __name__ == "__main__":
     # Setup the dymola-api:
     FMU_API = setup_fmu_api(n_cpu=2)
     FMU_API.sim_setup = {"stopTime": 3600,
-                         "resultNames": ["heater1.heatPorts[1].T"]}
-    res = FMU_API.simulate()
-    plt.plot(res[0]["heater1.heatPorts[1].T"])
+                         "resultNames": ["heater1.heatPorts[1].T"],
+                         "initialNames": ["booleanStep.period"]}
+    res = FMU_API.simulate(sim_setup=[{"initialValues": [1000]},
+                                      {"initialValues": [2000]}])
+    plt.plot(res[0]["heater1.heatPorts[1].T"], color="blue")
+    plt.plot(res[1]["heater1.heatPorts[1].T"], color="red")
     # Close the api to remove the created files:
     FMU_API.close()
     plt.show()

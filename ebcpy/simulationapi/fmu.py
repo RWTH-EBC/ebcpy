@@ -177,7 +177,7 @@ class FMU_API(simulationapi.SimulationAPI):
             sim_setups = kwargs.get("sim_setup", {})
             if isinstance(sim_setups, dict):
                 sim_setups = [sim_setups]
-            inputs = kwargs.get("sim_setup", None)
+            inputs = kwargs.get("inputs", None)
             if isinstance(inputs, list):
                 if len(inputs) != len(sim_setups):
                     raise ValueError(f"Mismatch in multiprocessing of "
