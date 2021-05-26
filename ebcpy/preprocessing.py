@@ -235,10 +235,10 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
             raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
                             "Call to_datetime_index() to convert any index to "
                             "a DateTimeIndex")
-        else:
-            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
-                            "Call convert_index_to_datetime_index() to convert any index to "
-                            "a DateTimeIndex")
+        # Else
+        raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                        "Call convert_index_to_datetime_index() to convert any index to "
+                        "a DateTimeIndex")
     #%% Check DataFrame for NANs
     # Create a pandas Series with number of invalid values for each column of df
     series_with_na = df.isnull().sum()

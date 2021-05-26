@@ -85,7 +85,8 @@ class FMU_API(simulationapi.SimulationAPI):
             inputs = inputs.copy() # Create save copy
             # Shift all columns, because "simulate_fmu" gets an input at
             # timestep x and calculates the related output for timestep x+1
-            shift_period = int(self.sim_setup["outputInterval"] / (inputs.index[0] - inputs.index[1]))
+            shift_period = int(self.sim_setup["outputInterval"] /
+                               (inputs.index[0] - inputs.index[1]))
             inputs = inputs.shift(periods=shift_period)
             # Shift time column back
             inputs.time = inputs.time.shift(-shift_period, fill_value=0)
@@ -94,8 +95,9 @@ class FMU_API(simulationapi.SimulationAPI):
 
             # Convert df to structured numpy array for fmpy: simulate_fmu
             inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
+            # TODO: implement more than "np.double" as type-possibilities
             dtype = [(i, np.double) for i in
-                     inputs.columns]  # %%% TO-DO: implement more than "np.double" as type-possibilities
+                     inputs.columns]
             inputs = np.array(inputs_tuple, dtype=dtype)
 
         try:
@@ -152,13 +154,13 @@ class FMU_API(simulationapi.SimulationAPI):
             self._fmi_type = 'CoSimulation'
 
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
-        for v in self._model_description.modelVariables:
-            if v.causality == 'input':
-                self.inputs.append(v)
-            if v.causality == 'output':
-                self.outputs.append(v)
-            if v.causality == 'parameter' or v.causality == 'calculatedParameter':
-                self.parameters.append(v)
+        for var in self._model_description.modelVariables:
+            if var.causality == 'input':
+                self.inputs.append(var)
+            if var.causality == 'output':
+                self.outputs.append(var)
+            if var.causality == 'parameter' or v.causality == 'calculatedParameter':
+                self.parameters.append(var)
 
         self._fmu_instance = fmpy.instantiate_fmu(
             unzipdir=self._unzip_dir,

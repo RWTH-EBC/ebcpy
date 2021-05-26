@@ -38,7 +38,7 @@ default_sim_config = {"packages": None,
                       "get_structural_parameters": True
                       }
 
-tsd_config = {"filepath": "TODO: Specify the path to the target values measured",
+tsd_config = {"data": "TODO: Specify the path to the target values measured",
               "key": None,
               "sheet_name": None,
               "sep": ","}

@@ -73,7 +73,7 @@ class TestDataTypes(unittest.TestCase):
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
 
     def test_time_series_tagging(self):
-        # Test tagging functions
+        """Test tagging functions"""
         with self.assertRaises(TypeError):
             data_types.TimeSeriesData(self.example_data_mat_path,
                                       default_tag=10)
@@ -96,6 +96,7 @@ class TestDataTypes(unittest.TestCase):
                          tsd2.size)
 
     def test_time_series_utils(self):
+        """Test the utils for time series"""
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
         self.assertIsNotNone(tsd.get_tags())

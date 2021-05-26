@@ -35,8 +35,8 @@ class TestOptimizer(unittest.TestCase):
                 reference_function = opt._dlib_minimize
             elif _framework == "scipy_differential_evolution":
                 reference_function = opt._scipy_differential_evolution
-            opt._choose_framework(_framework)
-            self.assertEqual(opt._minimize_func, reference_function)
+            _minimize_func, required_method = opt._choose_framework(_framework)
+            self.assertEqual(_minimize_func, reference_function)
         with self.assertRaises(TypeError):
             opt._choose_framework("not_supported_framework")
 
@@ -47,7 +47,6 @@ class TestOptimizer(unittest.TestCase):
             """Dummy class"""
 
             x_goal = np.random.rand(3)
-            x0 = np.array([0, 0, 0])
 
             def obj(self, xk, *args):
                 x_data = np.linspace(-2, 2, 100)
@@ -64,7 +63,8 @@ class TestOptimizer(unittest.TestCase):
             my_custom_optimizer.optimize(framework="scipy_minimize")
         # Test scipy minimize
         res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
-                                               method="L-BFGS-B")
+                                               method="L-BFGS-B",
+                                               x0=np.array([0, 0, 0]))
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # Test scipy differential evolution
