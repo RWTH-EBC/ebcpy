@@ -92,7 +92,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinxdoc'
+html_theme = 'sphinx_material'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -117,6 +117,26 @@ html_sidebars = {
     ]
 }
 
+html_theme_options = {
+
+    # Set the name of the project to appear in the navigation.
+    'nav_title': 'ebcpy',
+
+    # Set the color and the accent color
+    'color_primary': 'red',
+    'color_accent': 'light-red',
+
+    # Set the repo location to get a badge with stats
+    'repo_url': 'https://git.rwth-aachen.de/EBC/EBC_all/Python/ebcpy/',
+    'repo_name': 'ebcpy',
+
+    # Visible levels of the global TOC; -1 means unlimited
+    'globaltoc_depth': 3,
+    # If False, expand all TOC entries
+    'globaltoc_collapse': False,
+    # If True, show hidden TOC entries
+    'globaltoc_includehidden': False,
+}
 
 # -- Options for HTMLHelp output ------------------------------------------
 
