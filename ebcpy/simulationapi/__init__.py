@@ -5,6 +5,7 @@ may inherit classes of this module."""
 import os
 import warnings
 from abc import abstractmethod
+import multiprocessing as mp
 from ebcpy.utils import setup_logger
 
 
@@ -15,11 +16,16 @@ class SimulationAPI:
     :param str,os.path.normpath cd:
         Working directory path
     :param str model_name:
-        Name of the model being simulated."""
+        Name of the model being simulated.
+    :keyword int n_cpu:
+        Number of cores to be used by simulation.
+        If None is given, single core will be used.
+        Maximum number equals the cpu count of the device.
+    """
 
     _default_sim_setup = {"initialValues": []}
 
-    def __init__(self, cd, model_name):
+    def __init__(self, cd, model_name, **kwargs):
         self._sim_setup = self._default_sim_setup.copy()
         self.cd = cd
         self.model_name = model_name
@@ -27,9 +33,15 @@ class SimulationAPI:
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # TODO: Future: For extracting input-, output- & tuner-parameter
-        self.inputs = []     # Inputs of model
-        self.outputs = []    # Outputs of model
-        self.parameters = [] # Parameter of model
+        self.inputs = []      # Inputs of model
+        self.outputs = []     # Outputs of model
+        self.parameters = []  # Parameter of model
+        # Check multiprocessing
+        self.n_cpu = kwargs.get("n_cpu", 1)
+        if self.n_cpu > mp.cpu_count():
+            raise ValueError(f"Given n_cpu '{self.n_cpu}' is greater "
+                             "than the available number of "
+                             f"cpus on your machine '{mp.cpu_count()}'")
 
     @abstractmethod
     def close(self):
