@@ -6,12 +6,16 @@ stages:
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'Code-Quality/pylint.gitlab-ci.yml'
+    file: 'python/code-quality/pylint.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'sphinxdoc/sphinxdoc.gitlab-ci.yml'
+    file: 'python/doc/sphinxdoc.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'tests/tests.gitlab-ci.yml'
+    file: 'python/unit-tests/unittest.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/unit-tests/coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/unit-tests/dymola-coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml

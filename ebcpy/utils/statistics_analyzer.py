@@ -9,7 +9,8 @@ class StatisticsAnalyzer:
     """Class for calculation of the statistical measure based on the
     given method. Either instantiate the class and run
     StatisticsAnalyzer.calc(meas, sim), or go for direct calculation with
-    StatisticsAnalyzer.calc_METHOD(meas, sim).
+    StatisticsAnalyzer.calc_METHOD(meas, sim). Where METHOD stands for one
+    of the available methods (see below).
 
     :param str method:
         One of the following:
@@ -19,9 +20,13 @@ class StatisticsAnalyzer:
             - RMSE(root mean square error)
             - CVRMSE(variance of RMSE)
             - NRMSE(Normalized RMSE)
+    :param Boolean for_minimization:
+        Default True. To reduce (minimize) the error in given data,
+        we either have to minimize or maximize the statistical measure.
+        Example: R2 has to be maximized to minimize the error in data.
     """
 
-    def __init__(self, method):
+    def __init__(self, method, for_minimization=True):
         """Instantiate class parameters"""
         _supported_methods = {"mae": self.calc_mae,
                               "r2": self.calc_r2,
@@ -30,16 +35,28 @@ class StatisticsAnalyzer:
                               "cvrmse": self.calc_cvrmse,
                               "nrmse": self.calc_nrmse}
 
+        _minimization_factors = {"mae": 1,
+                                 "r2": -1,
+                                 "mse": 1,
+                                 "rmse": 1,
+                                 "cvrmse": 1,
+                                 "nrmse": 1}
+
         # Remove case-sensitive input
         _method_internal = method.lower()
 
         if _method_internal not in _supported_methods:
-            raise ValueError("The given method {} is not supported.\n Choose one out of: "
-                             "{}".format(_method_internal, ", ".join(_supported_methods.keys())))
+            raise ValueError(f"The given method {_method_internal} is not supported.\n "
+                             f"Choose one out of: {', '.join(_supported_methods.keys())}")
         self._calc_internal = _supported_methods[_method_internal]
+        self.for_minimization = for_minimization
+        self._min_fac = _minimization_factors[_method_internal]
 
     def calc(self, meas, sim):
         """Placeholder class before instantiating the class correctly."""
+        if self.for_minimization:
+            return self._calc_internal(meas, sim) * self._min_fac
+
         return self._calc_internal(meas, sim)
 
     @staticmethod
@@ -70,7 +87,7 @@ class StatisticsAnalyzer:
         :return: float MAE:
             R2 of the given data.
         """
-        return 1 - skmetrics.r2_score(meas, sim)
+        return skmetrics.r2_score(meas, sim)
 
     @staticmethod
     def calc_mse(meas, sim):

@@ -3,10 +3,9 @@ ebcpy.optimization."""
 
 import unittest
 import os
-from modelicares import SimRes
-from ebcpy.modelica import manipulate_ds
-import ebcpy.modelica.simres as sr_ebc
 import pandas as pd
+from ebcpy.modelica import manipulate_ds
+from ebcpy.modelica.simres import SimRes
 
 
 class TestSimRes(unittest.TestCase):
@@ -16,22 +15,22 @@ class TestSimRes(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
-        self.sim = SimRes(os.path.normpath(self.example_dir + '//ChuaCircuit.mat'))
+        self.example_dir = os.path.join(self.framework_dir, "examples", "data")
+        self.sim = SimRes(os.path.join(self.example_dir, 'ChuaCircuit.mat'))
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
-        df = sr_ebc.to_pandas(self.sim)
+        df = self.sim.to_pandas()
         first_col_name = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
-        df = sr_ebc.to_pandas(self.sim, with_unit=False)
+        df = self.sim.to_pandas(with_unit=False)
         first_col_name_without_unit = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
         self.assertTrue(first_col_name.startswith(first_col_name_without_unit))
 
     def test_get_trajectories(self):
         """Test function for the function get_trajectories"""
-        trajectories = sr_ebc.get_trajectories(self.sim)
+        trajectories = self.sim.get_trajectories()
         self.assertEqual(39, len(trajectories))
 
 
@@ -42,8 +41,8 @@ class TestManipulateDS(unittest.TestCase):
         """Called before every test.
             Used to setup relevant paths and APIs etc."""
         self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(self.framework_dir + "//examples//data")
-        self.ds_path = os.path.normpath(self.example_dir + "//example_dsfinal.txt")
+        self.example_dir = os.path.join(self.framework_dir, "examples", "data")
+        self.ds_path = os.path.join(self.example_dir, "example_dsfinal.txt")
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""

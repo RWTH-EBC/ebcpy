@@ -1,10 +1,14 @@
 """Module with static functions used to preprocess or alter
 data, maily in the format of datafames or np.arrays."""
+import warnings
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
+from pandas.tseries.frequencies import to_offset
 import numpy as np
 import pandas as pd
+import scipy.stats as st
+from ebcpy import data_types
 
 
 def build_average_on_duplicate_rows(df):
@@ -112,7 +116,81 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     return df
 
 
-def clean_and_space_equally_time_series(df, desired_freq):
+def convert_datetime_index_to_float_index(df, offset=0):
+    """
+    Convert a datetime-based index to FloatIndex (in seconds).
+    Seconds are used as a standard unit as simulation software
+    outputs data in seconds (e.g. Modelica)
+
+    :param pd.DataFrame df:
+        DataFrame to be converted to FloatIndex
+    :param float offset:
+        Offset in seconds
+    :return: pd.DataFrame df:
+        DataFrame with correct index
+
+    Examples:
+    >>> import pandas as pd
+    >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
+    >>> print(convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1)))
+                           A    B    C    D
+    2007-01-01 00:00:00  1.0  1.0  1.0  1.0
+    2007-01-01 00:00:01  1.0  1.0  1.0  1.0
+    2007-01-01 00:00:02  1.0  1.0  1.0  1.0
+    >>> print(convert_datetime_index_to_float_index(df))
+           A    B    C    D
+    0.0  1.0  1.0  1.0  1.0
+    1.0  1.0  1.0  1.0  1.0
+    2.0  1.0  1.0  1.0  1.0
+    """
+    # Check correct input
+    if not isinstance(df.index, pd.DatetimeIndex):
+        raise IndexError("Given DataFrame has no DatetimeIndex, conversion not possible")
+
+    new_index = pd.to_timedelta(df.index - df.index[0]).total_seconds()
+    df.index = np.round(new_index, 4) + offset
+    return df
+
+
+def time_based_weighted_mean(df):
+    """
+    Creates the weighted mean according to time index that does not need to be equidistant.
+    Further info:
+    https://stackoverflow.com/questions/26343252/create-a-weighted-mean-for-a-irregular-timeseries-in-pandas
+
+    :param pd.DataFrame df:
+        A pandas DataFrame with DatetimeIndex.
+    :return np.array:
+        A numpy array containing weighted means of all columns
+
+    Examples:
+    >>> from datetime import datetime
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> time_vec = [datetime(2007,1,1,0,0),
+    >>>             datetime(2007,1,1,0,0),
+    >>>             datetime(2007,1,1,0,5),
+    >>>             datetime(2007,1,1,0,7),
+    >>>             datetime(2007,1,1,0,10)]
+    >>> df = pd.DataFrame({'A': [1,2,4,3,6], 'B': [11,12,14,13,16]}, index=time_vec)
+    >>> print(time_based_weighted_mean(df=df))
+    [  3.55  13.55]
+    """
+
+    if not isinstance(df.index, pd.DatetimeIndex):
+        raise IndexError(f"df.index must be DatetimeIndex, but it is {type(df.index)}.")
+
+    time_delta = [(x-y).total_seconds() for x, y in zip(df.index[1:], df.index[:-1])]
+    weights = [x+y for x, y in zip([0] + time_delta, time_delta + [0])]
+    # Create empty numpy array
+    res = np.empty(len(df.columns))
+    res[:] = np.nan
+    for i, col_name in enumerate(df.columns):
+        res[i] = np.average(df[col_name], weights=weights)
+    return res
+
+
+def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.95):
     """
     Function for cleaning of the given dataFrame and interpolating
     based on the the given desired frequency. Linear interpolation
@@ -127,23 +205,38 @@ def clean_and_space_equally_time_series(df, desired_freq):
         - 5s: Every 5 seconds
         - 6min: Every 6 minutes
         This also works for h, d, m, y, ms etc.
+    :param float confidence_warning:
+        Value to check the confidence interval of input data without
+        a defined frequency. If the desired frequency is outside of
+        the resulting confidence interval, a warning is issued.
     :return: pd.DataFrame
         Cleaned and equally spaced data-frame
 
     Examples:
-    **Note:** As this function works best with some random
-    data, we will leave it up to you to see the structure of the
-    dataframe in every step.
+    **Note:** The example is for random data. Try out different sampling
+    frequencys. You will be warned if the samping rate is to high or to low.
 
     >>> df = pd.DataFrame(np.random.randint(0,100,size=(100, 4)),
     >>>                   columns=list('ABCD')).set_index("A").sort_index()
     >>> df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
     >>> clean_and_space_equally_time_series(df, "30s")
+    >>> import matplotlib.pyplot as plt
+    >>> plt.plot(df["B"], label="Raw data")
+    >>> df = clean_and_space_equally_time_series(df.copy(), "1500ms")
+    >>> plt.plot(df["B"], label="Clead and spaced equally")
+    >>> plt.legend()
+    >>> plt.show()
 
+    .. versionchanged:: 0.1.7
     """
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
-        raise TypeError("DataFrame needs a DateTimeIndex for executing this function."
+        if isinstance(df, data_types.TimeSeriesData):
+            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                            "Call to_datetime_index() to convert any index to "
+                            "a DateTimeIndex")
+        # Else
+        raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
                         "Call convert_index_to_datetime_index() to convert any index to "
                         "a DateTimeIndex")
     #%% Check DataFrame for NANs
@@ -152,8 +245,8 @@ def clean_and_space_equally_time_series(df, desired_freq):
     for name in series_with_na.index:
         if series_with_na.loc[name] > 0:
             # Print only columns with invalid values
-            print("{} has following number of invalid "
-                  "values\n {}".format(name, str(series_with_na.loc[name])))
+            print(f"{name} has following number of invalid "
+                  f"values\n {series_with_na.loc[name]}")
     # Drop all rows where at least one NA exists
     df.dropna(how='any', inplace=True)
 
@@ -164,11 +257,51 @@ def clean_and_space_equally_time_series(df, desired_freq):
     # Merge duplicate rows using mean.
     df = build_average_on_duplicate_rows(df)
 
+    # Make user warning for two cases: Upsampling and data input without a freq:
+    confidence = 0.95
+    # Check if the frequency differs
+    old_freq = df.index.freq
+    if old_freq is None:
+        # Construct a frequency by converting it first to int, then to timedelta back again:
+        _artificial_freq = df.index.to_series().diff().dropna().values.astype(np.int64)
+        cfd_int = st.t.interval(confidence,
+                                len(_artificial_freq)-1,
+                                loc=np.mean(_artificial_freq),
+                                scale=st.sem(_artificial_freq))
+        # Convert back to timedelta
+        cfd_int = pd.to_timedelta(cfd_int)
+        if pd.to_timedelta(desired_freq) < cfd_int[0]:
+            warnings.warn("Input data has no frequency, but the desired frequency "
+                          f"is lower than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
+        if pd.to_timedelta(desired_freq) > cfd_int[1]:
+            warnings.warn("Input data has no frequency, but the desired frequency "
+                          f"is higher than the given confidence interval "
+                          f"({cfd_int.values} (in nano seconds). "
+                          "Carefully check the result to see if you "
+                          "introduced errors to the data.")
+
     #%% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
     time_index = pd.date_range(start=df.index[0], end=df.index[-1], freq=desired_freq)
+
+    # Check if the user is trying to upsample the data:
+    if old_freq:
+        if time_index.freq > old_freq:
+            warnings.warn("You are upsampling your data. This may be dangerous. "
+                          "Carefully check the result to see if you introduced errors to the data.")
+
     # Create an empty data frame
-    df_time_temp = pd.DataFrame(index=time_index)
+    # If multi-columns is used, first get the old index and make it empty:
+    multi_cols = df.columns
+    if isinstance(multi_cols, pd.MultiIndex):
+        empty_multi_cols = pd.MultiIndex.from_product([[] for _ in range(multi_cols.nlevels)],
+                                                      names=multi_cols.names)
+        df_time_temp = pd.DataFrame(index=time_index, columns=empty_multi_cols)
+    else:
+        df_time_temp = pd.DataFrame(index=time_index)
 
     # Insert temporary time_index into df. fill_value = 0 can only be used,
     # since all NaNs should be eliminated prior
@@ -184,7 +317,15 @@ def clean_and_space_equally_time_series(df, desired_freq):
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
-    df = df.resample(rule=desired_freq, loffset=delta_time).first()
+
+    # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
+    if isinstance(df, data_types.TimeSeriesData):
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
+        df = data_types.TimeSeriesData(df)
+    else:
+        df = df.resample(rule=desired_freq).first()
+        df.index = df.index + to_offset(delta_time)
     del delta_time
 
     return df
@@ -211,6 +352,12 @@ def low_pass_filter(data, crit_freq, filter_order):
     >>> plt.show()
 
     """
+    if len(data.shape) > 1: # Check if given data has multiple dimensions
+        if data.shape[1] == 1:
+            data = data[:, 0]  # Resize to 1D-Array
+        else:
+            raise ValueError("Given data has multiple dimensions. "
+                             "Only one-dimensional arrays are supported in this function.")
     _filter_order = int(filter_order)
     numerator, denominator = signal.butter(N=_filter_order, Wn=crit_freq,
                                            btype='low', analog=False, output='ba')
@@ -218,7 +365,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     return output
 
 
-def moving_average(values, window):
+def moving_average(data, window):
     """
     Creates a pandas Series as moving average of the input series.
 
@@ -243,31 +390,47 @@ def moving_average(values, window):
     >>> plt.show()
 
     """
+    if len(data.shape) > 1: # Check if given data has multiple dimensions
+        if data.shape[1] == 1:
+            data = data[:, 0]  # Resize to 1D-Array
+        else:
+            raise ValueError("Given data has multiple dimensions. "
+                             "Only one-dimensional arrays are supported in this function.")
     window = int(window)
     weights = np.repeat(1.0, window) / window
-    sma = np.convolve(values, weights, 'valid')
+    sma = np.convolve(data, weights, 'valid')
     # Create array with first entries and window/2 elements
     fill_start = np.full((int(np.floor(window/2)), 1), sma[0])
-    # Same with last value of -values-
-    fill_end = np.full((int(np.ceil(window/2)), 1), sma[-1])
+    # Same with last value of -data-
+    fill_end = np.full((int(np.ceil(window/2)) - 1, 1), sma[-1])
     # Stack the arrays
     sma = np.concatenate((fill_start[:, 0], sma, fill_end[:, 0]), axis=0)
     return sma
 
 
-def create_on_off_signal(df, col_names, threshold, col_names_new):
+def create_on_off_signal(df, col_names, threshold, col_names_new,
+                         tags="raw", new_tag="converted_signal"):
     """
     Create on and off signals based on the given threshold for all column names.
 
     :param pd.DataFame df:
         DataFrame with the data to process
     :param list col_names:
-        Column names to convert to signals
+        Column names of variables to convert to signals
     :param float,list threshold:
         Threshold for all column-names (single float) or
         a list with specific thresholds for specific columns.
     :param list col_names_new:
         New name for the signal-column
+    :param str,list tags:
+        If a 2-Level DataFrame for TimeSeriesData is used, one has to
+        specify the tag of the variables. Default value is to use the "raw"
+        tag set in the TimeSeriesClass. However one can specify a list
+        (Different tag for each variable), or on can pass a string
+        (same tags for all given variables)
+    :param str new_tag:
+        The tag the newly created variable will hold. This can be used to
+        indicate where the signal was converted from.
     :return: pd.DataFrame
         Now with the created signals.
 
@@ -282,20 +445,31 @@ def create_on_off_signal(df, col_names, threshold, col_names_new):
     >>> plt.show()
     """
     if len(col_names) != len(col_names_new):
-        raise IndexError("Given lists differ in length. col_names: {}, "
-                         "col_names_new: {}".format(len(col_names), len(col_names_new)))
+        raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                         f"col_names_new: {len(col_names_new)}")
     if isinstance(threshold, list):
         if len(col_names) != len(threshold):
-            raise IndexError("Given lists differ in length. col_names: {}, "
-                             "threshold: {}".format(len(col_names), len(threshold)))
+            raise IndexError(f"Given lists differ in length. col_names: {len(col_names)}, "
+                             f"threshold: {len(threshold)}")
     else:
         threshold = [threshold for _ in enumerate(col_names)]
     # Do on_off signal creation for all desired columns
-    for i, _ in enumerate(col_names):
-        # Create zero-array
-        df[col_names_new[i]] = 0.0
-        # Change all values to 1.0 according to threshold
-        df.loc[df[col_names[i]] >= threshold[i], col_names_new[i]] = 1.0
+    if isinstance(df.columns, pd.MultiIndex):
+        # Convert given tags to a list
+        if isinstance(tags, str):
+            tags = [tags for _ in enumerate(col_names)]
+
+        for i, _ in enumerate(col_names):
+            # Create zero-array
+            df.loc[:, (col_names_new[i], new_tag)] = 0.0
+            # Change all values to 1.0 according to threshold
+            df.loc[df[col_names[i], tags[i]] >= threshold[i], (col_names_new[i], new_tag)] = 1.0
+    else:
+        for i, _ in enumerate(col_names):
+            # Create zero-array
+            df.loc[:, col_names_new[i]] = 0.0
+            # Change all values to 1.0 according to threshold
+            df.loc[df[col_names[i]] >= threshold[i], col_names_new[i]] = 1.0
     return df
 
 
