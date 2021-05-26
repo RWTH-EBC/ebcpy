@@ -169,14 +169,17 @@ class TestLogger(unittest.TestCase):
         """Test if logging works."""
         example_str = "This is a test"
         self.logger.info(example_str)
-        with open(self.logger.handlers[0].baseFilename, "r") as logfile:
+        with open(self.logger.handlers[1].baseFilename, "r") as logfile:
             logfile.seek(0)
             self.assertTrue(example_str in logfile.read())
 
     def tearDown(self):
         """Remove created files."""
         self.logger.handlers[0].close()
-        os.remove(self.logger.handlers[0].baseFilename)
+        try:
+            os.remove(self.logger.handlers[1].baseFilename)
+        except PermissionError:
+            pass
 
 
 if __name__ == "__main__":
