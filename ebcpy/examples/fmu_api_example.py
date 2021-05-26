@@ -8,7 +8,7 @@ import os
 from ebcpy.simulationapi import fmu
 
 
-def setup_fmu_api(cd=None):
+def setup_fmu_api(cd=None, n_cpu=1):
     """
     Function to show how to setup the FMU_API.
 
@@ -28,18 +28,20 @@ def setup_fmu_api(cd=None):
                               "Modelica",
                               "TestModel.fmu")
     # Setup the dymola api
-    fmu_api = fmu.FMU_API(cd, model_name)
+    fmu_api = fmu.FMU_API(cd=cd,
+                          model_name=model_name,
+                          n_cpu=n_cpu)
     return fmu_api
 
 
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
     # Setup the dymola-api:
-    FMU_API = setup_fmu_api()
+    FMU_API = setup_fmu_api(n_cpu=2)
     FMU_API.sim_setup = {"stopTime": 3600,
                          "resultNames": ["heater1.heatPorts[1].T"]}
     res = FMU_API.simulate()
-    plt.plot(res["heater1.heatPorts[1].T"])
+    plt.plot(res[0]["heater1.heatPorts[1].T"])
     # Close the api to remove the created files:
     FMU_API.close()
     plt.show()

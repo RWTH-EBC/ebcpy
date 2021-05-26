@@ -24,6 +24,7 @@ class SimulationAPI:
     """
 
     _default_sim_setup = {"initialValues": []}
+    _items_to_drop = ['pool']
 
     def __init__(self, cd, model_name, **kwargs):
         self._sim_setup = self._default_sim_setup.copy()
@@ -42,6 +43,23 @@ class SimulationAPI:
             raise ValueError(f"Given n_cpu '{self.n_cpu}' is greater "
                              "than the available number of "
                              f"cpus on your machine '{mp.cpu_count()}'")
+        if self.n_cpu > 1:
+            self.pool = mp.Pool(processes=self.n_cpu)
+            self.use_mp = True
+        else:
+            self.pool = None
+            self.use_mp = False
+
+    def __getstate__(self):
+        """Overwrite magic method to allow pickling the api object"""
+        self_dict = self.__dict__.copy()
+        for item in self._items_to_drop:
+            del self_dict[item]
+        return self_dict
+
+    def __setstate__(self, state):
+        """Overwrite magic method to allow pickling the api object"""
+        self.__dict__.update(state)
 
     @abstractmethod
     def close(self):
@@ -68,6 +86,24 @@ class SimulationAPI:
         :param dict sim_setup:
             Dictionary object with the same keys as this class's sim_setup dictionary
         """
+        warnings.warn("Function will be removed in future versions. "
+                      "Use the set_sim_setup function.", DeprecationWarning)
+        self.set_sim_setup(sim_setup)
+
+    @sim_setup.deleter
+    def sim_setup(self):
+        """In case user deletes the object, reset it to the default one."""
+        self._sim_setup = self._default_sim_setup.copy()
+
+    def set_sim_setup(self, sim_setup: dict):
+        """
+        Overwrites multiple entries in the simulation
+        setup dictionary for simulations with the used program.
+        The object _number_values can be overwritten in child classes.
+
+        :param dict sim_setup:
+            Dictionary object with the same keys as this class's sim_setup dictionary
+        """
         _diff = set(sim_setup.keys()).difference(self._default_sim_setup.keys())
         if _diff:
             raise KeyError(f"The given sim_setup contains the following keys "
@@ -83,20 +119,6 @@ class SimulationAPI:
             else:
                 raise TypeError(f"{key} is of type {type(value).__name__} "
                                 f"but should be type {_ref}")
-
-    @sim_setup.deleter
-    def sim_setup(self):
-        """In case user deletes the object, reset it to the default one."""
-        self._sim_setup = self._default_sim_setup.copy()
-
-    def set_sim_setup(self, sim_setup):
-        """
-        Replaced in v0.1.7 by property function
-        """
-        warnings.warn("Function will be removed in future versions. "
-                      "Use the property setter directly e.g. "
-                      "sim_api.sim_setup = sim_setup", DeprecationWarning)
-        self.sim_setup = sim_setup
 
     def set_initial_values(self, initial_values: list):
         """
@@ -128,3 +150,6 @@ class SimulationAPI:
         """Base function for simulating one timestep."""
         raise NotImplementedError('{}.do_step function is not '
                                   'defined'.format(self.__class__.__name__))
+
+    def get_worker_idx(self):
+        return mp.current_process()._identity[0]
