@@ -3,6 +3,7 @@ ebcpy.data_types."""
 
 import os
 import unittest
+from pathlib import Path
 import pandas as pd
 from ebcpy import data_types
 
@@ -14,14 +15,11 @@ class TestDataTypes(unittest.TestCase):
         """Called before every test.
         Define example paths and parameters used in all test-functions.
         """
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.join(self.framework_dir, "examples", "data")
-        self.example_data_hdf_path = os.path.join(self.example_dir,
-                                                  "example_data.hdf")
-        self.example_data_csv_path = os.path.join(self.example_dir,
-                                                  "example_data.CSV")
-        self.example_data_mat_path = os.path.join(self.example_dir,
-                                                  "example_data.mat")
+        self.framework_dir = Path(__file__).parents[1]
+        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
+        self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
+        self.example_data_csv_path = self.example_dir.joinpath("example_data.CSV")
+        self.example_data_mat_path = self.example_dir.joinpath("example_data.mat")
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""

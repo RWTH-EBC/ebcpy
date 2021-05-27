@@ -3,6 +3,7 @@ ebcpy.optimization."""
 
 import unittest
 import os
+from pathlib import Path
 import pandas as pd
 from ebcpy.modelica import manipulate_ds
 from ebcpy.modelica.simres import SimRes
@@ -14,9 +15,9 @@ class TestSimRes(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.join(self.framework_dir, "examples", "data")
-        self.sim = SimRes(os.path.join(self.example_dir, 'ChuaCircuit.mat'))
+        self.framework_dir = Path(__file__).parents[1]
+        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
+        self.sim = SimRes(self.example_dir.joinpath("ChuaCircuit.mat"))
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
@@ -40,9 +41,9 @@ class TestManipulateDS(unittest.TestCase):
     def setUp(self):
         """Called before every test.
             Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.join(self.framework_dir, "examples", "data")
-        self.ds_path = os.path.join(self.example_dir, "example_dsfinal.txt")
+        self.framework_dir = Path(__file__).parents[1]
+        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
+        self.ds_path = self.example_dir.joinpath("example_dsfinal.txt")
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""

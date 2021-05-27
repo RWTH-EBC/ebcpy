@@ -3,6 +3,7 @@ of Modelica-Models."""
 
 import sys
 import os
+import pathlib
 import warnings
 import atexit
 import pandas as pd
@@ -111,7 +112,15 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if "bin64" not in self.dymola_path:
             self._bit_64 = False
 
-        self.packages = packages
+        self.packages = []
+        for package in packages:
+            if isinstance(package, pathlib.Path):
+                self.packages.append(str(package))
+            elif isinstance(package, str):
+                self.packages.append(package)
+            else:
+                raise TypeError(f"Given package is of type {type(package)}"
+                                f" but should be any valid path.")
 
         # Update kwargs with regard to what kwargs are supported.
         _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
@@ -522,6 +531,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         :return: str
             Path readable in dymola
         """
+        if isinstance(path, pathlib.Path):
+            path = str(path)
+
         # Create base directory:
         _basedir = os.path.dirname(path)
         if not os.path.isdir(_basedir):

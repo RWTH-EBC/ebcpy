@@ -4,6 +4,7 @@ ebcpy.simulationapi."""
 import unittest
 import sys
 import os
+from pathlib import Path
 import shutil
 import pandas as pd
 from ebcpy.simulationapi import dymola_api, fmu
@@ -15,15 +16,12 @@ class TestDymolaAPI(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(framework_dir, "examples", "data"))
-        self.example_sim_dir = os.path.join(self.example_dir, "testzone")
+        self.framework_dir = Path(__file__).parents[1]
+        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples")
+        self.example_sim_dir = self.example_dir.joinpath("testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
-        ebcpy_test_package_dir = os.path.normpath(os.path.join(framework_dir,
-                                                               "examples",
-                                                               "Modelica",
-                                                               "TestModel.mo"))
+        ebcpy_test_package_dir = self.example_dir.joinpath("Modelica", "TestModel.mo")
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest_TestModel"
         self.initial_names = ["C",
@@ -98,16 +96,13 @@ class TestFMUAPI(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(framework_dir, "examples"))
+        self.framework_dir = Path(__file__).parents[1]
+        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples")
         self.example_sim_dir = os.path.join(self.example_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
 
-        model_name = os.path.normpath(os.path.join(framework_dir,
-                                                   "examples",
-                                                   "Modelica",
-                                                   "TestModel.fmu"))
+        model_name = self.example_dir.joinpath("Modelica", "TestModel.fmu")
         self.initial_names = ["C",
                               "heatConv_b",
                               "heatConv_a"]

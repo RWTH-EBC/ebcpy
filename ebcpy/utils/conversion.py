@@ -3,6 +3,7 @@ Module with functions to convert
 certain format into other formats.
 """
 import os
+import pathlib
 import scipy.io as spio
 import numpy as np
 import pandas as pd
@@ -46,6 +47,9 @@ def convert_hdf_to_modelica_mat(filepath, save_path_file=None, columns=None,
     True
     >>> os.remove(filepath)
     """
+    if isinstance(save_path_file, pathlib.Path):
+        save_path_file = str(save_path_file)
+
     if save_path_file and not save_path_file.endswith(".mat"):
         raise ValueError("Given savepath for txt-file is not a .mat file!")
 

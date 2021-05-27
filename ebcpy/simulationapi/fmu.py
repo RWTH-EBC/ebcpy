@@ -3,6 +3,7 @@ simulate models."""
 
 import os
 import logging
+import pathlib
 import shutil
 import fmpy
 from fmpy.model_description import read_model_description
@@ -34,6 +35,8 @@ class FMU_API(simulationapi.SimulationAPI):
     def __init__(self, cd, model_name):
         """Instantiate class parameters"""
         super().__init__(cd, model_name)
+        if isinstance(model_name, pathlib.Path):
+            model_name = str(model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError(f"{model_name} is not a valid fmu file!")
         # Init instance attributes
@@ -159,7 +162,7 @@ class FMU_API(simulationapi.SimulationAPI):
                 self.inputs.append(var)
             if var.causality == 'output':
                 self.outputs.append(var)
-            if var.causality == 'parameter' or v.causality == 'calculatedParameter':
+            if var.causality == 'parameter' or var.causality == 'calculatedParameter':
                 self.parameters.append(var)
 
         self._fmu_instance = fmpy.instantiate_fmu(
