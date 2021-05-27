@@ -212,6 +212,7 @@ class FMU_API(simulationapi.SimulationAPI):
         Manually set up and extract the data to
         avoid this step in the simulate function.
         """
+        self.logger.info("Extracting fmu and reading fmu model description")
         # First load model description and extract variables
         _unzip_dir_single = os.path.join(self.cd,
                                          os.path.basename(self.model_name)[:-4] + "_extracted")
@@ -226,6 +227,7 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             self._fmi_type = 'CoSimulation'
 
+        self.logger.info("Reading model variables")
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
             if var.causality == 'input':
@@ -234,8 +236,13 @@ class FMU_API(simulationapi.SimulationAPI):
                 self.outputs.append(var)
             if var.causality == 'parameter' or var.causality == 'calculatedParameter':
                 self.parameters.append(var)
+            else:
+                self.states.append(var)
 
         if self.use_mp:
+            self.logger.info("Extracting fmu %s times for "
+                             "multiprocessing on %s cores",
+                             self.n_cpu, self.n_cpu)
             _unzip_dirs = []
             for cpu_idx in range(self.n_cpu):
                 _unzip_dir_cpu_idx = _unzip_dir_single + f"_worker_{cpu_idx}"
@@ -244,6 +251,7 @@ class FMU_API(simulationapi.SimulationAPI):
                 _unzip_dirs.append(_unzip_dir_cpu_idx)
             self.pool.map(self._setup_single_fmu_instance, _unzip_dirs)
         else:
+            self.logger.info("Instantiating fmu for single processing")
             self._unzip_dirs = {0: _unzip_dir_single}
             self._fmu_instances = {0: fmpy.instantiate_fmu(
                 unzipdir=_unzip_dir_single,
@@ -258,6 +266,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def _setup_single_fmu_instance(self, unzip_dir):
         idx_worker = self.get_worker_idx()
+        self.logger.info("Instantiating fmu for worker %s", idx_worker)
         self._fmu_instances.update({idx_worker: fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
             model_description=self._model_description,
@@ -270,7 +279,6 @@ class FMU_API(simulationapi.SimulationAPI):
         self._unzip_dirs.update({
             idx_worker: unzip_dir
         })
-        return None
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """

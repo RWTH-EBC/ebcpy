@@ -34,9 +34,10 @@ class SimulationAPI:
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # TODO: Future: For extracting input-, output- & tuner-parameter
-        self.inputs = []      # Inputs of model
-        self.outputs = []     # Outputs of model
-        self.parameters = []  # Parameter of model
+        self.inputs = []      # Inputs of the model
+        self.outputs = []     # Outputs of the model
+        self.parameters = []  # Parameter of the model
+        self.states = []      # States of the model
         # Check multiprocessing
         self.n_cpu = kwargs.get("n_cpu", 1)
         if self.n_cpu > mp.cpu_count():
