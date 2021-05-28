@@ -31,9 +31,10 @@ class TimeSeriesData(pd.DataFrame):
     efficiently handle variable passed processing and provide easy
     visualization access.
 
-    :param str,os.path.normpath data:
+    :param str,os.path.normpath,pd.DataFrame data:
         Filepath ending with either .hdf, .mat or .csv containing
-        time-dependent data to be loaded as a pandas.DataFrame
+        time-dependent data to be loaded as a pandas.DataFrame.
+        Alternative option is to pass a DataFrame directly.
     :keyword str key:
         Name of the table in a .hdf-file if the file
         contains multiple tables.
@@ -45,6 +46,23 @@ class TimeSeriesData(pd.DataFrame):
         argument when loading a xlsx-file.
     :keyword str default_tag:
         Which value to use as tag. Default is 'raw'
+
+
+    Examples:
+
+    First let's see the usage for a common dataframe.
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from ebcpy import TimeSeriesData
+    >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
+    >>> tsd = TimeSeriesData(df)
+    >>> tsd.to_datetime_index()
+    >>> tsd.save("my_new_data.hdf", key="NewData")
+
+    Now, let's load the recently created file.
+    As we just created the data, we specify the tag
+    'sim' to indicate it is some sort of simulated value.
+    >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
     """
 
     # normal properties

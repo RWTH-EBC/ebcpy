@@ -11,11 +11,7 @@ Paramters can easily be updated, and the initialization-process is much more use
 .. automodule:: ebcpy.simulationapi.dymola_api
    :members:
 
-.. automodule:: ebcpy.simulationapi.py_fmi
+.. automodule:: ebcpy.simulationapi.fmu
    :members:
 
 .. _cosimulation-api:
-Co-Simulation APIs
-=====================
-
-In the future, co-simulation using FMU's will also be a feature.

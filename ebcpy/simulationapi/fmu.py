@@ -18,6 +18,23 @@ class FMU_API(simulationapi.SimulationAPI):
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
 
+    Example:
+
+    >>> import matplotlib.pyplot as plt
+    >>> from ebcpy import FMU_API
+    >>> # Select any valid fmu. Replace the line below if
+    >>> # you don't have this file on your device.
+    >>> model_name = pathlib.Path(__file__).parents[1].joinpath("examples", "Modelica", "TestModel.fmu")
+    >>> fmu_api = FMU_API(model_name)
+    >>> fmu_api.sim_setup = {"stopTime": 3600}
+    >>> result_df = fmu_api.simulate()
+    >>> fmu_api.close()
+    >>> # Select an examplary column
+    >>> col = result_df.columns[0]
+    >>> plt.plot(result_df[col], label=col)
+    >>> _ = plt.legend()
+    >>> _ = plt.show()
+
     .. versionadded:: 0.1.7
     """
 
@@ -32,13 +49,16 @@ class FMU_API(simulationapi.SimulationAPI):
         'resultNames': [],
         'timeout': np.inf}
 
-    def __init__(self, cd, model_name):
+    def __init__(self, model_name, cd=None):
         """Instantiate class parameters"""
-        super().__init__(cd, model_name)
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError(f"{model_name} is not a valid fmu file!")
+        if cd is None:
+            cd = os.path.dirname(model_name)
+        super().__init__(cd, model_name)
+
         # Init instance attributes
         self._unzip_dir = None
         self._fmu_instance = None
@@ -188,3 +208,8 @@ class FMU_API(simulationapi.SimulationAPI):
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
+
+
+if __name__ == "__main__":
+    import doctest
+    doctest.testmod()
