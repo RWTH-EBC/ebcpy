@@ -40,10 +40,11 @@ def setup_dymola_api(cd=None, show_window=True):
 
     # Define the name of your model and the packages needed for import
     # and setup the simulation api of choice
-    model_name = "AixCalTest_TestModel"
+    model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
     packages = [os.path.normpath(os.path.join(os.path.dirname(__file__),
                                               "Modelica",
                                               "TestModel.mo"))]
+    packages = []
     # Setup the dymola api
     dym_api = dymola_api.DymolaAPI(cd,
                                    model_name,
@@ -57,3 +58,4 @@ if __name__ == "__main__":
     DYM_API = setup_dymola_api()
     # Run example:
     DYM_API.get_all_parameters()
+    print("Lol")

@@ -156,6 +156,8 @@ class Optimizer:
         hess = None
         hessp = None
         """
+        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs.update(kwargs)
         try:
             import scipy.optimize as opt
         except ImportError as error:
@@ -169,13 +171,13 @@ class Optimizer:
                 fun=self.obj,
                 x0=kwargs["x0"],
                 method=method,
-                jac=kwargs.get("jac", None),
-                hess=kwargs.get("hess", None),
-                hessp=kwargs.get("hessp", None),
+                jac=default_kwargs["jac"],
+                hess=default_kwargs["hess"],
+                hessp=default_kwargs["hessp"],
                 bounds=self.bounds,
-                constraints=kwargs.get("constraints", {}),
-                tol=kwargs.get("tol", None),
-                options=kwargs.get("options", None)
+                constraints=default_kwargs["constraints"],
+                tol=default_kwargs["tol"],
+                options=default_kwargs["options"]
             )
             return res
         except (KeyboardInterrupt, Exception) as error:
@@ -190,6 +192,8 @@ class Optimizer:
         solver_epsilon = 0
         num_function_calls = int(1e9)
         """
+        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs.update(kwargs)
         try:
             import dlib
         except ImportError as error:
@@ -219,8 +223,8 @@ class Optimizer:
                 bound1=_bound_min,
                 bound2=_bound_max,
                 is_integer_variable=is_integer_variable,
-                num_function_calls=int(kwargs.get("num_function_calls", 1e9)),
-                solver_epsilon=float(kwargs.get("solver_epsilon", 0))
+                num_function_calls=int(default_kwargs["num_function_calls"]),
+                solver_epsilon=float(default_kwargs["solver_epsilon"])
             )
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=x_res, fun=f_res)
@@ -243,6 +247,8 @@ class Optimizer:
         init = 'latinhypercube'
         atol = 0
         """
+        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs.update(kwargs)
         try:
             import scipy.optimize as opt
         except ImportError as error:
@@ -257,16 +263,16 @@ class Optimizer:
                 func=self.obj,
                 bounds=self.bounds,
                 strategy=method,
-                maxiter=kwargs.get("maxiter", 1000),
-                popsize=kwargs.get("popsize", 15),
-                tol=kwargs.get("tol", 0.01),
-                mutation=kwargs.get("mutation", (0.5, 1)),
-                recombination=kwargs.get("recombination", 0.7),
-                seed=kwargs.get("seed", None),
+                maxiter=default_kwargs["maxiter"],
+                popsize=default_kwargs["popsize"],
+                tol=default_kwargs["tol"],
+                mutation=default_kwargs["mutation"],
+                recombination=default_kwargs["recombination"],
+                seed=default_kwargs["seed"],
                 disp=False,  # We have our own logging
-                polish=kwargs.get("polish", True),
-                init=kwargs.get("init", "latinhypercube"),
-                atol=kwargs.get("atol", 0)
+                polish=default_kwargs["polish"],
+                init=default_kwargs["init"],
+                atol=default_kwargs["atol"]
             )
             return res
         except (KeyboardInterrupt, Exception) as error:
@@ -294,3 +300,32 @@ class Optimizer:
         self.logger.error("\n".join([f"{key}: {value}"
                                      for key, value in self._current_best_iterate.items()]))
         raise error
+
+    def get_default_config(self, framework: str) -> dict:
+        """
+        Return the default config or kwargs for the
+        given framework.
+
+        The default values are extracted of the corresponding
+        framework directly.
+        """
+        if framework.lower() == "scipy_minimize":
+            return {"tol": None,
+                    "options": {"maxfun": 1},
+                    "constraints": None,
+                    "jac": None,
+                    "hess": None,
+                    "hessp": None}
+        if framework.lower() == "dlib_minimize":
+            return {"num_function_calls": int(1e9),
+                    "solver_epsilon": 0}
+        if framework.lower() == "scipy_differential_evolution":
+            return {"maxiter": 30,
+                    "popsize": 5,
+                    "mutation": (0.5, 1),
+                    "recombination": 0.7,
+                    "seed": None,
+                    "polish": True,
+                    "init": 'latinhypercube',
+                    "atol": 0
+                    }

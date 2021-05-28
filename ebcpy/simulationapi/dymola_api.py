@@ -457,6 +457,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
         dsin_path = os.path.join(self.cd, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
         # Convert and return all parameters of dsin to initial values and names
+        self.parameters = df[df["5"] == "1"].index.values.tolist()
+        self.outputs = df[df["5"] == "4"].index.values.tolist()
+        self.inputs = df[df["5"] == "5"].index.values.tolist()
+        self.states = df[(df["5"] == "2") | (df["5"] == "3") | (df["5"] == "6")].index.values.tolist()
         df = df[df["5"] == "1"]
         names = df.index
         initial_values = pd.to_numeric(df["2"].values)
