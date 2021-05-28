@@ -6,13 +6,10 @@ INSTALL_REQUIRES = [
     'numpy>=1.19.5',
     'matplotlib>=3.3.4',
     'scipy>=1.5.4',
-    'six>=1.15.0',
     'pandas>=1.1.5',
     'tables>=3.6.1',
-    'pyyaml~=5.4.1',
     'sklearn~=0.0',
-    'fmpy>=0.2.27',
-    'cmake>=3.18.4.post1',
+    'fmpy>=0.2.27'
 ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 #INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source

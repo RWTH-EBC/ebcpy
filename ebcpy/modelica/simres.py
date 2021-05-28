@@ -31,7 +31,6 @@ from collections import namedtuple
 import re as regexp
 from scipy.io import loadmat
 from scipy.io.matlab.mio_utils import chars_to_strings
-from six import PY2
 import pandas as pd
 import numpy as np
 
@@ -181,8 +180,6 @@ def loadsim(fname, constants_only=False):
             except ValueError:
                 pass # (displayUnit = '')
         description = description.rstrip()
-        if PY2:
-            description = description.decode('utf-8')
 
         return description, unit, display_unit
 
