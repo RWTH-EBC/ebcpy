@@ -64,7 +64,7 @@ class FMU_API(simulationapi.SimulationAPI):
         except OSError as error:
             self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
-        shutil.rmtree(self._unzip_dir)
+        shutil.rmtree(self._unzip_dir, ignore_errors=True)
         self._unzip_dir = None
 
     def simulate(self, **kwargs):

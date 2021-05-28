@@ -156,17 +156,18 @@ class Optimizer:
         hess = None
         hessp = None
         """
-        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs = self.get_default_config(framework="scipy_minimize")
         default_kwargs.update(kwargs)
         try:
             import scipy.optimize as opt
         except ImportError as error:
-            raise ImportError("Please install scipy to use the minimize_scipy function.") from error
+            raise ImportError("Please install scipy to use "
+                              "the minimize_scipy function.") from error
 
         try:
             if "x0" not in kwargs:
-                raise KeyError("An initial guess (x0) is required for scipy.minimize. "
-                               "You passed None")
+                raise KeyError("An initial guess (x0) is required "
+                               "for scipy.minimize. You passed None")
             res = opt.minimize(
                 fun=self.obj,
                 x0=kwargs["x0"],
@@ -192,7 +193,7 @@ class Optimizer:
         solver_epsilon = 0
         num_function_calls = int(1e9)
         """
-        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs = self.get_default_config(framework="dlib_minimize")
         default_kwargs.update(kwargs)
         try:
             import dlib
@@ -247,7 +248,7 @@ class Optimizer:
         init = 'latinhypercube'
         atol = 0
         """
-        default_kwargs = self.get_default_config(framework=framework)
+        default_kwargs = self.get_default_config(framework="scipy_differential_evolution")
         default_kwargs.update(kwargs)
         try:
             import scipy.optimize as opt
@@ -311,7 +312,7 @@ class Optimizer:
         """
         if framework.lower() == "scipy_minimize":
             return {"tol": None,
-                    "options": {"maxfun": 1},
+                    "options": None,
                     "constraints": None,
                     "jac": None,
                     "hess": None,
@@ -322,6 +323,7 @@ class Optimizer:
         if framework.lower() == "scipy_differential_evolution":
             return {"maxiter": 30,
                     "popsize": 5,
+                    "tol": 0.01,
                     "mutation": (0.5, 1),
                     "recombination": 0.7,
                     "seed": None,
