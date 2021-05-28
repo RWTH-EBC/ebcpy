@@ -66,7 +66,7 @@ class TestOptimizer(unittest.TestCase):
                                                method="L-BFGS-B",
                                                x0=np.array([0, 0, 0]))
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
-        self.assertEqual(0.0, np.round(delta_solution, 2))
+        self.assertEqual(0.0, np.round(delta_solution, 3))
         # Test scipy differential evolution
         # Bounds are necessary (here, 1 and 0 are sufficient,
         #  as the goal values are element of [0,1]
@@ -74,7 +74,7 @@ class TestOptimizer(unittest.TestCase):
         res_de = my_custom_optimizer.optimize(framework="scipy_differential_evolution",
                                               method="best2bin")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
-        self.assertEqual(0.0, np.round(delta_solution, 2))
+        self.assertEqual(0.0, np.round(delta_solution, 3))
         # Skip dlib test as problems in ci occur.
 
     def tearDown(self):

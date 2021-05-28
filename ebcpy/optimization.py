@@ -321,8 +321,8 @@ class Optimizer:
             return {"num_function_calls": int(1e9),
                     "solver_epsilon": 0}
         if framework.lower() == "scipy_differential_evolution":
-            return {"maxiter": 30,
-                    "popsize": 5,
+            return {"maxiter": 1000,
+                    "popsize": 15,
                     "tol": 0.01,
                     "mutation": (0.5, 1),
                     "recombination": 0.7,
