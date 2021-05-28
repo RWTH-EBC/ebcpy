@@ -111,9 +111,3 @@ class SimulationAPI:
         """Set the current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
-
-    @abstractmethod
-    def do_step(self, **kwargs):
-        """Base function for simulating one timestep."""
-        raise NotImplementedError('{}.do_step function is not '
-                                  'defined'.format(self.__class__.__name__))
