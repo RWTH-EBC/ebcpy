@@ -102,17 +102,17 @@ class TestFMUAPI(unittest.TestCase):
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
 
-        model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
         self.initial_names = ["C",
                               "heatConv_b",
                               "heatConv_a"]
         self.initial_values = [2000, 5, 5]
-        try:
-            self.fmu_api = fmu.FMU_API(self.example_sim_dir,
-                                       model_name)
-        except Exception as error:  # pylint: disable=broad-except
-            self.skipTest(f"Could not instantiate the fmu. "
-                          f"Error message: {error}")
+        if "win" in sys.platform:
+            model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
+        else:
+            model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
+
+        self.fmu_api = fmu.FMU_API(cd=self.example_sim_dir,
+                                   model_name=model_name)
 
     def test_close(self):
         """Test close functionality of fmu api"""
@@ -130,8 +130,8 @@ class TestFMUAPI(unittest.TestCase):
     def test_set_cd(self):
         """Test set_cd functionality of fmu api"""
         # Test the setting of the function
-        self.fmu_api.set_cd(self.example_dir)
-        self.assertEqual(self.example_dir, self.fmu_api.cd)
+        self.fmu_api.set_cd(self.data_dir)
+        self.assertEqual(self.data_dir, self.fmu_api.cd)
 
     def test_set_sim_setup(self):
         """Test set_sim_setup functionality of fmu api"""
