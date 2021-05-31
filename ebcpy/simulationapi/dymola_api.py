@@ -13,7 +13,7 @@ from ebcpy.modelica import manipulate_ds
 
 class DymolaAPI(simulationapi.SimulationAPI):
     """
-    Dymola interface class
+    API to a Dymola instance.
 
     :param str,os.path.normpath cd:
         Dirpath for the current working directory of dymola
@@ -40,6 +40,22 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
         below 1 Dymola does not restart.
+
+
+    Example:
+    --------
+    >>> import os
+    >>> from ebcpy import DymolaAPI
+    >>> # Specify the model name
+    >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
+    >>> dym_api = DymolaAPI(cd=os.getcwd(),
+    >>>                     model_name=model_name,
+    >>>                     packages=[],
+    >>>                     show_window=True)
+    >>> dym_api.sim_setup = {"startTime": 100,
+    >>>                      "stopTime": 200}
+    >>> dym_api.simulate()
+    >>> dym_api.close()
     """
 
     show_window = False

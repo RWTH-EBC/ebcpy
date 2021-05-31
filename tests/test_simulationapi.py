@@ -97,12 +97,12 @@ class TestFMUAPI(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples")
-        self.example_sim_dir = os.path.join(self.example_dir, "testzone")
+        self.data_dir = self.framework_dir.joinpath("tests", "data")
+        self.example_sim_dir = os.path.join(self.data_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
 
-        model_name = self.example_dir.joinpath("Modelica", "TestModel.fmu")
+        model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
         self.initial_names = ["C",
                               "heatConv_b",
                               "heatConv_a"]

@@ -43,9 +43,10 @@ class Optimizer:
     def __init__(self, cd=None, **kwargs):
         """Instantiate class parameters"""
         if cd is None:
-            self.cd = os.getcwd()
+            self._cd = None
         else:
             self.cd = cd
+
         self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
         # Set kwargs
         self.bounds = kwargs.get("bounds", None)

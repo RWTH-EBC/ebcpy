@@ -57,7 +57,7 @@ class TestOptimizer(unittest.TestCase):
                 # Return the MAE of the quadratic function.
                 return np.sum(np.abs(quadratic_func_should - quadratic_func_is))
 
-        my_custom_optimizer = CustomOptimizer(self.example_opt_dir)
+        my_custom_optimizer = CustomOptimizer()
         # Test value error if no method is supplied
         with self.assertRaises(ValueError):
             my_custom_optimizer.optimize(framework="scipy_minimize")
