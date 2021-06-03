@@ -7,7 +7,7 @@ import pathlib
 import warnings
 import atexit
 import pandas as pd
-from ebcpy import simulationapi
+from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 
 
@@ -328,7 +328,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Most of the cases, only one set is provided. In that case, avoid
         if len(dfs) == 1 and squeeze:
             dfs = dfs[0]
-        return dfs
+        return [TimeSeriesData(df, default_tag="sim") for df in dfs]
 
     def translate(self):
         """

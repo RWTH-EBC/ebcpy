@@ -9,7 +9,7 @@ import fmpy
 from fmpy.model_description import read_model_description
 import pandas as pd
 import numpy as np
-from ebcpy import simulationapi
+from ebcpy import simulationapi, TimeSeriesData
 # pylint: disable=broad-except
 
 
@@ -156,7 +156,7 @@ class FMU_API(simulationapi.SimulationAPI):
         df = pd.DataFrame(res).set_index("time")
         df.index = df.index.astype("float64")
 
-        return df
+        return TimeSeriesData(df, default_tag="sim")
 
     def setup_fmu_instance(self):
         """
