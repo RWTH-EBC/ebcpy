@@ -6,33 +6,31 @@ import os
 from pathlib import Path
 import pandas as pd
 from ebcpy.modelica import manipulate_ds
-from ebcpy.modelica.simres import SimRes
+from ebcpy.modelica.simres import mat_to_pandas
 
 
-class TestSimRes(unittest.TestCase):
+class TestToPandas(unittest.TestCase):
     """Test-class for simres module"""
 
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.example_dir = Path(__file__).parent.joinpath("data")
-        self.sim = SimRes(self.example_dir.joinpath("example_data.mat"))
+        self.example_dir = Path(__file__).parent.joinpath("data",
+                                                          "example_data.mat")
 
-    def test_to_pandas(self):
+    def test_mat_to_pandas(self):
         """Test function for the function to_pandas"""
-        df = self.sim.to_pandas()
+        df = mat_to_pandas(fname=self.example_dir)
         first_col_name = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
-        df = self.sim.to_pandas(with_unit=False)
+        df = mat_to_pandas(fname=self.example_dir, with_unit=False)
         first_col_name_without_unit = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
         self.assertTrue(first_col_name.startswith(first_col_name_without_unit))
-
-    def test_get_trajectories(self):
-        """Test function for the function get_trajectories"""
-        trajectories = self.sim.get_trajectories()
-        self.assertEqual(9, len(trajectories))
-
+        df = mat_to_pandas(fname=self.example_dir,
+                           with_unit=False,
+                           names=['combiTimeTable.y[6]'])
+        self.assertEqual(len(df.columns), 1)
 
 class TestManipulateDS(unittest.TestCase):
     """Test-class for manipulate_ds module."""

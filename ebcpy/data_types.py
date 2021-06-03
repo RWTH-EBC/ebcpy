@@ -222,8 +222,7 @@ class TimeSeriesData(pd.DataFrame):
         elif f_name.endswith("csv"):
             return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
         elif f_name.endswith("mat"):
-            sim = sr.SimRes(self.filepath)
-            return sim.to_pandas(with_unit=False)
+            return sr.mat_to_pandas(fname=self.filepath, with_unit=False)
         elif f_name.split(".")[-1] in ['xlsx', 'xls', 'odf', 'ods', 'odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:

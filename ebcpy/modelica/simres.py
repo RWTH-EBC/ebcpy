@@ -20,7 +20,7 @@ merged upstream, this "fork" of the to_pandas() function is used.
 
 Update 18.01.2021:
 As modelicares is no longer compatible with matplotlib > 3.3.2, we integrated all
-necessary functions from modelicares to still be able and use SimRes.to_pandas().
+necessary functions from modelicares to still be able and use loadsim functions.
 
 .. versionadded:: 0.1.7
 """
@@ -37,105 +37,6 @@ import numpy as np
 
 # Namedtuple to store the time and value information of each variable
 Samples = namedtuple('Samples', ['times', 'values', 'negated'])
-
-
-def flatten_list(lis, ltypes=(list, tuple)):
-    """
-    Flatten a nested list.
-
-    **Arguments:**
-
-    - *lis*: List (may be nested to an arbitrary depth)
-
-          If the type of *l* is not in ltypes, then it is placed in a list.
-
-    - *ltypes*: Tuple (not list) of accepted indexable types
-
-    **Example:**
-
-    >>> flatten_list([1, [2, 3, [4]]])
-    [1, 2, 3, 4]
-    """
-    # Based on
-    # http://rightfootin.blogspot.com/2006/09/more-on-python-flatten.html,
-    # 10/28/2011
-    ltype = type(lis)
-    if ltype not in ltypes: # So that strings aren't split into characters
-        return [lis]
-    lis = lis(lis)
-    i = 0
-    while i < len(lis):
-        while isinstance(lis[i], ltypes):
-            if lis[i]:
-                lis[i:i + 1] = lis[i]
-            else:
-                lis.pop(i)
-                i -= 1
-                break
-        i += 1
-    return ltype(lis)
-
-
-def match(strings, pattern=None, re=False):
-    r"""Reduce a list of strings to those that match a pattern.
-
-    By default, all of the strings are returned.
-
-    **Arguments:**
-
-    - *strings*: List of strings
-
-    - *pattern*: Case-sensitive string used for matching
-
-      - If *re* is *False* (next argument), then the pattern follows the
-        Unix shell style:
-
-        ============   ============================
-        Character(s)   Role
-        ============   ============================
-        \*             Matches everything
-        ?              Matches any single character
-        [seq]          Matches any character in seq
-        [!seq]         Matches any char not in seq
-        ============   ============================
-
-        Wildcard characters ('\*') are not automatically added at the
-        beginning or the end of the pattern.  For example, '\*x\*' matches all
-        strings that contain "x", but 'x\*' matches only the strings that begin
-        with "x".
-
-      - If *re* is *True*, regular expressions are used a la `Python's re
-        module <http://docs.python.org/2/library/re.html>`_.  See also
-        http://docs.python.org/2/howto/regex.html#regex-howto.
-
-        Since :mod:`re.search` is used to produce the matches, it is as if
-        wildcards ('.*') are automatically added at the beginning and the
-        end.  For example, 'x' matches all strings that contain "x".  Use '^x$'
-        to match only the strings that begin with "x" and 'x$' to match only the
-        strings that end with "x".
-
-        Note that '.' is a subclass separator in Modelica_ but a wildcard in
-        regular expressions.  Escape the subclass separator as '\\.'.
-
-    - *re*: *True* to use regular expressions (*False* to use shell style)
-
-    **Example:**
-
-    >>> match(['apple', 'orange', 'banana'], '*e')
-    ['apple', 'orange']
-
-
-    .. _Modelica: http://www.modelica.org/
-    """
-    if pattern is None or (pattern in ['.*', '.+', '.', '.?', ''] if re
-                           else pattern == '*'):
-        return list(strings) # Shortcut
-
-    if re:
-        matcher = regexp.compile(pattern).search
-    else:
-        matcher = lambda name: fnmatchcase(name, pattern)
-    return list(filter(matcher, strings))
 
 
 def loadsim(fname, constants_only=False):
@@ -327,220 +228,84 @@ class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit
         return -self.samples.values if self.samples.negated else self.samples.values
 
 
-# pylint: disable=line-too-long
-class SimRes:
-    """Class to load, analyze, and plot results from a Modelica_ simulation
-
-    **Initialization arguments:**
-
-    - *fname*: Name of the file (including the directory if necessary)
-
-    - *constants_only*: *True* to load only the variables from the first
-      data table
-
-         The first data table typically contains all of the constants,
-         parameters, and variables that don't vary.  If only that
-         information is needed, it may save resources to set
-         *constants_only* to *True*.
-
-    **Other methods:**
-
-    - :meth:`names` - Return a list of variable names, optionally filtered by
-      pattern matching.
-
-    - :meth:`to_pandas` - Return a `pandas DataFrame`_ with selected variables.
-
-    **Properties:**
-
-    - *dirname* - Directory from which the variables were loaded
-
-    - *fbase* - Base filename from which the results were loaded, without the
-      directory or file extension.
-
-    - *fname* - Filename from which the variables were loaded, with absolute
-      path
-
-    - *n_constants* - Number of variables that do not change over time
+def mat_to_pandas(fname='dsres.mat',
+                  names=None,
+                  aliases=None,
+                  with_unit=True,
+                  constants_only=False):
     """
+    Return a `pandas.DataFrame` with values from selected variables
+    for the given .mat file.
 
-    def __init__(self, fname='dsres.mat', constants_only=False):
-        """Upon initialization, load Modelica_ simulation results from a file.
+    The index is time. The column headings indicate the variable names and
+    units.
 
-        See the top-level class documentation.
-        """
+    :param str fname:
+        The mat file to load.
+    :param list names:
+        If None (default), then all variables are included.
+    :param dict aliases:
+        Dictionary of aliases for the variable names
 
-        # Load the file and store the variables.
-        self._variables = loadsim(fname, constants_only)
+        The keys are the "official" variable names from the Modelica model
+        and the values are the names as they should be included in the
+        column headings. Any variables not in this list will not be
+        aliased. Any unmatched aliases will not be used.
+    :param bool with_unit:
+        Boolean to determine format of keys. Default value is True.
 
-        # Remember the tool and filename.
-        self.fname = os.path.abspath(fname)
+        If set to True, the unit will be added to the key. As not all modelica-
+        result files export the unit information, using with_unit=True can lead
+        to errors.
+    :param bool constants_only:
+        The first data matrix usually contains all of the constants,
+        parameters, and variables that don't vary.  If only that information is
+        needed, it may save resources to set *constants_only* to *True*.
+    """
+    _variables = loadsim(fname, constants_only)
+    # Avoid mutable argument
+    if aliases is None:
+        aliases = {}
 
-    def __repr__(self):
-        """Return a formal description of an instance of this class.
-        """
-        return f"{self.__class__.__name__}('{self.fname}')"
-        # Note:  The class name is inquired so that this method will still be
-        # correct if the class is extended.
+    # Create the list of variable names.
+    if names:
+        if 'Time' not in names:
+            names.append('Time')
+    else:
+        names = _variables.keys()
 
-    @property
-    def dirname(self):
-        """Directory from which the variables were loaded
-        """
-        return os.path.dirname(self.fname)
+    # Create a dictionary of names and values.
+    times = _variables['Time'].values()
+    data = {}
+    for name in names:
 
-    @property
-    def fbase(self):
-        """Base filename from which the variables were loaded, without the
-        directory or file extension
-        """
-        return os.path.splitext(os.path.basename(self.fname))[0]
-
-    def to_pandas(self, names=None, aliases=None, with_unit=True):
-        """
-        Return a `pandas.DataFrame` with values from selected variables.
-
-        The index is time.  The column headings indicate the variable names and
-        units.
-
-        :param modelicares.SimRes sim:
-            Simulation result object loaded with modelicares.SimRes.
-        :param str,list names
-             If None (default), then all variables are included.
-        :param dict aliases:
-            Dictionary of aliases for the variable names
-
-             The keys are the "official" variable names from the Modelica model
-             and the values are the names as they should be included in the
-             column headings. Any variables not in this list will not be
-             aliased. Any unmatched aliases will not be used.
-        :param bool with_unit:
-            Boolean to determine format of keys. Default value is True.
-
-            If set to True, the unit will be added to the key. As not all modelica-
-            result files export the unit information, using with_unit=True can lead
-            to errors.
-        """
-        # Note: The first doctest above requires pandas >= 0.14.0.  Otherwise,
-        # more decimal places are shown in the Time column.
-
-        # Avoid mutable argument
-        if aliases is None:
-            aliases = {}
-
-        # Create the list of variable names.
-        if names:
-            names = set(flatten_list(names))
-            names.add('Time')
+        # Get the values.
+        if np.array_equal(_variables[name].times(), times):
+            values = _variables[name].values()  # Save computation.
+        # Check if all values are constant to save resampling time
+        elif np.count_nonzero(_variables[name].values() -
+                              np.max(_variables[name].values())) == 0:
+            # Passing a scalar converts automatically to an array.
+            values = np.max(_variables[name].values())
         else:
-            names = self.names()
+            values = _variables[name].values(t=times)  # Resample.
 
-        # Create a dictionary of names and values.
-        times = self._variables['Time'].values()
-        data = {}
-        for name in names:
+        unit = _variables[name].unit
 
-            # Get the values.
-            if np.array_equal(self._variables[name].times(), times):
-                values = self._variables[name].values()  # Save computation.
-            # Check if all values are constant to save resampling time
-            elif np.count_nonzero(self._variables[name].values() -
-                                  np.max(self._variables[name].values())) == 0:
-                # Passing a scalar converts automatically to an array.
-                values = np.max(self._variables[name].values())
-            else:
-                values = self._variables[name].values(t=times)  # Resample.
+        # Apply an alias if available.
+        try:
+            name = aliases[name]
+        except KeyError:
+            pass
 
-            unit = self._variables[name].unit
-
-            # Apply an alias if available.
-            try:
-                name = aliases[name]
-            except KeyError:
-                pass
-
-            if unit and with_unit:
-                data.update({name + ' / ' + unit: values})
-            else:
-                data.update({name: values})
-
-        # Create the pandas data frame.
-        if with_unit:
-            time_key = 'Time / s'
+        if unit and with_unit:
+            data.update({name + ' / ' + unit: values})
         else:
-            time_key = 'Time'
-        return pd.DataFrame(data).set_index(time_key)
+            data.update({name: values})
 
-    def get_trajectories(self):
-        """
-        Function to filter time-variant parameters.
-
-        All variables which are trajectories are extracted from the simulation result.
-        Either the length of the variable is greater than two, or the values are not
-        equal. In both cases, the variable is considered to be a trajectory.
-        """
-        trajectory_names = []
-        for name in self.names():
-            values = self._variables[name].values()
-            # If the value array is greater then two, it is always a trajectory
-            if len(values) > 2:
-                trajectory_names.append(name)
-            # Special Case: Only two time-steps are simulated.
-            # In that case, if the last value does not equal
-            # the first value, it is also a trajectory
-            elif len(values) == 2 and values[0] != values[-1]:
-                trajectory_names.append(name)
-        return trajectory_names
-
-    def names(self, pattern=None, re=False, constants_only=False):
-        r"""Return a list of variable names that match a pattern.
-
-        By default, all names are returned.
-
-        **Arguments:**
-
-        - *pattern*: Case-sensitive string used for matching
-
-          - If *re* is *False* (next argument), then the pattern follows the
-            Unix shell style:
-
-            ============   ============================
-            Character(s)   Role
-            ============   ============================
-            \*             Matches everything
-            ?              Matches any single character
-            [seq]          Matches any character in seq
-            [!seq]         Matches any char not in seq
-            ============   ============================
-
-            Wildcard characters ('\*') are not automatically added at the
-            beginning or the end of the pattern.  For example, '\*x\*' matches
-            all variables that that contain "x", but 'x\*' matches only the
-            variables that begin with "x".
-
-          - If *re* is *True*, the regular expressions are used a la `Python's
-            res module <http://docs.python.org/2/library/re.html>`_.  See also
-            http://docs.python.org/2/howto/regex.html#regex-howto.
-
-            Since :mod:`re.search` is used to produce the matches, it is as if
-            wildcards ('.*') are automatically added at the beginning and the
-            end.  For example, 'x' matches all variables that contain "x".  Use
-            '^x$' to match only the variables that begin with "x" and 'x$' to
-            match only the variables that end with "x".
-
-            Note that '.' is a subclass separator in Modelica_ but a wildcard in
-            regular expressions.  Escape subclass separators as '\\.'.
-
-        - *re*: *True* to use regular expressions (*False* to use shell style)
-
-        - *constants_only*: *True* to include only the variables that do not
-          change over time
-        """
-        # Get a list of all the variables or just the constants.
-        if constants_only:
-            names = (name for (name, variable) in self._variables.items()
-                     if variable.is_constant)
-        else:
-            names = self._variables.keys()
-
-        # Filter the list and return it.
-        return match(names, pattern, re)
+    # Create the pandas data frame.
+    if with_unit:
+        time_key = 'Time / s'
+    else:
+        time_key = 'Time'
+    return pd.DataFrame(data).set_index(time_key)
