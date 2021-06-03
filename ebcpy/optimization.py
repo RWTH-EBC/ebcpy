@@ -311,6 +311,7 @@ class Optimizer:
             raise ImportError("Please install pymoo to use this function.") from error
 
         class EBCPYProblem(Problem):
+            """Construct wrapper problem class."""
             def __init__(self,
                          ebcpy_class: Optimizer
                          ):
@@ -421,3 +422,4 @@ class Optimizer:
                     "copy_algorithm": False,
                     "copy_termination": False
                     }
+        return {}

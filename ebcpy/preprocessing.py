@@ -260,13 +260,13 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     df = build_average_on_duplicate_rows(df)
 
     # Make user warning for two cases: Upsampling and data input without a freq:
-    confidence = 0.95
+    confidence_warning = 0.95
     # Check if the frequency differs
     old_freq = df.index.freq
     if old_freq is None:
         # Construct a frequency by converting it first to int, then to timedelta back again:
         _artificial_freq = df.index.to_series().diff().dropna().values.astype(np.int64)
-        cfd_int = st.t.interval(confidence,
+        cfd_int = st.t.interval(confidence_warning,
                                 len(_artificial_freq)-1,
                                 loc=np.mean(_artificial_freq),
                                 scale=st.sem(_artificial_freq))

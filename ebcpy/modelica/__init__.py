@@ -38,8 +38,6 @@ def get_expressions(filepath_model: str,
     :return: list matches
         List with all lines matching the given expression.
     """
-    # TODO: Write Unit tests
-
     if excludes is None:
         excludes = []
     if modelica_type == "parameters":
@@ -154,10 +152,3 @@ def get_names_and_values_of_lines(lines: List[str]) -> dict:
         res.update({name: value})
 
     return res
-
-
-if __name__ == "__main__":
-    lines = ['parameter Boolean my_boolean=true "Some description"',
-             'parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
-    output = get_names_and_values_of_lines(lines=lines)
-    print(output)

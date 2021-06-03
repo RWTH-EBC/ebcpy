@@ -24,11 +24,8 @@ necessary functions from modelicares to still be able and use loadsim functions.
 
 .. versionadded:: 0.1.7
 """
-import os
-from fnmatch import fnmatchcase
 from itertools import count
 from collections import namedtuple
-import re as regexp
 from scipy.io import loadmat
 from scipy.io.matlab.mio_utils import chars_to_strings
 import pandas as pd

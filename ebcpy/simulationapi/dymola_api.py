@@ -451,7 +451,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.parameters = df[df["5"] == "1"].index.values.tolist()
         self.outputs = df[df["5"] == "4"].index.values.tolist()
         self.inputs = df[df["5"] == "5"].index.values.tolist()
-        self.states = df[(df["5"] == "2") | (df["5"] == "3") | (df["5"] == "6")].index.values.tolist()
+        self.states = df[(df["5"] == "2") |
+                         (df["5"] == "3") |
+                         (df["5"] == "6")].index.values.tolist()
         self.set_sim_setup({"resultNames": self.sim_setup["resultNames"] + self.states})
 
     def _setup_dymola_interface(self):
@@ -462,7 +464,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
-            self.logger.info("Loading Model %s" % os.path.dirname(package).split("\\")[-1])
+            self.logger.info("Loading Model %s", os.path.dirname(package).split("\\")[-1])
             res = self.dymola.openModel(package, changeDirectory=False)
             if not res:
                 raise ImportError(self.dymola.getLastErrorLog())
@@ -490,7 +492,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             raise ImportError("Given dymola-interface could not be "
                               "loaded:\n %s" % self.dymola_interface_path) from error
         except DymolaConnectionException as error:
-            raise ConnectionError(error)
+            raise ConnectionError(error) from error
 
     def to_dict(self):
         """
