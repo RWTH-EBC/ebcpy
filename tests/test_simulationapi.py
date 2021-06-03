@@ -6,8 +6,8 @@ import sys
 import os
 from pathlib import Path
 import shutil
-import pandas as pd
 from ebcpy.simulationapi import dymola_api, fmu
+from ebcpy import TimeSeriesData
 
 
 class TestDymolaAPI(unittest.TestCase):
@@ -52,7 +52,7 @@ class TestDymolaAPI(unittest.TestCase):
                                     "stopTime": 10.0})
         res = self.dym_api.simulate()
         if len(self.dym_api.sim_setup["resultNames"]) > 1:
-            self.assertIsInstance(res, pd.DataFrame)
+            self.assertIsInstance(res, TimeSeriesData)
         else:
             self.assertEqual(res, [])
 
@@ -124,7 +124,7 @@ class TestFMUAPI(unittest.TestCase):
         self.fmu_api.set_sim_setup({"startTime": 0.0,
                                     "stopTime": 10.0})
         res = self.fmu_api.simulate()
-        self.assertIsInstance(res, pd.DataFrame)
+        self.assertIsInstance(res, TimeSeriesData)
 
     def test_set_cd(self):
         """Test set_cd functionality of fmu api"""

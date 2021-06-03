@@ -40,7 +40,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
         below 1 Dymola does not restart.
-
+    :keyword bool extract_variables:
+        If True (the default), all variables of the model will be extracted
+        on init of this class.
+        This required translating the model.
 
     Example:
     --------
@@ -327,7 +330,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dfs.append(df)
         # Most of the cases, only one set is provided. In that case, avoid
         if len(dfs) == 1 and squeeze:
-            dfs = dfs[0]
+            return TimeSeriesData(dfs[0], default_tag="sim")
         return [TimeSeriesData(df, default_tag="sim") for df in dfs]
 
     def translate(self):
@@ -454,7 +457,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.states = df[(df["5"] == "2") |
                          (df["5"] == "3") |
                          (df["5"] == "6")].index.values.tolist()
-        self.set_sim_setup({"resultNames": self.sim_setup["resultNames"] + self.states})
 
     def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
