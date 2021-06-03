@@ -20,7 +20,6 @@ def build_average_on_duplicate_rows(df):
     function.
 
     Example:
-
     >>> df = pd.DataFrame({"idx": np.ones(5), "val": np.arange(5)}).set_index("idx")
     >>> df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
     >>> print(df)
@@ -76,7 +75,7 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
         DataFrame with correct index for usage in this
         framework.
 
-    Examples:
+    Example:
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(df)
@@ -129,7 +128,7 @@ def convert_datetime_index_to_float_index(df, offset=0):
     :return: pd.DataFrame df:
         DataFrame with correct index
 
-    Examples:
+    Example:
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1)))
@@ -163,7 +162,7 @@ def time_based_weighted_mean(df):
     :return np.array:
         A numpy array containing weighted means of all columns
 
-    Examples:
+    Example:
     >>> from datetime import datetime
     >>> import numpy as np
     >>> import pandas as pd
@@ -212,7 +211,7 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     :return: pd.DataFrame
         Cleaned and equally spaced data-frame
 
-    Examples:
+    Example:
     **Note:** The example is for random data. Try out different sampling
     frequencys. You will be warned if the samping rate is to high or to low.
 
@@ -341,8 +340,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     :param int filter_order:
     :return: numpy.ndarray,
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> rand_series = np.random.rand(100)
@@ -377,8 +375,7 @@ def moving_average(data, window):
         shape has (###,). First and last points of input Series are extrapolated as constant
         values (hold first and last point).
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> series = np.sin(np.linspace(-30, 30, 1000))
@@ -434,8 +431,7 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     :return: pd.DataFrame
         Now with the created signals.
 
-    Examples:
-
+    Example:
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
     >>> df = pd.DataFrame({"P_el": np.sin(np.linspace(-20, 20, 10000))*100})
@@ -483,8 +479,7 @@ def number_lines_totally_na(df):
     :return: int
         Number of NaN-Rows.
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> import pandas as pd
     >>> dim = np.random.randint(100) + 10
@@ -519,8 +514,7 @@ def z_score(x, limit=3):
     :return: np.array iqr:
         modified z score
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = z_score(normal_dis, limit=2)
@@ -545,8 +539,7 @@ def modified_z_score(x, limit=3.5):
     :return: np.array iqr:
         modified z score
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = modified_z_score(normal_dis, limit=2)
@@ -569,8 +562,7 @@ def interquartile_range(x):
     :return: np.array iqr:
         Array matching the interquartile-range
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = interquartile_range(normal_dis)
@@ -607,8 +599,7 @@ def cross_validation(x, y, test_size=0.3):
         Split data into 4 objects. The order is:
         x_train, x_test, y_train, y_test
 
-    Examples:
-
+    Example:
     >>> import numpy as np
     >>> x = np.random.rand(100)
     >>> y = np.random.rand(100)
