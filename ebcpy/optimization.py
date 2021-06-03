@@ -99,6 +99,7 @@ class Optimizer:
             reference/generated/scipy.optimize.minimize.html>`_
             - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
             reference/generated/scipy.optimize.differential_evolution.html>`_
+            - 'pymoo' <https://pymoo.org/index.html>
         :param str method:
             The method you pass depends on the methods available in the framework
             you chose when setting up the class. Some frameworks don't require a
@@ -106,6 +107,8 @@ class Optimizer:
             with different methods, you must provide one.
             For the scipy.differential_evolution function, method is equal to the
             strategy.
+            For the pymoo function, method is equal to the
+            algorithm.
 
         Keyword arguments:
             Depending on the framework an method you use, you can fine-tune the
@@ -136,6 +139,7 @@ class Optimizer:
             - scipy_minimize
             - dlib_minimize
             - scipy_differential_evolution
+            - pymoo
         """
         if framework.lower() == "scipy_minimize":
             return self._scipy_minimize, True
@@ -143,6 +147,8 @@ class Optimizer:
             return self._dlib_minimize, False
         if framework.lower() == "scipy_differential_evolution":
             return self._scipy_differential_evolution, True
+        if framework.lower() == "pymoo":
+            return self._pymoo, True
         raise TypeError(f"Given framework {framework} is currently not supported.")
 
     def _scipy_minimize(self, method, **kwargs):
@@ -281,50 +287,72 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _pymoo(self, method="best1bin", **kwargs):
+    def _pymoo(self, method="NSGA2", **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
-        maxiter = 1000
-        popsize = 15
-        tol = None
-        mutation = (0.5, 1)
-        recombination = 0.7
-        seed = None
-        polish = True
-        init = 'latinhypercube'
-        atol = 0
+        algorithm=NGSA2
+        termination=None
+        seed=None
+        verbose=False
+        display=None
+        callback=None
+        save_history=False
+        copy_algorithm=False
+        copy_termination=False
         """
-        default_kwargs = self.get_default_config(framework="scipy_differential_evolution")
+        default_kwargs = self.get_default_config(framework="pymoo")
         default_kwargs.update(kwargs)
         try:
             from pymoo.optimize import minimize
+            from pymoo.problems.single import Problem
             from pymoo.algorithms.nsga2 import NSGA2
-            from pymoo.factory import get_problem
-            from pymoo.optimize import minimize
         except ImportError as error:
-            raise ImportError("Please install scipy to use the minimize_scipy function.") from error
+            raise ImportError("Please install pymoo to use this function.") from error
+
+        class EBCPYProblem(Problem):
+            def __init__(self,
+                         ebcpy_class: Optimizer
+                         ):
+                self.ebcpy_class = ebcpy_class
+                super().__init__(n_var=len(ebcpy_class.bounds),
+                                 n_obj=1,
+                                 n_constr=0,
+                                 xl=np.array([bound[0] for bound in ebcpy_class.bounds]),
+                                 xu=np.array([bound[1] for bound in ebcpy_class.bounds])
+                                 )
+
+            def _evaluate(self, x, out, *args, **kwargs):
+                out["F"] = np.array([self.ebcpy_class.obj(xk=_x, *args) for _x in x])
 
         try:
             if self.bounds is None:
-                raise ValueError("For the differential evolution approach, you need to specify "
+                raise ValueError("For pymoo, you need to specify "
                                  "boundaries. Currently, no bounds are specified.")
 
-            res = opt.differential_evolution(
-                func=self.obj,
-                bounds=self.bounds,
-                strategy=method,
-                maxiter=default_kwargs["maxiter"],
-                popsize=default_kwargs["popsize"],
-                tol=default_kwargs["tol"],
-                mutation=default_kwargs["mutation"],
-                recombination=default_kwargs["recombination"],
+            if method == "NSGA2":
+                algorithm = NSGA2()
+            else:
+                algorithm = method
+
+            termination = default_kwargs["termination"]
+            if termination is None:
+                termination = ("n_gen", default_kwargs["n_gen"])
+
+            res = minimize(
+                problem=EBCPYProblem(ebcpy_class=self),
+                algorithm=algorithm,
+                termination=termination,
                 seed=default_kwargs["seed"],
-                disp=False,  # We have our own logging
-                polish=default_kwargs["polish"],
-                init=default_kwargs["init"],
-                atol=default_kwargs["atol"]
+                verbose=default_kwargs["verbose"],
+                display=None,
+                callback=None,
+                save_history=default_kwargs["save_history"],
+                copy_algorithm=default_kwargs["copy_algorithm"],
+                copy_termination=default_kwargs["copy_termination"],
             )
+            res_tuple = namedtuple("res_tuple", "x fun")
+            res = res_tuple(x=res.X, fun=res.F[0])
             return res
         except (KeyboardInterrupt, Exception) as error:
             # pylint: disable=inconsistent-return-statements
@@ -353,7 +381,7 @@ class Optimizer:
         raise error
 
     @staticmethod
-    def get_default_config(self, framework: str) -> dict:
+    def get_default_config(framework: str) -> dict:
         """
         Return the default config or kwargs for the
         given framework.
@@ -381,4 +409,15 @@ class Optimizer:
                     "polish": True,
                     "init": 'latinhypercube',
                     "atol": 0
+                    }
+        if framework.lower() == "pymoo":
+            return {"n_gen": 1000,
+                    "termination": None,
+                    "seed": 1,
+                    "verbose": False,
+                    "display": None,
+                    "callback": None,
+                    "save_history": False,
+                    "copy_algorithm": False,
+                    "copy_termination": False
                     }
