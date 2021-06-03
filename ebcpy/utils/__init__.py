@@ -36,6 +36,7 @@ def setup_logger(name: str,
     console.setFormatter(fmt=formatter)
     logger.addHandler(hdlr=console)
     if cd is not None:
+        os.makedirs(cd, exist_ok=True)
         file_handler = logging.FileHandler(filename=os.path.join(cd, f"{name}.log"))
         file_handler.setFormatter(fmt=formatter)
         logger.addHandler(hdlr=file_handler)

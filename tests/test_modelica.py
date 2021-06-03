@@ -15,9 +15,8 @@ class TestSimRes(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
-        self.sim = SimRes(self.example_dir.joinpath("ChuaCircuit.mat"))
+        self.example_dir = Path(__file__).parent.joinpath("data")
+        self.sim = SimRes(self.example_dir.joinpath("example_data.mat"))
 
     def test_to_pandas(self):
         """Test function for the function to_pandas"""
@@ -32,7 +31,7 @@ class TestSimRes(unittest.TestCase):
     def test_get_trajectories(self):
         """Test function for the function get_trajectories"""
         trajectories = self.sim.get_trajectories()
-        self.assertEqual(39, len(trajectories))
+        self.assertEqual(9, len(trajectories))
 
 
 class TestManipulateDS(unittest.TestCase):
@@ -41,9 +40,8 @@ class TestManipulateDS(unittest.TestCase):
     def setUp(self):
         """Called before every test.
             Used to setup relevant paths and APIs etc."""
-        self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
-        self.ds_path = self.example_dir.joinpath("example_dsfinal.txt")
+        self.ds_path = Path(__file__).parent.joinpath("data",
+                                                      "example_dsfinal.txt")
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""
@@ -54,9 +52,30 @@ class TestManipulateDS(unittest.TestCase):
         """Test function for the function eliminate_parameters_from_ds_file."""
         manipulate_ds.eliminate_parameters_from_ds_file(self.ds_path,
                                                         "dummy_dsout.txt",
-                                                        [])
+                                                        [],
+                                                        del_aux_paras=True)
         self.assertTrue(os.path.isfile("dummy_dsout.txt"))
         os.remove("dummy_dsout.txt")
+        # Test dont remove aux
+        manipulate_ds.eliminate_parameters_from_ds_file(self.ds_path,
+                                                        "dummy_dsout.txt",
+                                                        [],
+                                                        del_aux_paras=False)
+        self.assertTrue(os.path.isfile("dummy_dsout.txt"))
+        os.remove("dummy_dsout.txt")
+        # Test wring input:
+        with self.assertRaises(TypeError):
+            manipulate_ds.eliminate_parameters_from_ds_file(
+                filename=self.ds_path,
+                savepath="dummy_dsout.kdk",
+                exclude_paras=[]
+            )
+        with self.assertRaises(TypeError):
+            manipulate_ds.eliminate_parameters_from_ds_file(
+                filename=self.ds_path,
+                savepath="dummy_dsout.kdk",
+                exclude_paras={"Not a": "list"}
+            )
 
 
 if __name__ == "__main__":

@@ -15,8 +15,7 @@ class TestDataTypes(unittest.TestCase):
         """Called before every test.
         Define example paths and parameters used in all test-functions.
         """
-        self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
+        self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
         self.example_data_csv_path = self.example_dir.joinpath("example_data.CSV")
         self.example_data_mat_path = self.example_dir.joinpath("example_data.mat")

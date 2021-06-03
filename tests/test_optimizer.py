@@ -4,8 +4,12 @@ ebcpy.optimization."""
 import unittest
 import os
 import shutil
+import logging
 import numpy as np
 from ebcpy.optimization import Optimizer
+
+
+logger = logging.getLogger(__name__)
 
 
 class TestOptimizer(unittest.TestCase):
@@ -14,11 +18,7 @@ class TestOptimizer(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(self.framework_dir,
-                                                         "examples",
-                                                         "data"))
-        self.example_opt_dir = os.path.normpath(os.path.join(self.example_dir,
+        self.example_opt_dir = os.path.normpath(os.path.join(os.path.dirname(__file__),
                                                              "test_optimization"))
         self.supported_frameworks = ["scipy_minimize",
                                      "dlib_minimize",
@@ -27,7 +27,7 @@ class TestOptimizer(unittest.TestCase):
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
         # pylint: disable=protected-access
-        opt = Optimizer(self.example_opt_dir)
+        opt = Optimizer()
         for _framework in self.supported_frameworks:
             if _framework == "scipy_minimize":
                 reference_function = opt._scipy_minimize
@@ -39,6 +39,14 @@ class TestOptimizer(unittest.TestCase):
             self.assertEqual(_minimize_func, reference_function)
         with self.assertRaises(TypeError):
             opt._choose_framework("not_supported_framework")
+
+    def test_set_and_delete_cd(self):
+        """Test the cd and delete functions"""
+        opt = Optimizer()
+        self.assertIsNone(opt.cd)
+        opt = Optimizer(cd=self.example_opt_dir)
+        self.assertEqual(opt.cd, self.example_opt_dir)
+        shutil.rmtree(opt.cd)
 
     def test_custom_optimizer(self):
         """Test-case for the customization of the optimization-base-class."""
@@ -81,8 +89,8 @@ class TestOptimizer(unittest.TestCase):
         """Remove all created folders while optimizing."""
         try:
             shutil.rmtree(self.example_opt_dir)
-        except (FileNotFoundError, PermissionError):
-            pass
+        except (FileNotFoundError, PermissionError) as err:
+            logger.error("Could not delete files %s", err)
 
 
 if __name__ == "__main__":

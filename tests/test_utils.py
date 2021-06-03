@@ -17,8 +17,7 @@ class TestConversion(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples", "data")
+        self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
 
     def test_conversion_hdf_to_mat(self):
@@ -90,8 +89,7 @@ class TestStatisticsAnalyzer(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = os.path.dirname(os.path.dirname(__file__))
-        self.example_dir = os.path.normpath(os.path.join(self.framework_dir, "examples", "data"))
+        self.example_dir = Path(__file__).parent.joinpath("data")
         self.meas_ex = np.random.rand(1000)
         self.sim_ex = np.random.rand(1000)*10
 
@@ -159,9 +157,7 @@ class TestLogger(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.example_dir = os.path.normpath(
-            os.path.join(os.path.dirname(os.path.dirname(__file__)),
-                         "examples", "data"))
+        self.example_dir = Path(__file__).parent.joinpath("test_logger")
         self.logger = setup_logger(cd=self.example_dir,
                                    name="test_logger")
 

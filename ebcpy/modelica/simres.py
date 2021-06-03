@@ -155,12 +155,6 @@ def loadsim(fname, constants_only=False):
          needed, it may save resources to set *constants_only* to *True*.
 
     **Returns:** An instance of dict
-
-    **Example:**
-
-    >>> variables = loadsim('examples/ChuaCircuit.mat')
-    >>> variables['L.v'].unit
-    'V'
     """
     # This does the task of mfiles/traj/tload.m from the Dymola installation.
 
@@ -367,16 +361,6 @@ class SimRes:
       path
 
     - *n_constants* - Number of variables that do not change over time
-
-    **Example:**
-
-    >>> sim = SimRes('examples/ChuaCircuit.mat')
-    >>> print(sim) # doctest: +ELLIPSIS
-    Modelica simulation results from .../examples/ChuaCircuit.mat
-
-
-    .. _Python: http://www.python.org/
-    .. _pandas DataFrame: http://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html?highlight=dataframe#pandas.DataFrame
     """
 
     def __init__(self, fname='dsres.mat', constants_only=False):
@@ -435,35 +419,6 @@ class SimRes:
             If set to True, the unit will be added to the key. As not all modelica-
             result files export the unit information, using with_unit=True can lead
             to errors.
-
-        **Examples:**
-        For further examples, please see
-        `to_pandas <http://kdavies4.github._io/ModelicaRes/modelicares.simres.html>`_
-
-        >>> from ebcpy.modelica.simres import SimRes
-        >>> dir_path = os.path.dirname(os.path.dirname(__file__))
-        >>> sim = SimRes(dir_path + '//examples//data//ChuaCircuit.mat')
-        >>> voltages = sim.names('^[^.]*.v$', re=True)
-        >>> sim.to_pandas(voltages) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-                    C1.v / V  C2.v / V   G.v / V   L.v / V  Nr.v / V  Ro.v / V
-        Time / s
-        0.000000    4.000000  0.000000 -4.000000  0.000000  4.000000  0.000000
-        5.000000    3.882738  0.109426 -3.773312  0.109235  3.882738  0.000191
-        ...
-        [514 rows x 6 columns]
-
-        >>> from ebcpy.modelica.simres import SimRes
-        >>> dir_path = os.path.dirname(os.path.dirname(__file__))
-        >>> sim = SimRes(dir_path + '//examples//data//ChuaCircuit.mat')
-        >>> voltages = sim.names('^[^.]*.v$', re=True)
-        >>> sim.to_pandas(voltages, with_unit=False) # doctest: +ELLIPSIS +NORMALIZE_WHITESPACE
-                  C1.v      C2.v      G.v       L.v       Nr.v      Ro.v
-        Time
-        0         4.000000  0.000000 -4.000000  0.000000  4.000000  0.000000
-        5         3.882738  0.109426 -3.773312  0.109235  3.882738  0.000191
-        ...
-        [514 rows x 6 columns]
-
         """
         # Note: The first doctest above requires pandas >= 0.14.0.  Otherwise,
         # more decimal places are shown in the Time column.
@@ -522,13 +477,6 @@ class SimRes:
         All variables which are trajectories are extracted from the simulation result.
         Either the length of the variable is greater than two, or the values are not
         equal. In both cases, the variable is considered to be a trajectory.
-
-        **Examples:**
-        >>> from ebcpy.modelica.simres import SimRes
-        >>> sim = SimRes('examples/ChuaCircuit.mat')
-        >>> trajectory_names = sim.get_trajectories()
-        >>> len(trajectory_names)
-        39
         """
         trajectory_names = []
         for name in self.names():
@@ -586,21 +534,6 @@ class SimRes:
 
         - *constants_only*: *True* to include only the variables that do not
           change over time
-
-        **Example:**
-
-        .. code-block:: python
-
-           >>> sim = SimRes('examples/ChuaCircuit.mat')
-
-           >>> # Names for voltages across all of the components:
-           >>> sim.names('^[^.]*.v$', re=True) # doctest: +SKIP
-           ['C1.v', 'C2.v', 'G.v', 'L.v', 'Nr.v', 'Ro.v']
-
-        .. testcleanup::
-
-           >>> sorted(sim.names('^[^.]*.v$', re=True))
-           ['C1.v', 'C2.v', 'G.v', 'L.v', 'Nr.v', 'Ro.v']
         """
         # Get a list of all the variables or just the constants.
         if constants_only:

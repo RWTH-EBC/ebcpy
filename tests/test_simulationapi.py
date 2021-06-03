@@ -16,12 +16,11 @@ class TestDymolaAPI(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = Path(__file__).parents[1]
-        self.example_dir = self.framework_dir.joinpath("ebcpy", "examples")
+        self.example_dir = Path(__file__).parent
         self.example_sim_dir = self.example_dir.joinpath("testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
-        ebcpy_test_package_dir = self.example_dir.joinpath("Modelica", "TestModel.mo")
+        ebcpy_test_package_dir = self.example_dir.joinpath("data", "TestModel.mo")
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest_TestModel"
         self.initial_names = ["C",
@@ -96,8 +95,7 @@ class TestFMUAPI(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.framework_dir = Path(__file__).parents[1]
-        self.data_dir = self.framework_dir.joinpath("tests", "data")
+        self.data_dir = Path(__file__).parent.joinpath("data")
         self.example_sim_dir = os.path.join(self.data_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
