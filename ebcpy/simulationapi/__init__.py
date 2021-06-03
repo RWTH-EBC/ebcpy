@@ -17,7 +17,11 @@ class SimulationAPI:
     :param str model_name:
         Name of the model being simulated."""
 
-    _default_sim_setup = {"initialValues": []}
+    _default_sim_setup = {"initialValues": [],
+                          "startTime": 0,
+                          "stopTime": 1,
+                          'outputInterval': 1,
+                          }
 
     def __init__(self, cd, model_name):
         self._sim_setup = self._default_sim_setup.copy()
@@ -26,7 +30,6 @@ class SimulationAPI:
         # Setup the logger
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
-        # TODO: Future: For extracting input-, output- & tuner-parameter
         self.inputs = []      # Inputs of model
         self.outputs = []     # Outputs of model
         self.parameters = []  # Parameter of model
@@ -57,6 +60,21 @@ class SimulationAPI:
         :param dict sim_setup:
             Dictionary object with the same keys as this class's sim_setup dictionary
         """
+        warnings.warn("Function will be removed in future versions. "
+                      "Use the set function instead of the property setter directly e.g. "
+                      "sim_api.set_sim_setup(sim_setup)", DeprecationWarning)
+        self.set_sim_setup(sim_setup)
+
+    @sim_setup.deleter
+    def sim_setup(self):
+        """In case user deletes the object, reset it to the default one."""
+        self._sim_setup = self._default_sim_setup.copy()
+
+    def set_sim_setup(self, sim_setup):
+        """
+        Replaced in v0.1.7 by property function
+        """
+
         _diff = set(sim_setup.keys()).difference(self._default_sim_setup.keys())
         if _diff:
             raise KeyError(f"The given sim_setup contains the following keys "
@@ -72,20 +90,6 @@ class SimulationAPI:
             else:
                 raise TypeError(f"{key} is of type {type(value).__name__} "
                                 f"but should be type {_ref}")
-
-    @sim_setup.deleter
-    def sim_setup(self):
-        """In case user deletes the object, reset it to the default one."""
-        self._sim_setup = self._default_sim_setup.copy()
-
-    def set_sim_setup(self, sim_setup):
-        """
-        Replaced in v0.1.7 by property function
-        """
-        warnings.warn("Function will be removed in future versions. "
-                      "Use the property setter directly e.g. "
-                      "sim_api.sim_setup = sim_setup", DeprecationWarning)
-        self.sim_setup = sim_setup
 
     def set_initial_values(self, initial_values: list):
         """
@@ -111,3 +115,36 @@ class SimulationAPI:
         """Set the current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
+
+    @property
+    def start_time(self) -> float:
+        """Start time of the simulation"""
+        return self.sim_setup["startTime"]
+
+    @start_time.setter
+    def start_time(self, start_time: float):
+        """Set the start time of the simulation"""
+        self.sim_setup["startTime"] = start_time
+
+    @property
+    def stop_time(self) -> float:
+        """Stop time of the simulation"""
+        return self.sim_setup["startTime"]
+
+    @stop_time.setter
+    def stop_time(self, stop_time: float):
+        """Set the stop time of the simulation"""
+        self.sim_setup["stopTime"] = stop_time
+
+    @property
+    def output_interval(self) -> float:
+        """
+        Output interval of the simulation.
+        Other meaning: The step size / sampling time of the simulation.
+        """
+        return self.sim_setup["startTime"]
+
+    @output_interval.setter
+    def output_interval(self, output_interval: float):
+        """Set the stop time of the simulation"""
+        self.sim_setup["outputInterval"] = output_interval
