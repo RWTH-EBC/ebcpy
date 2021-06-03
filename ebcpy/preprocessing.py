@@ -1,6 +1,7 @@
 """Module with static functions used to preprocess or alter
 data, maily in the format of datafames or np.arrays."""
 import warnings
+import logging
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
@@ -9,6 +10,8 @@ import numpy as np
 import pandas as pd
 import scipy.stats as st
 from ebcpy import data_types
+
+logger = logging.getLogger(__name__)
 
 
 def build_average_on_duplicate_rows(df):
@@ -244,8 +247,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     for name in series_with_na.index:
         if series_with_na.loc[name] > 0:
             # Print only columns with invalid values
-            print(f"{name} has following number of invalid "
-                  f"values\n {series_with_na.loc[name]}")
+            logger.info("%s has following number of invalid "
+                        "values\n %s", name, series_with_na.loc[name])
     # Drop all rows where at least one NA exists
     df.dropna(how='any', inplace=True)
 

@@ -24,12 +24,12 @@ class FMU_API(simulationapi.SimulationAPI):
     >>> from ebcpy import FMU_API
     >>> # Select any valid fmu. Replace the line below if
     >>> # you don't have this file on your device.
-    >>> model_name = pathlib.Path(__file__).parents[1].joinpath("examples", "Modelica", "TestModel.fmu")
+    >>> model_name = "Path to your fmu"
     >>> fmu_api = FMU_API(model_name)
     >>> fmu_api.sim_setup = {"stopTime": 3600}
     >>> result_df = fmu_api.simulate()
     >>> fmu_api.close()
-    >>> # Select an examplary column
+    >>> # Select an exemplary column
     >>> col = result_df.columns[0]
     >>> plt.plot(result_df[col], label=col)
     >>> _ = plt.legend()
@@ -47,7 +47,8 @@ class FMU_API(simulationapi.SimulationAPI):
         'initialNames': [],
         'initialValues': [],
         'resultNames': [],
-        'timeout': np.inf}
+        'timeout': np.inf
+    }
 
     def __init__(self, model_name, cd=None):
         """Instantiate class parameters"""
@@ -169,7 +170,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self._unzip_dir = fmpy.extract(self.model_name,
                                        unzipdir=_unzipdir)
         self._model_description = read_model_description(self._unzip_dir,
-                                                         validate=True)
+                                                         validate=False)
 
         if self._model_description.coSimulation is None:
             self._fmi_type = 'ModelExchange'
@@ -180,10 +181,15 @@ class FMU_API(simulationapi.SimulationAPI):
         for var in self._model_description.modelVariables:
             if var.causality == 'input':
                 self.inputs.append(var)
-            if var.causality == 'output':
+            elif var.causality == 'output':
                 self.outputs.append(var)
-            if var.causality == 'parameter' or var.causality == 'calculatedParameter':
+            elif var.causality == 'parameter' or var.causality == 'calculatedParameter':
                 self.parameters.append(var)
+            elif var.causality == 'local':
+                self.states.append(var)
+            else:
+                self.logger.error(f"Could not map causality {var.causality}"
+                                  f" to any variable type.")
 
         self._fmu_instance = fmpy.instantiate_fmu(
             unzipdir=self._unzip_dir,

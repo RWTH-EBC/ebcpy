@@ -281,6 +281,55 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
+    def _pymoo(self, method="best1bin", **kwargs):
+        """
+        Possible kwargs for the dlib minimize function with default values:
+
+        maxiter = 1000
+        popsize = 15
+        tol = None
+        mutation = (0.5, 1)
+        recombination = 0.7
+        seed = None
+        polish = True
+        init = 'latinhypercube'
+        atol = 0
+        """
+        default_kwargs = self.get_default_config(framework="scipy_differential_evolution")
+        default_kwargs.update(kwargs)
+        try:
+            from pymoo.optimize import minimize
+            from pymoo.algorithms.nsga2 import NSGA2
+            from pymoo.factory import get_problem
+            from pymoo.optimize import minimize
+        except ImportError as error:
+            raise ImportError("Please install scipy to use the minimize_scipy function.") from error
+
+        try:
+            if self.bounds is None:
+                raise ValueError("For the differential evolution approach, you need to specify "
+                                 "boundaries. Currently, no bounds are specified.")
+
+            res = opt.differential_evolution(
+                func=self.obj,
+                bounds=self.bounds,
+                strategy=method,
+                maxiter=default_kwargs["maxiter"],
+                popsize=default_kwargs["popsize"],
+                tol=default_kwargs["tol"],
+                mutation=default_kwargs["mutation"],
+                recombination=default_kwargs["recombination"],
+                seed=default_kwargs["seed"],
+                disp=False,  # We have our own logging
+                polish=default_kwargs["polish"],
+                init=default_kwargs["init"],
+                atol=default_kwargs["atol"]
+            )
+            return res
+        except (KeyboardInterrupt, Exception) as error:
+            # pylint: disable=inconsistent-return-statements
+            self._handle_error(error)
+
     def _dlib_obj(self, *args):
         """
         This function is needed as the signature for the dlib-obj
@@ -303,6 +352,7 @@ class Optimizer:
                                      for key, value in self._current_best_iterate.items()]))
         raise error
 
+    @staticmethod
     def get_default_config(self, framework: str) -> dict:
         """
         Return the default config or kwargs for the

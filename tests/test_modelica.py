@@ -5,7 +5,9 @@ import unittest
 import os
 from pathlib import Path
 import pandas as pd
-from ebcpy.modelica import manipulate_ds
+from ebcpy.modelica import manipulate_ds, \
+    get_expressions, \
+    get_names_and_values_of_lines
 from ebcpy.modelica.simres import mat_to_pandas
 
 
@@ -15,22 +17,46 @@ class TestToPandas(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.example_dir = Path(__file__).parent.joinpath("data",
-                                                          "example_data.mat")
+        data_dir = Path(__file__).parent.joinpath("data")
+        self.example_mat_dir = data_dir.joinpath("example_data.mat")
+        self.example_mo_dir = data_dir.joinpath("HeatPumpSystem.mo")
 
     def test_mat_to_pandas(self):
         """Test function for the function to_pandas"""
-        df = mat_to_pandas(fname=self.example_dir)
+        df = mat_to_pandas(fname=self.example_mat_dir)
         first_col_name = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
-        df = mat_to_pandas(fname=self.example_dir, with_unit=False)
+        df = mat_to_pandas(fname=self.example_mat_dir, with_unit=False)
         first_col_name_without_unit = df.columns[0]
         self.assertIsInstance(df, pd.DataFrame)
         self.assertTrue(first_col_name.startswith(first_col_name_without_unit))
-        df = mat_to_pandas(fname=self.example_dir,
+        df = mat_to_pandas(fname=self.example_mat_dir,
                            with_unit=False,
                            names=['combiTimeTable.y[6]'])
         self.assertEqual(len(df.columns), 1)
+
+    def test_get_variable_code(self):
+        """Test function get variable code"""
+        exp = get_expressions(filepath_model=self.example_mo_dir)
+        self.assertEqual(len(exp), 23)
+        exp = get_expressions(filepath_model=self.example_mo_dir, modelica_type="replaceable model")
+        self.assertEqual(len(exp), 2)
+        exp = get_expressions(filepath_model=self.example_mo_dir, modelica_type="variables")
+        self.assertEqual(len(exp), 0)
+
+    def test_get_variable_values(self):
+        """Test get variable names and values"""
+        exp = get_expressions(filepath_model=self.example_mo_dir)
+        for var_name, var_value in get_names_and_values_of_lines(exp).items():
+            self.assertTrue(" " not in var_name)
+            if var_value is not None:
+                self.assertIsInstance(var_value, (float, int, bool))
+        # Test doctest
+        lines = ['parameter Boolean my_boolean=true "Some description"',
+                 'parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
+        self.assertEqual(get_names_and_values_of_lines(lines=lines),
+                         {'my_boolean': True, 'my_real': 12.0})
+
 
 class TestManipulateDS(unittest.TestCase):
     """Test-class for manipulate_ds module."""

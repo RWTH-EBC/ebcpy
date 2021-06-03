@@ -85,7 +85,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
         'autoLoad': False,
         'initialNames': [],
         'initialValues': [],
-        'resultNames': []}
+        'resultNames': []
+    }
 
     def __init__(self, cd, model_name, packages, **kwargs):
         """Instantiate class objects."""
@@ -166,7 +167,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Parameter for raising a warning if to many dymola-instances are running
         self._critical_number_instances = 10
         self._setup_dymola_interface()
-        # Register this class to the atexit module to always close dymola-instances
+        # Translate the model and extract all variables,
+        # if the user wants to:
+        if kwargs.get("extract_variables", True):
+            self.extract_model_variables()
 
     def simulate(self, **kwargs):
         """
@@ -326,31 +330,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dfs = dfs[0]
         return dfs
 
-    def set_sim_setup(self, sim_setup):
-        """
-        Overwrites multiple entries in the simulation setup dictionary
-
-        :param dict sim_setup:
-            Dictionary object with the same keys as this class's sim_setup dictionary
-        """
-        _diff = set(sim_setup.keys()).difference(self.sim_setup.keys())
-        if _diff:
-            raise KeyError(f"The given sim_setup contains the following keys "
-                           f"({' ,'.join(list(_diff))} which are not part of "
-                           f"the dymola sim_setup.")
-        _number_values = ["startTime", "stopTime", "numberOfIntervals",
-                          "outputInterval", "tolerance", "fixedstepsize"]
-        for key, value in sim_setup.items():
-            if key in _number_values:
-                _ref = (float, int)
-            else:
-                _ref = type(self.sim_setup[key])
-            if isinstance(value, _ref):
-                self.sim_setup[key] = value
-            else:
-                raise TypeError(f"{key} is of type {type(value).__name__} but "
-                                f"should be type {_ref}")
-
     def translate(self):
         """
         Translates the current model using dymola.translateModel()
@@ -358,9 +337,9 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         res = self.dymola.translateModel(self.model_name)
         if not res:
-            self.logger.log("Translation failed!")
-            self.logger.log("The last error log from Dymola:")
-            self.logger.log(self.dymola.getLastErrorLog())
+            self.logger.error("Translation failed!")
+            self.logger.error("The last error log from Dymola:")
+            self.logger.error(self.dymola.getLastErrorLog())
             raise Exception("Translation failed - Aborting")
 
     def set_compiler(self, name, path, dll=False, dde=False, opc=False):
@@ -454,21 +433,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
             self._dummy_dymola_instance.close()
             self.logger.info('Successfully closed dummy Dymola instance')
 
-    def get_all_parameters(self):
-        """Get all parameters of the model by
+    def extract_model_variables(self):
+        """
+        Extract all variables of the model by
         translating it and then processing the dsin
-        using modelicares.
+        using the manipulate_ds module.
         Returns a dict with keys the following keys and values:
             names: List of names
             initial_values: List of initial values
         """
         # Translate model
-        res = self.dymola.translateModel(self.model_name)
-        if not res:
-            self.logger.error("Translation failed!")
-            self.logger.error("The last error log from Dymola:")
-            self.logger.error(self.dymola.getLastErrorLog())
-            raise Exception("Translation failed!")
+        self.translate()
         # Get path to dsin:
         dsin_path = os.path.join(self.cd, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
@@ -477,10 +452,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self.outputs = df[df["5"] == "4"].index.values.tolist()
         self.inputs = df[df["5"] == "5"].index.values.tolist()
         self.states = df[(df["5"] == "2") | (df["5"] == "3") | (df["5"] == "6")].index.values.tolist()
-        df = df[df["5"] == "1"]
-        names = df.index
-        initial_values = pd.to_numeric(df["2"].values)
-        return {'names': names, 'initial_values': initial_values}
+        self.set_sim_setup({"resultNames": self.sim_setup["resultNames"] + self.states})
 
     def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
