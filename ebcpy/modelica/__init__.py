@@ -1,6 +1,6 @@
 """
-Package for functions used to alter Modelicare simulation results and
-other files like dsfinal or model (mo) files.
+This package aims to help manipulate simulation files (dsfinal.txt or dsin.txt)
+or to load simulation result files (.mat) efficiently into a pandas.DataFrame
 """
 import re
 from typing import Union, List

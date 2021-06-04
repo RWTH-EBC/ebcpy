@@ -1,6 +1,9 @@
-"""Module with the base class for all simulation APIs.
-Different simulation modules like dymola_api or py_fmi
-may inherit classes of this module."""
+"""
+Simulation APIs help you to perform automated
+simulations for energy and building climate related models.
+Parameters can easily be updated, and the initialization-process is
+much more user-friendly than the provided APIs by Dymola or fmpy.
+"""
 
 import os
 import warnings
