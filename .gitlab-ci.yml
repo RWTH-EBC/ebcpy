@@ -4,6 +4,9 @@ stages:
   - test
   - deploy
 
+variables:
+  COVERAGE_TYPE: "Dymola"
+
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/pylint.gitlab-ci.yml'
@@ -13,9 +16,7 @@ include:
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/unittest.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/unit-tests/coverage.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/unit-tests/dymola-coverage.gitlab-ci.yml'
+    file: 'python/unit-tests/coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
