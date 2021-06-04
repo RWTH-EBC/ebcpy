@@ -24,12 +24,15 @@ __all__ = ['TimeSeries',
 
 class TimeSeriesData(pd.DataFrame):
     """
+    Most data related to energy and building
+    climate related problems is time-variant.
+
     Class for handling time series data using a pandas dataframe.
     This class works file-based and makes the import of different
     file-types into a pandas DataFrame more user-friendly.
     Furthermore, functions to support multi-indexing are provided to
     efficiently handle variable passed processing and provide easy
-    visualization access.
+    visualization and preprocessing access.
 
     :param str,os.path.normpath,pd.DataFrame data:
         Filepath ending with either .hdf, .mat or .csv containing
