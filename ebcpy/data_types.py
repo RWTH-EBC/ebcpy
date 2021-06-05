@@ -279,8 +279,11 @@ class TimeSeriesData(pd.DataFrame):
 
     def set_data_by_tag(self, data, tag: str, variables=None):
         """
+        # TODO: Remove?
         Data can be an array for single variables, or a dataframe itself.
-        :param data:
+
+        :param pd.Series data:
+            The data to set.
         :param str tag:
             New tag for the data
         :param variables:

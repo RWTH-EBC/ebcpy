@@ -95,7 +95,6 @@ class TestFMUAPI(unittest.TestCase):
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
-        self.skipTest(f"Wait for new docker image")
         self.data_dir = Path(__file__).parent.joinpath("data")
         self.example_sim_dir = os.path.join(self.data_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):

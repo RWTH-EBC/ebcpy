@@ -36,7 +36,13 @@ def build_average_on_duplicate_rows(df):
     any dataFrame should be already sorted before calling this
     function.
 
+    :param pd.DataFame df:
+        DataFrame with the data to process
+    :return: pd.DataFame
+        The processed DataFame
+
     Example:
+
     >>> df = pd.DataFrame({"idx": np.ones(5), "val": np.arange(5)}).set_index("idx")
     >>> df = convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1))
     >>> print(df)
@@ -51,10 +57,6 @@ def build_average_on_duplicate_rows(df):
                          val
     idx
     2007-01-01 00:00:01  2.0
-
-    :param pd.DataFame df:
-        DataFrame with the data to process
-    :return: pd.DataFame
     """
     # Find entries that are exactly the same timestamp
     double_ind = df.index[df.index.duplicated()].unique()
@@ -93,6 +95,7 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
         framework.
 
     Example:
+
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(df)
@@ -146,6 +149,7 @@ def convert_datetime_index_to_float_index(df, offset=0):
         DataFrame with correct index
 
     Example:
+
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1)))
@@ -180,6 +184,7 @@ def time_based_weighted_mean(df):
         A numpy array containing weighted means of all columns
 
     Example:
+
     >>> from datetime import datetime
     >>> import numpy as np
     >>> import pandas as pd
@@ -358,6 +363,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     :return: numpy.ndarray,
 
     Example:
+
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> rand_series = np.random.rand(100)
@@ -393,6 +399,7 @@ def moving_average(data, window):
         values (hold first and last point).
 
     Example:
+
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
     >>> series = np.sin(np.linspace(-30, 30, 1000))
@@ -449,6 +456,7 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
         Now with the created signals.
 
     Example:
+
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
     >>> df = pd.DataFrame({"P_el": np.sin(np.linspace(-20, 20, 10000))*100})
@@ -497,6 +505,7 @@ def number_lines_totally_na(df):
         Number of NaN-Rows.
 
     Example:
+
     >>> import numpy as np
     >>> import pandas as pd
     >>> dim = np.random.randint(100) + 10
@@ -532,6 +541,7 @@ def z_score(x, limit=3):
         modified z score
 
     Example:
+
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = z_score(normal_dis, limit=2)
@@ -557,6 +567,7 @@ def modified_z_score(x, limit=3.5):
         modified z score
 
     Example:
+
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = modified_z_score(normal_dis, limit=2)
@@ -580,6 +591,7 @@ def interquartile_range(x):
         Array matching the interquartile-range
 
     Example:
+
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
     >>> res = interquartile_range(normal_dis)
@@ -617,6 +629,7 @@ def cross_validation(x, y, test_size=0.3):
         x_train, x_test, y_train, y_test
 
     Example:
+
     >>> import numpy as np
     >>> x = np.random.rand(100)
     >>> y = np.random.rand(100)

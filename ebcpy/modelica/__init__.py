@@ -25,11 +25,11 @@ def get_expressions(filepath_model: str,
         multiple strings are relevant to you.
         Special cases:
         parameters:
-            - include: ["parameter"]
-            - excludes: ["final", "in", "of", "replaceable"]
+        - include: ["parameter"]
+        - excludes: ["final", "in", "of", "replaceable"]
         variables: Note: The case for already imported SIUnits is not considered here.
-            - include: ["Modelica.SIunits", "Real", "Boolean", "Integer"]
-            - excludes: ["parameter", "import", "constant"]
+        - include: ["Modelica.SIunits", "Real", "Boolean", "Integer"]
+        - excludes: ["parameter", "import", "constant"]
     :param list excludes:
         List of strings to exclude from expression. Default is None.
     :param Boolean get_protected:
@@ -108,6 +108,7 @@ def get_names_and_values_of_lines(lines: List[str]) -> dict:
         dict: Containing the names as key and values as value.
 
     Example:
+
     >>> lines = ['parameter Boolean my_boolean=true "Some description"',
     >>>          'parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
     >>> output = get_names_and_values_of_lines(lines=lines)

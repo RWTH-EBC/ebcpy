@@ -208,7 +208,7 @@ def get_strings(str_arr):
 
 
 class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit', 'displayUnit'])):
-    """Special namedtuple_ to represent a variable in a simulation, with
+    """Special namedtuple to represent a variable in a simulation, with
     methods to retrieve and perform calculations on its values
 
     This class is usually not instantiated directly by the user, but instances

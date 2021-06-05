@@ -8,36 +8,36 @@ import pandas as pd
 
 def convert_ds_file_to_dataframe(filename):
     """
-        Function to convert a given dsfinal or dsfin file to a DataFrame.
-        The index is the name of the variable. Further,
-        the following columns are used analog to the dsfinal:
-        column 1: Type of initial value
-                  = -2: special case: for continuing simulation (column 2 = value)
-                  = -1: fixed value (column 2 = fixed value)
-                  =  0: free value, i.e., no restriction (column 2 = initial value)
-                  >  0: desired value (column 1 = weight for optimization
-                                       column 2 = desired value)
-                        use weight=1, since automatic scaling usually
-                        leads to equally weighted terms
-        column 2: fixed, free or desired value according to column 1.
-        column 3: Minimum value (ignored, if Minimum >= Maximum).
-        column 4: Maximum value (ignored, if Minimum >= Maximum).
-                  Minimum and maximum restrict the search range in initial
-                  value calculation. They might also be used for scaling.
-        column 5: Category of variable.
-                  = 1: parameter.
-                  = 2: state.
-                  = 3: state derivative.
-                  = 4: output.
-                  = 5: input.
-                  = 6: auxiliary variable.
-        column 6: Data type of variable and flags according to dsBaseType
+    Function to convert a given dsfinal or dsfin file to a DataFrame.
+    The index is the name of the variable. Further,
+    the following columns are used analog to the dsfinal:
+    column 1: Type of initial value:
+    = -2: special case: for continuing simulation (column 2 = value)
+    = -1: fixed value (column 2 = fixed value)
+    =  0: free value, i.e., no restriction (column 2 = initial value)
+    >  0: desired value (column 1 = weight for optimization,
+    column 2 = desired value)
+    use weight=1, since automatic scaling usually
+    leads to equally weighted terms
+    column 2: fixed, free or desired value according to column 1.
+    column 3: Minimum value (ignored, if Minimum >= Maximum).
+    column 4: Maximum value (ignored, if Minimum >= Maximum).
+    Minimum and maximum restrict the search range in initial
+    value calculation. They might also be used for scaling.
+    column 5: Category of variable:
+    = 1: parameter.
+    = 2: state.
+    = 3: state derivative.
+    = 4: output.
+    = 5: input.
+    = 6: auxiliary variable.
+    column 6: Data type of variable and flags according to dsBaseType
 
-        :param str,os.path.normpath filename:
-            Filepath to the dsfinal or dsinto be loaded.
-        :return: pd.DataFrame
-            Converted DataFrame
-        """
+    :param str,os.path.normpath filename:
+        Filepath to the dsfinal or dsinto be loaded.
+    :return: pd.DataFrame
+        Converted DataFrame
+    """
     if not os.path.isfile(filename):
         raise FileNotFoundError(f"Given filename {filename} does not exists.")
 

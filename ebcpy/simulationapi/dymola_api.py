@@ -46,7 +46,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         This required translating the model.
 
     Example:
-    --------
+
     >>> import os
     >>> from ebcpy import DymolaAPI
     >>> # Specify the model name
@@ -179,24 +179,25 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """
         Simulate the current setup.
         If simulation terminates without an error, you can either
-         - save the files in a given savepath (savepath_files) or
-         - get the trajectories specified by `resultNames` returned.
+        - save the files in a given savepath (savepath_files) or
+        - get the trajectories specified by `resultNames` returned.
 
-         Some Notes on using `resultNames`:
-        - You can't use `outputInterval`. Instead you have to use `numberOfIntervals`.
-          An attempt is made to convert it internally. For this to work,
-          `outputInterval` has to be an even divisor of the interval given
-          by`stopTime-startTime`. In the case of `startTime=0, stopTime=100`,
-          `outputInterval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
-          :raises ValueError if `outputInterval` is wrong
+        Some Notes on using `resultNames`:
+        - You can't use `outputInterval`. Instead you
+        have to use `numberOfIntervals`.
+        An attempt is made to convert it internally. For this to work,
+        `outputInterval` has to be an even divisor of the interval given
+        by`stopTime-startTime`. In the case of `startTime=0, stopTime=100`,
+        `outputInterval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
+        :raises ValueError if `outputInterval` is wrong
         - You have to pass an `initialName` and `initialValue`.
-          Else the result is always empty
+        Else the result is always empty
         - If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
-          It has to be 2D list (e.g. [[1, 2]]). As we normally use only
-          one parameter at a time, we automatically convert any 1D list
-          to a 2D list. Passing a 2D list to the `sim_setup` also works.
+        It has to be 2D list (e.g. [[1, 2]]). As we normally use only
+        one parameter at a time, we automatically convert any 1D list
+        to a 2D list. Passing a 2D list to the `sim_setup` also works.
         - The resulting dataframe has size `numberOfIntervals + 1` this is
-          due to the structure in Modelica.
+        due to the structure in Modelica.
 
         :param str,os.path.normpath savepath_files:
             If path is provided, the relevant simulation results will be saved
@@ -209,18 +210,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
 
-        Returns:
-        if savepath_files:
-            :return str,os.path.normpath filepath:
-                Filepath of the result file.
-        else
-            :return pd.DataFrame,list dfs:
-                If len(sim_setup['initialValues']) is one and squeeze=True,
-                a DataFrame with the columns being equal to
-                sim_setup['resultNames'] and an index of length
-                sim_setup['numberOfIntervals'] + 1
-                If multiple set's of initial values are given, one
-                dataframe for each set is returned in a list
+        :return: str,os.path.normpath filepath:
+            Only if savepath_files is given.
+            Filepath of the result file.
+        :return: Union[List[pd.DataFrame],pd.DataFrame]:
+            If len(sim_setup['initialValues']) is one and squeeze=True,
+            a DataFrame with the columns being equal to
+            sim_setup['resultNames'] and an index of length
+            sim_setup['numberOfIntervals'] + 1
+            If multiple set's of initial values are given, one
+            dataframe for each set is returned in a list
         """
         # Unpack kwargs
         savepath_files = kwargs.get("savepath_files", "")
@@ -441,9 +440,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         Extract all variables of the model by
         translating it and then processing the dsin
         using the manipulate_ds module.
-        Returns a dict with keys the following keys and values:
-            names: List of names
-            initial_values: List of initial values
         """
         # Translate model
         self.translate()

@@ -60,7 +60,7 @@ class Optimizer:
 
         :param np.array xk:
             Array with parameters for optimization
-        :returns float result
+        :return: float result:
             A scalar (float/ 1d) value for the optimization framework.
         """
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
@@ -91,14 +91,12 @@ class Optimizer:
         Perform the optimization based on the given method and framework.
 
         :param str framework:
-        The framework (python module) you want to use to perform the optimization.
-        Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
-        are supported options. To further inform yourself about these frameworks, please see:
+            The framework (python module) you want to use to perform the optimization.
+            Currently, "scipy_minimize", "dlib_minimize" and "scipy_differential_evolution"
+            are supported options. To further inform yourself about these frameworks, please see:
             - `dlib <http://dlib.net/python/index.html>`_
-            - `scipy minimize <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.minimize.html>`_
-            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/
-            reference/generated/scipy.optimize.differential_evolution.html>`_
+            - `scipy minimize <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_
+            - `scipy differential evolution <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html>`_
             - 'pymoo' <https://pymoo.org/index.html>
         :param str method:
             The method you pass depends on the methods available in the framework
@@ -117,6 +115,7 @@ class Optimizer:
             to set them.
             E.g. For scipy.optimize.minimize one could
             add "tol=1e-3" as a kwarg.
+
         :return: res
             Optimization result.
         """

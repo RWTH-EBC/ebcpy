@@ -73,7 +73,8 @@ class FMU_API(simulationapi.SimulationAPI):
     def close(self):
         """
         Closes the fmu.
-        :return:
+
+        :return: bool
             True on success
         """
         try:
