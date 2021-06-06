@@ -1,10 +1,11 @@
 """Test-module for all classes inside
 ebcpy.data_types."""
-
 import os
+import shutil
 import unittest
 from pathlib import Path
 import pandas as pd
+import numpy as np
 from ebcpy import data_types
 
 
@@ -19,6 +20,55 @@ class TestDataTypes(unittest.TestCase):
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
         self.example_data_csv_path = self.example_dir.joinpath("example_data.CSV")
         self.example_data_mat_path = self.example_dir.joinpath("example_data.mat")
+        self.example_data_xls_path = self.example_dir.joinpath("example_data.xlsx")
+        self.savedir = self.example_dir.joinpath("test_save")
+        os.makedirs(self.savedir, exist_ok=True)
+
+    def test_default_tag(self):
+        """Test the default_tag property"""
+        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
+                                        key="parameters")
+        self.assertIsInstance(tsd.default_tag, str)
+        with self.assertRaises(KeyError):
+            tsd.default_tag = "Not in current keys"
+        tsd.default_tag = tsd.default_tag
+
+    def test_multilevel(self):
+        """Test the two-level format of tsd"""
+        df = pd.DataFrame({"col_1": [5]})
+        df.columns = pd.MultiIndex.from_product(
+            [["first"], ["second"], ["third"]])
+        with self.assertRaises(TypeError):
+            data_types.TimeSeriesData(df)
+        df.columns = pd.MultiIndex.from_product(
+            [["first"], ["second"]],
+            names=["Not Variables", "not a tag"])
+        with self.assertRaises(TypeError):
+            data_types.TimeSeriesData(df)
+
+    def test_save(self):
+        """Test fp property"""
+        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
+                                        key="parameters")
+
+        filepath = self.savedir.joinpath("test_hdf.hdf")
+        with self.assertRaises(KeyError):
+            tsd.save(filepath=filepath)
+        tsd.save(filepath=filepath, key="test")
+        self.assertTrue(os.path.isfile(filepath))
+        # Test csv and the setter.
+        filepath = self.savedir.joinpath("test_hdf.csv")
+        tsd.filepath = filepath
+        tsd.save()
+        self.assertTrue(os.path.isfile(filepath))
+
+        with self.assertRaises(TypeError):
+            filepath = self.savedir.joinpath("test_mat.mat")
+            tsd.save(filepath=filepath)
+
+        with self.assertRaises(ValueError):
+            tsd.filepath = None
+            tsd.save()
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
@@ -35,6 +85,11 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(KeyError):
             data_types.TimeSeriesData(self.example_data_hdf_path,
                                       key="wrong_key")
+        with self.assertRaises(KeyError):
+            data_types.TimeSeriesData(self.example_data_hdf_path,
+                                      key="")
+        with self.assertRaises(KeyError):
+            data_types.TimeSeriesData(self.example_data_xls_path)
         # Correctly load the .hdf:
         time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path,
                                                      key="parameters")
@@ -44,6 +99,12 @@ class TestDataTypes(unittest.TestCase):
         # Correctly load the .csv:
         time_series_data = data_types.TimeSeriesData(self.example_data_csv_path,
                                                      sep=",")
+        self.assertIsInstance(
+            time_series_data,
+            type(pd.DataFrame()))
+        # Correctly load the .csv:
+        time_series_data = data_types.TimeSeriesData(self.example_data_xls_path,
+                                                     sheet_name="example_data")
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
@@ -62,6 +123,10 @@ class TestDataTypes(unittest.TestCase):
                                         key="parameters")
         tsd.to_datetime_index()
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.to_datetime_index()
+        self.assertIsInstance(tsd.index, pd.DatetimeIndex)
+        tsd.to_float_index()
+        self.assertIsInstance(tsd.index, pd.Float64Index)
         tsd.to_float_index()
         self.assertIsInstance(tsd.index, pd.Float64Index)
         tsd.to_datetime_index()
@@ -92,6 +157,23 @@ class TestDataTypes(unittest.TestCase):
         self.assertEqual(tsd3.get_columns_by_tag('new_data').size,
                          tsd2.size)
 
+    def test_get_cols_by_tag(self):
+        time_series_data = data_types.TimeSeriesData(self.example_data_mat_path)
+        tsd2 = time_series_data.get_columns_by_tag(tag="raw")
+        self.assertTrue(np.all(tsd2 == time_series_data))
+        tsd2 = time_series_data.get_columns_by_tag(tag="raw",
+                                                   variables=["combiTimeTable.smoothness"])
+        self.assertEqual(len(tsd2.columns), 1)
+        with self.assertRaises(TypeError):
+            time_series_data.get_columns_by_tag(tag="raw",
+                                                return_type="not_supported")
+        tsd = time_series_data.get_columns_by_tag(tag="raw",
+                                                  return_type="np")
+        self.assertIsInstance(tsd, np.ndarray)
+        tsd = time_series_data.get_columns_by_tag(tag="raw",
+                                                  return_type="control")
+        self.assertIsInstance(tsd, np.ndarray)
+
     def test_time_series_utils(self):
         """Test the utils for time series"""
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
@@ -113,6 +195,19 @@ class TestDataTypes(unittest.TestCase):
         reference_list = ['parameters', 'trajectories']
         return_val = data_types.get_keys_of_hdf_file(self.example_data_hdf_path)
         self.assertListEqual(return_val, reference_list)
+
+    def test_time_series(self):
+        """Test the time series object"""
+        time_series = data_types.TimeSeries(np.random.rand(100))
+        self.assertIsInstance(time_series.to_frame(),
+                              data_types.TimeSeriesData)
+
+    def tearDown(self) -> None:
+        """Delete saved files"""
+        try:
+            shutil.rmtree(self.savedir, ignore_errors=True)
+        except Exception:
+            pass
 
 
 if __name__ == "__main__":

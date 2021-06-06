@@ -20,21 +20,20 @@ class TestOptimizer(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.example_opt_dir = os.path.normpath(os.path.join(os.path.dirname(__file__),
                                                              "test_optimization"))
-        self.supported_frameworks = ["scipy_minimize",
-                                     "dlib_minimize",
-                                     "scipy_differential_evolution"]
 
     def test_optimizer_choose_function(self):
         """Test-case for the base-class for optimization."""
         # pylint: disable=protected-access
         opt = Optimizer()
-        for _framework in self.supported_frameworks:
+        for _framework in opt.supported_frameworks:
             if _framework == "scipy_minimize":
                 reference_function = opt._scipy_minimize
             elif _framework == "dlib_minimize":
                 reference_function = opt._dlib_minimize
             elif _framework == "scipy_differential_evolution":
                 reference_function = opt._scipy_differential_evolution
+            elif _framework == "pymoo":
+                reference_function = opt._pymoo
             _minimize_func, required_method = opt._choose_framework(_framework)
             self.assertEqual(_minimize_func, reference_function)
         with self.assertRaises(TypeError):
@@ -69,12 +68,25 @@ class TestOptimizer(unittest.TestCase):
         # Test value error if no method is supplied
         with self.assertRaises(ValueError):
             my_custom_optimizer.optimize(framework="scipy_minimize")
+        # Test without x0
+        with self.assertRaises(KeyError):
+            my_custom_optimizer.optimize(framework="scipy_minimize",
+                                         method="L-BFGS-B")
         # Test scipy minimize
         res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
                                                method="L-BFGS-B",
                                                x0=np.array([0, 0, 0]))
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        # test wrong bounds in pymoo and sp_dif_evo
+        my_custom_optimizer.bounds = None
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize(framework="scipy_differential_evolution",
+                                         method="best2bin")
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize(framework="pymoo",
+                                         method="NSGA2")
+
         # Test scipy differential evolution
         # Bounds are necessary (here, 1 and 0 are sufficient,
         #  as the goal values are element of [0,1]
@@ -84,6 +96,35 @@ class TestOptimizer(unittest.TestCase):
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # Skip dlib test as problems in ci occur.
+        res_de = my_custom_optimizer.optimize(framework="pymoo",
+                                              method="NSGA2")
+        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
+        # Test own algorithm
+        from pymoo.algorithms.nsga2 import NSGA2
+        nsga2 = NSGA2(pop_size=150)
+        res_de = my_custom_optimizer.optimize(framework="pymoo",
+                                              method=nsga2)
+        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
+
+    def test_error_handler(self):
+        """Test if error handling works for each framework"""
+        opt = Optimizer()
+        try:
+            raise KeyError("My own error")
+        except KeyError as error:
+            with self.assertRaises(KeyError):
+                opt._handle_error(error)
+
+    def test_get_cfg(self):
+        """Test get the default config"""
+        opt = Optimizer()
+        for framework in opt.supported_frameworks:
+            cfg = opt.get_default_config(framework=framework)
+            self.assertGreater(len(cfg), 0)
+        self.assertEqual(opt.get_default_config("not supported"),
+                         {})
 
     def tearDown(self):
         """Remove all created folders while optimizing."""

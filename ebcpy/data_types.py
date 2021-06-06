@@ -190,9 +190,16 @@ class TimeSeriesData(pd.DataFrame):
             raise ValueError("Current TimeSeriesData instance "
                              "has no filepath, please specify one.")
 
+        if isinstance(filepath, Path):
+            filepath = str(filepath)
+
         # Save based on file suffix
         if filepath.lower().endswith(".hdf"):
+            if "key" not in kwargs:
+                raise KeyError("Argument 'key' must be "
+                               "specified to save a .hdf file")
             pd.DataFrame(self).to_hdf(filepath, key=kwargs.get("key"))
+
         elif filepath.lower().endswith(".csv"):
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         else:
@@ -252,17 +259,31 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_columns_by_tag(self,
                            tag: str,
-                           columns=None,
-                           return_type='pandas',
+                           variables: list =None,
+                           return_type: str='pandas',
                            drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
-        :param boolean drop_level: if tag should be included in the response
+
+        :param str tag:
+            Define the tag which return columns have to
+            match.
+        :param list variables:
+            Besides the given tag, specify the
+            variables names matching the return criteria as well.
+        :param boolean drop_level:
+            If tag should be included in the response.
+            Default is True.
+        :param str return_type:
+            Return format. Options are:
+            - pandas (pd.series)
+            - numpy, scipy, sp, and np (np.array)
+            - control (transposed np.array)
         :return: ndarray of input signals
         """
         # Extract columns
-        if columns:
-            _ret = self.loc[:, columns]
+        if variables:
+            _ret = self.loc[:, variables]
         else:
             _ret = self
 
@@ -276,20 +297,6 @@ class TimeSeriesData(pd.DataFrame):
         if return_type.lower() == 'control':
             return _ret.to_numpy().transpose()
         raise TypeError("Unknown return type")
-
-    def set_data_by_tag(self, data, tag: str, variables=None):
-        """
-        # TODO: Remove?
-        Data can be an array for single variables, or a dataframe itself.
-
-        :param pd.Series data:
-            The data to set.
-        :param str tag:
-            New tag for the data
-        :param variables:
-        :return:
-        """
-        self.loc[:, (variables, tag)] = data
 
     def to_datetime_index(self, unit_of_index="s", origin=datetime.now()):
         """

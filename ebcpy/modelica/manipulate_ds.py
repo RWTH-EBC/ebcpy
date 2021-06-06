@@ -38,9 +38,6 @@ def convert_ds_file_to_dataframe(filename):
     :return: pd.DataFrame
         Converted DataFrame
     """
-    if not os.path.isfile(filename):
-        raise FileNotFoundError(f"Given filename {filename} does not exists.")
-
     # Define relevant parameters
     number_line_initial_name = 104  # Line where the string char initialName(,) is always stored
 

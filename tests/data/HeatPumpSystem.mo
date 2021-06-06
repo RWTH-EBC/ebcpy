@@ -72,6 +72,8 @@ model HeatPumpSystem
       choice=false "only heating",
       radioButtons=true));
   parameter Real scalingFactor=1 "Scaling-factor of HP" annotation(Dialog(tab="Heat Pump"), Evaluate=true);
+  //parameter Real scalingFactor=1 "Scaling-factor of HP" annotation(Dialog(tab="Heat Pump"), Evaluate=true);
+  
   parameter Boolean use_refIne=true  "Consider the inertia of the refrigerant cycle"
     annotation (Dialog(tab="Heat Pump",group="Refrigerant cycle inertia"), choices(checkBox=true));
   constant Modelica.SIunits.Frequency refIneFre_constant
@@ -120,6 +122,7 @@ model HeatPumpSystem
     "Constant parameter for heat transfer to heat exchangers capacity. Represents a sum of thermal resistances such as forced convection and conduction inside of the capacity"
     annotation (Evaluate=true,Dialog(group="Evaporator", tab="Evaporator/ Condenser",
       enable=use_evaCap));
+protected
   parameter Modelica.SIunits.HeatCapacity CCon
     "Heat capacity of Condenser (= cp*m). If you want to neglace the dry mass of the condenser, you can set this value to zero"
     annotation (Dialog(tab="Evaporator/ Condenser", group="Condenser",

@@ -38,11 +38,14 @@ class TestToPandas(unittest.TestCase):
     def test_get_variable_code(self):
         """Test function get variable code"""
         exp = get_expressions(filepath_model=self.example_mo_dir)
-        self.assertEqual(len(exp), 23)
+        self.assertEqual(len(exp), 24)
         exp = get_expressions(filepath_model=self.example_mo_dir, modelica_type="replaceable model")
         self.assertEqual(len(exp), 2)
         exp = get_expressions(filepath_model=self.example_mo_dir, modelica_type="variables")
         self.assertEqual(len(exp), 0)
+        exp, exp_pr = get_expressions(filepath_model=self.example_mo_dir, get_protected=True)
+        self.assertEqual(len(exp), 16)
+        self.assertEqual(len(exp_pr), 8)
 
     def test_get_variable_values(self):
         """Test get variable names and values"""
@@ -56,6 +59,10 @@ class TestToPandas(unittest.TestCase):
                  'parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
         self.assertEqual(get_names_and_values_of_lines(lines=lines),
                          {'my_boolean': True, 'my_real': 12.0})
+        lines = ['parameter Boolean my_boolean=true "Some description"',
+                 '//parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
+        self.assertEqual(get_names_and_values_of_lines(lines=lines),
+                         {'my_boolean': True})
 
 
 class TestManipulateDS(unittest.TestCase):

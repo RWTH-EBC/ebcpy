@@ -15,3 +15,6 @@ exclude_lines =
 	if __name__ == '__main__':
 	raise ImportError
 	except Exception as error:
+	except ImportError as error:
+    except ImportError:
+    except (KeyboardInterrupt, Exception) as error:

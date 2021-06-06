@@ -66,6 +66,17 @@ class Optimizer:
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
     @property
+    def supported_frameworks(self):
+        """
+        List with all frameworks supported by this
+        wrapper class.
+        """
+        return ["scipy_minimize",
+                "scipy_differential_evolution",
+                "dlib_minimize",
+                "pymoo"]
+
+    @property
     def cd(self) -> str:
         """The current working directory"""
         return self._cd
