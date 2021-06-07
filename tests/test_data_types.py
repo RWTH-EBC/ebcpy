@@ -20,7 +20,7 @@ class TestDataTypes(unittest.TestCase):
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
         self.example_data_csv_path = self.example_dir.joinpath("example_data.CSV")
         self.example_data_mat_path = self.example_dir.joinpath("example_mat_data.mat")
-        self.example_data_xls_path = self.example_dir.joinpath("example_data.xlsx")
+        self.example_data_xls_path = self.example_dir.joinpath("example_data.xls")
         self.savedir = self.example_dir.joinpath("test_save")
         os.makedirs(self.savedir, exist_ok=True)
 
