@@ -18,7 +18,7 @@ class TestToPandas(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         data_dir = Path(__file__).parent.joinpath("data")
-        self.example_mat_dir = data_dir.joinpath("example_data.mat")
+        self.example_mat_dir = data_dir.joinpath("example_mat_data.mat")
         self.example_mo_dir = data_dir.joinpath("HeatPumpSystem.mo")
 
     def test_mat_to_pandas(self):
@@ -104,7 +104,7 @@ class TestManipulateDS(unittest.TestCase):
         with self.assertRaises(TypeError):
             manipulate_ds.eliminate_parameters_from_ds_file(
                 filename=self.ds_path,
-                savepath="dummy_dsout.kdk",
+                savepath="dummy_dsout.txt",
                 exclude_paras={"Not a": "list"}
             )
 
