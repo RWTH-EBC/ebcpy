@@ -74,7 +74,6 @@ class TimeSeriesData(pd.DataFrame):
     def __init__(self, data: Union[str, Any], **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
-
         self._filepath = None
         self._loader_kwargs = {}
         _multi_col_names = ["Variables", "Tags"]
@@ -205,6 +204,17 @@ class TimeSeriesData(pd.DataFrame):
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
+
+    def to_df(self):
+        """
+        Return the dataframe version of the current TimeSeriesData object.
+        If all tags are equal, the tags are dropped.
+        Else, the object is just converted.
+        """
+        if len(self.get_tags()) == 1:
+            return pd.DataFrame(self.droplevel(1, axis=1))
+        else:
+            return pd.DataFrame(self)
 
     def _load_df_from_file(self):
         """Function to load a given filepath into a dataframe"""

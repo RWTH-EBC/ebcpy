@@ -196,6 +196,17 @@ class TestDataTypes(unittest.TestCase):
         return_val = data_types.get_keys_of_hdf_file(self.example_data_hdf_path)
         self.assertListEqual(return_val, reference_list)
 
+    def test_to_df(self):
+        """Test the to_df function"""
+        df = pd.DataFrame({"my_variable": np.random.rand(5),
+                           "my_variable1": np.random.rand(5)})
+        tsd = data_types.TimeSeriesData(df)
+        self.assertEqual(tsd.to_df(), df)
+        self.assertEqual(tsd.to_df().columns.nlevels, 1)
+        tsd.loc[:, ("my_variable", "new_tag")] = 5
+        self.assertIsInstance(tsd.to_df(), pd.DataFrame)
+        self.assertEqual(tsd.columns.nlevels, 2)
+
     def test_time_series(self):
         """Test the time series object"""
         time_series = data_types.TimeSeries(np.random.rand(100))

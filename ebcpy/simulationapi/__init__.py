@@ -23,7 +23,7 @@ class SimulationAPI:
     _default_sim_setup = {"initialValues": [],
                           "startTime": 0,
                           "stopTime": 1,
-                          'outputInterval': 1,
+                          "outputInterval": 1,
                           }
 
     def __init__(self, cd, model_name):
