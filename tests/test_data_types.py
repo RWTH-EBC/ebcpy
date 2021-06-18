@@ -200,8 +200,9 @@ class TestDataTypes(unittest.TestCase):
         """Test the to_df function"""
         df = pd.DataFrame({"my_variable": np.random.rand(5),
                            "my_variable1": np.random.rand(5)})
-        tsd = data_types.TimeSeriesData(df)
-        self.assertEqual(tsd.to_df(), df)
+        tsd = data_types.TimeSeriesData(df.copy())
+        self.assertEqual(tsd.to_df().columns.values.tolist(),
+                         df.columns.values.tolist())
         self.assertEqual(tsd.to_df().columns.nlevels, 1)
         tsd.loc[:, ("my_variable", "new_tag")] = 5
         self.assertIsInstance(tsd.to_df(), pd.DataFrame)

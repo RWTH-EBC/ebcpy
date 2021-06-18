@@ -98,9 +98,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
             dymola_interface_path = None
 
         dymola_path = kwargs.pop("dymola_path", None)
-        if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
-            raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
-                                    "your machine.")
+        if dymola_path is not None:
+            if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
+                raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
+                                        "your machine.")
 
         if (not dymola_path) or (not dymola_interface_path):
             # First get the dymola-install-path:
