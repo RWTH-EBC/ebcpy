@@ -44,7 +44,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
         If True (the default), all variables of the model will be extracted
         on init of this class.
         This required translating the model.
-
+    :keyword bool debug:
+        If True (not the default), the dymola instance is not closed
+        on exit of the python script. This allows further debugging in
+        dymola itself if API-functions cause a python error.
     Example:
 
     >>> import os
@@ -60,19 +63,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
     >>> dym_api.simulate()
     >>> dym_api.close()
     """
-
-    show_window = False
-    get_structural_parameters = True
-    # Alter the output-format so all simulations will result in the same array-length
-    equidistant_output = True
-    _supported_kwargs = ["show_window",
-                         "get_structural_parameters",
-                         "dymola_path",
-                         "dymola_interface_path",
-                         "equidistant_output",
-                         "n_restart"]
-    dymola_path = ""
-    _bit_64 = True  # Whether to use 32 bit or not.
 
     dymola = None
     # Default simulation setup
@@ -99,7 +89,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if "dymola_interface_path" in kwargs:
             if not kwargs["dymola_interface_path"].endswith(".egg"):
                 raise TypeError("Please provide an .egg-file for the dymola-interface.")
-            dymola_interface_path = kwargs["dymola_interface_path"]
+            dymola_interface_path = kwargs.pop("dymola_interface_path")
             if not (os.path.isfile(dymola_interface_path) and
                     os.path.exists(dymola_interface_path)):
                 raise FileNotFoundError(f"Given path {dymola_interface_path} can not be found on "
@@ -107,13 +97,10 @@ class DymolaAPI(simulationapi.SimulationAPI):
         else:
             dymola_interface_path = None
 
-        if kwargs.get("dymola_path", None) is not None:
-            dymola_path = kwargs["dymola_path"]
-            if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
-                raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
-                                        "your machine.")
-        else:
-            dymola_path = None
+        dymola_path = kwargs.pop("dymola_path", None)
+        if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
+            raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
+                                    "your machine.")
 
         if (not dymola_path) or (not dymola_interface_path):
             # First get the dymola-install-path:
@@ -129,8 +116,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
         # Set the path variables:
         self.dymola_interface_path = dymola_interface_path
         self.dymola_path = dymola_path
-        if "bin64" not in self.dymola_path:
-            self._bit_64 = False
 
         self.packages = []
         for package in packages:
@@ -143,20 +128,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
                                 f" but should be any valid path.")
 
         # Update kwargs with regard to what kwargs are supported.
-        _not_supported = set(kwargs.keys()).difference(self._supported_kwargs)
-        if _not_supported:
-            raise KeyError("The following keyword-arguments are not "
-                           f"supported: \n{', '.join(list(_not_supported))}")
-
-        # By know only supported kwargs are in the dictionary.
-        self.__dict__.update(kwargs)
+        self.debug = kwargs.pop("debug", False)
+        self.show_window = kwargs.pop("show_window", False)
+        self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
+        self.equidistant_output = kwargs.pop("equidistant_output", True)
 
         # Import n_restart
         self.sim_counter = 0
-        self.n_restart = kwargs.get("n_restart", -1)
+        self.n_restart = kwargs.pop("n_restart", -1)
         if not isinstance(self.n_restart, int):
             raise TypeError(f"n_restart has to be type int but "
-                            f"is of type {type(kwargs['n_restart'])}")
+                            f"is of type {type(self.n_restart)}")
 
         self._dummy_dymola_instance = None  # Ensure self._close_dummy gets the attribute.
         if self.n_restart > 0:
@@ -172,8 +154,16 @@ class DymolaAPI(simulationapi.SimulationAPI):
         self._setup_dymola_interface()
         # Translate the model and extract all variables,
         # if the user wants to:
-        if kwargs.get("extract_variables", True):
+        if kwargs.pop("extract_variables", True):
             self.extract_model_variables()
+
+        # Check if some kwargs are still present. If so, inform the user about
+        # false usage of kwargs:
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
     def simulate(self, **kwargs):
         """
@@ -458,7 +448,8 @@ class DymolaAPI(simulationapi.SimulationAPI):
         """Load all packages and change the current working directory"""
         self.dymola = self._open_dymola_interface()
         # Register the function now in case of an error.
-        atexit.register(self.close)
+        if not self.debug:
+            atexit.register(self.close)
         self._check_dymola_instances()
         self.set_cd(self.cd)
         for package in self.packages:
