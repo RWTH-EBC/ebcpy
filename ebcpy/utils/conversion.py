@@ -216,12 +216,12 @@ def _convert_hdf_to_df_subset(filepath, key, columns, offset):
     if isinstance(df.index, pd.DatetimeIndex):
         df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
         df[_time_header] = df.index.total_seconds() + offset
-    elif isinstance(df.index, (pd.Float64Index, pd.RangeIndex)):
+    elif isinstance(df.index, (pd.Float64Index, pd.RangeIndex, pd.Int64Index)):
         df[_time_header] = df.index - df.iloc[0].name + offset
     else:
         raise IndexError(f"Given data has index of type {type(df.index)}. "
                          f"Currently only DatetimeIndex, Float64Index "
-                         f"and RangeIndex are supported.")
+                         f", RangeIndex and Int64Index are supported.")
     # Avoid 1e-8 errors in timedelta calculation.
     df[_time_header] = df[_time_header].round(4)
 

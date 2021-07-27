@@ -81,7 +81,7 @@ class DymolaAPI(simulationapi.SimulationAPI):
         'resultNames': []
     }
 
-    def __init__(self, cd, model_name, packages, **kwargs):
+    def __init__(self, cd, model_name, packages=[], **kwargs):
         """Instantiate class objects."""
         super().__init__(cd, model_name)
 
