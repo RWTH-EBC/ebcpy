@@ -155,7 +155,8 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # Reshape result:
         df = pd.DataFrame(res).set_index("time")
-        df.index = df.index.astype("float64")
+        df.index = np.round(df.index.astype("float64"),
+                            str(self.output_interval)[::-1].find('.'))
 
         return TimeSeriesData(df, default_tag="sim")
 

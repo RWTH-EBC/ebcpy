@@ -132,7 +132,7 @@ class SimulationAPI:
     @property
     def stop_time(self) -> float:
         """Stop time of the simulation"""
-        return self.sim_setup["startTime"]
+        return self.sim_setup["stopTime"]
 
     @stop_time.setter
     def stop_time(self, stop_time: float):
@@ -145,7 +145,7 @@ class SimulationAPI:
         Output interval of the simulation.
         Other meaning: The step size / sampling time of the simulation.
         """
-        return self.sim_setup["startTime"]
+        return self.sim_setup["outputInterval"]
 
     @output_interval.setter
     def output_interval(self, output_interval: float):
