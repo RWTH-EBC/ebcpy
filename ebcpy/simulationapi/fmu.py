@@ -199,8 +199,7 @@ class FMU_API(simulationapi.SimulationAPI):
             visible=False,
             debug_logging=False,
             logger=self._custom_logger,
-            fmi_call_logger=None,
-            use_remoting=False
+            fmi_call_logger=None
         )
 
     def _custom_logger(self, component, instanceName, status, category, message):
