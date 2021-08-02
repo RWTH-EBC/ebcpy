@@ -6,12 +6,58 @@ import os
 import pathlib
 import warnings
 import atexit
+from pydantic import Field, validator
 import pandas as pd
-from ebcpy import simulationapi, TimeSeriesData
+from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
+from ebcpy.simulationapi import SimulationSetup, SimulationAPI
 
 
-class DymolaAPI(simulationapi.SimulationAPI):
+class DymolaSimulationSetup(SimulationSetup):
+    number_of_intervals: int = Field(
+        title="number_of_intervals",
+        default=0,
+        description="Number of output points"
+    )
+
+    fixedstepsize: float = Field(
+        title="fixedstepsize",
+        default=0.0,
+        description="Fixed step size for Euler"
+    )
+    tolerance: float = Field(
+        title="tolerance",
+        default=0.0001,
+        description="Tolerance of integration"
+    )
+
+    _default_solver = "Dassl"
+    _allowed_solvers = ["Dassl", "Euler"]
+
+    @root_validator
+    def convert_to_output_interval(cls, values):
+        # Internally convert output Interval to number of intervals
+        # (Required by function simulateMultiResultsModel
+        num_of_intervals = values["number_of_intervals"]
+        if num_of_intervals == 0:
+            generated_num_ints = (values["stop_time"] - values["start_time"]) / \
+                                 values['output_interval']
+            if int(generated_num_ints) != generated_num_ints:
+                raise ValueError(
+                    "Given output_interval and time interval did not yield "
+                    "an integer numberOfIntervals. To use this functions "
+                    "without savepaths, you have to provide either a "
+                    "numberOfIntervals or a value for output_interval "
+                    "which can be converted to numberOfIntervals.")
+            values["number_of_intervals"] = generated_num_ints
+        else:
+            out_interval = (values["stop_time"] - values["start_time"]) / \
+                           num_of_intervals
+            values["output_interval"] = out_interval
+        return values
+
+
+class DymolaAPI(SimulationAPI):
     """
     API to a Dymola instance.
 
@@ -66,20 +112,6 @@ class DymolaAPI(simulationapi.SimulationAPI):
 
     dymola = None
     # Default simulation setup
-    _default_sim_setup = {
-        'startTime': 0.0,
-        'stopTime': 1.0,
-        'numberOfIntervals': 0,
-        'outputInterval': 1,
-        'method': 'Dassl',
-        'tolerance': 0.0001,
-        'fixedstepsize': 0.0,
-        'resultFile': 'resultFile',
-        'autoLoad': False,
-        'initialNames': [],
-        'initialValues': [],
-        'resultNames': []
-    }
 
     def __init__(self, cd, model_name, packages=[], **kwargs):
         """Instantiate class objects."""
@@ -174,13 +206,13 @@ class DymolaAPI(simulationapi.SimulationAPI):
         - get the trajectories specified by `resultNames` returned.
 
         Some Notes on using `resultNames`:
-        - You can't use `outputInterval`. Instead you
+        - You can't use `output_interval`. Instead you
         have to use `numberOfIntervals`.
         An attempt is made to convert it internally. For this to work,
-        `outputInterval` has to be an even divisor of the interval given
+        `output_interval` has to be an even divisor of the interval given
         by`stopTime-startTime`. In the case of `startTime=0, stopTime=100`,
-        `outputInterval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
-        :raises ValueError if `outputInterval` is wrong
+        `output_interval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
+        :raises ValueError if `output_interval` is wrong
         - You have to pass an `initialName` and `initialValue`.
         Else the result is always empty
         - If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
@@ -237,32 +269,17 @@ class DymolaAPI(simulationapi.SimulationAPI):
         if savepath_files:
             res = self.dymola.simulateExtendedModel(
                 self.model_name,
-                startTime=self.sim_setup['startTime'],
-                stopTime=self.sim_setup['stopTime'],
-                numberOfIntervals=self.sim_setup['numberOfIntervals'],
-                outputInterval=self.sim_setup['outputInterval'],
-                method=self.sim_setup['method'],
-                tolerance=self.sim_setup['tolerance'],
-                fixedstepsize=self.sim_setup['fixedstepsize'],
+                startTime=self.sim_setup.start_time,
+                stopTime=self.sim_setup.stop_time,
+                numberOfIntervals=self.sim_setup.number_of_intervals,
+                outputInterval=self.sim_setup.output_interval,
+                method=self.sim_setup.solver,
+                tolerance=self.sim_setup.tolerance,
+                fixedstepsize=self.sim_setup.fixedstepsize,
                 resultFile=self.sim_setup['resultFile'],
-                initialNames=self.sim_setup['initialNames'],
-                initialValues=self.sim_setup['initialValues'])
+                initialNames=initial_names,
+                initialValues=initial_values)
         else:
-            # Internally convert output Interval to number of intervals
-            # (Required by function simulateMultiResultsModel
-
-            num_ints = self.sim_setup['numberOfIntervals']
-            if num_ints == 0:
-                generated_num_ints = (self.sim_setup['stopTime'] - self.sim_setup['startTime']) / \
-                                     self.sim_setup['outputInterval']
-                if int(generated_num_ints) != generated_num_ints:
-                    raise ValueError(
-                        "Given outputInterval and time interval did not yield "
-                        "an integer numberOfIntervals. To use this functions "
-                        "without savepaths, you have to provide either a "
-                        "numberOfIntervals or a value for outputInterval "
-                        "which can be converted to numberOfIntervals.")
-                num_ints = generated_num_ints
             # Handle 1 and 2 D initial names
             initial_values = self.sim_setup.get('initialValues', [])
             # Convert a 1D list to 2D list
@@ -275,14 +292,14 @@ class DymolaAPI(simulationapi.SimulationAPI):
                 res_names.append("Time")
             res = self.dymola.simulateMultiResultsModel(
                 self.model_name,
-                startTime=self.sim_setup['startTime'],
-                stopTime=self.sim_setup['stopTime'],
-                numberOfIntervals=int(num_ints),
-                method=self.sim_setup['method'],
-                tolerance=self.sim_setup['tolerance'],
-                fixedstepsize=self.sim_setup['fixedstepsize'],
+                startTime=self.sim_setup.start_time,
+                stopTime=self.sim_setup.stop_time,
+                numberOfIntervals=self.sim_setup.number_of_intervals,
+                method=self.sim_setup.solver,
+                tolerance=self.sim_setup.tolerance,
+                fixedstepsize=self.sim_setup.fixedstepsize,
                 resultFile=None,
-                initialNames=self.sim_setup['initialNames'],
+                initialNames=initial_names,
                 initialValues=initial_values,
                 resultNames=res_names)
 

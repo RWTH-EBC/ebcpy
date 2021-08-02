@@ -9,7 +9,8 @@ INSTALL_REQUIRES = [
     'pandas>=1.1.5',
     'tables>=3.6.1',
     'sklearn~=0.0',
-    'fmpy>=0.2.27'
+    'fmpy>=0.2.27',
+    'pydantic>=1.8.2'
 ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 #INSTALL_REQUIRES.append('dlib')  # Disabled until this is open-source

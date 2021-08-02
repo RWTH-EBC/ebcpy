@@ -4,13 +4,24 @@ simulate models."""
 import os
 import logging
 import pathlib
+import atexit
 import shutil
 import fmpy
 from fmpy.model_description import read_model_description
 import pandas as pd
 import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
+from ebcpy.simulationapi import SimulationSetup
 # pylint: disable=broad-except
+
+
+class FMU_Setup(SimulationSetup):
+
+    _default_sim_setup = {
+        'numberOfIntervals': 0,
+        'solver': 'CVode',
+        'timeout': np.inf
+    }
 
 
 class FMU_API(simulationapi.SimulationAPI):
@@ -38,18 +49,6 @@ class FMU_API(simulationapi.SimulationAPI):
     .. versionadded:: 0.1.7
     """
 
-    _default_sim_setup = {
-        'startTime': 0.0,
-        'stopTime': 1.0,
-        'numberOfIntervals': 0,
-        'outputInterval': 1,
-        'solver': 'CVode',
-        'initialNames': [],
-        'initialValues': [],
-        'resultNames': [],
-        'timeout': np.inf
-    }
-
     def __init__(self, model_name, cd=None):
         """Instantiate class parameters"""
         if isinstance(model_name, pathlib.Path):
@@ -69,6 +68,8 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # Setup the fmu instance
         self.setup_fmu_instance()
+        # Register exit option
+        atexit.register(self.close)
 
     def close(self):
         """
@@ -107,10 +108,10 @@ class FMU_API(simulationapi.SimulationAPI):
 
         inputs = kwargs.get("inputs", None)
         if inputs is not None:
-            inputs = inputs.copy() # Create save copy
+            inputs = inputs.copy()  # Create save copy
             # Shift all columns, because "simulate_fmu" gets an input at
             # timestep x and calculates the related output for timestep x+1
-            shift_period = int(self.sim_setup["outputInterval"] /
+            shift_period = int(self.sim_setup["output_interval"] /
                                (inputs.index[0] - inputs.index[1]))
             inputs = inputs.shift(periods=shift_period)
             # Shift time column back
@@ -133,11 +134,11 @@ class FMU_API(simulationapi.SimulationAPI):
                 solver=self.sim_setup["solver"],
                 step_size=self.sim_setup["numberOfIntervals"],
                 relative_tolerance=None,
-                output_interval=self.sim_setup["outputInterval"],
+                output_interval=self.sim_setup["output_interval"],
                 record_events=False,  # Used for an equidistant output
                 start_values=start_values,
                 apply_default_start_values=False,  # As we pass start_values already
-                input=inputs,   # TODO: Add custom input
+                input=inputs,
                 output=self.sim_setup["resultNames"],
                 timeout=self.sim_setup["timeout"],
                 step_finished=None,
