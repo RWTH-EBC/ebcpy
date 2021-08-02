@@ -6,11 +6,33 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 """
 
 import os
+import itertools
 import warnings
-from typing import Dict, Union, TypeVar
+import numpy as np
+from typing import Dict, Union, TypeVar, Any, List
 from pydantic import BaseModel, Field, validator
 from abc import abstractmethod
 from ebcpy.utils import setup_logger
+
+
+class Variable(BaseModel):
+    """
+    Data-Class to store relevant information for a
+    simulation variable (input, parameter, output or local/state).
+    """
+    value: Any = Field(
+        description="Default variable value"
+    )
+    max: Union[float, int] = Field(
+        default=np.inf,
+        title='max',
+        description='Maximal value (upper bound) of the variables value'
+    )
+    min: Union[float, int] = Field(
+        default=-np.inf,
+        title='min',
+        description='Minimal value (lower bound) of the variables value'
+    )
 
 
 class SimulationSetup(BaseModel):
@@ -30,19 +52,27 @@ class SimulationSetup(BaseModel):
                     "thus also output interval of results.",
         title="output_interval"
     )
+    fixedstepsize: float = Field(
+        title="fixedstepsize",
+        default=0.0,
+        description="Fixed step size for Euler"
+    )
     solver: str = Field(
         title="solver",
+        default="",  # Is added in the validator
         description="The solver to be used for numerical integration."
     )
-    _default_solver = None
-    _allowed_solvers = []
+    _default_solver: str = None
+    _allowed_solvers: list = []
 
-    @validator("solver", always=True)
+    @validator("solver", always=True, allow_reuse=True)
     def check_valid_solver(cls, solver):
-        if solver is None:
-            return cls._default_solver
-        if solver not in cls._allowed_solvers:
-            raise ValueError("Given solver is not supported!")
+        if not solver:
+            return cls.__private_attributes__['_default_solver'].default
+        allowed_solvers = cls.__private_attributes__['_allowed_solvers'].default
+        if solver not in allowed_solvers:
+            raise ValueError(f"Given solver '{solver}' is not supported! "
+                             f"Supported are '{allowed_solvers}'")
         return solver
 
     class Config:
@@ -71,10 +101,11 @@ class SimulationAPI:
         # Setup the logger
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
-        self.inputs = []      # Inputs of model
-        self.outputs = []     # Outputs of model
-        self.parameters = []  # Parameter of model
-        self.states = []      # States of model
+        self.inputs: Dict[str, Variable] = {}       # Inputs of model
+        self.outputs: Dict[str, Variable] = {}      # Outputs of model
+        self.parameters: Dict[str, Variable] = {}   # Parameter of model
+        self.states: Dict[str, Variable] = {}       # States of model
+        self.result_names = {}
 
     @abstractmethod
     def close(self):
@@ -82,8 +113,46 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}.close function is not defined')
 
     @abstractmethod
-    def simulate(self, **kwargs):
-        """Base function for simulating the simulation-model."""
+    def simulate(self,
+                 parameters: dict = {},
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Base function for simulating the simulation-model.
+
+        :param parameters Dict:
+            Parameters to simulate.
+            Names of parameters are key, values are value of the dict.
+            Default is an empty dict.
+        :param return_option str:
+            How to handle the simulation results. Options are:
+            - 'time_series': Returns a DataFrame with the results and does not store anything.
+            Only variables specified in result_names will be returned.
+            - 'last_point': Returns only the last point of the simulation.
+            Relevant for integral metrics like energy consumption.
+            Only variables specified in result_names will be returned.
+            - 'savepath': Returns the savepath where the results are stored.
+            Depending on the API, different kwargs may be used to specify file type etc.
+        :keyword str,os.path.normpath savepath:
+            If path is provided, the relevant simulation results will be saved
+            in the given directory.
+            Only relevant if return_option equals 'savepath' .
+        :keyword str result_file_name:
+            Name of the result file. Default is 'resultFile'.
+            Only relevant if return_option equals 'savepath'.
+
+        :return: str,os.path.normpath filepath:
+            Only if return_option equals 'savepath'.
+            Filepath of the result file.
+        :return: dict:
+            Only if return_option equals 'last_point'.
+        :return: Union[List[pd.DataFrame],pd.DataFrame]:
+            If parameters are scalar and squeeze=True,
+            a DataFrame with the columns being equal to
+            self.result_names.
+            If multiple set's of initial values are given, one
+            dataframe for each set is returned in a list
+        """
         raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
 
     @property
@@ -121,3 +190,39 @@ class SimulationAPI:
         """Set the current working directory"""
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
+
+    @property
+    def result_names(self) -> List[str]:
+        """
+        The variables names which to store in results.
+
+        Returns:
+            list: List of string where the string is the
+            name of the variable to store in the result.
+        """
+        return self._result_names
+
+    @result_names.setter
+    def result_names(self, result_names):
+        """
+        Set the result names. If the name is not supported,
+        an error is logged.
+        """
+        for res_name in result_names:
+            if res_name not in self.variables:
+                self.logger.error(
+                    "Variable name '%s' not found in model. "
+                    "Will most probably trigger an error when simulating.",
+                    res_name
+                )
+        self._result_names = result_names
+
+    @property
+    def variables(self):
+        """
+        All variables of the simulation model
+        """
+        return itertools.chain(self.parameters.keys(),
+                               self.outputs.keys(),
+                               self.inputs.keys(),
+                               self.states.keys())

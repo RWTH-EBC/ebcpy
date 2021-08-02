@@ -6,23 +6,29 @@ import os
 import pathlib
 import warnings
 import atexit
-from pydantic import Field, validator
+from pydantic import Field, root_validator
 import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
-from ebcpy.simulationapi import SimulationSetup, SimulationAPI
+from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
+    SimulationSetupClass
 
 
 class DymolaSimulationSetup(SimulationSetup):
+    """
+    - You can't use `output_interval`. Instead you
+        have to use `numberOfIntervals`.
+        An attempt is made to convert it internally. For this to work,
+        `output_interval` has to be an even divisor of the interval given
+        by`stop_time-start_time`. In the case of `start_time=0, stop_time=100`,
+        `output_interval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
+        :raises ValueError if `output_interval` is wrong
+
+    """
     number_of_intervals: int = Field(
         title="number_of_intervals",
         default=0,
         description="Number of output points"
-    )
-    fixedstepsize: float = Field(
-        title="fixedstepsize",
-        default=0.0,
-        description="Fixed step size for Euler"
     )
     tolerance: float = Field(
         title="tolerance",
@@ -106,12 +112,12 @@ class DymolaAPI(SimulationAPI):
     >>>                     model_name=model_name,
     >>>                     packages=[],
     >>>                     show_window=True)
-    >>> dym_api.sim_setup = {"startTime": 100,
-    >>>                      "stopTime": 200}
+    >>> dym_api.sim_setup = {"start_time": 100,
+    >>>                      "stop_time": 200}
     >>> dym_api.simulate()
     >>> dym_api.close()
     """
-
+    _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
     dymola = None
     # Default simulation setup
 
@@ -200,56 +206,34 @@ class DymolaAPI(SimulationAPI):
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-    def simulate(self, **kwargs):
+    def simulate(self,
+                 parameters: dict = {},
+                 return_option: str = "time_series",
+                 **kwargs):
         """
-        Simulate the current setup.
-        If simulation terminates without an error, you can either
-        - save the files in a given savepath (savepath_files) or
-        - get the trajectories specified by `resultNames` returned.
+        Simulate the given parameters.
 
         Some Notes on using `resultNames`:
-        - You can't use `output_interval`. Instead you
-        have to use `numberOfIntervals`.
-        An attempt is made to convert it internally. For this to work,
-        `output_interval` has to be an even divisor of the interval given
-        by`stopTime-startTime`. In the case of `startTime=0, stopTime=100`,
-        `output_interval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
-        :raises ValueError if `output_interval` is wrong
-        - You have to pass an `initialName` and `initialValue`.
+        - TODO: You have to pass an `initialName` and `initialValue`.
         Else the result is always empty
-        - If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
+        - TODO: If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
         It has to be 2D list (e.g. [[1, 2]]). As we normally use only
         one parameter at a time, we automatically convert any 1D list
         to a 2D list. Passing a 2D list to the `sim_setup` also works.
-        - The resulting dataframe has size `numberOfIntervals + 1` this is
+        - TODO: Check: The resulting dataframe has size `numberOfIntervals + 1` this is
         due to the structure in Modelica.
 
-        :param str,os.path.normpath savepath_files:
-            If path is provided, the relevant simulation results will be saved
-            in the given directory.
-            If not, the simulation setting `resultNames` is used to store the
-            trajectories of the simulation and return them (See also: returns)
-        :param Boolean show_eventlog:
+        Additional settings:
+        :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
-        :param Boolean squeeze:
+        :keyword Boolean squeeze:
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
-
-        :return: str,os.path.normpath filepath:
-            Only if savepath_files is given.
-            Filepath of the result file.
-        :return: Union[List[pd.DataFrame],pd.DataFrame]:
-            If len(sim_setup['initialValues']) is one and squeeze=True,
-            a DataFrame with the columns being equal to
-            sim_setup['resultNames'] and an index of length
-            sim_setup['numberOfIntervals'] + 1
-            If multiple set's of initial values are given, one
-            dataframe for each set is returned in a list
         """
         # Unpack kwargs
-        savepath_files = kwargs.get("savepath_files", "")
         show_eventlog = kwargs.get("show_eventlog", False)
         squeeze = kwargs.get("squeeze", True)
+        result_file_name = kwargs.get("result_file_name", 'resultFile')
 
         if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
@@ -268,7 +252,11 @@ class DymolaAPI(SimulationAPI):
         # Restart Dymola after n_restart iterations
         self._check_restart()
 
-        if savepath_files:
+        # Convert parameters:
+        initial_names = list(parameters.keys())
+        initial_values = list(parameters.values())
+
+        if return_option == "savepath":
             res = self.dymola.simulateExtendedModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
@@ -278,18 +266,17 @@ class DymolaAPI(SimulationAPI):
                 method=self.sim_setup.solver,
                 tolerance=self.sim_setup.tolerance,
                 fixedstepsize=self.sim_setup.fixedstepsize,
-                resultFile=self.sim_setup['resultFile'],
+                resultFile=result_file_name,
                 initialNames=initial_names,
                 initialValues=initial_values)
         else:
-            # Handle 1 and 2 D initial names
-            initial_values = self.sim_setup.get('initialValues', [])
+            # Handle 1 and 2 D initial names:
             # Convert a 1D list to 2D list
             if initial_values and isinstance(initial_values[0], (float, int)):
                 initial_values = [initial_values]
 
             # Handle the time of the simulation:
-            res_names = self.sim_setup['resultNames']
+            res_names = self.result_names.copy()
             if "Time" not in res_names:
                 res_names.append("Time")
             res = self.dymola.simulateMultiResultsModel(
@@ -308,26 +295,47 @@ class DymolaAPI(SimulationAPI):
         if not res[0]:
             self.logger.error("Simulation failed!")
             self.logger.error("The last error log from Dymola:")
-            self.logger.error(self.dymola.getLastErrorLog())
-            raise Exception(f"Simulation failed: Look into dslog.txt "
-                            f"at {os.path.join(self.cd, 'dslog.txt')} of the simulation.")
+            log = self.dymola.getLastErrorLog()
+            # Only print first part as output is sometimes to verbose.
+            self.logger.error(log[:10000])
+            dslog_path = os.path.join(self.cd, 'dslog.txt')
+            try:
+                with open(dslog_path, "r") as dslog_file:
+                    dslog_content = dslog_file.read()
+                    self.logger.error(dslog_content)
+            except Exception:
+                dslog_content = "Not retreivable. Open it yourself."
+            raise Exception(f"Simulation failed: Reason according to dslog, located at '{dslog_path}':"
+                            f"{dslog_content}")
 
         if self.get_structural_parameters:
             # Get the structural parameters based on the error log
             self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
 
-        if savepath_files:
-            _save_name_dsres = f"{self.sim_setup['resultFile']}.mat"
-            os.makedirs(savepath_files, exist_ok=True)
-            for filepath in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
+        if return_option == "savepath":
+            _save_name_dsres = f"{result_file_name}.mat"
+            savepath = kwargs.pop("savepath", None)
+            if savepath is None:
+                return os.path.join(self.cd, _save_name_dsres)
+            os.makedirs(savepath, exist_ok=True)
+            for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
-                if os.path.isfile(os.path.join(savepath_files, filepath)):
-                    os.remove(os.path.join(savepath_files, filepath))
+                if os.path.isfile(os.path.join(savepath, filename)):
+                    os.remove(os.path.join(savepath, filename))
                 # Move files
-                os.rename(os.path.join(self.cd, filepath),
-                          os.path.join(savepath_files, filepath))
-            return os.path.join(savepath_files, _save_name_dsres)
-        data = res[1]
+                os.rename(os.path.join(self.cd, filename),
+                          os.path.join(savepath, filename))
+            return os.path.join(savepath, _save_name_dsres)
+        data = res[1]  # Get data
+        if return_option == "last_point":
+            results = []
+            for ini_val_set in data:
+                results.append({result_name: ini_val_set[idx][-1] for idx, result_name
+                                in enumerate(res_names)})
+            if len(results) == 1 and squeeze:
+                return results[0]
+            return results
+        # Else return as dataframe.
         dfs = []
         for ini_val_set in data:
             df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name

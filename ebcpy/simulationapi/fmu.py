@@ -8,21 +8,24 @@ import atexit
 import shutil
 import fmpy
 from fmpy.model_description import read_model_description
+from pydantic import Field
 import pandas as pd
 import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
-from ebcpy.simulationapi import SimulationSetup
+from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
 # pylint: disable=broad-except
 
 
 class FMU_Setup(SimulationSetup):
 
-    _default_sim_setup = {
-        'numberOfIntervals': 0,
-        'solver': 'CVode',
-        'timeout': np.inf
-    }
+    timeout: float = Field(
+        title="timeout",
+        default=np.inf,
+        description="Timeout after which the simulation stops."
+    )
 
+    _default_solver = "CVode"
+    _allowed_solvers = ["CVode", "Euler"]
 
 class FMU_API(simulationapi.SimulationAPI):
     """
@@ -37,7 +40,7 @@ class FMU_API(simulationapi.SimulationAPI):
     >>> # you don't have this file on your device.
     >>> model_name = "Path to your fmu"
     >>> fmu_api = FMU_API(model_name)
-    >>> fmu_api.sim_setup = {"stopTime": 3600}
+    >>> fmu_api.sim_setup = {"stop_time": 3600}
     >>> result_df = fmu_api.simulate()
     >>> fmu_api.close()
     >>> # Select an exemplary column
@@ -48,6 +51,8 @@ class FMU_API(simulationapi.SimulationAPI):
 
     .. versionadded:: 0.1.7
     """
+
+    _sim_setup_class: SimulationSetupClass = FMU_Setup
 
     def __init__(self, model_name, cd=None):
         """Instantiate class parameters"""
@@ -68,6 +73,8 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # Setup the fmu instance
         self.setup_fmu_instance()
+        # Set all outputs to result_names:
+        self.result_names = self.outputs.keys()
         # Register exit option
         atexit.register(self.close)
 
@@ -87,13 +94,19 @@ class FMU_API(simulationapi.SimulationAPI):
         except OSError as error:
             self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
-        shutil.rmtree(self._unzip_dir, ignore_errors=True)
+        if self._unzip_dir is not None:
+            shutil.rmtree(self._unzip_dir, ignore_errors=True)
         self._unzip_dir = None
 
-    def simulate(self, **kwargs):
+    def simulate(self,
+                 parameters: dict = {},
+                 return_option: str = "time_series",
+                 **kwargs):
         """
         Simulate current simulation-setup.
 
+
+        Additional settings:
         :param dataframe inputs:
             Pandas.Dataframe of the input data for simulating the FMU with fmpy
         :keyword Boolean fail_on_error:
@@ -102,10 +115,6 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             Filepath of the mat-file.
         """
-        # Dictionary with all tuner parameter names & -values
-        start_values = {self.sim_setup["initialNames"][i]: value
-                        for i, value in enumerate(self.sim_setup["initialValues"])}
-
         inputs = kwargs.get("inputs", None)
         if inputs is not None:
             inputs = inputs.copy()  # Create save copy
@@ -129,18 +138,18 @@ class FMU_API(simulationapi.SimulationAPI):
         try:
             res = fmpy.simulate_fmu(
                 self._unzip_dir,
-                start_time=self.sim_setup["startTime"],
-                stop_time=self.sim_setup["stopTime"],
-                solver=self.sim_setup["solver"],
-                step_size=self.sim_setup["numberOfIntervals"],
+                start_time=self.sim_setup.start_time,
+                stop_time=self.sim_setup.stop_time,
+                solver=self.sim_setup.solver,
+                step_size=self.sim_setup.fixedstepsize,
                 relative_tolerance=None,
-                output_interval=self.sim_setup["output_interval"],
+                output_interval=self.sim_setup.output_interval,
                 record_events=False,  # Used for an equidistant output
-                start_values=start_values,
+                start_values=parameters,
                 apply_default_start_values=False,  # As we pass start_values already
                 input=inputs,
-                output=self.sim_setup["resultNames"],
-                timeout=self.sim_setup["timeout"],
+                output=self.result_names,
+                timeout=self.sim_setup.timeout,
                 step_finished=None,
                 model_description=self._model_description,
                 fmu_instance=self._fmu_instance,
@@ -157,9 +166,23 @@ class FMU_API(simulationapi.SimulationAPI):
         # Reshape result:
         df = pd.DataFrame(res).set_index("time")
         df.index = np.round(df.index.astype("float64"),
-                            str(self.output_interval)[::-1].find('.'))
+                            str(self.sim_setup.output_interval)[::-1].find('.'))
 
-        return TimeSeriesData(df, default_tag="sim")
+        if return_option == "savepath":
+            result_file_name = kwargs.get("result_file_name", 'resultFile')
+            savepath = kwargs.get("savepath", None)
+
+            if savepath is None:
+                savepath = self.cd
+            filepath = os.path.join(savepath, f"{result_file_name}.hdf")
+            df.to_hdf(filepath,
+                      key="simulation")
+            return filepath
+        if return_option == "last_point":
+            return df.iloc[-1].to_dict()
+        # Else return time series data
+        tsd = TimeSeriesData(df, default_tag="sim")
+        return tsd
 
     def setup_fmu_instance(self):
         """
@@ -180,16 +203,28 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             self._fmi_type = 'CoSimulation'
 
+        def _to_bound(value):
+            if value is None or \
+                    not isinstance(value, (float, int, bool)):
+                return np.inf
+            return value
+
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
+
+            _var_ebcpy = Variable(
+                min=-_to_bound(var.min),
+                max=_to_bound(var.max),
+                value=var.start
+            )
             if var.causality == 'input':
-                self.inputs.append(var)
+                self.inputs[var.name] = _var_ebcpy
             elif var.causality == 'output':
-                self.outputs.append(var)
+                self.outputs[var.name] = _var_ebcpy
             elif var.causality == 'parameter' or var.causality == 'calculatedParameter':
-                self.parameters.append(var)
+                self.parameters[var.name] = _var_ebcpy
             elif var.causality == 'local':
-                self.states.append(var)
+                self.states[var.name] = _var_ebcpy
             else:
                 self.logger.error(f"Could not map causality {var.causality}"
                                   f" to any variable type.")

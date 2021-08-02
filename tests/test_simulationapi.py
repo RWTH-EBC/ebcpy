@@ -6,8 +6,10 @@ import sys
 import os
 from pathlib import Path
 import shutil
+from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
+
 
 
 class TestDymolaAPI(unittest.TestCase):
@@ -48,8 +50,8 @@ class TestDymolaAPI(unittest.TestCase):
 
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
-        self.dym_api.set_sim_setup({"startTime": 0.0,
-                                    "stopTime": 10.0})
+        self.dym_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
         res = self.dym_api.simulate()
         if len(self.dym_api.sim_setup["resultNames"]) > 1:
             self.assertIsInstance(res, TimeSeriesData)
@@ -61,20 +63,6 @@ class TestDymolaAPI(unittest.TestCase):
         # Test the setting of the function
         self.dym_api.set_cd(self.example_dir)
         self.assertEqual(self.example_dir, self.dym_api.cd)
-
-    def test_set_sim_setup(self):
-        """Test set_sim_setup functionality of dymola api"""
-        new_sim_setup = {'initialNames': self.initial_names,
-                         'initialValues': self.initial_values}
-        self.dym_api.set_sim_setup(new_sim_setup)
-        self.assertEqual(self.dym_api.sim_setup['initialNames'],
-                         new_sim_setup['initialNames'])
-        self.assertEqual(self.dym_api.sim_setup['initialValues'],
-                         new_sim_setup['initialValues'])
-        with self.assertRaises(KeyError):
-            self.dym_api.set_sim_setup({"NotAValidKey": None})
-        with self.assertRaises(TypeError):
-            self.dym_api.set_sim_setup({"stopTime": "not_a_float_or_int"})
 
     def tearDown(self):
         """Delete all files created while testing"""
@@ -121,10 +109,20 @@ class TestFMUAPI(unittest.TestCase):
 
     def test_simulate(self):
         """Test simulate functionality of fmu api"""
-        self.fmu_api.set_sim_setup({"startTime": 0.0,
-                                    "stopTime": 10.0})
+        self.fmu_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
         res = self.fmu_api.simulate()
         self.assertIsInstance(res, TimeSeriesData)
+        res = self.fmu_api.simulate(return_option='last_point')
+        self.assertIsInstance(res, dict)
+        res = self.fmu_api.simulate(return_option='savepath')
+        self.assertTrue(os.path.isfile(res))
+        self.assertIsInstance(res, str)
+        res = self.fmu_api.simulate(return_option='savepath',
+                                    savepath=os.getcwd(),
+                                    result_file_name="my_other_name")
+        self.assertTrue(os.path.isfile(res))
+        self.assertIsInstance(res, str)
 
     def test_set_cd(self):
         """Test set_cd functionality of fmu api"""
@@ -134,17 +132,17 @@ class TestFMUAPI(unittest.TestCase):
 
     def test_set_sim_setup(self):
         """Test set_sim_setup functionality of fmu api"""
-        new_sim_setup = {'initialNames': self.initial_names,
-                         'initialValues': self.initial_values}
-        self.fmu_api.sim_setup = new_sim_setup
-        self.assertEqual(self.fmu_api.sim_setup['initialNames'],
-                         new_sim_setup['initialNames'])
-        self.assertEqual(self.fmu_api.sim_setup['initialValues'],
-                         new_sim_setup['initialValues'])
-        with self.assertRaises(KeyError):
-            self.fmu_api.sim_setup = {"NotAValidKey": None}
-        with self.assertRaises(TypeError):
-            self.fmu_api.sim_setup = {"stopTime": "not_a_float_or_int"}
+        new_sim_setup = {'solver': 'Euler',
+                         'timeout': 100}
+        self.fmu_api.set_sim_setup(sim_setup=new_sim_setup)
+        self.assertEqual(self.fmu_api.sim_setup.solver,
+                         new_sim_setup['solver'])
+        self.assertEqual(self.fmu_api.sim_setup.timeout,
+                         new_sim_setup['timeout'])
+        with self.assertRaises(ValidationError):
+            self.fmu_api.set_sim_setup(sim_setup={"NotAValidKey": None})
+        with self.assertRaises(ValidationError):
+            self.fmu_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
 
     def tearDown(self):
         """Delete all files created while testing"""
