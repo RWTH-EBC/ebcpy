@@ -53,7 +53,7 @@ class TestDymolaAPI(unittest.TestCase):
         self.dym_api.set_sim_setup({"start_time": 0.0,
                                     "stop_time": 10.0})
         res = self.dym_api.simulate()
-        if len(self.dym_api.sim_setup["resultNames"]) > 1:
+        if len(self.dym_api.result_names) > 1:
             self.assertIsInstance(res, TimeSeriesData)
         else:
             self.assertEqual(res, [])

@@ -105,7 +105,7 @@ class SimulationAPI:
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
         self.states: Dict[str, Variable] = {}       # States of model
-        self.result_names = {}
+        self.result_names = []
 
     @abstractmethod
     def close(self):

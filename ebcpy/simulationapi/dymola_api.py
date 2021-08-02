@@ -11,7 +11,7 @@ import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
-    SimulationSetupClass
+    SimulationSetupClass, Variable
 
 
 class DymolaSimulationSetup(SimulationSetup):
@@ -213,7 +213,7 @@ class DymolaAPI(SimulationAPI):
         """
         Simulate the given parameters.
 
-        Some Notes on using `resultNames`:
+        Some Notes on using `result_names`:
         - TODO: You have to pass an `initialName` and `initialValue`.
         Else the result is always empty
         - TODO: If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
@@ -465,12 +465,25 @@ class DymolaAPI(SimulationAPI):
         dsin_path = os.path.join(self.cd, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
         # Convert and return all parameters of dsin to initial values and names
-        self.parameters = df[df["5"] == "1"].index.values.tolist()
-        self.outputs = df[df["5"] == "4"].index.values.tolist()
-        self.inputs = df[df["5"] == "5"].index.values.tolist()
-        self.states = df[(df["5"] == "2") |
-                         (df["5"] == "3") |
-                         (df["5"] == "6")].index.values.tolist()
+        for idx, row in df.iterrows():
+            _max = float(row["4"])
+            _min = float(row["3"])
+            if _min >= _max:
+                _var_ebcpy = Variable(value=float(row["2"]))
+            else:
+                _var_ebcpy = Variable(
+                    min=_min,
+                    max=_max,
+                    value=float(row["2"])
+                )
+            if row["5"] == "1":
+                self.parameters[idx] = _var_ebcpy
+            elif row["5"] == "4":
+                self.inputs[idx] = _var_ebcpy
+            elif row["5"] == "5":
+                self.outputs[idx] = _var_ebcpy
+            else:
+                self.states[idx] = _var_ebcpy
 
     def _setup_dymola_interface(self):
         """Load all packages and change the current working directory"""
@@ -695,13 +708,13 @@ class DymolaAPI(SimulationAPI):
                           "running on your machine!" % counter)
 
     @staticmethod
-    def _alter_model_name(sim_setup, model_name, structural_params):
+    def _alter_model_name(parameters, model_name, structural_params):
         """
         Creates a modifier for all structural parameters,
         based on the modelname and the initalNames and values.
 
-        :param dict sim_setup:
-            Simulation setup dictionary
+        :param dict parameters:
+            Parameters of the simulation
         :param str model_name:
             Name of the model to be modified
         :param list structural_params:
@@ -709,20 +722,18 @@ class DymolaAPI(SimulationAPI):
         :return: str altered_modelName:
             modified model name
         """
-        initial_values = sim_setup["initialValues"]
-        initial_names = sim_setup["initialNames"]
         model_name = model_name.split("(")[0] # Trim old modifier
-        if structural_params == [] or initial_names == []:
+        if structural_params == [] or parameters == {}:
             return model_name
         all_modifiers = []
         for structural_para in structural_params:
             # Checks if the structural parameter is inside the initialNames to be altered
-            if structural_para in initial_names:
+            if structural_para in parameters.keys():
                 # Get the location of the parameter for
                 # extraction of the corresponding initial value
-                k = initial_names.index(structural_para)
-                all_modifiers.append("%s = %s" % (structural_para, initial_values[k]))
-        altered_model_name = "%s(%s)" % (model_name, ",".join(all_modifiers))
+                val = parameters[structural_para]
+                all_modifiers.append(f"{structural_para} = {val}")
+        altered_model_name = f"{model_name}({','.join(all_modifiers)})"
         return altered_model_name
 
     @staticmethod

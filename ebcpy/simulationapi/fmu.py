@@ -120,7 +120,7 @@ class FMU_API(simulationapi.SimulationAPI):
             inputs = inputs.copy()  # Create save copy
             # Shift all columns, because "simulate_fmu" gets an input at
             # timestep x and calculates the related output for timestep x+1
-            shift_period = int(self.sim_setup["output_interval"] /
+            shift_period = int(self.sim_setup.output_interval /
                                (inputs.index[0] - inputs.index[1]))
             inputs = inputs.shift(periods=shift_period)
             # Shift time column back
