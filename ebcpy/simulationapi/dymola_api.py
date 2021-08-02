@@ -19,7 +19,6 @@ class DymolaSimulationSetup(SimulationSetup):
         default=0,
         description="Number of output points"
     )
-
     fixedstepsize: float = Field(
         title="fixedstepsize",
         default=0.0,
@@ -32,7 +31,10 @@ class DymolaSimulationSetup(SimulationSetup):
     )
 
     _default_solver = "Dassl"
-    _allowed_solvers = ["Dassl", "Euler"]
+    _allowed_solvers = ["Dassl", "Euler", "Cerk23", "Cerk34", "Cerk45",
+                        "Esdirk23a", "Esdirk34a", "Esdirk45a", "Cvode",
+                        "Rkfix2", "Rkfix3", "Rkfix4", "Lsodar",
+                        "Radau", "Dopri45", "Dopri853", "Sdirk34hw"]
 
     @root_validator
     def convert_to_output_interval(cls, values):
