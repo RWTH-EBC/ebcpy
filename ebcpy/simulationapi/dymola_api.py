@@ -25,11 +25,6 @@ class DymolaSimulationSetup(SimulationSetup):
         :raises ValueError if `output_interval` is wrong
 
     """
-    number_of_intervals: int = Field(
-        title="number_of_intervals",
-        default=0,
-        description="Number of output points"
-    )
     tolerance: float = Field(
         title="tolerance",
         default=0.0001,
@@ -41,28 +36,6 @@ class DymolaSimulationSetup(SimulationSetup):
                         "Esdirk23a", "Esdirk34a", "Esdirk45a", "Cvode",
                         "Rkfix2", "Rkfix3", "Rkfix4", "Lsodar",
                         "Radau", "Dopri45", "Dopri853", "Sdirk34hw"]
-
-    @root_validator
-    def convert_to_output_interval(cls, values):
-        # Internally convert output Interval to number of intervals
-        # (Required by function simulateMultiResultsModel
-        num_of_intervals = values["number_of_intervals"]
-        if num_of_intervals == 0:
-            generated_num_ints = (values["stop_time"] - values["start_time"]) / \
-                                 values['output_interval']
-            if int(generated_num_ints) != generated_num_ints:
-                raise ValueError(
-                    "Given output_interval and time interval did not yield "
-                    "an integer numberOfIntervals. To use this functions "
-                    "without savepaths, you have to provide either a "
-                    "numberOfIntervals or a value for output_interval "
-                    "which can be converted to numberOfIntervals.")
-            values["number_of_intervals"] = generated_num_ints
-        else:
-            out_interval = (values["stop_time"] - values["start_time"]) / \
-                           num_of_intervals
-            values["output_interval"] = out_interval
-        return values
 
 
 class DymolaAPI(SimulationAPI):
@@ -207,19 +180,13 @@ class DymolaAPI(SimulationAPI):
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
     def simulate(self,
-                 parameters: dict = {},
+                 parameters: dict = None,
                  return_option: str = "time_series",
                  **kwargs):
         """
         Simulate the given parameters.
 
         Some Notes on using `result_names`:
-        - TODO: You have to pass an `initialName` and `initialValue`.
-        Else the result is always empty
-        - TODO: If `initialValues` is a 1D list (e.g. `[1, 2]`), an error get's thrown.
-        It has to be 2D list (e.g. [[1, 2]]). As we normally use only
-        one parameter at a time, we automatically convert any 1D list
-        to a 2D list. Passing a 2D list to the `sim_setup` also works.
         - TODO: Check: The resulting dataframe has size `numberOfIntervals + 1` this is
         due to the structure in Modelica.
 
@@ -253,15 +220,28 @@ class DymolaAPI(SimulationAPI):
         self._check_restart()
 
         # Convert parameters:
+        if parameters is None:
+            parameters = {}
+            unsupported_parameters = False
+        else:
+            unsupported_parameters = self.check_unsupported_variables(
+                variables=list(parameters.keys()),
+                type_of_var="parameters"
+            )
         initial_names = list(parameters.keys())
         initial_values = list(parameters.values())
 
         if return_option == "savepath":
+            if unsupported_parameters:
+                raise KeyError("Dymola does not accept invalid parameter "
+                               "names for option return_type='savepath'. "
+                               "To use this option, delete unsupported "
+                               "parameters from your setup.")
             res = self.dymola.simulateExtendedModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
-                numberOfIntervals=self.sim_setup.number_of_intervals,
+                numberOfIntervals=0,
                 outputInterval=self.sim_setup.output_interval,
                 method=self.sim_setup.solver,
                 tolerance=self.sim_setup.tolerance,
@@ -270,6 +250,18 @@ class DymolaAPI(SimulationAPI):
                 initialNames=initial_names,
                 initialValues=initial_values)
         else:
+            # TODO: You have to pass an `initialName` and `initialValue`.
+            if not parameters and not self.parameters:
+                raise ValueError(
+                    "Sadly, simulating a model in Dymola "
+                    "with no parameters returns no result. "
+                    "Call this function using return_option='savepath' to get the results."
+                )
+            elif not parameters:
+                random_name = list(self.parameters.keys())[0]
+                initial_values = [self.parameters[random_name].value]
+                initial_names = [random_name]
+
             # Handle 1 and 2 D initial names:
             # Convert a 1D list to 2D list
             if initial_values and isinstance(initial_values[0], (float, int)):
@@ -279,11 +271,24 @@ class DymolaAPI(SimulationAPI):
             res_names = self.result_names.copy()
             if "Time" not in res_names:
                 res_names.append("Time")
+
+            # Internally convert output Interval to number of intervals
+            # (Required by function simulateMultiResultsModel
+            number_of_intervals = (self.sim_setup.stop_time - self.sim_setup.start_time) / \
+                                  self.sim_setup.output_interval
+            if int(number_of_intervals) != number_of_intervals:
+                raise ValueError(
+                    "Given output_interval and time interval did not yield "
+                    "an integer numberOfIntervals. To use this functions "
+                    "without savepaths, you have to provide either a "
+                    "numberOfIntervals or a value for output_interval "
+                    "which can be converted to numberOfIntervals.")
+
             res = self.dymola.simulateMultiResultsModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
-                numberOfIntervals=self.sim_setup.number_of_intervals,
+                numberOfIntervals=int(number_of_intervals),
                 method=self.sim_setup.solver,
                 tolerance=self.sim_setup.tolerance,
                 fixedstepsize=self.sim_setup.fixedstepsize,
@@ -460,6 +465,8 @@ class DymolaAPI(SimulationAPI):
         using the manipulate_ds module.
         """
         # Translate model
+        self.logger.info("Translating model '%s' to extract model variables ",
+                         self.model_name)
         self.translate()
         # Get path to dsin:
         dsin_path = os.path.join(self.cd, "dsin.txt")
@@ -478,9 +485,9 @@ class DymolaAPI(SimulationAPI):
                 )
             if row["5"] == "1":
                 self.parameters[idx] = _var_ebcpy
-            elif row["5"] == "4":
-                self.inputs[idx] = _var_ebcpy
             elif row["5"] == "5":
+                self.inputs[idx] = _var_ebcpy
+            elif row["5"] == "4":
                 self.outputs[idx] = _var_ebcpy
             else:
                 self.states[idx] = _var_ebcpy

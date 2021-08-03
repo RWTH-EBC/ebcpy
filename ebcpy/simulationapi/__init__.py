@@ -114,7 +114,7 @@ class SimulationAPI:
 
     @abstractmethod
     def simulate(self,
-                 parameters: dict = {},
+                 parameters: dict = None,
                  return_option: str = "time_series",
                  **kwargs):
         """
@@ -208,6 +208,8 @@ class SimulationAPI:
         Set the result names. If the name is not supported,
         an error is logged.
         """
+        self.check_unsupported_variables(variables=result_names,
+                                         type_of_var="variables")
         for res_name in result_names:
             if res_name not in self.variables:
                 self.logger.error(
@@ -226,3 +228,26 @@ class SimulationAPI:
                                self.outputs.keys(),
                                self.inputs.keys(),
                                self.states.keys())
+
+    def check_unsupported_variables(self, variables: List[str], type_of_var: str):
+        """Log warnings if variables are not supported."""
+        if type_of_var == "parameters":
+            ref = self.parameters.keys()
+        elif type_of_var == "outputs":
+            ref = self.outputs.keys()
+        elif type_of_var == "inputs":
+            ref = self.inputs.keys()
+        elif type_of_var == "inputs":
+            ref = self.states.keys()
+        else:
+            ref = self.variables
+
+        diff = set(variables).difference(ref)
+        if diff:
+            self.logger.warning(
+                "Variables '%s' not found in model '%s'. "
+                "Will most probably trigger an error when simulating.",
+                ', '.join(diff), self.model_name
+            )
+            return True
+        return False

@@ -11,7 +11,6 @@ from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
 
 
-
 class TestDymolaAPI(unittest.TestCase):
     """Test-Class for the DymolaAPI class."""
 
@@ -25,10 +24,10 @@ class TestDymolaAPI(unittest.TestCase):
         ebcpy_test_package_dir = self.example_dir.joinpath("data", "TestModel.mo")
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest_TestModel"
-        self.initial_names = ["C",
-                              "heatConv_b",
-                              "heatConv_a"]
-        self.initial_values = [2000, 5, 5]
+        self.parameters = {"C": 2000,
+                           "heatConv_a": 5,
+                           "heatConv_b": 5,
+                           }
         # Just for tests in the ci:
         if "linux" in sys.platform:
             dymola_path = "/usr/local/bin/dymola"
@@ -52,11 +51,30 @@ class TestDymolaAPI(unittest.TestCase):
         """Test simulate functionality of dymola api"""
         self.dym_api.set_sim_setup({"start_time": 0.0,
                                     "stop_time": 10.0})
-        res = self.dym_api.simulate()
-        if len(self.dym_api.result_names) > 1:
-            self.assertIsInstance(res, TimeSeriesData)
-        else:
-            self.assertEqual(res, [])
+        result_names = list(self.dym_api.states.keys())[:5]
+        self.dym_api.result_names = result_names
+        res = self.dym_api.simulate()  # Test with no parameters
+        self.assertIsInstance(res, TimeSeriesData)
+        self.assertEqual(len(res.columns), len(result_names))
+        res = self.dym_api.simulate(return_option='last_point')
+        self.assertIsInstance(res, dict)
+        res = self.dym_api.simulate(parameters=self.parameters,
+                                    return_option='savepath')
+        self.assertTrue(os.path.isfile(res))
+        self.assertIsInstance(res, str)
+        res = self.dym_api.simulate(parameters=self.parameters,
+                                    return_option='savepath',
+                                    savepath=os.getcwd(),
+                                    result_file_name="my_other_name")
+        self.assertTrue(os.path.isfile(res))
+        self.assertIsInstance(res, str)
+        # Test non-existing parameter
+        self.parameters.update({"C2": 10})
+        with self.assertRaises(KeyError):
+            self.dym_api.simulate(parameters=self.parameters,
+                                  return_option='savepath')
+        # Does not raise anything
+        self.dym_api.simulate(parameters=self.parameters)
 
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
@@ -88,10 +106,6 @@ class TestFMUAPI(unittest.TestCase):
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
 
-        self.initial_names = ["C",
-                              "heatConv_b",
-                              "heatConv_a"]
-        self.initial_values = [2000, 5, 5]
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
         else:

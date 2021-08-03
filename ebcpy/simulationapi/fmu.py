@@ -99,7 +99,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self._unzip_dir = None
 
     def simulate(self,
-                 parameters: dict = {},
+                 parameters: dict = None,
                  return_option: str = "time_series",
                  **kwargs):
         """
@@ -134,7 +134,11 @@ class FMU_API(simulationapi.SimulationAPI):
             dtype = [(i, np.double) for i in
                      inputs.columns]
             inputs = np.array(inputs_tuple, dtype=dtype)
-
+        if parameters is None:
+            parameters = {}
+        else:
+            self.check_unsupported_variables(variables=list(parameters.keys()),
+                                             type_of_var="parameters")
         try:
             res = fmpy.simulate_fmu(
                 self._unzip_dir,
