@@ -371,6 +371,35 @@ class FMU_API(simulationapi.SimulationAPI):
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
 
 
+#if __name__ == "__main__":
+#    import doctest
+#    doctest.testmod()
 if __name__ == "__main__":
-    import doctest
-    doctest.testmod()
+    import matplotlib.pyplot as plt
+    # Setup the dymola-api:
+    model_name = r"E:\04_git\ebcpy\tests\data\PumpAndValve_windows.fmu"
+    cwd = r"D:\00_temp\test_mp_fmu"
+    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=3)
+    fmu_api_2 = FMU_API(model_name=model_name, n_cpu=3, cd=os.path.join(model_name, "testzone_2"))
+    fmu_api.result_names = ["heatCapacitor.T"]
+    fmu_api.result_names = ["heatCapacitor.T"]
+    fmu_api.set_sim_setup({"stop_time": 2,
+                           "output_interval": 0.001,
+                           "resultNames": ["heatCapacitor.T"],
+                           "initialNames": ["speedRamp.duration"]}
+                          )
+    fmu_api_2.set_sim_setup({"stop_time": 2,
+                             "output_interval": 0.001,
+                             "resultNames": ["heatCapacitor.T"],
+                             "initialNames": ["speedRamp.duration"]}
+                            )
+    sim_setups = [{"initialValues": [0.1 + 0.1 * i]} for i in range(12)]
+    res = fmu_api.simulate(sim_setup=sim_setups)
+    res2 = fmu_api_2.simulate(sim_setup=sim_setups)
+    for idx, _res in enumerate(res):
+        plt.plot(_res["heatCapacitor.T"], label=idx)
+    # Close the api to remove the created files:
+    fmu_api.close()
+    fmu_api_2.close()
+    plt.legend()
+    plt.show()

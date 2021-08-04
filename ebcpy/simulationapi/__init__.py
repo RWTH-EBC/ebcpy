@@ -125,10 +125,20 @@ class SimulationAPI:
             self.pool = None
             self.use_mp = False
 
+    # MP-Functions
+    @staticmethod
+    def get_worker_idx(self):
+        return mp.current_process()._identity[0]
+
     @abstractmethod
     def close(self):
         """Base function for closing the simulation-program."""
         raise NotImplementedError(f'{self.__class__.__name__}.close function is not defined')
+
+    @abstractmethod
+    def _single_close(self):
+        """Base function for closing the simulation-program of a single core"""
+        raise NotImplementedError(f'{self.__class__.__name__}._single_close function is not defined')
 
     @abstractmethod
     def simulate(self,
@@ -138,11 +148,11 @@ class SimulationAPI:
         """
         Base function for simulating the simulation-model.
 
-        :param parameters Dict:
+        :param dict parameters:
             Parameters to simulate.
             Names of parameters are key, values are value of the dict.
             Default is an empty dict.
-        :param return_option str:
+        :param str return_option:
             How to handle the simulation results. Options are:
             - 'time_series': Returns a DataFrame with the results and does not store anything.
             Only variables specified in result_names will be returned.
@@ -172,6 +182,16 @@ class SimulationAPI:
             dataframe for each set is returned in a list
         """
         raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
+
+    @abstractmethod
+    def _single_simulation(self,
+                 parameters: dict = None,
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Same arguments and function as simulate().
+        Used to differ between single- and multi-processing simulation"""
+        raise NotImplementedError(f'{self.__class__.__name__}._single_simulation function is not defined')
 
     @property
     def sim_setup(self) -> SimulationSetupClass:
@@ -295,6 +315,3 @@ class SimulationAPI:
             )
             return True
         return False
-
-    def get_worker_idx(self):
-        return mp.current_process()._identity[0]
