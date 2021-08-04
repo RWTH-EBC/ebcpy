@@ -6,6 +6,8 @@ import logging
 import pathlib
 import atexit
 import shutil
+import multiprocessing as mp
+from typing import Any, List, Union
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import Field
@@ -32,6 +34,9 @@ class FMU_API(simulationapi.SimulationAPI):
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
 
+    :keyword bool log_fmu:
+        Whether to print fmu messages or not.
+
     Example:
 
     >>> import matplotlib.pyplot as plt
@@ -53,15 +58,15 @@ class FMU_API(simulationapi.SimulationAPI):
     """
 
     _sim_setup_class: SimulationSetupClass = FMU_Setup
+    _fmu_instances: dict = {}
+    _unzip_dirs: dict = {}
 
-    def __init__(self, model_name, cd=None):
+    def __init__(self, cd, model_name, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
-        self._unzip_dir = None
-        self._fmu_instance = None
         self._model_description = None
         self._fmi_type = None
-        self.log_fmu = True
+        self.log_fmu = kwargs.get("log_fmu", True)
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -69,7 +74,7 @@ class FMU_API(simulationapi.SimulationAPI):
             raise ValueError(f"{model_name} is not a valid fmu file!")
         if cd is None:
             cd = os.path.dirname(model_name)
-        super().__init__(cd, model_name)
+        super().__init__(cd, model_name, **kwargs)
         # Register exit option
         atexit.register(self.close)
 
@@ -84,26 +89,43 @@ class FMU_API(simulationapi.SimulationAPI):
         :return: bool
             True on success
         """
+        if self.use_mp:
+            self.pool.map(self._close_multiprocessing, [_ for _ in range(self.n_cpu)])
+        else:
+            self._close_single(fmu_instance=self._fmu_instances[0],
+                               unzip_dir=self._unzip_dirs[0])
+        self._unzip_dirs = {}
+        self._fmu_instances = {}
+
+    def _close_single(self, fmu_instance, unzip_dir):
         try:
-            self._fmu_instance.terminate()
+            fmu_instance.terminate()
         except Exception as error:  # This is due to fmpy which does not yield a narrow error
             self.logger.error(f"Could not terminate fmu instance: {error}")
         try:
-            self._fmu_instance.freeInstance()
+            fmu_instance.freeInstance()
         except OSError as error:
             self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
-        if self._unzip_dir is not None:
-            shutil.rmtree(self._unzip_dir, ignore_errors=True)
-        self._unzip_dir = None
+        if unzip_dir is not None:
+            shutil.rmtree(unzip_dir)
 
-    def simulate(self,
-                 parameters: dict = None,
-                 return_option: str = "time_series",
-                 **kwargs):
+    def _close_multiprocessing(self, _):
+        idx_worker = self.get_worker_idx()
+        self._close_single(fmu_instance=self._fmu_instances[idx_worker],
+                           unzip_dir=self._unzip_dirs[idx_worker])
+
+    def _single_simulation(self,
+                           parameters: dict = None,
+                           return_option: str = "time_series",
+                           **kwargs):
         """
-        Simulate current simulation-setup.
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
 
+        The single argument kwarg is to make this
+        function accessible by multiprocessing pool.map.
 
         Additional settings:
         :param dataframe inputs:
@@ -114,6 +136,21 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             Filepath of the mat-file.
         """
+        if self.use_mp:
+            idx_worker = mp.current_process()._identity[0]
+        else:
+            idx_worker = 0
+        print(self._fmu_instances)
+        fmu_instance = self._fmu_instances[idx_worker]
+        unzip_dir = self._unzip_dirs[idx_worker]
+
+        # First update the simulation setup
+        self.set_sim_setup(kwargs.get("sim_setup", {}))
+
+        # Dictionary with all tuner parameter names & -values
+        start_values = {self.sim_setup["initialNames"][i]: value
+                        for i, value in enumerate(self.sim_setup["initialValues"])}
+
         inputs = kwargs.get("inputs", None)
         if inputs is not None:
             inputs = inputs.copy()  # Create save copy
@@ -140,7 +177,7 @@ class FMU_API(simulationapi.SimulationAPI):
                                              type_of_var="parameters")
         try:
             res = fmpy.simulate_fmu(
-                self._unzip_dir,
+                self.unzip_dir,
                 start_time=self.sim_setup.start_time,
                 stop_time=self.sim_setup.stop_time,
                 solver=self.sim_setup.solver,
@@ -155,10 +192,10 @@ class FMU_API(simulationapi.SimulationAPI):
                 timeout=self.sim_setup.timeout,
                 step_finished=None,
                 model_description=self._model_description,
-                fmu_instance=self._fmu_instance,
+                fmu_instance=fmu_instance,
                 fmi_type=self._fmi_type,
             )
-            self._fmu_instance.reset()
+            fmu_instance.reset()
 
         except Exception as error:
             self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
@@ -187,19 +224,67 @@ class FMU_API(simulationapi.SimulationAPI):
         tsd = TimeSeriesData(df, default_tag="sim")
         return tsd
 
+    def simulate(self, **kwargs):
+        """
+        Simulate current simulation-setup.
+
+        :param dataframe inputs:
+            Pandas.Dataframe of the input data for simulating the FMU with fmpy
+        :keyword Boolean fail_on_error:
+            If True, an error in fmpy will trigger an error in this script.
+            Default is false
+        :return:
+            Filepath of the mat-file.
+        """
+        # Decide between mp and single core
+        if self.use_mp:
+            sim_setups = kwargs.get("sim_setup", {})
+            if isinstance(sim_setups, dict):
+                sim_setups = [sim_setups]
+            inputs = kwargs.get("inputs", None)
+            if isinstance(inputs, list):
+                if len(inputs) != len(sim_setups):
+                    raise ValueError(f"Mismatch in multiprocessing of "
+                                     f"given sim_setups ({len(sim_setups)}) "
+                                     f"and given inputs ({len(inputs)})")
+            else:
+                inputs = [inputs] * len(sim_setups)
+            fail_on_error = kwargs.get("fail_on_error", False)
+            if isinstance(fail_on_error, list):
+                if len(fail_on_error) != len(sim_setups):
+                    raise ValueError(f"Mismatch in multiprocessing of "
+                                     f"given sim_setups ({len(sim_setups)}) "
+                                     f"and given inputs ({len(fail_on_error)})")
+            else:
+                fail_on_error = [fail_on_error] * len(sim_setups)
+            kwargs = []
+            for _sim_setup, _inputs, _fail_on_error in zip(sim_setups,
+                                                           inputs,
+                                                           fail_on_error):
+                kwargs.append(
+                    {"sim_setup": _sim_setup,
+                     "inputs": _inputs,
+                     "fail_on_error": _fail_on_error,
+                     }
+                )
+            return self.pool.map(self._single_simulation, kwargs)
+        else:
+            return self._single_simulation(kwargs)
+
     def setup_fmu_instance(self):
         """
         Manually set up and extract the data to
-        avoid this step in the simulate function
-        :return:
+        avoid this step in the simulate function.
         """
-        _unzipdir = os.path.join(self.cd,
-                                 os.path.basename(self.model_name)[:-4] + "_extracted")
-        os.makedirs(_unzipdir, exist_ok=True)
-        self._unzip_dir = fmpy.extract(self.model_name,
-                                       unzipdir=_unzipdir)
-        self._model_description = read_model_description(self._unzip_dir,
-                                                         validate=False)
+        self.logger.info("Extracting fmu and reading fmu model description")
+        # First load model description and extract variables
+        _unzip_dir_single = os.path.join(self.cd,
+                                         os.path.basename(self.model_name)[:-4] + "_extracted")
+        os.makedirs(_unzip_dir_single, exist_ok=True)
+        _unzip_dir_single = fmpy.extract(self.model_name,
+                                         unzipdir=_unzip_dir_single)
+        self._model_description = read_model_description(_unzip_dir_single,
+                                                         validate=True)
 
         if self._model_description.coSimulation is None:
             self._fmi_type = 'ModelExchange'
@@ -211,7 +296,7 @@ class FMU_API(simulationapi.SimulationAPI):
                     not isinstance(value, (float, int, bool)):
                 return np.inf
             return value
-
+        self.logger.info("Reading model variables")
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
 
@@ -232,15 +317,45 @@ class FMU_API(simulationapi.SimulationAPI):
                 self.logger.error(f"Could not map causality {var.causality}"
                                   f" to any variable type.")
 
-        self._fmu_instance = fmpy.instantiate_fmu(
-            unzipdir=self._unzip_dir,
+        if self.use_mp:
+            self.logger.info("Extracting fmu %s times for "
+                             "multiprocessing on %s cores",
+                             self.n_cpu, self.n_cpu)
+            _unzip_dirs = []
+            for cpu_idx in range(self.n_cpu):
+                _unzip_dir_cpu_idx = _unzip_dir_single + f"_worker_{cpu_idx}"
+                _unzip_dir_cpu_idx = fmpy.extract(self.model_name,
+                                                  unzipdir=_unzip_dir_cpu_idx)
+                _unzip_dirs.append(_unzip_dir_cpu_idx)
+            self.pool.map(self._setup_single_fmu_instance, _unzip_dirs)
+        else:
+            self.logger.info("Instantiating fmu for single processing")
+            self._unzip_dirs = {0: _unzip_dir_single}
+            self._fmu_instances = {0: fmpy.instantiate_fmu(
+                unzipdir=_unzip_dir_single,
+                model_description=self._model_description,
+                fmi_type=self._fmi_type,
+                visible=False,
+                debug_logging=False,
+                logger=self._custom_logger,
+                fmi_call_logger=None,
+                use_remoting=False)
+            }
+
+    def _setup_single_fmu_instance(self, unzip_dir):
+        idx_worker = self.get_worker_idx()
+        self.logger.info("Instantiating fmu for worker %s", idx_worker)
+        self._fmu_instances.update({idx_worker: fmpy.instantiate_fmu(
+            unzipdir=unzip_dir,
             model_description=self._model_description,
             fmi_type=self._fmi_type,
             visible=False,
             debug_logging=False,
             logger=self._custom_logger,
-            fmi_call_logger=None
-        )
+            fmi_call_logger=None)})
+        self._unzip_dirs.update({
+            idx_worker: unzip_dir
+        })
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """

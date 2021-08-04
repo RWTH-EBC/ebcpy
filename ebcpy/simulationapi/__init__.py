@@ -12,6 +12,7 @@ import numpy as np
 from typing import Dict, Union, TypeVar, Any, List
 from pydantic import BaseModel, Field, validator
 from abc import abstractmethod
+import multiprocessing as mp
 from ebcpy.utils import setup_logger
 
 
@@ -90,11 +91,16 @@ class SimulationAPI:
     :param str,os.path.normpath cd:
         Working directory path
     :param str model_name:
-        Name of the model being simulated."""
-
+        Name of the model being simulated.
+    :keyword int n_cpu:
+        Number of cores to be used by simulation.
+        If None is given, single core will be used.
+        Maximum number equals the cpu count of the device.
+    """
     _sim_setup_class: SimulationSetupClass = SimulationSetup
+    _items_to_drop = ['pool']
 
-    def __init__(self, cd, model_name):
+    def __init__(self, cd, model_name, **kwargs):
         self._sim_setup = self._sim_setup_class()
         self.cd = cd
         self.model_name = model_name
@@ -106,6 +112,18 @@ class SimulationAPI:
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
         self.states: Dict[str, Variable] = {}       # States of model
         self.result_names = []
+        # Check multiprocessing
+        self.n_cpu = kwargs.get("n_cpu", 1)
+        if self.n_cpu > mp.cpu_count():
+            raise ValueError(f"Given n_cpu '{self.n_cpu}' is greater "
+                             "than the available number of "
+                             f"cpus on your machine '{mp.cpu_count()}'")
+        if self.n_cpu > 1:
+            self.pool = mp.Pool(processes=self.n_cpu)
+            self.use_mp = True
+        else:
+            self.pool = None
+            self.use_mp = False
 
     @abstractmethod
     def close(self):
@@ -277,3 +295,6 @@ class SimulationAPI:
             )
             return True
         return False
+
+    def get_worker_idx(self):
+        return mp.current_process()._identity[0]
