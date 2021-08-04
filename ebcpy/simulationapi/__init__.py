@@ -101,17 +101,9 @@ class SimulationAPI:
     _items_to_drop = ['pool']
 
     def __init__(self, cd, model_name, **kwargs):
-        self._sim_setup = self._sim_setup_class()
-        self.cd = cd
-        self.model_name = model_name
         # Setup the logger
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
-        self.inputs: Dict[str, Variable] = {}       # Inputs of model
-        self.outputs: Dict[str, Variable] = {}      # Outputs of model
-        self.parameters: Dict[str, Variable] = {}   # Parameter of model
-        self.states: Dict[str, Variable] = {}       # States of model
-        self.result_names = []
         # Check multiprocessing
         self.n_cpu = kwargs.get("n_cpu", 1)
         if self.n_cpu > mp.cpu_count():
@@ -124,11 +116,32 @@ class SimulationAPI:
         else:
             self.pool = None
             self.use_mp = False
+        # Setup the model
+        self._sim_setup = self._sim_setup_class()
+        self.cd = cd
+        self.model_name = model_name
+        self.inputs: Dict[str, Variable] = {}       # Inputs of model
+        self.outputs: Dict[str, Variable] = {}      # Outputs of model
+        self.parameters: Dict[str, Variable] = {}   # Parameter of model
+        self.states: Dict[str, Variable] = {}       # States of model
+        self.result_names = []
 
     # MP-Functions
-    @staticmethod
-    def get_worker_idx(self):
+    @property
+    def worker_idx(self):
+        """Index of the current worker"""
         return mp.current_process()._identity[0]
+
+    def __getstate__(self):
+        """Overwrite magic method to allow pickling the api object"""
+        self_dict = self.__dict__.copy()
+        for item in self._items_to_drop:
+            del self_dict[item]
+        return self_dict
+
+    def __setstate__(self, state):
+        """Overwrite magic method to allow pickling the api object"""
+        self.__dict__.update(state)
 
     @abstractmethod
     def close(self):
@@ -142,7 +155,7 @@ class SimulationAPI:
 
     @abstractmethod
     def simulate(self,
-                 parameters: dict = None,
+                 parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
         """
@@ -184,10 +197,7 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
 
     @abstractmethod
-    def _single_simulation(self,
-                 parameters: dict = None,
-                 return_option: str = "time_series",
-                 **kwargs):
+    def _single_simulation(self, **kwargs):
         """
         Same arguments and function as simulate().
         Used to differ between single- and multi-processing simulation"""

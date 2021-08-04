@@ -6,6 +6,7 @@ import os
 import pathlib
 import warnings
 import atexit
+from typing import Union, List
 from pydantic import Field, root_validator
 import pandas as pd
 from ebcpy import TimeSeriesData
@@ -188,7 +189,7 @@ class DymolaAPI(SimulationAPI):
             self.extract_model_variables()
 
     def simulate(self,
-                 parameters: dict = None,
+                 parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
         """

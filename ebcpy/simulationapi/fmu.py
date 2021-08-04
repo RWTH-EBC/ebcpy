@@ -6,8 +6,7 @@ import logging
 import pathlib
 import atexit
 import shutil
-import multiprocessing as mp
-from typing import Any, List, Union
+from typing import List, Union
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import Field
@@ -111,14 +110,56 @@ class FMU_API(simulationapi.SimulationAPI):
             shutil.rmtree(unzip_dir)
 
     def _close_multiprocessing(self, _):
-        idx_worker = self.get_worker_idx()
+        """Small helper function"""
+        idx_worker = self.worker_idx
         self._close_single(fmu_instance=self._fmu_instances[idx_worker],
                            unzip_dir=self._unzip_dirs[idx_worker])
 
-    def _single_simulation(self,
-                           parameters: dict = None,
-                           return_option: str = "time_series",
-                           **kwargs):
+    def simulate(self,
+                 parameters: Union[dict, List[dict]] = None,
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Simulate current simulation-setup.
+
+        :param dataframe inputs:
+            Pandas.Dataframe of the input data for simulating the FMU with fmpy
+        :keyword Boolean fail_on_error:
+            If True, an error in fmpy will trigger an error in this script.
+            Default is false
+        :return:
+            Filepath of the mat-file.
+        """
+        # Decide between mp and single core
+        if self.use_mp:
+            if isinstance(parameters, dict):
+                parameters = [parameters]
+            new_kwargs = {}
+            kwargs["return_option"] = return_option  # Update with arg
+            for key, value in kwargs.items():
+                if isinstance(value, list):
+                    if len(value) != len(parameters):
+                        raise ValueError(f"Mismatch in multiprocessing of "
+                                         f"given parameters ({len(parameters)}) "
+                                         f"and given {key} ({len(value)})")
+                    new_kwargs[key] = value
+                else:
+                    new_kwargs[key] = [value] * len(parameters)
+            kwargs = []
+            for _idx, _parameters in enumerate(parameters):
+                kwargs.append(
+                    {"parameters": _parameters,
+                     **{key: value[_idx] for key, value in new_kwargs.items()}
+                     }
+                )
+            return self.pool.map(self._single_simulation, kwargs)
+        else:
+            return self._single_simulation(
+                parameters=parameters,
+                return_option=return_option,
+                **kwargs)
+
+    def _single_simulation(self, **kwargs):
         """
         Perform the single simulation for the given
         unzip directory and fmu_instance.
@@ -136,20 +177,17 @@ class FMU_API(simulationapi.SimulationAPI):
         :return:
             Filepath of the mat-file.
         """
+        # Unpack kwargs:
+        parameters = kwargs.pop("parameters", None)
+        return_option = kwargs.pop("return_option", "time_series")
+
         if self.use_mp:
-            idx_worker = mp.current_process()._identity[0]
+            idx_worker = self.worker_idx
         else:
             idx_worker = 0
         print(self._fmu_instances)
         fmu_instance = self._fmu_instances[idx_worker]
         unzip_dir = self._unzip_dirs[idx_worker]
-
-        # First update the simulation setup
-        self.set_sim_setup(kwargs.get("sim_setup", {}))
-
-        # Dictionary with all tuner parameter names & -values
-        start_values = {self.sim_setup["initialNames"][i]: value
-                        for i, value in enumerate(self.sim_setup["initialValues"])}
 
         inputs = kwargs.get("inputs", None)
         if inputs is not None:
@@ -177,7 +215,7 @@ class FMU_API(simulationapi.SimulationAPI):
                                              type_of_var="parameters")
         try:
             res = fmpy.simulate_fmu(
-                self.unzip_dir,
+                filename=unzip_dir,
                 start_time=self.sim_setup.start_time,
                 stop_time=self.sim_setup.stop_time,
                 solver=self.sim_setup.solver,
@@ -223,53 +261,6 @@ class FMU_API(simulationapi.SimulationAPI):
         # Else return time series data
         tsd = TimeSeriesData(df, default_tag="sim")
         return tsd
-
-    def simulate(self, **kwargs):
-        """
-        Simulate current simulation-setup.
-
-        :param dataframe inputs:
-            Pandas.Dataframe of the input data for simulating the FMU with fmpy
-        :keyword Boolean fail_on_error:
-            If True, an error in fmpy will trigger an error in this script.
-            Default is false
-        :return:
-            Filepath of the mat-file.
-        """
-        # Decide between mp and single core
-        if self.use_mp:
-            sim_setups = kwargs.get("sim_setup", {})
-            if isinstance(sim_setups, dict):
-                sim_setups = [sim_setups]
-            inputs = kwargs.get("inputs", None)
-            if isinstance(inputs, list):
-                if len(inputs) != len(sim_setups):
-                    raise ValueError(f"Mismatch in multiprocessing of "
-                                     f"given sim_setups ({len(sim_setups)}) "
-                                     f"and given inputs ({len(inputs)})")
-            else:
-                inputs = [inputs] * len(sim_setups)
-            fail_on_error = kwargs.get("fail_on_error", False)
-            if isinstance(fail_on_error, list):
-                if len(fail_on_error) != len(sim_setups):
-                    raise ValueError(f"Mismatch in multiprocessing of "
-                                     f"given sim_setups ({len(sim_setups)}) "
-                                     f"and given inputs ({len(fail_on_error)})")
-            else:
-                fail_on_error = [fail_on_error] * len(sim_setups)
-            kwargs = []
-            for _sim_setup, _inputs, _fail_on_error in zip(sim_setups,
-                                                           inputs,
-                                                           fail_on_error):
-                kwargs.append(
-                    {"sim_setup": _sim_setup,
-                     "inputs": _inputs,
-                     "fail_on_error": _fail_on_error,
-                     }
-                )
-            return self.pool.map(self._single_simulation, kwargs)
-        else:
-            return self._single_simulation(kwargs)
 
     def setup_fmu_instance(self):
         """
@@ -343,7 +334,7 @@ class FMU_API(simulationapi.SimulationAPI):
             }
 
     def _setup_single_fmu_instance(self, unzip_dir):
-        idx_worker = self.get_worker_idx()
+        idx_worker = self.worker_idx
         self.logger.info("Instantiating fmu for worker %s", idx_worker)
         self._fmu_instances.update({idx_worker: fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
@@ -380,22 +371,16 @@ if __name__ == "__main__":
     model_name = r"E:\04_git\ebcpy\tests\data\PumpAndValve_windows.fmu"
     cwd = r"D:\00_temp\test_mp_fmu"
     fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=3)
-    fmu_api_2 = FMU_API(model_name=model_name, n_cpu=3, cd=os.path.join(model_name, "testzone_2"))
+    fmu_api_2 = FMU_API(model_name=model_name, n_cpu=3, cd=os.path.join(cwd, "testzone_2"))
     fmu_api.result_names = ["heatCapacitor.T"]
     fmu_api.result_names = ["heatCapacitor.T"]
     fmu_api.set_sim_setup({"stop_time": 2,
-                           "output_interval": 0.001,
-                           "resultNames": ["heatCapacitor.T"],
-                           "initialNames": ["speedRamp.duration"]}
-                          )
+                           "output_interval": 0.001})
     fmu_api_2.set_sim_setup({"stop_time": 2,
-                             "output_interval": 0.001,
-                             "resultNames": ["heatCapacitor.T"],
-                             "initialNames": ["speedRamp.duration"]}
-                            )
-    sim_setups = [{"initialValues": [0.1 + 0.1 * i]} for i in range(12)]
-    res = fmu_api.simulate(sim_setup=sim_setups)
-    res2 = fmu_api_2.simulate(sim_setup=sim_setups)
+                             "output_interval": 0.001})
+    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(12)]
+    res = fmu_api.simulate(parameters=parameters)
+    res2 = fmu_api_2.simulate(parameters=parameters)
     for idx, _res in enumerate(res):
         plt.plot(_res["heatCapacitor.T"], label=idx)
     # Close the api to remove the created files:
