@@ -75,6 +75,10 @@ class TestDymolaAPI(unittest.TestCase):
                                   return_option='savepath')
         # Does not raise anything
         self.dym_api.simulate(parameters=self.parameters)
+        # Model with no parameters:
+        with self.assertRaises(ValueError):
+            self.dym_api.parameters = {}
+            self.dym_api.simulate()  # Test with no parameters
 
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""

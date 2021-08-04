@@ -194,10 +194,6 @@ class DymolaAPI(SimulationAPI):
         """
         Simulate the given parameters.
 
-        Some Notes on using `result_names`:
-        - TODO: Check: The resulting dataframe has size `numberOfIntervals + 1` this is
-        due to the structure in Modelica.
-
         Additional settings:
         :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
@@ -258,7 +254,6 @@ class DymolaAPI(SimulationAPI):
                 initialNames=initial_names,
                 initialValues=initial_values)
         else:
-            # TODO: You have to pass an `initialName` and `initialValue`.
             if not parameters and not self.parameters:
                 raise ValueError(
                     "Sadly, simulating a model in Dymola "
