@@ -173,11 +173,37 @@ class SimulationAPI:
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
 
+    @property
+    def model_name(self) -> str:
+        """Name of the model being simulated"""
+        return self._model_name
+
+    @model_name.setter
+    def model_name(self, model_name):
+        """
+        Set new model_name and trigger further functions
+        to load parameters etc.
+        """
+        # Empty all variables again.
+        self.outputs = {}
+        self.parameters = {}
+        self.states = {}
+        self.inputs = {}
+        self._model_name = model_name
+        self._update_model()
+        # Set all outputs to result_names:
+        self.result_names = self.outputs.keys()
+
+    @abstractmethod
+    def _update_model(self):
+        """
+        Reimplement this to change variables etc.
+        based on the new model.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}._update_model function is not defined')
+
     def set_cd(self, cd):
         """Base function for changing the current working directory."""
-        warnings.warn("Function will be removed in future versions. "
-                      "Use the property setter function instead of this setter: "
-                      "sim_api.cd = cd", DeprecationWarning)
         self.cd = cd
 
     @property

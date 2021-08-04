@@ -96,6 +96,15 @@ class DymolaAPI(SimulationAPI):
 
     def __init__(self, cd, model_name, packages=[], **kwargs):
         """Instantiate class objects."""
+
+        # Update kwargs with regard to what kwargs are supported.
+        self.extract_variables = kwargs.pop("extract_variables", True)
+        self.fully_initialized = False
+        self.debug = kwargs.pop("debug", False)
+        self.show_window = kwargs.pop("show_window", False)
+        self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
+        self.equidistant_output = kwargs.pop("equidistant_output", True)
+
         super().__init__(cd, model_name)
 
         # First import the dymola-interface
@@ -141,12 +150,6 @@ class DymolaAPI(SimulationAPI):
                 raise TypeError(f"Given package is of type {type(package)}"
                                 f" but should be any valid path.")
 
-        # Update kwargs with regard to what kwargs are supported.
-        self.debug = kwargs.pop("debug", False)
-        self.show_window = kwargs.pop("show_window", False)
-        self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
-        self.equidistant_output = kwargs.pop("equidistant_output", True)
-
         # Import n_restart
         self.sim_counter = 0
         self.n_restart = kwargs.pop("n_restart", -1)
@@ -166,10 +169,9 @@ class DymolaAPI(SimulationAPI):
         # Parameter for raising a warning if to many dymola-instances are running
         self._critical_number_instances = 10
         self._setup_dymola_interface()
-        # Translate the model and extract all variables,
-        # if the user wants to:
-        if kwargs.pop("extract_variables", True):
-            self.extract_model_variables()
+        self.fully_initialized = True
+        # Trigger on init.
+        self._update_model()
 
         # Check if some kwargs are still present. If so, inform the user about
         # false usage of kwargs:
@@ -178,6 +180,12 @@ class DymolaAPI(SimulationAPI):
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to:
+        if self.extract_variables and self.fully_initialized:
+            self.extract_model_variables()
 
     def simulate(self,
                  parameters: dict = None,

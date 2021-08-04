@@ -56,14 +56,6 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def __init__(self, model_name, cd=None):
         """Instantiate class parameters"""
-        if isinstance(model_name, pathlib.Path):
-            model_name = str(model_name)
-        if not model_name.lower().endswith(".fmu"):
-            raise ValueError(f"{model_name} is not a valid fmu file!")
-        if cd is None:
-            cd = os.path.dirname(model_name)
-        super().__init__(cd, model_name)
-
         # Init instance attributes
         self._unzip_dir = None
         self._fmu_instance = None
@@ -71,12 +63,19 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmi_type = None
         self.log_fmu = True
 
-        # Setup the fmu instance
-        self.setup_fmu_instance()
-        # Set all outputs to result_names:
-        self.result_names = self.outputs.keys()
+        if isinstance(model_name, pathlib.Path):
+            model_name = str(model_name)
+        if not model_name.lower().endswith(".fmu"):
+            raise ValueError(f"{model_name} is not a valid fmu file!")
+        if cd is None:
+            cd = os.path.dirname(model_name)
+        super().__init__(cd, model_name)
         # Register exit option
         atexit.register(self.close)
+
+    def _update_model(self):
+        # Setup the fmu instance
+        self.setup_fmu_instance()
 
     def close(self):
         """
