@@ -93,6 +93,7 @@ class DymolaAPI(SimulationAPI):
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
     _dymola_instances: dict = {}
+    _items_to_drop = ["pool", "dymola"]
     # Default simulation setup
     _supported_kwargs = ["show_window",
                          "get_structural_parameters",
@@ -113,7 +114,9 @@ class DymolaAPI(SimulationAPI):
         self.equidistant_output = kwargs.pop("equidistant_output", True)
         self.dymola = None
 
-        super().__init__(cd, model_name)
+        super().__init__(cd=cd,
+                         model_name=model_name,
+                         n_cpu=kwargs.pop("n_cpu", 1))
 
         # First import the dymola-interface
         if "dymola_interface_path" in kwargs:
@@ -231,7 +234,7 @@ class DymolaAPI(SimulationAPI):
                 self._setup_dymola_interface(use_mp=True)
             dymola = self._dymola_instances[idx_worker]
         else:
-            dymola = self._dymola_instances[0]
+            dymola = self.dymola
 
         if show_eventlog:
             dymola.experimentSetupOutput(events=True)
@@ -491,7 +494,7 @@ class DymolaAPI(SimulationAPI):
             self._single_close(dymola=self.dymola)
             self.dymola = None
 
-    def _close_multiprocessing(self):
+    def _close_multiprocessing(self, _):
         wrk_idx = self.worker_idx
         if wrk_idx in self._dymola_instances:
             self._single_close(dymola=self._dymola_instances.pop(wrk_idx))
@@ -853,11 +856,11 @@ if __name__ == "__main__":
     # Setup the fmu-api:
     model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
     cwd = r"D:\00_temp\test_mp_fmu"
-    dym_api = DymolaAPI(cd=cwd, model_name=model_name, n_cpu=10)
+    dym_api = DymolaAPI(cd=cwd, model_name=model_name, n_cpu=10, show_window=True)
     dym_api.result_names = ["heatCapacitor.T"]
     dym_api.set_sim_setup({"stop_time": 10,
                            "output_interval": 0.001})
-    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
+    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(100)]
     res = dym_api.simulate(parameters=parameters)
     for idx, _res in enumerate(res):
         plt.plot(_res["heatCapacitor.T"], label=idx)
