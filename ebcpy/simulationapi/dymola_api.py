@@ -92,10 +92,16 @@ class DymolaAPI(SimulationAPI):
     >>> dym_api.close()
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
-    dymola = None
+    _dymola_instances: dict = {}
     # Default simulation setup
+    _supported_kwargs = ["show_window",
+                         "get_structural_parameters",
+                         "dymola_path",
+                         "dymola_interface_path",
+                         "equidistant_output",
+                         "n_restart"]
 
-    def __init__(self, cd, model_name, packages=[], **kwargs):
+    def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
 
         # Update kwargs with regard to what kwargs are supported.
@@ -105,6 +111,7 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
+        self.dymola = None
 
         super().__init__(cd, model_name)
 
@@ -142,14 +149,15 @@ class DymolaAPI(SimulationAPI):
         self.dymola_path = dymola_path
 
         self.packages = []
-        for package in packages:
-            if isinstance(package, pathlib.Path):
-                self.packages.append(str(package))
-            elif isinstance(package, str):
-                self.packages.append(package)
-            else:
-                raise TypeError(f"Given package is of type {type(package)}"
-                                f" but should be any valid path.")
+        if packages is not None:
+            for package in packages:
+                if isinstance(package, pathlib.Path):
+                    self.packages.append(str(package))
+                elif isinstance(package, str):
+                    self.packages.append(package)
+                else:
+                    raise TypeError(f"Given package is of type {type(package)}"
+                                    f" but should be any valid path.")
 
         # Import n_restart
         self.sim_counter = 0
@@ -168,8 +176,14 @@ class DymolaAPI(SimulationAPI):
         # List storing structural parameters for later modifying the simulation-name.
         self._structural_params = []
         # Parameter for raising a warning if to many dymola-instances are running
-        self._critical_number_instances = 10
-        self._setup_dymola_interface()
+        self._critical_number_instances = 10 + self.n_cpu
+        # Register the function now in case of an error.
+        if not self.debug:
+            atexit.register(self.close)
+        if self.use_mp:
+            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+        # For translation etc. always setup a default dymola instance
+        self.dymola = self._setup_dymola_interface(use_mp=False)
         self.fully_initialized = True
         # Trigger on init.
         self._update_model()
@@ -202,15 +216,27 @@ class DymolaAPI(SimulationAPI):
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
         """
+        return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
+
+    def _single_simulation(self, kwargs):
         # Unpack kwargs
         show_eventlog = kwargs.get("show_eventlog", False)
         squeeze = kwargs.get("squeeze", True)
         result_file_name = kwargs.get("result_file_name", 'resultFile')
+        parameters = kwargs.get("parameters")
+        return_option = kwargs.get("return_option")
+        if self.use_mp:
+            idx_worker = self.worker_idx
+            if idx_worker not in self._dymola_instances:
+                self._setup_dymola_interface(use_mp=True)
+            dymola = self._dymola_instances[idx_worker]
+        else:
+            dymola = self._dymola_instances[0]
 
         if show_eventlog:
-            self.dymola.experimentSetupOutput(events=True)
-            self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
-            self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
+            dymola.experimentSetupOutput(events=True)
+            dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
+            dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
         if self._structural_params:
             warnings.warn(f"Warning: Currently, the model is re-translating "
@@ -242,7 +268,7 @@ class DymolaAPI(SimulationAPI):
                                "names for option return_type='savepath'. "
                                "To use this option, delete unsupported "
                                "parameters from your setup.")
-            res = self.dymola.simulateExtendedModel(
+            res = dymola.simulateExtendedModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
@@ -288,7 +314,7 @@ class DymolaAPI(SimulationAPI):
                     "numberOfIntervals or a value for output_interval "
                     "which can be converted to numberOfIntervals.")
 
-            res = self.dymola.simulateMultiResultsModel(
+            res = dymola.simulateMultiResultsModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
@@ -304,7 +330,7 @@ class DymolaAPI(SimulationAPI):
         if not res[0]:
             self.logger.error("Simulation failed!")
             self.logger.error("The last error log from Dymola:")
-            log = self.dymola.getLastErrorLog()
+            log = dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
             dslog_path = os.path.join(self.cd, 'dslog.txt')
@@ -319,7 +345,7 @@ class DymolaAPI(SimulationAPI):
 
         if self.get_structural_parameters:
             # Get the structural parameters based on the error log
-            self._structural_params = self._filter_error_log(self.dymola.getLastErrorLog())
+            self._structural_params = self._filter_error_log(dymola.getLastErrorLog())
 
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
@@ -407,6 +433,8 @@ class DymolaAPI(SimulationAPI):
             raise FileNotFoundError(f"Given compiler path {path} does not exist on your machine.")
         # Convert path for correct input
         path = self._make_modelica_normpath(path)
+        if self.use_mp:
+            raise ValueError("Given function is not yet supported for multiprocessing")
 
         res = self.dymola.SetDymolaCompiler(name.lower(),
                                             [f"CCompiler={_name_int[name]}",
@@ -428,29 +456,52 @@ class DymolaAPI(SimulationAPI):
             raise FileNotFoundError(f"Given filepath {filepath} does not exist")
         if not os.path.splitext(filepath)[1] == ".txt":
             raise TypeError('File is not of type .txt')
+        if self.use_mp:
+            raise ValueError("Given function is not yet supported for multiprocessing")
         res = self.dymola.importInitial(dsName=filepath)
         if res:
             self.logger.info("Successfully loaded dsfinal.txt")
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
-    def set_cd(self, cd):
+    @SimulationAPI.cd.setter
+    def cd(self, cd):
         """Set the working directory to the given path"""
-        super().set_cd(cd)
+        self._cd = cd
+        if not self.dymola:  # Not yet started
+            return
         # Also set the cd in the dymola api
-        modelica_normpath = self._make_modelica_normpath(cd)
-        res = self.dymola.cd(modelica_normpath)
+        self.set_dymola_cd(dymola=self.dymola,
+                           cd=cd)
+        if self.use_mp:
+            self.logger.warning("Won't set the cd for all workers, not yet implemented.")
+
+    def set_dymola_cd(self, dymola, cd):
+        os.makedirs(cd, exist_ok=True)
+        cd_modelica = self._make_modelica_normpath(path=cd)
+        res = dymola.cd(cd_modelica)
         if not res:
             raise OSError(f"Could not change working directory to {cd}")
 
     def close(self):
         """Closes dymola."""
+        if self.use_mp:
+            self.pool.map(self._close_multiprocessing, [_ for _ in range(self.n_cpu)])
+        else:
+            self._single_close(dymola=self.dymola)
+            self.dymola = None
+
+    def _close_multiprocessing(self):
+        wrk_idx = self.worker_idx
+        if wrk_idx in self._dymola_instances:
+            self._single_close(dymola=self._dymola_instances.pop(wrk_idx))
+
+    def _single_close(self, dymola):
+        """Closes a single dymola instance"""
         self.logger.info('Closing Dymola')
         # Change so the atexit function works without an error.
-        if self.dymola is not None:
-            self.dymola.close()
-        # Set dymola object to None to avoid further access to it.
-        self.dymola = None
+        if dymola is not None:
+            dymola.close()
         self.logger.info('Successfully closed Dymola')
 
     def _close_dummy(self):
@@ -496,29 +547,41 @@ class DymolaAPI(SimulationAPI):
             else:
                 self.states[idx] = _var_ebcpy
 
-    def _setup_dymola_interface(self):
+    def _setup_dymola_interface(self, use_mp):
         """Load all packages and change the current working directory"""
-        self.dymola = self._open_dymola_interface()
-        # Register the function now in case of an error.
-        if not self.debug:
-            atexit.register(self.close)
+        dymola = self._open_dymola_interface()
         self._check_dymola_instances()
-        self.set_cd(self.cd)
+        if use_mp:
+            cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
+            os.makedirs(cd, exist_ok=True)
+        else:
+            cd = self.cd
+        # Also set the cd in the dymola api
+        cd_modelica = self._make_modelica_normpath(path=cd)
+        res = dymola.cd(cd_modelica)
+        if not res:
+            raise OSError(f"Could not change working directory to {cd}")
+
         for package in self.packages:
             self.logger.info("Loading Model %s", os.path.dirname(package).split("\\")[-1])
-            res = self.dymola.openModel(package, changeDirectory=False)
+            res = dymola.openModel(package, changeDirectory=False)
             if not res:
-                raise ImportError(self.dymola.getLastErrorLog())
+                raise ImportError(dymola.getLastErrorLog())
         self.logger.info("Loaded modules")
         if self.equidistant_output:
             # Change the Simulation Output, to ensure all
             # simulation results have the same array shape.
             # Events can also cause errors in the shape.
-            self.dymola.experimentSetupOutput(equidistant=True,
-                                              events=False)
-        if not self.dymola.RequestOption("Standard"):
+            dymola.experimentSetupOutput(equidistant=True,
+                                         events=False)
+        if not dymola.RequestOption("Standard"):
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
+        if use_mp:
+            self._dymola_instances[self.worker_idx] = dymola
+            return True
+        else:
+            return dymola
 
     def _open_dymola_interface(self):
         """Open an instance of dymola and return the API-Object"""
@@ -779,7 +842,26 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self._setup_dymola_interface()
+            self.dymola = self._setup_dymola_interface(use_mp=False)
             self.sim_counter = 1
         else:
             self.sim_counter += 1
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    # Setup the fmu-api:
+    model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
+    cwd = r"D:\00_temp\test_mp_fmu"
+    dym_api = DymolaAPI(cd=cwd, model_name=model_name, n_cpu=10)
+    dym_api.result_names = ["heatCapacitor.T"]
+    dym_api.set_sim_setup({"stop_time": 10,
+                           "output_interval": 0.001})
+    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
+    res = dym_api.simulate(parameters=parameters)
+    for idx, _res in enumerate(res):
+        plt.plot(_res["heatCapacitor.T"], label=idx)
+    # Close the api to remove the created files:
+    dym_api.close()
+    plt.legend()
+    plt.show()

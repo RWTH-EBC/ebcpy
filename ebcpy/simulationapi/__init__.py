@@ -199,7 +199,39 @@ class SimulationAPI:
             If multiple set's of initial values are given, one
             dataframe for each set is returned in a list
         """
-        raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
+        # Convert inputs to equally sized objects of lists:
+        if isinstance(parameters, dict):
+            parameters = [parameters]
+        new_kwargs = {}
+        kwargs["return_option"] = return_option  # Update with arg
+        for key, value in kwargs.items():
+            if isinstance(value, list):
+                if len(value) != len(parameters):
+                    raise ValueError(f"Mismatch in multiprocessing of "
+                                     f"given parameters ({len(parameters)}) "
+                                     f"and given {key} ({len(value)})")
+                new_kwargs[key] = value
+            else:
+                new_kwargs[key] = [value] * len(parameters)
+        kwargs = []
+        for _idx, _parameters in enumerate(parameters):
+            kwargs.append(
+                {"parameters": _parameters,
+                 **{key: value[_idx] for key, value in new_kwargs.items()}
+                 }
+            )
+        # Decide between mp and single core
+        if self.use_mp:
+            return self.pool.map(self._single_simulation, kwargs)
+        else:
+            results = [self._single_simulation(kwargs={
+                "parameters": _single_kwargs["parameters"],
+                "return_option": _single_kwargs["return_option"],
+                **_single_kwargs
+            }) for _single_kwargs in kwargs]
+            if len(results) == 1:
+                return results[0]
+            return results
 
     @abstractmethod
     def _single_simulation(self, kwargs):

@@ -152,39 +152,7 @@ class FMU_API(simulationapi.SimulationAPI):
             If True, an error in fmpy will trigger an error in this script.
             Default is false
         """
-        # Convert inputs to equally sized objects of lists:
-        if isinstance(parameters, dict):
-            parameters = [parameters]
-        new_kwargs = {}
-        kwargs["return_option"] = return_option  # Update with arg
-        for key, value in kwargs.items():
-            if isinstance(value, list):
-                if len(value) != len(parameters):
-                    raise ValueError(f"Mismatch in multiprocessing of "
-                                     f"given parameters ({len(parameters)}) "
-                                     f"and given {key} ({len(value)})")
-                new_kwargs[key] = value
-            else:
-                new_kwargs[key] = [value] * len(parameters)
-        kwargs = []
-        for _idx, _parameters in enumerate(parameters):
-            kwargs.append(
-                {"parameters": _parameters,
-                 **{key: value[_idx] for key, value in new_kwargs.items()}
-                 }
-            )
-        # Decide between mp and single core
-        if self.use_mp:
-            return self.pool.map(self._single_simulation, kwargs)
-        else:
-            results = [self._single_simulation(kwargs={
-                "parameters": _single_kwargs["parameters"],
-                "return_option": _single_kwargs["return_option"],
-                **_single_kwargs
-            }) for _single_kwargs in kwargs]
-            if len(results) == 1:
-                return results[0]
-            return results
+        return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
     def _single_simulation(self, kwargs):
         """
@@ -209,7 +177,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if self.use_mp:
             idx_worker = self.worker_idx
             if idx_worker not in self._fmu_instances:
-                self._setup_single_fmu_instance(unzip_fmu_again=True)
+                self._setup_single_fmu_instance(use_mp=True)
         else:
             idx_worker = 0
 
