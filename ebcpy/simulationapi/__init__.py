@@ -7,7 +7,7 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 
 import os
 import itertools
-import warnings
+from copy import deepcopy
 import numpy as np
 from typing import Dict, Union, TypeVar, Any, List
 from pydantic import BaseModel, Field, validator
@@ -98,7 +98,9 @@ class SimulationAPI:
         Maximum number equals the cpu count of the device.
     """
     _sim_setup_class: SimulationSetupClass = SimulationSetup
-    _items_to_drop = ['pool']
+    _items_to_drop = [
+        'pool',
+    ]
 
     def __init__(self, cd, model_name, **kwargs):
         # Setup the logger
@@ -119,24 +121,27 @@ class SimulationAPI:
         # Setup the model
         self._sim_setup = self._sim_setup_class()
         self.cd = cd
-        self.model_name = model_name
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
         self.states: Dict[str, Variable] = {}       # States of model
         self.result_names = []
+        self.model_name = model_name
 
     # MP-Functions
     @property
     def worker_idx(self):
         """Index of the current worker"""
-        return mp.current_process()._identity[0]
+        _id = mp.current_process()._identity
+        if _id:
+            return _id[0]
 
     def __getstate__(self):
         """Overwrite magic method to allow pickling the api object"""
         self_dict = self.__dict__.copy()
         for item in self._items_to_drop:
             del self_dict[item]
+        #return deepcopy(self_dict)
         return self_dict
 
     def __setstate__(self, state):
@@ -149,7 +154,7 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}.close function is not defined')
 
     @abstractmethod
-    def _single_close(self):
+    def _single_close(self, **kwargs):
         """Base function for closing the simulation-program of a single core"""
         raise NotImplementedError(f'{self.__class__.__name__}._single_close function is not defined')
 
@@ -197,7 +202,7 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}.simulate function is not defined')
 
     @abstractmethod
-    def _single_simulation(self, **kwargs):
+    def _single_simulation(self, kwargs):
         """
         Same arguments and function as simulate().
         Used to differ between single- and multi-processing simulation"""
@@ -232,15 +237,17 @@ class SimulationAPI:
         Set new model_name and trigger further functions
         to load parameters etc.
         """
+        self._model_name = model_name
         # Empty all variables again.
+        if self.worker_idx:
+            return
         self.outputs = {}
         self.parameters = {}
         self.states = {}
         self.inputs = {}
-        self._model_name = model_name
         self._update_model()
         # Set all outputs to result_names:
-        self.result_names = self.outputs.keys()
+        self.result_names = list(self.outputs.keys())
 
     @abstractmethod
     def _update_model(self):

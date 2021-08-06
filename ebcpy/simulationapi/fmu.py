@@ -6,6 +6,8 @@ import logging
 import pathlib
 import atexit
 import shutil
+import time
+from itertools import repeat
 from typing import List, Union
 import fmpy
 from fmpy.model_description import read_model_description
@@ -15,6 +17,10 @@ import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
 # pylint: disable=broad-except
+
+#import multiprocessing as mp
+#m = mp.Manager()
+#m.dict()
 
 
 class FMU_Setup(SimulationSetup):
@@ -27,6 +33,7 @@ class FMU_Setup(SimulationSetup):
 
     _default_solver = "CVode"
     _allowed_solvers = ["CVode", "Euler"]
+
 
 class FMU_API(simulationapi.SimulationAPI):
     """
@@ -66,6 +73,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self._model_description = None
         self._fmi_type = None
         self.log_fmu = kwargs.get("log_fmu", True)
+        self._single_unzip_dir: str = None
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -91,12 +99,14 @@ class FMU_API(simulationapi.SimulationAPI):
         if self.use_mp:
             self.pool.map(self._close_multiprocessing, [_ for _ in range(self.n_cpu)])
         else:
-            self._close_single(fmu_instance=self._fmu_instances[0],
+            if self._fmu_instances:
+                return  # Already closed
+            self._single_close(fmu_instance=self._fmu_instances[0],
                                unzip_dir=self._unzip_dirs[0])
-        self._unzip_dirs = {}
-        self._fmu_instances = {}
+            self._unzip_dirs = {}
+            self._fmu_instances = {}
 
-    def _close_single(self, fmu_instance, unzip_dir):
+    def _single_close(self, fmu_instance, unzip_dir):
         try:
             fmu_instance.terminate()
         except Exception as error:  # This is due to fmpy which does not yield a narrow error
@@ -107,59 +117,76 @@ class FMU_API(simulationapi.SimulationAPI):
             self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
         if unzip_dir is not None:
-            shutil.rmtree(unzip_dir)
+            try:
+                shutil.rmtree(unzip_dir)
+            except FileNotFoundError:
+                pass  # Nothing to delete
+            except PermissionError:
+                self.logger.error("Could not delete unzipped fmu "
+                                  "in location %s. Delete it yourself.", unzip_dir)
 
     def _close_multiprocessing(self, _):
         """Small helper function"""
         idx_worker = self.worker_idx
-        self._close_single(fmu_instance=self._fmu_instances[idx_worker],
+        if idx_worker not in self._fmu_instances:
+            return  # Already closed
+        self.logger.error(f"Closing fmu for worker {idx_worker}")
+        self._single_close(fmu_instance=self._fmu_instances[idx_worker],
                            unzip_dir=self._unzip_dirs[idx_worker])
+        self._unzip_dirs = {}
+        self._fmu_instances = {}
 
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
         """
-        Simulate current simulation-setup.
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
 
-        :param dataframe inputs:
+        Additional settings:
+        :keyword pd.DataFrame inputs:
             Pandas.Dataframe of the input data for simulating the FMU with fmpy
         :keyword Boolean fail_on_error:
             If True, an error in fmpy will trigger an error in this script.
             Default is false
-        :return:
-            Filepath of the mat-file.
         """
+        # Convert inputs to equally sized objects of lists:
+        if isinstance(parameters, dict):
+            parameters = [parameters]
+        new_kwargs = {}
+        kwargs["return_option"] = return_option  # Update with arg
+        for key, value in kwargs.items():
+            if isinstance(value, list):
+                if len(value) != len(parameters):
+                    raise ValueError(f"Mismatch in multiprocessing of "
+                                     f"given parameters ({len(parameters)}) "
+                                     f"and given {key} ({len(value)})")
+                new_kwargs[key] = value
+            else:
+                new_kwargs[key] = [value] * len(parameters)
+        kwargs = []
+        for _idx, _parameters in enumerate(parameters):
+            kwargs.append(
+                {"parameters": _parameters,
+                 **{key: value[_idx] for key, value in new_kwargs.items()}
+                 }
+            )
         # Decide between mp and single core
         if self.use_mp:
-            if isinstance(parameters, dict):
-                parameters = [parameters]
-            new_kwargs = {}
-            kwargs["return_option"] = return_option  # Update with arg
-            for key, value in kwargs.items():
-                if isinstance(value, list):
-                    if len(value) != len(parameters):
-                        raise ValueError(f"Mismatch in multiprocessing of "
-                                         f"given parameters ({len(parameters)}) "
-                                         f"and given {key} ({len(value)})")
-                    new_kwargs[key] = value
-                else:
-                    new_kwargs[key] = [value] * len(parameters)
-            kwargs = []
-            for _idx, _parameters in enumerate(parameters):
-                kwargs.append(
-                    {"parameters": _parameters,
-                     **{key: value[_idx] for key, value in new_kwargs.items()}
-                     }
-                )
             return self.pool.map(self._single_simulation, kwargs)
         else:
-            return self._single_simulation(
-                parameters=parameters,
-                return_option=return_option,
-                **kwargs)
+            results = [self._single_simulation(kwargs={
+                "parameters": _single_kwargs["parameters"],
+                "return_option": _single_kwargs["return_option"],
+                **_single_kwargs
+            }) for _single_kwargs in kwargs]
+            if len(results) == 1:
+                return results[0]
+            return results
 
-    def _single_simulation(self, **kwargs):
+    def _single_simulation(self, kwargs):
         """
         Perform the single simulation for the given
         unzip directory and fmu_instance.
@@ -169,13 +196,11 @@ class FMU_API(simulationapi.SimulationAPI):
         function accessible by multiprocessing pool.map.
 
         Additional settings:
-        :param dataframe inputs:
+        :keyword pd.DataFrame inputs:
             Pandas.Dataframe of the input data for simulating the FMU with fmpy
         :keyword Boolean fail_on_error:
             If True, an error in fmpy will trigger an error in this script.
             Default is false
-        :return:
-            Filepath of the mat-file.
         """
         # Unpack kwargs:
         parameters = kwargs.pop("parameters", None)
@@ -183,9 +208,11 @@ class FMU_API(simulationapi.SimulationAPI):
 
         if self.use_mp:
             idx_worker = self.worker_idx
+            if idx_worker not in self._fmu_instances:
+                self._setup_single_fmu_instance(unzip_fmu_again=True)
         else:
             idx_worker = 0
-        print(self._fmu_instances)
+
         fmu_instance = self._fmu_instances[idx_worker]
         unzip_dir = self._unzip_dirs[idx_worker]
 
@@ -269,12 +296,12 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         self.logger.info("Extracting fmu and reading fmu model description")
         # First load model description and extract variables
-        _unzip_dir_single = os.path.join(self.cd,
-                                         os.path.basename(self.model_name)[:-4] + "_extracted")
-        os.makedirs(_unzip_dir_single, exist_ok=True)
-        _unzip_dir_single = fmpy.extract(self.model_name,
-                                         unzipdir=_unzip_dir_single)
-        self._model_description = read_model_description(_unzip_dir_single,
+        self._single_unzip_dir = os.path.join(self.cd,
+                                              os.path.basename(self.model_name)[:-4] + "_extracted")
+        os.makedirs(self._single_unzip_dir, exist_ok=True)
+        self._single_unzip_dir = fmpy.extract(self.model_name,
+                                         unzipdir=self._single_unzip_dir)
+        self._model_description = read_model_description(self._single_unzip_dir,
                                                          validate=True)
 
         if self._model_description.coSimulation is None:
@@ -310,33 +337,29 @@ class FMU_API(simulationapi.SimulationAPI):
 
         if self.use_mp:
             self.logger.info("Extracting fmu %s times for "
-                             "multiprocessing on %s cores",
+                             "multiprocessing on %s processes",
                              self.n_cpu, self.n_cpu)
-            _unzip_dirs = []
-            for cpu_idx in range(self.n_cpu):
-                _unzip_dir_cpu_idx = _unzip_dir_single + f"_worker_{cpu_idx}"
-                _unzip_dir_cpu_idx = fmpy.extract(self.model_name,
-                                                  unzipdir=_unzip_dir_cpu_idx)
-                _unzip_dirs.append(_unzip_dir_cpu_idx)
-            self.pool.map(self._setup_single_fmu_instance, _unzip_dirs)
+            self.pool.map(
+                self._setup_single_fmu_instance,
+                [True for _ in range(self.n_cpu)]
+            )
+            self.logger.info("Instantiated fmu's on all processes.")
         else:
-            self.logger.info("Instantiating fmu for single processing")
-            self._unzip_dirs = {0: _unzip_dir_single}
-            self._fmu_instances = {0: fmpy.instantiate_fmu(
-                unzipdir=_unzip_dir_single,
-                model_description=self._model_description,
-                fmi_type=self._fmi_type,
-                visible=False,
-                debug_logging=False,
-                logger=self._custom_logger,
-                fmi_call_logger=None,
-                use_remoting=False)
-            }
+            self._setup_single_fmu_instance(use_mp=False)
 
-    def _setup_single_fmu_instance(self, unzip_dir):
-        idx_worker = self.worker_idx
-        self.logger.info("Instantiating fmu for worker %s", idx_worker)
-        self._fmu_instances.update({idx_worker: fmpy.instantiate_fmu(
+    def _setup_single_fmu_instance(self, use_mp):
+        if not use_mp:
+            wrk_idx = 0
+        else:
+            wrk_idx = self.worker_idx
+        if use_mp:
+            unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
+            unzip_dir = fmpy.extract(self.model_name,
+                                     unzipdir=unzip_dir)
+        else:
+            unzip_dir = self._single_unzip_dir
+        self.logger.info("Instantiating fmu for worker %s", wrk_idx)
+        self._fmu_instances.update({wrk_idx: fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
             model_description=self._model_description,
             fmi_type=self._fmi_type,
@@ -345,8 +368,9 @@ class FMU_API(simulationapi.SimulationAPI):
             logger=self._custom_logger,
             fmi_call_logger=None)})
         self._unzip_dirs.update({
-            idx_worker: unzip_dir
+            wrk_idx: unzip_dir
         })
+        return True
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
@@ -362,29 +386,20 @@ class FMU_API(simulationapi.SimulationAPI):
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
 
 
-#if __name__ == "__main__":
-#    import doctest
-#    doctest.testmod()
 if __name__ == "__main__":
     import matplotlib.pyplot as plt
-    # Setup the dymola-api:
+    # Setup the fmu-api:
     model_name = r"E:\04_git\ebcpy\tests\data\PumpAndValve_windows.fmu"
     cwd = r"D:\00_temp\test_mp_fmu"
-    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=3)
-    fmu_api_2 = FMU_API(model_name=model_name, n_cpu=3, cd=os.path.join(cwd, "testzone_2"))
+    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=1)
     fmu_api.result_names = ["heatCapacitor.T"]
-    fmu_api.result_names = ["heatCapacitor.T"]
-    fmu_api.set_sim_setup({"stop_time": 2,
+    fmu_api.set_sim_setup({"stop_time": 10,
                            "output_interval": 0.001})
-    fmu_api_2.set_sim_setup({"stop_time": 2,
-                             "output_interval": 0.001})
-    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(12)]
+    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
     res = fmu_api.simulate(parameters=parameters)
-    res2 = fmu_api_2.simulate(parameters=parameters)
     for idx, _res in enumerate(res):
         plt.plot(_res["heatCapacitor.T"], label=idx)
     # Close the api to remove the created files:
     fmu_api.close()
-    fmu_api_2.close()
     plt.legend()
     plt.show()
