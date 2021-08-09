@@ -64,7 +64,7 @@ class TestDymolaAPI(unittest.TestCase):
         self.assertIsInstance(res, str)
         res = self.dym_api.simulate(parameters=self.parameters,
                                     return_option='savepath',
-                                    savepath=os.getcwd(),
+                                    savepath=oself.example_sim_dir,
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
@@ -118,12 +118,11 @@ class TestFMUAPI(unittest.TestCase):
         self.fmu_api = fmu.FMU_API(cd=self.example_sim_dir,
                                    model_name=model_name)
 
-    @unittest.skip("Does not work in ci")
     def test_close(self):
         """Test close functionality of fmu api"""
         # pylint: disable=protected-access
         self.fmu_api.close()
-        self.assertIsNone(self.fmu_api._unzip_dir)
+        self.assertEqual(self.fmu_api._unzip_dirs, {})
 
     def test_simulate(self):
         """Test simulate functionality of fmu api"""
@@ -137,7 +136,7 @@ class TestFMUAPI(unittest.TestCase):
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
         res = self.fmu_api.simulate(return_option='savepath',
-                                    savepath=os.getcwd(),
+                                    savepath=self.example_sim_dir,
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)

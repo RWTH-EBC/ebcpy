@@ -489,7 +489,13 @@ class DymolaAPI(SimulationAPI):
     def close(self):
         """Closes dymola."""
         if self.use_mp:
-            self.pool.map(self._close_multiprocessing, [_ for _ in range(self.n_cpu)])
+            try:
+                self.pool.map(self._close_multiprocessing,
+                              [_ for _ in range(self.n_cpu)])
+                self.pool.close()
+                self.pool.join()
+            except ValueError:
+                pass  # Already closed prior to atexit
         else:
             self._single_close(dymola=self.dymola)
             self.dymola = None

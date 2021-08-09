@@ -97,9 +97,15 @@ class FMU_API(simulationapi.SimulationAPI):
             True on success
         """
         if self.use_mp:
-            self.pool.map(self._close_multiprocessing, [_ for _ in range(self.n_cpu)])
+            try:
+                self.pool.map(self._close_multiprocessing,
+                              [_ for _ in range(self.n_cpu)])
+                self.pool.close()
+                self.pool.join()
+            except ValueError:
+                pass  # Already closed prior to atexit
         else:
-            if self._fmu_instances:
+            if not self._fmu_instances:
                 return  # Already closed
             self._single_close(fmu_instance=self._fmu_instances[0],
                                unzip_dir=self._unzip_dirs[0])
@@ -193,7 +199,7 @@ class FMU_API(simulationapi.SimulationAPI):
                                (inputs.index[0] - inputs.index[1]))
             inputs = inputs.shift(periods=shift_period)
             # Shift time column back
-            inputs.time = inputs.time.shift(-shift_period, fill_value=0)
+            inputs.index = inputs.index.shift(-shift_period, fill_value=0)
             # drop NANs
             inputs = inputs.dropna()
 
@@ -283,13 +289,21 @@ class FMU_API(simulationapi.SimulationAPI):
                 return np.inf
             return value
         self.logger.info("Reading model variables")
+
+        _types = {"Enumeration": int,
+                  "Integer": int,
+                  "Real": float,
+                  "Boolean": bool, }
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
+            if var.start is not None:
+                var.start = _types[var.type](var.start)
 
             _var_ebcpy = Variable(
                 min=-_to_bound(var.min),
                 max=_to_bound(var.max),
-                value=var.start
+                value=var.start,
+                type=_types[var.type]
             )
             if var.causality == 'input':
                 self.inputs[var.name] = _var_ebcpy
@@ -363,8 +377,8 @@ if __name__ == "__main__":
     fmu_api.result_names = ["heatCapacitor.T"]
     fmu_api.set_sim_setup({"stop_time": 10,
                            "output_interval": 0.001})
-    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
-    res = fmu_api.simulate(parameters=parameters)
+    PARAMETERS = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
+    res = fmu_api.simulate(parameters=PARAMETERS)
     for idx, _res in enumerate(res):
         plt.plot(_res["heatCapacitor.T"], label=idx)
     # Close the api to remove the created files:

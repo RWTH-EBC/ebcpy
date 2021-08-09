@@ -34,6 +34,11 @@ class Variable(BaseModel):
         title='min',
         description='Minimal value (lower bound) of the variables value'
     )
+    type: Any = Field(
+        default=None,
+        title='type',
+        description='Type of the variable'
+    )
 
 
 class SimulationSetup(BaseModel):
@@ -200,6 +205,8 @@ class SimulationAPI:
             dataframe for each set is returned in a list
         """
         # Convert inputs to equally sized objects of lists:
+        if parameters is None:
+            parameters = [{}]
         if isinstance(parameters, dict):
             parameters = [parameters]
         new_kwargs = {}
@@ -323,13 +330,6 @@ class SimulationAPI:
         """
         self.check_unsupported_variables(variables=result_names,
                                          type_of_var="variables")
-        for res_name in result_names:
-            if res_name not in self.variables:
-                self.logger.error(
-                    "Variable name '%s' not found in model. "
-                    "Will most probably trigger an error when simulating.",
-                    res_name
-                )
         self._result_names = result_names
 
     @property
@@ -337,10 +337,10 @@ class SimulationAPI:
         """
         All variables of the simulation model
         """
-        return itertools.chain(self.parameters.keys(),
-                               self.outputs.keys(),
-                               self.inputs.keys(),
-                               self.states.keys())
+        return list(itertools.chain(self.parameters.keys(),
+                                    self.outputs.keys(),
+                                    self.inputs.keys(),
+                                    self.states.keys()))
 
     def check_unsupported_variables(self, variables: List[str], type_of_var: str):
         """Log warnings if variables are not supported."""
