@@ -8,3 +8,4 @@ fmpy>=0.2.27
 openpyxl>=3.0.5
 xlrd>=2.0.1
 pymoo>=0.4.2
+pydantic>=1.8.2
