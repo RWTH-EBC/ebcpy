@@ -1,5 +1,5 @@
 """
-Goals of this part of the workshop:
+Goals of this part of the examples:
 1. Learn how to use the DymolaAPI
 2. Learn the different result options of the simulation
 3. Get a first idea of the usage of TimeSeriesData

@@ -1,5 +1,5 @@
 """
-Goals of this part of the workshop:
+Goals of this part of the examples:
 1. Learn how to create a custom Optimizer class
 2. Learn the different optimizer frameworks
 """
@@ -8,33 +8,64 @@ import matplotlib.pyplot as plt
 import numpy as np
 # Imports from ebcpy
 from ebcpy.optimization import Optimizer
+from ebcpy.utils.statistics_analyzer import StatisticsAnalyzer
 
 
-def main():
+def main(statistical_measure="MAE"):
+    """
+    Arguments of this example:
+    :param str statistical_measure:
+        The measure to use for regression analysis. Default is MAE.
+        We refer to the documentation of the `StatisticsAnalyzer`
+        class for other options
 
-    class MyCustomOptimizer(Optimizer):
+    """
 
-        def __init__(self, goal, data, **kwargs):
+    # ######################### Class definition ##########################
+    # To create a custom optimizer, one needs to inherit from the Optimizer
+    class PolynomalFitOptimizer(Optimizer):
+        """
+        Define a custom Optimizer by inheriting.
+        This Optimizer finds the value a, b anc c for the function:
+        f(x) = a * x ** 2 + b * x + c
+        """
+
+        def __init__(self, goal, data, stat_anaylzer, **kwargs):
+            """
+            In the init, add any data you want to access during optimization.
+            You could also use global variables and don't overwrite the init,
+            but as we all now: Don't use global variables.
+            """
             super().__init__(**kwargs)
+            # Set your custom data
             self.goal = goal
             self.data = data
+            self.stat_anaylzer = stat_anaylzer
 
         def obj(self, xk, *args):
+            """
+            The only function you have to overwrite is the Optimizer.obj
+            Here you have to calculate, based on the given current optimization variables xk,
+            the objective value to minimize.
+            This has to be a scalar value!!
+            """
             # Calculate the quadratic formula:
-            quadratic_func = xk[0] * self.data ** 2 \
-                             + xk[1] * self.data \
-                             + xk[2]
-            # Return the MAE of the quadratic function.
-            return np.sum(np.abs(self.goal - quadratic_func))
+            a, b, c = xk
+            f_x = a * self.data ** 2 + b * self.data + c
+            # Return the choosen statistical measure
+            return self.stat_anaylzer.calc(self.goal, f_x)
 
     # Generate an array between 0 and pi
     my_data = np.linspace(0, np.pi, 100)
     my_goal = np.sin(my_data)
+    stat_analyzer = StatisticsAnalyzer(statistical_measure)
 
-    mco = MyCustomOptimizer(goal=my_goal,
-                            data=my_data,
-                            bounds=[(-100, 100), (-100, 100), (-100, 100)]  # Specify bounds to the optimization
-                            )
+    mco = PolynomalFitOptimizer(
+        goal=my_goal,
+        data=my_data,
+        stat_anaylzer=stat_analyzer,
+        bounds=[(-100, 100), (-100, 100), (-100, 100)]  # Specify bounds to the optimization
+    )
 
     framework_methods = {
         "scipy_differential_evolution": ("best1bin", {}),
@@ -45,7 +76,8 @@ def main():
 
     for framework, method_kwargs in framework_methods.items():
         method, kwargs = method_kwargs
-        mco.logger.info("Optimizing framework %s with method %s", framework, method)
+        mco.logger.info("Optimizing framework %s with method %s and %s",
+                        framework, method, statistical_measure)
         res = mco.optimize(framework=framework, method=method, **kwargs)
         plt.figure()
         plt.plot(my_data, my_goal, "r", label="Reference")
@@ -58,4 +90,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(statistical_measure="R2")
