@@ -11,7 +11,7 @@ from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
 
 
-class PartialTestDymolaAPI(unittest.TestCase):
+class PartialTestSimAPI(unittest.TestCase):
 
     def setUp(self) -> None:
         self.sim_api = None
@@ -21,7 +21,7 @@ class PartialTestDymolaAPI(unittest.TestCase):
         self.example_sim_dir = os.path.join(self.data_dir, "testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
-        if self.__class__ == PartialTestDymolaAPI:
+        if self.__class__ == PartialTestSimAPI:
             self.skipTest("Just a partial class")
 
     def test_simulate(self):
@@ -45,18 +45,6 @@ class PartialTestDymolaAPI(unittest.TestCase):
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
-        # Test non-existing parameter
-        self.parameters.update({"C2": 10})
-        if isinstance(self.sim_api, dymola_api.DymolaAPI):
-            with self.assertRaises(KeyError):
-                self.sim_api.simulate(parameters=self.parameters,
-                                      return_option='savepath')
-            # Does not raise anything
-            self.sim_api.simulate(parameters=self.parameters)
-            # Model with no parameters:
-            with self.assertRaises(ValueError):
-                self.sim_api.parameters = {}
-                self.sim_api.simulate()  # Test with no parameters
 
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
@@ -88,13 +76,14 @@ class PartialTestDymolaAPI(unittest.TestCase):
             pass
 
 
-class TestDymolaAPI(PartialTestDymolaAPI):
-    """Test-Class for the DymolaAPI class."""
+class PartialTestDymolaAPI(PartialTestSimAPI):
 
-    def setUp(self):
-        """Called before every test.
-        Used to setup relevant paths and APIs etc."""
+    n_cpu = None
+
+    def setUp(self) -> None:
         super().setUp()
+        if self.__class__ == PartialTestDymolaAPI:
+            self.skipTest("Just a partial class")
         ebcpy_test_package_dir = self.data_dir.joinpath("TestModel.mo")
         packages = [ebcpy_test_package_dir]
         model_name = "AixCalTest_TestModel"
@@ -115,7 +104,8 @@ class TestDymolaAPI(PartialTestDymolaAPI):
             self.sim_api = dymola_api.DymolaAPI(cd=self.example_sim_dir,
                                                 model_name=model_name,
                                                 packages=packages,
-                                                dymola_path=dymola_path)
+                                                dymola_path=dymola_path,
+                                                n_cpu=self.n_cpu)
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
                           f"on this machine. Error message: {error}")
@@ -125,14 +115,43 @@ class TestDymolaAPI(PartialTestDymolaAPI):
         self.sim_api.close()
         self.assertIsNone(self.sim_api.dymola)
 
+    def test_wrong_parameters(self):
+        # Test non-existing parameter
+        self.parameters.update({"C2": 10})
+        with self.assertRaises(KeyError):
+            self.sim_api.simulate(parameters=self.parameters,
+                                  return_option='savepath')
+        # Does not raise anything
+        self.sim_api.simulate(parameters=self.parameters)
+        # Model with no parameters:
+        with self.assertRaises(ValueError):
+            self.sim_api.parameters = {}
+            self.sim_api.simulate()  # Test with no parameters
 
-class TestFMUAPI(PartialTestDymolaAPI):
+
+class TestDymolaAPIMultiCore(PartialTestDymolaAPI):
+    """Test-Class for the DymolaAPI class on single core."""
+
+    n_cpu = 2
+
+
+class TestDymolaAPISingleCore(PartialTestDymolaAPI):
+    """Test-Class for the DymolaAPI class on multi core."""
+
+    n_cpu = 1
+
+
+class TestFMUAPI(PartialTestSimAPI):
     """Test-Class for the FMUAPI class."""
+
+    n_cpu = None
 
     def setUp(self):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         super().setUp()
+        if self.__class__ == PartialTestDymolaAPI:
+            self.skipTest("Just a partial class")
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
         else:
@@ -146,6 +165,18 @@ class TestFMUAPI(PartialTestDymolaAPI):
         # pylint: disable=protected-access
         self.sim_api.close()
         self.assertEqual(self.sim_api._unzip_dirs, {})
+
+
+class TestFMUAPISingleCore(TestFMUAPI):
+    """Test-Class for the FMU_API class on single core"""
+
+    n_cpu = 1
+
+
+class TestFMUAPIMultiCore(TestFMUAPI):
+    """Test-Class for the FMU_API class on multi core"""
+
+    n_cpu = 2
 
 
 if __name__ == "__main__":

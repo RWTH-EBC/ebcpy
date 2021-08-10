@@ -503,7 +503,7 @@ class DymolaAPI(SimulationAPI):
                 pass  # Already closed prior to atexit
         else:
             self._single_close(dymola=self.dymola)
-            self.dymola = None
+        self.dymola = None
 
     def _close_multiprocessing(self, _):
         wrk_idx = self.worker_idx

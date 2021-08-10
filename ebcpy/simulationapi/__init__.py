@@ -232,16 +232,16 @@ class SimulationAPI:
             )
         # Decide between mp and single core
         if self.use_mp:
-            return self.pool.map(self._single_simulation, kwargs)
+            results = self.pool.map(self._single_simulation, kwargs)
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
                 "return_option": _single_kwargs["return_option"],
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
-            if len(results) == 1:
-                return results[0]
-            return results
+        if len(results) == 1:
+            return results[0]
+        return results
 
     @abstractmethod
     def _single_simulation(self, kwargs):
