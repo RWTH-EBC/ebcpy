@@ -29,7 +29,7 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_mat = conversion.convert_hdf_to_modelica_mat(self.example_data_hdf_path,
+            res, filepath_mat = conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
                                                                        save_path,
                                                                        columns=col,
                                                                        key="trajectories")
@@ -45,12 +45,12 @@ class TestConversion(unittest.TestCase):
             os.remove(save_path)
 
         with self.assertRaises(ValueError):
-            conversion.convert_hdf_to_modelica_mat(self.example_data_hdf_path,
+            conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
                                                    save_path_file="not_a_mat_file.txt",
                                                    columns=col,
                                                    key="trajectories")
 
-        res, filepath_mat = conversion.convert_hdf_to_modelica_mat(self.example_data_hdf_path,
+        res, filepath_mat = conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
                                                                    columns=col,
                                                                    key="trajectories")
         self.assertTrue(res)
@@ -65,10 +65,10 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         for col in [columns, None]:
             # Check if successfully converted
-            res, filepath_txt = conversion.convert_hdf_to_modelica_txt(self.example_data_hdf_path,
+            res, filepath_txt = conversion.convert_tsd_to_modelica_txt(self.example_data_hdf_path,
                                                                        table_name="dummy",
                                                                        columns=col,
-                                                                       key="trajectories",)
+                                                                       key="trajectories", )
             self.assertTrue(res)
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
@@ -77,13 +77,13 @@ class TestConversion(unittest.TestCase):
             # Remove converted file again
             os.remove(filepath_txt)
         with self.assertRaises(ValueError):
-            conversion.convert_hdf_to_modelica_txt(
+            conversion.convert_tsd_to_modelica_txt(
                 self.example_data_hdf_path,
                 save_path_file="not_a_txt.mat",
                 table_name="dummy",
                 columns=col,
                 key="trajectories",)
-        res, filepath_txt = conversion.convert_hdf_to_modelica_txt(
+        res, filepath_txt = conversion.convert_tsd_to_modelica_txt(
             self.example_data_hdf_path,
             table_name="dummy",
             columns=col,
@@ -106,7 +106,7 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_txt = conversion.convert_hdf_to_clustering_txt(self.example_data_hdf_path,
+            res, filepath_txt = conversion.convert_tsd_to_clustering_txt(self.example_data_hdf_path,
                                                                          save_path,
                                                                          columns=col,
                                                                          key="trajectories")

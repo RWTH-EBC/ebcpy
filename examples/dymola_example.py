@@ -7,9 +7,11 @@ Goals of this part of the examples:
 # Start by importing all relevant packages
 import pathlib
 import time
+import numpy as np
 import matplotlib.pyplot as plt
 # Imports from ebcpy
 from ebcpy import DymolaAPI, TimeSeriesData, FMU_API
+from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 
 def main(
@@ -68,6 +70,41 @@ def main(
     p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
     dym_api.result_names = [p_el_name]
 
+    # ######################### Inputs ##########################
+    # Sadly, setting inputs directly is not supported in Dymola.
+    # Hence, you have to use the model `Modelica.Blocks.Sources.CombiTimeTable`.
+    # In the model "AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem" we
+    # already use this model to simulate heat gains into the room
+    # We called the instance of the model `timTab`.
+    # To get the output of the table, let's add it to the result names:
+    dym_api.result_names = [p_el_name, 'timTab.y[1]']
+    # In order to change the inputs, you have to change the model in Dymola by:
+    # 1. Double click on timTab
+    # 2. Set tableOnFile = true
+    # 3. Set tableName = "myCustomInput" (or any other nice string)
+    table_name = "myCustomInput"
+    # 4. Enter the fileName where you want to store your input. This can be any filepath.
+    # For this tutorial to work, set
+    # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
+    file_name = pathlib.Path(aixlib_mo).joinpath("Resources", "my_custom_input.txt")
+    # This input generate is re-used from the fmu_example.py file.
+    time_index = np.arange(
+        dym_api.sim_setup.start_time,
+        dym_api.sim_setup.stop_time,
+        dym_api.sim_setup.output_interval
+    )
+    # Apply some sinus function for the outdoor air temperature
+    internal_gains = np.sin(time_index/3600*np.pi) * 1000
+    tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
+    # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
+    success, filepath = convert_tsd_to_modelica_txt(
+        tsd=tsd_input,
+        table_name=table_name,
+        save_path_file=file_name
+    )
+    if success:
+        print("Successfully created Dymola input file at", filepath)
+
     # ######################### Simulation options ##########################
     # Let's look at the doc
     print(help(dym_api.simulate))
@@ -102,6 +139,9 @@ def main(
                 color="black", label="last_point", marker="^")
     plt.legend()
     plt.title("Difference in output for different return_options")
+    plt.figure()
+    plt.plot(tsd_1['timTab.y[1]'], color="blue")
+    plt.title("Input of CombiTimeTable 'timTab'")
     plt.show()
 
 
