@@ -3,6 +3,7 @@ of Modelica-Models."""
 
 import sys
 import os
+import shutil
 import pathlib
 import warnings
 import atexit
@@ -140,10 +141,13 @@ class DymolaAPI(SimulationAPI):
             # First get the dymola-install-path:
             _dym_install = self.get_dymola_install_path()
             if _dym_install:
+                self.logger.info("Using dymola installation at %s", _dym_install)
                 if not dymola_path:
                     dymola_path = self.get_dymola_path(_dym_install)
+                    self.logger.info("Using dymola.exe: %s", dymola_path)
                 if not dymola_interface_path:
                     dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+                    self.logger.info("Using dymola interface: %s", dymola_interface_path)
             else:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
 
@@ -361,8 +365,9 @@ class DymolaAPI(SimulationAPI):
                 if os.path.isfile(os.path.join(savepath, filename)):
                     os.remove(os.path.join(savepath, filename))
                 # Move files
-                os.rename(os.path.join(self.cd, filename),
-                          os.path.join(savepath, filename))
+                shutil.copy(os.path.join(self.cd, filename),
+                            os.path.join(savepath, filename))
+                os.remove(os.path.join(self.cd, filename))
             return os.path.join(savepath, _save_name_dsres)
         data = res[1]  # Get data
         if return_option == "last_point":

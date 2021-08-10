@@ -11,6 +11,7 @@ Before being able to run these examples, be sure to:
 2. Activate the environment in your terminal. In Anaconda run: `activate py38_ebcpy` 
 3. Clone the repository by running `git clone https://git.rwth-aachen.de/EBC/EBC_all/Python/ebcpy`
 4. Clone the AixLib in order to use the models: `git clone https://github.com/RWTH-EBC/AixLib`
+   Also check if you're on development using `cd AixLib && git status && cd ..`
 5. Install the library using `pip install -e ebcpy`
 
 # What can I learn in the examples?

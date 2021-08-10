@@ -205,15 +205,26 @@ class TimeSeriesData(pd.DataFrame):
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
 
-    def to_df(self):
+    def to_df(self, force_single_index=False):
         """
         Return the dataframe version of the current TimeSeriesData object.
         If all tags are equal, the tags are dropped.
         Else, the object is just converted.
+
+        :param bool force_single_index:
+            If True (not the default), the conversion to a standard
+            DataFrame with a single index column (only variable names)
+            is only done if no variable contains multiple tags.
         """
-        if len(self.get_tags()) == 1:
+        if len(self.get_variables_with_multiple_tags()) == 0:
             return pd.DataFrame(self.droplevel(1, axis=1))
         else:
+            if force_single_index:
+                raise IndexError(
+                    "Can't automatically drop all tags "
+                    "as the following variables contain multiple tags: "
+                    f"{' ,'.join(self.get_variables_with_multiple_tags())}. "
+                )
             return pd.DataFrame(self)
 
     def _load_df_from_file(self):
@@ -257,13 +268,25 @@ class TimeSeriesData(pd.DataFrame):
         """
         Return an alphabetically sorted list of all variables
         :return:
+            List[str]
         """
         return sorted(self.columns.get_level_values(0).unique())
+
+    def get_variables_with_multiple_tags(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all variables
+        that contain more than one tag.
+        :return:
+            List[str]
+        """
+        var_names = self.columns.get_level_values(0)
+        return sorted(var_names[var_names.duplicated()])
 
     def get_tags(self) -> List[str]:
         """
         Return an alphabetically sorted list of all tags
         :return:
+            List[str]
         """
         return sorted(self.columns.get_level_values(1).unique())
 

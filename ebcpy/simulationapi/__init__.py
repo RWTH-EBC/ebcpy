@@ -368,6 +368,7 @@ class SimulationAPI:
             return True
         return False
 
-    def get_simulation_setup_fields(self):
+    @classmethod
+    def get_simulation_setup_fields(cls):
         """Return all fields in the chosen SimulationSetup class."""
-        return list(self._sim_setup_class.__fields__.keys())
+        return list(cls._sim_setup_class.__fields__.keys())

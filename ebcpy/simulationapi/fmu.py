@@ -66,6 +66,11 @@ class FMU_API(simulationapi.SimulationAPI):
     _sim_setup_class: SimulationSetupClass = FMU_Setup
     _fmu_instances: dict = {}
     _unzip_dirs: dict = {}
+    _type_map = {
+        float: np.double,
+        bool: np.bool_,
+        int: np.int_
+    }
 
     def __init__(self, cd, model_name, **kwargs):
         """Instantiate class parameters"""
@@ -192,22 +197,24 @@ class FMU_API(simulationapi.SimulationAPI):
 
         inputs = kwargs.get("inputs", None)
         if inputs is not None:
+            if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
+                raise TypeError("DataFrame or TimeSeriesData object expected for inputs.")
             inputs = inputs.copy()  # Create save copy
-            # Shift all columns, because "simulate_fmu" gets an input at
-            # timestep x and calculates the related output for timestep x+1
-            shift_period = int(self.sim_setup.output_interval /
-                               (inputs.index[0] - inputs.index[1]))
-            inputs = inputs.shift(periods=shift_period)
-            # Shift time column back
-            inputs.index = inputs.index.shift(-shift_period, fill_value=0)
-            # drop NANs
-            inputs = inputs.dropna()
-
+            if isinstance(inputs, TimeSeriesData):
+                inputs = inputs.to_df(force_single_index=True)
+            if "time" in inputs.columns:
+                raise IndexError(
+                    "Given inputs contain a column named 'time'. "
+                    "The index is assumed to contain the time-information."
+                )
             # Convert df to structured numpy array for fmpy: simulate_fmu
+            inputs.insert(0, column="time", value=inputs.index)
             inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
-            # TODO: implement more than "np.double" as type-possibilities
-            dtype = [(i, np.double) for i in
-                     inputs.columns]
+            # Try to match the type, default is np.double. 'time' is not in inputs and thus handled separately.
+            dtype = [(inputs.columns[0], np.double)] + \
+                    [(col,
+                      self._type_map.get(self.inputs[col].type, np.double)
+                      ) for col in inputs.columns[1:]]
             inputs = np.array(inputs_tuple, dtype=dtype)
         if parameters is None:
             parameters = {}
