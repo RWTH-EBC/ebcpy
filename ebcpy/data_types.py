@@ -282,12 +282,19 @@ class TimeSeriesData(pd.DataFrame):
         var_names = self.columns.get_level_values(0)
         return sorted(var_names[var_names.duplicated()])
 
-    def get_tags(self) -> List[str]:
+    def get_tags(self, variable: str = None) -> List[str]:
         """
         Return an alphabetically sorted list of all tags
+
+        :param str variable:
+            If given, tags of this variable are returned
+
         :return:
             List[str]
         """
+        if variable:
+            tags = self.loc[:, variable].columns
+            return sorted(tags)
         return sorted(self.columns.get_level_values(1).unique())
 
     def get_columns_by_tag(self,
