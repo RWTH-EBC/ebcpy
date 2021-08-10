@@ -101,7 +101,8 @@ class DymolaAPI(SimulationAPI):
                          "dymola_path",
                          "dymola_interface_path",
                          "equidistant_output",
-                         "n_restart"]
+                          "n_restart",
+                         "debug"]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
