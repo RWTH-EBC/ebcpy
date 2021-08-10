@@ -1,9 +1,9 @@
 """
 Goals of this part of the examples:
 
-1. Learn how to use the FMU_API
+1. Learn how to use the `FMU_API`
 2. Understand model variables
-3. Learn how to change variables to store (result_names)
+3. Learn how to change variables to store (`result_names`)
 4. Learn how to change parameters of a simulation
 5. Learn how to change inputs of a simulation
 6. Learn how to run simulations in parallel

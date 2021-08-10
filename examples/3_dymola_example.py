@@ -1,8 +1,8 @@
 """
 Goals of this part of the examples:
-1. Learn how to use the DymolaAPI
+1. Learn how to use the `DymolaAPI`
 2. Learn the different result options of the simulation
-3. Get a first idea of the usage of TimeSeriesData
+3. Learn how to convert inputs into the Dymola format
 """
 # Start by importing all relevant packages
 import pathlib

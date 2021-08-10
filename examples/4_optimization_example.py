@@ -1,7 +1,9 @@
 """
 Goals of this part of the examples:
-1. Learn how to create a custom Optimizer class
+1. Learn how to create a custom `Optimizer` class
 2. Learn the different optimizer frameworks
+3. Learn the usage of `StatisticsAnalyzer`
+4. Understand the motivation behing `AixCaliBuHA`
 """
 # Start by importing all relevant packages
 import matplotlib.pyplot as plt
@@ -71,7 +73,7 @@ def main(statistical_measure="MAE"):
         "scipy_differential_evolution": ("best1bin", {}),
         "scipy_minimize": ("L-BFGS-B", {"x0": [0, 0, 0]}),
         "dlib_minimize": (None, {"num_function_calls": 1000}),
-        "pymoo": ("DE", {})
+        "pymoo": ("NSGA2", {})
     }
 
     for framework, method_kwargs in framework_methods.items():

@@ -378,6 +378,72 @@ class TimeSeriesData(pd.DataFrame):
                                                                desired_freq=desired_freq)
         super().__init__(df)
 
+    def low_pass_filter(self, crit_freq, filter_order, variable,
+                        tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.low_pass_filter()
+        See the docstring of this function to know what is happening.
+
+        :param float crit_freq:
+            The critical frequency or frequencies.
+        :param int filter_order:
+            The order of the filter
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.low_pass_filter(
+            data=data,
+            filter_order=filter_order,
+            crit_freq=crit_freq
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def moving_average(self, window, variable,
+                       tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.moving_average()
+        See the docstring of this function to know what is happening.
+
+        :param int window:
+            sample rate of input
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.moving_average(
+            data=data,
+            window=window,
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def number_lines_totally_na(self):
+        """
+        Returns the number of rows in the given dataframe
+        that are filled with NaN-values.
+        """
+        return preprocessing.number_lines_totally_na(self)
+
 
 class TimeSeries(pd.Series):
     """Overwrites pd.Series to enable correct slicing

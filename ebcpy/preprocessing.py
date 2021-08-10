@@ -359,8 +359,10 @@ def low_pass_filter(data, crit_freq, filter_order):
     :param numpy.ndarray data:
         For dataframe e.g. df['a_col_name'].values
     :param float crit_freq:
+        The critical frequency or frequencies.
     :param int filter_order:
-    :return: numpy.ndarray,
+        The order of the filter
+    :return: numpy.ndarray
 
     Example:
 
@@ -373,7 +375,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     >>> plt.show()
 
     """
-    if len(data.shape) > 1: # Check if given data has multiple dimensions
+    if len(data.shape) > 1:  # Check if given data has multiple dimensions
         if data.shape[1] == 1:
             data = data[:, 0]  # Resize to 1D-Array
         else:

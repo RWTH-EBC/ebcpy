@@ -1,7 +1,7 @@
 """
 Goals of this part of the examples:
-1. Learn how to use TimeSeriesData
-2. Understand why we use TimeSeriesData
+ 1. Learn how to use `TimeSeriesData`
+2. Understand why we use `TimeSeriesData`
 3. Get to know the different processing functions
 """
 # Start by importing all relevant packages
