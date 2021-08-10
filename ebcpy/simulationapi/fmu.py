@@ -373,11 +373,11 @@ if __name__ == "__main__":
     # Setup the fmu-api:
     model_name = r"E:\04_git\ebcpy\tests\data\PumpAndValve_windows.fmu"
     cwd = r"D:\00_temp\test_mp_fmu"
-    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=1)
+    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=10)
     fmu_api.result_names = ["heatCapacitor.T"]
     fmu_api.set_sim_setup({"stop_time": 10,
                            "output_interval": 0.001})
-    PARAMETERS = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(50)]
+    PARAMETERS = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(100)]
     res = fmu_api.simulate(parameters=PARAMETERS)
     for idx, _res in enumerate(res):
         plt.plot(_res["heatCapacitor.T"], label=idx)

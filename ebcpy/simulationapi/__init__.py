@@ -101,6 +101,9 @@ class SimulationAPI:
         Number of cores to be used by simulation.
         If None is given, single core will be used.
         Maximum number equals the cpu count of the device.
+        **Warning**: Logging is not yet fully working on multiple processes.
+        Output will be written to the stream handler, but not to the created .log files.
+
     """
     _sim_setup_class: SimulationSetupClass = SimulationSetup
     _items_to_drop = [
@@ -364,3 +367,7 @@ class SimulationAPI:
             )
             return True
         return False
+
+    def get_simulation_setup_fields(self):
+        """Return all fields in the chosen SimulationSetup class."""
+        return list(self._sim_setup_class.__fields__.keys())
