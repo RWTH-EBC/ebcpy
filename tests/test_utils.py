@@ -7,9 +7,8 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import scipy.io as spio
-from ebcpy.utils import setup_logger
-from ebcpy.utils import conversion
-from ebcpy.utils import statistics_analyzer
+from ebcpy import TimeSeriesData
+from ebcpy.utils import setup_logger, conversion, statistics_analyzer
 
 
 class TestConversion(unittest.TestCase):
@@ -20,6 +19,7 @@ class TestConversion(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
+        self.tsd = TimeSeriesData(self.example_data_hdf_path, key="trajectories")
 
     def test_conversion_hdf_to_mat(self):
         """Test function conversion.convert_hdf_to_modelica_mat().
@@ -29,10 +29,10 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_mat = conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
-                                                                       save_path,
-                                                                       columns=col,
-                                                                       key="trajectories")
+            res, filepath_mat = conversion.convert_tsd_to_modelica_mat(
+                tsd=self.tsd,
+                save_path_file=save_path,
+                columns=col)
             # Check if successfully converted
             self.assertTrue(res)
             # Check if converted file exists
@@ -45,19 +45,10 @@ class TestConversion(unittest.TestCase):
             os.remove(save_path)
 
         with self.assertRaises(ValueError):
-            conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
-                                                   save_path_file="not_a_mat_file.txt",
-                                                   columns=col,
-                                                   key="trajectories")
-
-        res, filepath_mat = conversion.convert_tsd_to_modelica_mat(self.example_data_hdf_path,
-                                                                   columns=col,
-                                                                   key="trajectories")
-        self.assertTrue(res)
-        self.assertTrue(os.path.isfile(filepath_mat))
-        self.assertIsInstance(spio.loadmat(filepath_mat), dict)
-        # Remove converted file again
-        os.remove(filepath_mat)
+            conversion.convert_tsd_to_modelica_mat(
+                tsd=self.tsd,
+                save_path_file="not_a_mat_file.txt",
+                columns=col)
 
     def test_conversion_hdf_to_modelica_txt(self):
         """Test function conversion.convert_hdf_to_modelica_txt().
@@ -65,10 +56,11 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         for col in [columns, None]:
             # Check if successfully converted
-            res, filepath_txt = conversion.convert_tsd_to_modelica_txt(self.example_data_hdf_path,
-                                                                       table_name="dummy",
-                                                                       columns=col,
-                                                                       key="trajectories", )
+            res, filepath_txt = conversion.convert_tsd_to_modelica_txt(
+                tsd=self.tsd,
+                save_path_file="some_text_data.txt",
+                table_name="dummy",
+                columns=col)
             self.assertTrue(res)
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
@@ -78,25 +70,10 @@ class TestConversion(unittest.TestCase):
             os.remove(filepath_txt)
         with self.assertRaises(ValueError):
             conversion.convert_tsd_to_modelica_txt(
-                self.example_data_hdf_path,
+                tsd=self.tsd,
                 save_path_file="not_a_txt.mat",
                 table_name="dummy",
-                columns=col,
-                key="trajectories",)
-        res, filepath_txt = conversion.convert_tsd_to_modelica_txt(
-            self.example_data_hdf_path,
-            table_name="dummy",
-            columns=col,
-            key="trajectories",
-            with_tag=False)
-        # Check if successfully converted
-        self.assertTrue(res)
-        # Check if converted file exists
-        self.assertTrue(os.path.isfile(filepath_txt))
-        # Check if converted filepath is provided filepath
-        self.assertTrue(filepath_txt.endswith(".txt"))
-        # Remove converted file again
-        os.remove(filepath_txt)
+                columns=col)
 
     def test_conversion_hdf_to_clustering_txt(self):
         """Test function conversion.convert_hdf_to_clustering_txt().
@@ -106,10 +83,10 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_txt = conversion.convert_tsd_to_clustering_txt(self.example_data_hdf_path,
-                                                                         save_path,
-                                                                         columns=col,
-                                                                         key="trajectories")
+            res, filepath_txt = conversion.convert_tsd_to_clustering_txt(
+                tsd=self.tsd,
+                save_path_file=save_path,
+                columns=col)
             # Check if successfully converted
             self.assertTrue(res)
             # Check if converted file exists
@@ -122,9 +99,8 @@ class TestConversion(unittest.TestCase):
     def test_convert_subset(self):
         """Test _convert_to_df_subset function"""
         df = pd.DataFrame({"val": np.random.rand(100)})
-        df, headers = conversion._convert_hdf_to_df_subset(
-            filepath=df,
-            key=None,
+        df, headers = conversion._convert_to_subset(
+            df=df,
             columns=[],
             offset=0)
         self.assertIsInstance(df, pd.DataFrame)
@@ -133,16 +109,15 @@ class TestConversion(unittest.TestCase):
         df = pd.DataFrame({"val": np.random.rand(100)})
         df.loc[2, "val"] = np.NAN
         with self.assertRaises(ValueError):
-            conversion._convert_hdf_to_df_subset(
-                filepath=df,
-                key=None,
+            conversion._convert_to_subset(
+                df=df,
                 columns=[],
                 offset=0)
         with self.assertRaises(IndexError):
             df = pd.DataFrame({"val": 5}, index=["string"])
-            conversion._convert_hdf_to_df_subset(
-                filepath=df,
-                key=None, columns=[], offset=0
+            conversion._convert_to_subset(
+                df=df,
+                columns=[], offset=0
             )
 
 

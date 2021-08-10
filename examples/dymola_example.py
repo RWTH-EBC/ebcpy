@@ -86,7 +86,7 @@ def main(
     # 4. Enter the fileName where you want to store your input. This can be any filepath.
     # For this tutorial to work, set
     # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
-    file_name = pathlib.Path(aixlib_mo).joinpath("Resources", "my_custom_input.txt")
+    file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     # This input generate is re-used from the fmu_example.py file.
     time_index = np.arange(
         dym_api.sim_setup.start_time,
@@ -106,9 +106,8 @@ def main(
         print("Successfully created Dymola input file at", filepath)
 
     # ######################### Simulation options ##########################
-    # Let's look at the doc
-    print(help(dym_api.simulate))
-
+    # Look at the doc of simulate() in the website
+    # Besides parameters (explained in fmu_example), return_option is important
     result_time_series = dym_api.simulate(return_option="time_series")
     print(type(result_time_series))
     print(result_time_series)

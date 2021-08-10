@@ -142,6 +142,8 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
     True
     >>> os.remove(filepath)
     """
+    if isinstance(save_path_file, pathlib.Path):
+        save_path_file = str(save_path_file)
     if not save_path_file.endswith(".txt"):
         raise ValueError("Given savepath for txt-file is not a .txt file!")
 
@@ -183,6 +185,7 @@ def _convert_to_subset(df, columns, offset):
     """
     Private function to ensure lean conversion to either mat or txt.
     """
+    df = df.copy()
     if columns:
         headers = df[columns].columns.values.tolist()
     else:
