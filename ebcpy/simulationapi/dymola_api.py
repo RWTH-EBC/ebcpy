@@ -357,7 +357,7 @@ class DymolaAPI(SimulationAPI):
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
             savepath = kwargs.pop("savepath", None)
-            if savepath is None:
+            if savepath is None or str(savepath) == str(self.cd):
                 return os.path.join(self.cd, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
             for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
