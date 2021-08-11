@@ -43,4 +43,4 @@ v0.1
    - Add multiprocessing to Simulation APIs. Fixed #5
    - Genereal restructuring of examples, tutorials and tests
    - Several new functions for easier access / utility
-  
+   - Add inputs option for `DymolaAPI`
