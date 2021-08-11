@@ -21,7 +21,8 @@ def main(
         n_cpu=1,
         log_fmu=True,
         n_sim=5,
-        output_interval=100
+        output_interval=100,
+        with_plot=True
 ):
     """
     Arguments of this example:
@@ -36,6 +37,8 @@ def main(
         Number of simulations to run
     :param int output_interval:
         Output interval / step size of the simulation
+    :param bool with_plot:
+        Show the plot at the end of the script. Default is True.
     """
 
     # General settings
@@ -44,7 +47,8 @@ def main(
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
-    fmu_api = FMU_API(model_name="data//HeatPumpSystemWithInput.fmu",
+    model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
+    fmu_api = FMU_API(model_name=model_name,
                       cd=cd,
                       n_cpu=n_cpu,
                       log_fmu=log_fmu)
@@ -136,7 +140,9 @@ def main(
         ax[1].plot(res['heaCap.T'], label=sizing)
     for _ax in ax:
         _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
-    plt.show()
+
+    if with_plot:
+        plt.show()
 
 
 if __name__ == '__main__':

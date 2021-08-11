@@ -12,9 +12,12 @@ import matplotlib.pyplot as plt
 from ebcpy import TimeSeriesData
 
 
-def main():
+def main(with_plot=True):
     """
-    This example has no arguments
+    Arguments of this example:
+
+    :param bool with_plot:
+        Show the plot at the end of the script. Default is True.
     """
     # First get the path with relevant input files:
     basepath = pathlib.Path(__file__).parents[1].joinpath("tutorial", "data")
@@ -66,7 +69,8 @@ def main():
     plt.plot(tsd_hdf_ref.loc[:, ("measured_T", "raw")], label="Reference", color="blue")
     plt.plot(tsd_hdf.loc[:, ("measured_T", "raw")], label="Resampled", color="red")
     plt.legend()
-    plt.show()
+    if with_plot:
+        plt.show()
 
 
 if __name__ == '__main__':

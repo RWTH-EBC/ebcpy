@@ -13,14 +13,15 @@ from ebcpy.optimization import Optimizer
 from ebcpy.utils.statistics_analyzer import StatisticsAnalyzer
 
 
-def main(statistical_measure="MAE"):
+def main(statistical_measure="MAE", with_plot=True):
     """
     Arguments of this example:
     :param str statistical_measure:
         The measure to use for regression analysis. Default is MAE.
         We refer to the documentation of the `StatisticsAnalyzer`
         class for other options
-
+    :param bool with_plot:
+        Show the plot at the end of the script. Default is True.
     """
 
     # ######################### Class definition ##########################
@@ -80,15 +81,18 @@ def main(statistical_measure="MAE"):
         method, kwargs = method_kwargs
         mco.logger.info("Optimizing framework %s with method %s and %s",
                         framework, method, statistical_measure)
-        res = mco.optimize(framework=framework, method=method, **kwargs)
+        try:
+            res = mco.optimize(framework=framework, method=method, **kwargs)
+        except ImportError as err:
+            mco.logger.error("Could not optimize due to import error %s", err)
         plt.figure()
         plt.plot(my_data, my_goal, "r", label="Reference")
         plt.plot(my_data, res.x[0] * my_data ** 2 + res.x[1] * my_data + res.x[2],
                  "b.", label="Regression")
         plt.legend(loc="upper left")
         plt.title(f"{framework}: {method}")
-
-    plt.show()
+    if with_plot:
+        plt.show()
 
 
 if __name__ == '__main__':

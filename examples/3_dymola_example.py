@@ -29,6 +29,8 @@ def main(
         Default is the examples\results folder
     :param int n_cpu:
         Number of processes to use
+    :param bool with_plot:
+        Show the plot at the end of the script. Default is True.
     """
 
     # General settings
@@ -155,7 +157,8 @@ def main(
     plt.figure()
     plt.plot(tsd_1['timTab.y[1]'], color="blue")
     plt.title("Input of CombiTimeTable 'timTab'")
-    plt.show()
+    if with_plot:
+        plt.show()
 
 
 if __name__ == '__main__':
