@@ -18,6 +18,7 @@ def main(
         aixlib_mo,
         cd=None,
         n_cpu=1,
+        with_plot=True
 ):
     """
     Arguments of this example:
@@ -162,7 +163,8 @@ def main(
 
 
 if __name__ == '__main__':
+    # TODO-User: Change the AixLib path!
     main(
-        aixlib_mo=r"D:\09_workshop\AixLib\AixLib\package.mo",
+        aixlib_mo=r"D:\02_workshop\AixLib\AixLib\package.mo",
         n_cpu=1
     )

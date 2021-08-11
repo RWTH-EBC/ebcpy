@@ -13,6 +13,7 @@ from typing import List, Union, Any
 from datetime import datetime
 from pandas.core.internals import BlockManager
 import pandas as pd
+import numpy as np
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -450,6 +451,28 @@ class TimeSeriesData(pd.DataFrame):
         that are filled with NaN-values.
         """
         return preprocessing.number_lines_totally_na(self)
+
+    @property
+    def frequency(self):
+        """
+        The frequency of the time series data.
+        Returns's the mean and the standard deviation of
+        the index.
+
+        :returns:
+            float: Mean value
+            float: Standard deviation
+        """
+
+        freq = []
+        for i in range(len(self.index) - 1):
+            delta = self.index[i + 1] - self.index[i]
+            if isinstance(self.index, pd.DatetimeIndex):
+                freq.append(delta.total_seconds())
+            else:
+                freq.append(delta)
+        freq = np.array(freq)
+        return freq.mean(), freq.std()
 
 
 class TimeSeries(pd.Series):
