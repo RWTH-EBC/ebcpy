@@ -27,6 +27,11 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
     :returns mat_file:
         Returns the version 4 mat-file
 
+    :return:
+        str,os.path.normpath:
+            Path where the data is saved.
+            Equal to save_path_file
+
     Examples:
 
     >>> import os
@@ -37,10 +42,8 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
     >>> tsd = TimeSeriesData(example_file, key=key)
-    >>> success, filepath = convert_tsd_to_modelica_mat(tsd,
-    >>>                         save_path, columns=cols, key=key)
-    >>> print(success)
-    True
+    >>> filepath = convert_tsd_to_modelica_mat(tsd,
+    >>>                                        save_path, columns=cols, key=key)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -57,7 +60,7 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
     # Save matrix as a MATLAB *.mat file, which is readable by Modelica.
     spio.savemat(save_path_file, new_mat, format="4")
     # Provide user feedback whether the conversion was successful.
-    return True, save_path_file
+    return save_path_file
 
 
 def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
@@ -74,6 +77,11 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     :returns True on Success, savepath of txt-file:
         Returns the version 4 mat-file
 
+    :return:
+        str,os.path.normpath:
+            Path where the data is saved.
+            Equal to save_path_file
+
     Examples:
 
     >>> import os
@@ -82,10 +90,8 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
-    >>> success, filepath = convert_tsd_to_clustering_txt(example_file,
-    >>>                         save_path, columns=cols, key=key)
-    >>> print(success)
-    True
+    >>> filepath = convert_tsd_to_clustering_txt(example_file,
+    >>>                                          save_path, columns=cols, key=key)
     >>> os.remove(filepath)
     """
     # Get the subset of the dataFrame
@@ -96,7 +102,7 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     # Save matrix as a *.txt file, which is readable by TICC.
     np.savetxt(save_path_file, df_sub, delimiter=',', fmt='%.4f')
     # Provide user feedback whether the conversion was successful.
-    return True, save_path_file
+    return save_path_file
 
 
 def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
@@ -124,7 +130,11 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
     :param Boolean with_tag:
         Use True each variable and tag is written to the file
         If False, only the variable name is written to the file.
+
     :return:
+        str,os.path.normpath:
+            Path where the data is saved.
+            Equal to save_path_file
 
     Examples:
 
@@ -136,10 +146,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
     >>> cols = ["sine.y / "]
     >>> key = "trajectories"
     >>> tsd = TimeSeriesData(example_file, key=key)
-    >>> success, filepath = convert_tsd_to_modelica_txt(tsd,
-    >>>                              "dummy_input_data", columns=cols, key=key)
-    >>> print(success)
-    True
+    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols, key=key)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -178,7 +185,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
     # Append the data directly using to_csv from pandas
     df_sub.to_csv(save_path_file, header=None, index=None, sep=sep, mode="a")
 
-    return True, save_path_file
+    return save_path_file
 
 
 def _convert_to_subset(df, columns, offset):

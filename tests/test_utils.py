@@ -29,12 +29,10 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_mat = conversion.convert_tsd_to_modelica_mat(
+            filepath_mat = conversion.convert_tsd_to_modelica_mat(
                 tsd=self.tsd,
                 save_path_file=save_path,
                 columns=col)
-            # Check if successfully converted
-            self.assertTrue(res)
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_mat))
             # Check if converted filepath is provided filepath
@@ -56,12 +54,11 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         for col in [columns, None]:
             # Check if successfully converted
-            res, filepath_txt = conversion.convert_tsd_to_modelica_txt(
+            filepath_txt = conversion.convert_tsd_to_modelica_txt(
                 tsd=self.tsd,
                 save_path_file="some_text_data.txt",
                 table_name="dummy",
                 columns=col)
-            self.assertTrue(res)
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
@@ -83,12 +80,10 @@ class TestConversion(unittest.TestCase):
         columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
         for col in [columns, None]:
-            res, filepath_txt = conversion.convert_tsd_to_clustering_txt(
+            filepath_txt = conversion.convert_tsd_to_clustering_txt(
                 tsd=self.tsd,
                 save_path_file=save_path,
                 columns=col)
-            # Check if successfully converted
-            self.assertTrue(res)
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath

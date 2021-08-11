@@ -194,6 +194,11 @@ class SimulationAPI:
         :keyword str result_file_name:
             Name of the result file. Default is 'resultFile'.
             Only relevant if return_option equals 'savepath'.
+        :keyword (TimeSeriesData, pd.DataFrame) inputs:
+            Pandas.Dataframe of the input data for simulating the FMU with fmpy
+        :keyword Boolean fail_on_error:
+            If True, an error in fmpy will trigger an error in this script.
+            Default is True
 
         :return: str,os.path.normpath filepath:
             Only if return_option equals 'savepath'.

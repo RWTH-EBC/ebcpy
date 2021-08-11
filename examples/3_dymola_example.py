@@ -97,29 +97,43 @@ def main(
     internal_gains = np.sin(time_index/3600*np.pi) * 1000
     tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
     # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
-    success, filepath = convert_tsd_to_modelica_txt(
+    filepath = convert_tsd_to_modelica_txt(
         tsd=tsd_input,
         table_name=table_name,
         save_path_file=file_name
     )
-    if success:
-        print("Successfully created Dymola input file at", filepath)
+    print("Successfully created Dymola input file at", filepath)
 
     # ######################### Simulation options ##########################
     # Look at the doc of simulate() in the website
     # Besides parameters (explained in fmu_example), return_option is important
-    result_time_series = dym_api.simulate(return_option="time_series")
+    result_time_series = dym_api.simulate(
+        return_option="time_series",
+        # Info: You would not need these following keyword-arguments,
+        # as we've already created our file above.
+        # However, you can also pass the arguments
+        # from above directly into the function call:
+        inputs=tsd_input,
+        table_name=table_name,
+        file_name=file_name
+    )
     print(type(result_time_series))
     print(result_time_series)
-    result_last_point = dym_api.simulate(return_option="last_point")
+    result_last_point = dym_api.simulate(
+        return_option="last_point"
+    )
     print(type(result_last_point))
     print(result_last_point)
-    result_sp = dym_api.simulate(return_option="savepath")
+    result_sp = dym_api.simulate(
+        return_option="savepath"
+    )
     print(result_sp)
     # Or change the savepath by using two keyword arguments.
-    result_sp_2 = dym_api.simulate(return_option="savepath",
-                                   savepath=r"D:\00_temp",
-                                   result_file_name="anotherResultFile")
+    result_sp_2 = dym_api.simulate(
+        return_option="savepath",
+        savepath=r"D:\00_temp",
+        result_file_name="anotherResultFile"
+    )
     print(result_sp_2)
 
     # ######################### Simulation analysis ##########################

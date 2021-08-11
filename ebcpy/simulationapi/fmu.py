@@ -155,13 +155,6 @@ class FMU_API(simulationapi.SimulationAPI):
         Perform the single simulation for the given
         unzip directory and fmu_instance.
         See the docstring of simulate() for information on kwargs.
-
-        Additional settings:
-        :keyword pd.DataFrame inputs:
-            Pandas.Dataframe of the input data for simulating the FMU with fmpy
-        :keyword Boolean fail_on_error:
-            If True, an error in fmpy will trigger an error in this script.
-            Default is false
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
@@ -173,17 +166,12 @@ class FMU_API(simulationapi.SimulationAPI):
 
         The single argument kwarg is to make this
         function accessible by multiprocessing pool.map.
-
-        Additional settings:
-        :keyword pd.DataFrame inputs:
-            Pandas.Dataframe of the input data for simulating the FMU with fmpy
-        :keyword Boolean fail_on_error:
-            If True, an error in fmpy will trigger an error in this script.
-            Default is false
         """
         # Unpack kwargs:
         parameters = kwargs.pop("parameters", None)
         return_option = kwargs.pop("return_option", "time_series")
+        inputs = kwargs.get("inputs", None)
+        fail_on_error = kwargs.get("fail_on_error", True)
 
         if self.use_mp:
             idx_worker = self.worker_idx
@@ -195,7 +183,6 @@ class FMU_API(simulationapi.SimulationAPI):
         fmu_instance = self._fmu_instances[idx_worker]
         unzip_dir = self._unzip_dirs[idx_worker]
 
-        inputs = kwargs.get("inputs", None)
         if inputs is not None:
             if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
                 raise TypeError("DataFrame or TimeSeriesData object expected for inputs.")
@@ -245,7 +232,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         except Exception as error:
             self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
-            if kwargs.get("fail_on_error", False):
+            if fail_on_error:
                 raise error
             return None
 

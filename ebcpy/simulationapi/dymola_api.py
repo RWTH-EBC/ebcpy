@@ -14,6 +14,7 @@ from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
+from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 
 class DymolaSimulationSetup(SimulationSetup):
@@ -223,6 +224,14 @@ class DymolaAPI(SimulationAPI):
         :keyword Boolean squeeze:
             Default True. If only one set of initialValues is provided,
             a DataFrame is returned directly instead of a list.
+        :keyword str table_name:
+            If inputs are given, you have to specify the name of the table
+            in the instance of CombiTimeTable. In order for the inputs to
+            work the value should be equal to the value of 'tableName' in Modelica.
+        :keyword str file_name:
+            If inputs are given, you have to specify the file_name of the table
+            in the instance of CombiTimeTable. In order for the inputs to
+            work the value should be equal to the value of 'fileName' in Modelica.
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
@@ -233,6 +242,10 @@ class DymolaAPI(SimulationAPI):
         result_file_name = kwargs.get("result_file_name", 'resultFile')
         parameters = kwargs.get("parameters")
         return_option = kwargs.get("return_option")
+        inputs = kwargs.get("inputs", None)
+        fail_on_error = kwargs.get("fail_on_error", True)
+
+        # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx
             if idx_worker not in self._dymola_instances:
@@ -241,11 +254,13 @@ class DymolaAPI(SimulationAPI):
         else:
             dymola = self.dymola
 
+        # Handle eventlog
         if show_eventlog:
             dymola.experimentSetupOutput(events=True)
             dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
+        # Handle structural parameters
         if self._structural_params:
             warnings.warn(f"Warning: Currently, the model is re-translating "
                           f"for each simulation. You should add to your Modelica "
@@ -258,7 +273,7 @@ class DymolaAPI(SimulationAPI):
         # Restart Dymola after n_restart iterations
         self._check_restart()
 
-        # Convert parameters:
+        # Handle parameters:
         if parameters is None:
             parameters = {}
             unsupported_parameters = False
@@ -269,6 +284,28 @@ class DymolaAPI(SimulationAPI):
             )
         initial_names = list(parameters.keys())
         initial_values = list(parameters.values())
+
+        # Handle inputs
+        if inputs is not None:
+            # Unpack additional kwargs
+            try:
+                table_name = kwargs["table_name"]
+                file_name = kwargs["file_name"]
+            except KeyError as err:
+                raise KeyError("For inputs to be used by DymolaAPI.simulate, you "
+                               "have to specify the 'table_name' and the 'file_name' "
+                               "as keyword arguments of the function. These must match"
+                               "the values 'tableName' and 'fileName' in the CombiTimeTable"
+                               " model in your modelica code.") from err
+            # Generate the input in the correct format
+            offset = self.sim_setup.start_time - inputs.index[0]
+            filepath = convert_tsd_to_modelica_txt(
+                tsd=inputs,
+                table_name=table_name,
+                save_path_file=file_name,
+                offset=offset
+            )
+            self.logger.info("Successfully created Dymola input file at %s", filepath)
 
         if return_option == "savepath":
             if unsupported_parameters:
@@ -348,8 +385,13 @@ class DymolaAPI(SimulationAPI):
                     self.logger.error(dslog_content)
             except Exception:
                 dslog_content = "Not retreivable. Open it yourself."
-            raise Exception(f"Simulation failed: Reason according to dslog, located at '{dslog_path}':"
-                            f"{dslog_content}")
+            msg = f"Simulation failed: Reason according " \
+                  f"to dslog, located at '{dslog_path}': {dslog_content}"
+            if fail_on_error:
+                raise Exception(msg)
+            # Don't raise and return None
+            self.logger.error(msg)
+            return None
 
         if self.get_structural_parameters:
             # Get the structural parameters based on the error log
