@@ -1,5 +1,3 @@
-v0.1
-
 - v0.1.0:
    - Implemented necessary features to run together with AixCaliBuHa and EnSTATS
 - v0.1.1:
@@ -37,6 +35,10 @@ v0.1
    - Use f-strings only
    - Update setup.py and requirements
    - Use `TimeSeriesData` in classes as output in the simulation api
+- v0.1.8:
+   - Drop support for Python 3.6 (See #44)
+      - Breaking changes in pandas forces us to increase the version required
+      - Pandas dropped the support for Python 3.6
 - v0.2.0:
    - Prepare JOSS publication. Fixed #48
    - Prepare workshop using new examples. Fixes #49

@@ -25,8 +25,8 @@ setuptools.setup(name='ebcpy',
                  of Energy Efficient Buildings and Indoor Climate',
                  # Specify the Python versions you support here. In particular, ensure
                  # that you indicate whether you support Python 2, Python 3 or both.
-                 classifiers=['Programming Language :: Python :: 3.6',
-                              'Programming Language :: Python :: 3.7', ],
+                 classifiers=['Programming Language :: Python :: 3.7',
+                              'Programming Language :: Python :: 3.8'],
                  packages=setuptools.find_packages(exclude=['img']),
                  setup_requires=SETUP_REQUIRES,
                  install_requires=INSTALL_REQUIRES,
