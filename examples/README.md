@@ -16,13 +16,13 @@ Before being able to run these examples, be sure to:
 
 # What can I learn in the examples?
 
-## `1_time_series_data_example.py`
+## `e1_time_series_data_example.py`
 
 1. Learn how to use `TimeSeriesData`
 2. Understand why we use `TimeSeriesData`
 3. Get to know the different processing functions
 
-## `2_fmu_example.py`
+## `e2_fmu_example.py`
 
 1. Learn how to use the `FMU_API`
 2. Understand model variables
@@ -31,13 +31,13 @@ Before being able to run these examples, be sure to:
 5. Learn how to change inputs of a simulation
 6. Learn how to run simulations in parallel
 
-## `3_dymola_example.py`
+## `e3_dymola_example.py`
 
 1. Learn how to use the `DymolaAPI`
 2. Learn the different result options of the simulation
 3. Learn how to convert inputs into the Dymola format
 
-## `4_optimization_example.py`
+## `e4_optimization_example.py`
 
 1. Learn how to create a custom `Optimizer` class
 2. Learn the different optimizer frameworks

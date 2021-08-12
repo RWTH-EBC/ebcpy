@@ -26,23 +26,23 @@ class TestExample(unittest.TestCase):
         test_func(**kwargs)
 
     def test_tst_example(self):
-        """Execute 1_time_series_data_example.py"""
-        self._run_example(file="1_time_series_data_example.py",
+        """Execute e1_time_series_data_example.py"""
+        self._run_example(file="e1_time_series_data_example.py",
                           func_name='main',
                           with_plot=False)
 
     def test_fmu_example(self):
-        """Execute 2_fmu_example.py"""
+        """Execute e2_fmu_example.py"""
         if "linux" in sys.platform:
             self.skipTest("Not supported in CI")
-        self._run_example(file="2_fmu_example.py",
+        self._run_example(file="e2_fmu_example.py",
                           func_name='main',
                           with_plot=False,
                           log_fmu=False,
                           n_cpu=1)
 
     def test_opt_example(self):
-        """Execute 4_optimization_example.py"""
-        self._run_example(file="4_optimization_example.py",
+        """Execute e4_optimization_example.py"""
+        self._run_example(file="e4_optimization_example.py",
                           func_name='main',
                           with_plot=False)
