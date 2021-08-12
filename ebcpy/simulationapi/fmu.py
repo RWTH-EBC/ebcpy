@@ -328,6 +328,8 @@ class FMU_API(simulationapi.SimulationAPI):
             wrk_idx = 0
         else:
             wrk_idx = self.worker_idx
+            if wrk_idx in self._fmu_instances:
+                return True
         if use_mp:
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
             unzip_dir = fmpy.extract(self.model_name,
