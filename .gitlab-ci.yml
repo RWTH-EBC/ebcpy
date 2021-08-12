@@ -6,6 +6,7 @@ stages:
 
 variables:
   EXLUDE_PYTHON: 36
+  COVERAGE_TYPE: "Not Dymola"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
@@ -18,7 +19,5 @@ include:
     file: 'python/unit-tests/unittest.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/coverage.gitlab-ci.yml'
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/unit-tests/dymola-coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml

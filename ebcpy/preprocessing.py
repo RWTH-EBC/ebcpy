@@ -1,6 +1,21 @@
-"""Module with static functions used to preprocess or alter
-data, maily in the format of datafames or np.arrays."""
+"""
+This general overview may help you find the function you need:
+
+- Remove duplicate rows by averaging the values (build_average_on_duplicate_rows)
+- Convert any integer or float index into a datetime index (convert_index_to_datetime_index)
+- Resample a given time-series on a given frequency (clean_and_space_equally_time_series)
+- Apply a low-pass-filter (low_pass_filter)
+- Apply a moving average to flatten disturbances in your measured data (moving_average)
+- Convert e.g. an electrical power signal into a binary control signal (on-off) based on a threshold (create_on_off_signal)
+- Find the number of lines without any values in it (number_lines_totally_na)
+- Split a data-set into training and test set according to cross-validation(cross_validation)
+
+All functions in the pre-processing module should have a doctest. We refer to the example
+in this doctest for a better understanding of the functions. If you don't understand
+the behaviour of a function or the meaning, please raise an issue.
+"""
 import warnings
+import logging
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
@@ -10,6 +25,8 @@ import pandas as pd
 import scipy.stats as st
 from ebcpy import data_types
 
+logger = logging.getLogger(__name__)
+
 
 def build_average_on_duplicate_rows(df):
     """
@@ -18,6 +35,11 @@ def build_average_on_duplicate_rows(df):
     the first occurrence of this duplicate index. Therefore,
     any dataFrame should be already sorted before calling this
     function.
+
+    :param pd.DataFame df:
+        DataFrame with the data to process
+    :return: pd.DataFame
+        The processed DataFame
 
     Example:
 
@@ -35,10 +57,6 @@ def build_average_on_duplicate_rows(df):
                          val
     idx
     2007-01-01 00:00:01  2.0
-
-    :param pd.DataFame df:
-        DataFrame with the data to process
-    :return: pd.DataFame
     """
     # Find entries that are exactly the same timestamp
     double_ind = df.index[df.index.duplicated()].unique()
@@ -76,7 +94,8 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
         DataFrame with correct index for usage in this
         framework.
 
-    Examples:
+    Example:
+
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(df)
@@ -129,7 +148,8 @@ def convert_datetime_index_to_float_index(df, offset=0):
     :return: pd.DataFrame df:
         DataFrame with correct index
 
-    Examples:
+    Example:
+
     >>> import pandas as pd
     >>> df = pd.DataFrame(np.ones([3, 4]), columns=list('ABCD'))
     >>> print(convert_index_to_datetime_index(df, origin=datetime(2007, 1, 1)))
@@ -163,7 +183,8 @@ def time_based_weighted_mean(df):
     :return np.array:
         A numpy array containing weighted means of all columns
 
-    Examples:
+    Example:
+
     >>> from datetime import datetime
     >>> import numpy as np
     >>> import pandas as pd
@@ -212,7 +233,7 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     :return: pd.DataFrame
         Cleaned and equally spaced data-frame
 
-    Examples:
+    Example:
     **Note:** The example is for random data. Try out different sampling
     frequencys. You will be warned if the samping rate is to high or to low.
 
@@ -235,20 +256,20 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
             raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
                             "Call to_datetime_index() to convert any index to "
                             "a DateTimeIndex")
-        else:
-            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
-                            "Call convert_index_to_datetime_index() to convert any index to "
-                            "a DateTimeIndex")
+        # Else
+        raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
+                        "Call convert_index_to_datetime_index() to convert any index to "
+                        "a DateTimeIndex")
     #%% Check DataFrame for NANs
     # Create a pandas Series with number of invalid values for each column of df
     series_with_na = df.isnull().sum()
     for name in series_with_na.index:
         if series_with_na.loc[name] > 0:
             # Print only columns with invalid values
-            print(f"{name} has following number of invalid "
-                  f"values\n {series_with_na.loc[name]}")
+            logger.info("%s has following number of invalid "
+                        "values\n %s", name, series_with_na.loc[name])
     # Drop all rows where at least one NA exists
-    df.dropna(how='any', inplace=True)
+    df = df.dropna(how='any')
 
     # Check if DataFrame still has non-numeric-values:
     if not all(df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())):
@@ -258,28 +279,24 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     df = build_average_on_duplicate_rows(df)
 
     # Make user warning for two cases: Upsampling and data input without a freq:
-    confidence = 0.95
     # Check if the frequency differs
     old_freq = df.index.freq
     if old_freq is None:
         # Construct a frequency by converting it first to int, then to timedelta back again:
         _artificial_freq = df.index.to_series().diff().dropna().values.astype(np.int64)
-        cfd_int = st.t.interval(confidence,
+        cfd_int = st.t.interval(confidence_warning,
                                 len(_artificial_freq)-1,
                                 loc=np.mean(_artificial_freq),
                                 scale=st.sem(_artificial_freq))
         # Convert back to timedelta
         cfd_int = pd.to_timedelta(cfd_int)
-        if pd.to_timedelta(desired_freq) < cfd_int[0]:
-            warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is lower than the given confidence interval "
-                          f"({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you "
-                          "introduced errors to the data.")
-        if pd.to_timedelta(desired_freq) > cfd_int[1]:
-            warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is higher than the given confidence interval "
-                          f"({cfd_int.values} (in nano seconds). "
+        _td_freq = pd.to_timedelta(desired_freq)
+        if (_td_freq < cfd_int[0]) or (_td_freq > cfd_int[1]):
+            _ns_to_s = 1e9
+            in_seconds = np.array(cfd_int.values.tolist()) / _ns_to_s  # From nanoseconds
+            warnings.warn(f"Input data has no frequency, but the desired frequency "
+                          f"{_td_freq.value / _ns_to_s} seconds is outside the given "
+                          f"confidence interval {in_seconds} (in seconds). "
                           "Carefully check the result to see if you "
                           "introduced errors to the data.")
 
@@ -338,10 +355,12 @@ def low_pass_filter(data, crit_freq, filter_order):
     :param numpy.ndarray data:
         For dataframe e.g. df['a_col_name'].values
     :param float crit_freq:
+        The critical frequency or frequencies.
     :param int filter_order:
-    :return: numpy.ndarray,
+        The order of the filter
+    :return: numpy.ndarray
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
@@ -352,7 +371,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     >>> plt.show()
 
     """
-    if len(data.shape) > 1: # Check if given data has multiple dimensions
+    if len(data.shape) > 1:  # Check if given data has multiple dimensions
         if data.shape[1] == 1:
             data = data[:, 0]  # Resize to 1D-Array
         else:
@@ -377,7 +396,7 @@ def moving_average(data, window):
         shape has (###,). First and last points of input Series are extrapolated as constant
         values (hold first and last point).
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> import matplotlib.pyplot as plt
@@ -434,7 +453,7 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     :return: pd.DataFrame
         Now with the created signals.
 
-    Examples:
+    Example:
 
     >>> import matplotlib.pyplot as plt
     >>> import numpy as np
@@ -483,7 +502,7 @@ def number_lines_totally_na(df):
     :return: int
         Number of NaN-Rows.
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> import pandas as pd
@@ -519,7 +538,7 @@ def z_score(x, limit=3):
     :return: np.array iqr:
         modified z score
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
@@ -545,7 +564,7 @@ def modified_z_score(x, limit=3.5):
     :return: np.array iqr:
         modified z score
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
@@ -569,7 +588,7 @@ def interquartile_range(x):
     :return: np.array iqr:
         Array matching the interquartile-range
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> normal_dis = np.random.normal(0, 1, 1000)
@@ -607,7 +626,7 @@ def cross_validation(x, y, test_size=0.3):
         Split data into 4 objects. The order is:
         x_train, x_test, y_train, y_test
 
-    Examples:
+    Example:
 
     >>> import numpy as np
     >>> x = np.random.rand(100)

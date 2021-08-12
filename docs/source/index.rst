@@ -6,42 +6,15 @@
 About ebcpy
 -------------------
 
-**ebcpy** is the official python package of the Institute for Energy and Building Climate
-(EBC) from the RWTH Aachen. The main use-case is to provide a common set of
-interfaces for different challenges concerning building-simulations.  one of the
-Find below possible challenges that may lead you to use this package.:
-
-- Easily load and process Time-Series-Data into a pd.DataFrame and further pre-process it using various functions
-- (Co-)Simulate models in the simulation-language Modelica either trough our fmu-api or dymola-api
-- Optimize results of the simulation through a given objective-function using different open-source python frameworks and solvers for optimization.
-- Process pandas.DataFrames or numpy arrays with functions for many different, typical problems in the sector of Building-Simulations
-- Use a collection of functions to process or alter modelica-specific files such as .mat-files or dsfinal.txt / dsin.txt files
-
-Check out our tutorial to fully understand the different classes and functions in this repo.
-Always contribute if you see room for improvement by raising and issues
-
-Installation
--------------------
-
-For installation use pip. Run ``pip install -e "Path/to/this/repository"``
-
-If environment variables are not set properly, try more explicit command in Windows shell:
-
-``C:\Path\to\pythonDirectory\python.exe -c "import pip" & C:\Path\to\pythonDirectory\python.exe -m pip install -e C:\Path\to\this\repository``
-
-Be aware of forward slashes (for python) and backslashes (for Windows). You might need to encompass paths in inverted commas (") in order to handle spaces.
-
+.. mdinclude::  ../../README.md
 
 .. toctree::
    :maxdepth: 2
 
-   tutorial
-   data_types
-   preprocessor
-   simulationapi
-   optimizer
-   modelica
-
+   ebcpy
+   ebcpy.modelica
+   ebcpy.simulationapi
+   ebcpy.utils
 
 Version History
 -------------------

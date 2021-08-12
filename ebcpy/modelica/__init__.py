@@ -1,10 +1,15 @@
-"""Package for functions used to alter Modelicare simulation results and
-other files like dsfinal. This package builds upon the python module
-modelicares."""
+"""
+This package aims to help manipulate simulation files (dsfinal.txt or dsin.txt)
+or to load simulation result files (.mat) efficiently into a pandas.DataFrame
+"""
 import re
+from typing import Union, List
 
 
-def get_expressions(filepath_model, get_protected=False, modelica_type="parameter", excludes=None):
+def get_expressions(filepath_model: str,
+                    get_protected: bool = False,
+                    modelica_type: Union[str, List] = "parameters",
+                    excludes: List = None):
     """
     This function extracts specific expressions out of modelica models.
 
@@ -16,15 +21,15 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
         have a special regex pattern.
         For other models, you can parse a string like:
         "replaceable package Medium" and it will yield all
-        afflicted lines. You can also five a list of strings if
+        afflicted lines. You can also give a list of strings if
         multiple strings are relevant to you.
         Special cases:
         parameters:
-            - include: ["parameter"]
-            - excludes: ["final", "in", "of", "replaceable"]
+        - include: ["parameter"]
+        - excludes: ["final", "in", "of", "replaceable"]
         variables: Note: The case for already imported SIUnits is not considered here.
-            - include: ["Modelica.SIunits", "Real", "Boolean", "Integer"]
-            - excludes: ["parameter", "import"]
+        - include: ["Modelica.SIunits", "Real", "Boolean", "Integer"]
+        - excludes: ["parameter", "import", "constant"]
     :param list excludes:
         List of strings to exclude from expression. Default is None.
     :param Boolean get_protected:
@@ -33,16 +38,14 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
     :return: list matches
         List with all lines matching the given expression.
     """
-    # TODO: Write Unit tests
-
-    if not excludes:
+    if excludes is None:
         excludes = []
     if modelica_type == "parameters":
         _includes = ["parameter"]
         _excludes = ["final", "in", "of", "replaceable"] + excludes
     elif modelica_type == "variables":
         _includes = ["Modelica.SIunits", "Real", "Boolean", "Integer"]
-        _excludes = ["parameter", "import"] + excludes
+        _excludes = ["parameter", "import", "constant"] + excludes
     else:
         _includes = [modelica_type]
         _excludes = excludes
@@ -93,43 +96,60 @@ def get_expressions(filepath_model, get_protected=False, modelica_type="paramete
     return expr_unprotected, expr_protected
 
 
-def get_names_and_values_of_lines(codelines):
+def get_names_and_values_of_lines(lines: List[str]) -> dict:
     """
     All unnecessary code is deleted (annotations, doc).
     Only the name of the variable and the value is extracted.
 
-    :param list codelines:
+    :param List[str] lines:
         List of strings with lines from a modelica file.
 
     :return:
+        dict: Containing the names as key and values as value.
+
+    Example:
+
+    >>> lines = ['parameter Boolean my_boolean=true "Some description"',
+    >>>          'parameter Real my_real=12.0 "Some description" annotation("Some annotation")']
+    >>> output = get_names_and_values_of_lines(lines=lines)
+    >>> print(output)
+    {'my_boolean': True, 'my_real': 12.0}
     """
-    # TODO: Write Unit tests
-    res = []
-    for line in codelines:
+    res = {}
+    for line in lines:
         line = line.replace(";", "")
 
         # Check if line is a commented line and if so, skip the line:
         if line.startswith("//"):
             continue
 
-        # Remove part behind possible annotation or documentation:
-        for search_term in ['"', "annotation"]:
-            loc = line.find(search_term)
-            if loc >= 0:
-                line = line[:loc]
+        # Remove part behind possible annotation:
+        loc = line.find("annotation")
+        if loc >= 0:
+            line = line[:loc]
         # Remove possible brackets, like "param(min=0, start=5)
-        line = re.sub(r"[\(\[].*?[\)\]]", "", line)
+        line = re.sub(r'[\(\[].*?[\)\]]', '', line)
+        # And now any quotes / doc / strings
+        line = re.sub(r'".*"', '', line)
         # If a value is present (e.g. for parameters, one = sign is still present (always)
         if line.find("=") >= 0:
             name_str, val_str = line.split("=")
             name_str = name_str.strip()
             name = name_str.split(" ")[-1].replace(" ", "")
-            value = float(val_str.replace(" ", ""))
+            val_str_stripped = val_str.replace(" ", "")
+            if val_str_stripped in ["true", "false"]:
+                value = val_str_stripped == "true"
+            else:
+                try:
+                    value = float(val_str_stripped)
+                except ValueError:
+                    # Neither float, integer nor boolean, hence None
+                    value = None
         # else no value is stored in the line
         else:
             line = line.strip()
             name = line.split(" ")[-1].replace(" ", "")
             value = None
-        res.append({"name": name, "value": value})
+        res.update({name: value})
 
     return res

@@ -8,8 +8,12 @@ optimization etc.
 """
 
 import os
+from pathlib import Path
+from typing import List, Union, Any
 from datetime import datetime
+from pandas.core.internals import BlockManager
 import pandas as pd
+import numpy as np
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -21,16 +25,20 @@ __all__ = ['TimeSeries',
 
 class TimeSeriesData(pd.DataFrame):
     """
+    Most data related to energy and building
+    climate related problems is time-variant.
+
     Class for handling time series data using a pandas dataframe.
     This class works file-based and makes the import of different
     file-types into a pandas DataFrame more user-friendly.
     Furthermore, functions to support multi-indexing are provided to
     efficiently handle variable passed processing and provide easy
-    visualization access.
+    visualization and preprocessing access.
 
-    :param str,os.path.normpath filepath:
+    :param str,os.path.normpath,pd.DataFrame data:
         Filepath ending with either .hdf, .mat or .csv containing
-        time-dependent data to be loaded as a pandas.DataFrame
+        time-dependent data to be loaded as a pandas.DataFrame.
+        Alternative option is to pass a DataFrame directly.
     :keyword str key:
         Name of the table in a .hdf-file if the file
         contains multiple tables.
@@ -42,30 +50,54 @@ class TimeSeriesData(pd.DataFrame):
         argument when loading a xlsx-file.
     :keyword str default_tag:
         Which value to use as tag. Default is 'raw'
+
+
+    Examples:
+
+    First let's see the usage for a common dataframe.
+    >>> import numpy as np
+    >>> import pandas as pd
+    >>> from ebcpy import TimeSeriesData
+    >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
+    >>> tsd = TimeSeriesData(df)
+    >>> tsd.to_datetime_index()
+    >>> tsd.save("my_new_data.hdf", key="NewData")
+
+    Now, let's load the recently created file.
+    As we just created the data, we specify the tag
+    'sim' to indicate it is some sort of simulated value.
+    >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
     """
 
     # normal properties
     _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
 
-    def __init__(self, filepath, **kwargs):
+    def __init__(self, data: Union[str, Any], **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
         self._filepath = None
         self._loader_kwargs = {}
         _multi_col_names = ["Variables", "Tags"]
+
         self._default_tag = kwargs.pop("default_tag", "raw")
+        if not isinstance(self._default_tag, str):
+            raise TypeError(f"Invalid type for default_tag! Expected 'str' but "
+                            f"received {type(self._default_tag)}")
 
         # Two possibles inputs. first argument is actually data provided by pandas
         # and kwargs hold further information or is it an actual filepath.
-        if not isinstance(filepath, str):
-            _df_loaded = pd.DataFrame(data=filepath,
+        if isinstance(data, BlockManager):
+            super().__init__(data=data)
+            return
+
+        if not isinstance(data, (str, Path)):
+            _df_loaded = pd.DataFrame(data=data,
                                       index=kwargs.get("index", None),
                                       columns=kwargs.get("columns", None),
                                       dtype=kwargs.get("dtype", None),
                                       copy=kwargs.get("copy", False))
-
         else:
-            self._filepath = filepath
+            self._filepath = str(data)
             self._loader_kwargs = kwargs.copy()
             _df_loaded = self._load_df_from_file()
 
@@ -74,14 +106,16 @@ class TimeSeriesData(pd.DataFrame):
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
             if _df_loaded.columns.name != _multi_col_names[1]:
                 multi_col = pd.MultiIndex.from_product(
-                    [_df_loaded.columns,
-                     [self._default_tag]], names=_multi_col_names
+                    [_df_loaded.columns, [self._default_tag]],
+                    names=_multi_col_names
                 )
                 _df_loaded.columns = multi_col
+
         elif _df_loaded.columns.nlevels == 2:
             if _df_loaded.columns.names != _multi_col_names:
-                raise TypeError("Loaded dataframe has a different 2-Level header format than "
-                                "it is supported by this class. The names have to match.")
+                raise TypeError("Loaded dataframe has a different 2-Level "
+                                "header format than it is supported by this "
+                                "class. The names have to match.")
         else:
             raise TypeError("Only DataFrames with Multi-Columns with 2 "
                             "Levels are supported by this class.")
@@ -112,12 +146,21 @@ class TimeSeriesData(pd.DataFrame):
 
     @property
     def default_tag(self) -> str:
-        """Get the default tag used in the multi-index dataframe"""
+        """Get the default of time series data object"""
         return self._default_tag
 
     @default_tag.setter
-    def default_tag(self, tag: str):
-        """Set the default tag used in the multi-index dataframe"""
+    def default_tag(self, tag: str) -> None:
+        """Set the default_tag of the time series data object
+        :param tag: new tag
+        :type tag: String
+        """
+        if not isinstance(tag, str):
+            raise TypeError(f"Invalid type for default_tag! Expected 'str' but "
+                            f"received {type(tag)}")
+        if tag not in self.get_tags():
+            raise KeyError(f"Tag '{tag}' does not exist for current data set!"
+                           f"\n Available tags: {self.get_tags()}")
         self._default_tag = tag
 
     def save(self, filepath: str = None, **kwargs) -> None:
@@ -147,14 +190,43 @@ class TimeSeriesData(pd.DataFrame):
             raise ValueError("Current TimeSeriesData instance "
                              "has no filepath, please specify one.")
 
+        if isinstance(filepath, Path):
+            filepath = str(filepath)
+
         # Save based on file suffix
         if filepath.lower().endswith(".hdf"):
+            if "key" not in kwargs:
+                raise KeyError("Argument 'key' must be "
+                               "specified to save a .hdf file")
             pd.DataFrame(self).to_hdf(filepath, key=kwargs.get("key"))
+
         elif filepath.lower().endswith(".csv"):
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
+
+    def to_df(self, force_single_index=False):
+        """
+        Return the dataframe version of the current TimeSeriesData object.
+        If all tags are equal, the tags are dropped.
+        Else, the object is just converted.
+
+        :param bool force_single_index:
+            If True (not the default), the conversion to a standard
+            DataFrame with a single index column (only variable names)
+            is only done if no variable contains multiple tags.
+        """
+        if len(self.get_variables_with_multiple_tags()) == 0:
+            return pd.DataFrame(self.droplevel(1, axis=1))
+        else:
+            if force_single_index:
+                raise IndexError(
+                    "Can't automatically drop all tags "
+                    "as the following variables contain multiple tags: "
+                    f"{' ,'.join(self.get_variables_with_multiple_tags())}. "
+                )
+            return pd.DataFrame(self)
 
     def _load_df_from_file(self):
         """Function to load a given filepath into a dataframe"""
@@ -182,8 +254,7 @@ class TimeSeriesData(pd.DataFrame):
         elif f_name.endswith("csv"):
             return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
         elif f_name.endswith("mat"):
-            sim = sr.SimRes(self.filepath)
-            return sim.to_pandas(with_unit=False)
+            return sr.mat_to_pandas(fname=self.filepath, with_unit=False)
         elif f_name.split(".")[-1] in ['xlsx', 'xls', 'odf', 'ods', 'odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:
@@ -194,18 +265,70 @@ class TimeSeriesData(pd.DataFrame):
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
 
-    def get_columns_by_tag(self, tag, columns=None, return_type='pandas'):
+    def get_variable_names(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all variables
+        :return:
+            List[str]
+        """
+        return sorted(self.columns.get_level_values(0).unique())
+
+    def get_variables_with_multiple_tags(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all variables
+        that contain more than one tag.
+        :return:
+            List[str]
+        """
+        var_names = self.columns.get_level_values(0)
+        return sorted(var_names[var_names.duplicated()])
+
+    def get_tags(self, variable: str = None) -> List[str]:
+        """
+        Return an alphabetically sorted list of all tags
+
+        :param str variable:
+            If given, tags of this variable are returned
+
+        :return:
+            List[str]
+        """
+        if variable:
+            tags = self.loc[:, variable].columns
+            return sorted(tags)
+        return sorted(self.columns.get_level_values(1).unique())
+
+    def get_columns_by_tag(self,
+                           tag: str,
+                           variables: list =None,
+                           return_type: str='pandas',
+                           drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
+
+        :param str tag:
+            Define the tag which return columns have to
+            match.
+        :param list variables:
+            Besides the given tag, specify the
+            variables names matching the return criteria as well.
+        :param boolean drop_level:
+            If tag should be included in the response.
+            Default is True.
+        :param str return_type:
+            Return format. Options are:
+            - pandas (pd.series)
+            - numpy, scipy, sp, and np (np.array)
+            - control (transposed np.array)
         :return: ndarray of input signals
         """
-        #Extract columns
-        if columns:
-            _ret = self.loc[:, columns]
+        # Extract columns
+        if variables:
+            _ret = self.loc[:, variables]
         else:
             _ret = self
 
-        _ret = _ret.xs(tag, axis=1, level=1)
+        _ret = _ret.xs(tag, axis=1, level=1, drop_level=drop_level)
 
         # Return based on the given return_type
         if return_type.lower() == 'pandas':
@@ -215,17 +338,6 @@ class TimeSeriesData(pd.DataFrame):
         if return_type.lower() == 'control':
             return _ret.to_numpy().transpose()
         raise TypeError("Unknown return type")
-
-    def set_data_by_tag(self, data, tag, variables=None):
-        """
-        Data can be an array for single variables, or a dataframe itself.
-        :param data:
-        :param str tag:
-            New tag for the data
-        :param variables:
-        :return:
-        """
-        self.loc[:, (variables, tag)] = data
 
     def to_datetime_index(self, unit_of_index="s", origin=datetime.now()):
         """
@@ -273,6 +385,94 @@ class TimeSeriesData(pd.DataFrame):
         df = preprocessing.clean_and_space_equally_time_series(df=self,
                                                                desired_freq=desired_freq)
         super().__init__(df)
+
+    def low_pass_filter(self, crit_freq, filter_order, variable,
+                        tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.low_pass_filter()
+        See the docstring of this function to know what is happening.
+
+        :param float crit_freq:
+            The critical frequency or frequencies.
+        :param int filter_order:
+            The order of the filter
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.low_pass_filter(
+            data=data,
+            filter_order=filter_order,
+            crit_freq=crit_freq
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def moving_average(self, window, variable,
+                       tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.moving_average()
+        See the docstring of this function to know what is happening.
+
+        :param int window:
+            sample rate of input
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.moving_average(
+            data=data,
+            window=window,
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def number_lines_totally_na(self):
+        """
+        Returns the number of rows in the given dataframe
+        that are filled with NaN-values.
+        """
+        return preprocessing.number_lines_totally_na(self)
+
+    @property
+    def frequency(self):
+        """
+        The frequency of the time series data.
+        Returns's the mean and the standard deviation of
+        the index.
+
+        :returns:
+            float: Mean value
+            float: Standard deviation
+        """
+
+        freq = []
+        for i in range(len(self.index) - 1):
+            delta = self.index[i + 1] - self.index[i]
+            if isinstance(self.index, pd.DatetimeIndex):
+                freq.append(delta.total_seconds())
+            else:
+                freq.append(delta)
+        freq = np.array(freq)
+        return freq.mean(), freq.std()
 
 
 class TimeSeries(pd.Series):

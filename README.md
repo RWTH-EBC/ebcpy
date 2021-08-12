@@ -35,14 +35,14 @@ For this, run the following code:
 # If jupyter is not already installed:
 pip install jupyter
 # Go into your ebcpy-folder (cd \path_to_\ebcpy) or change the path to tutorial.ipynb and run:
-jupyter notebook ebcpy\examples\tutorial.ipynb
+jupyter notebook ebcpy\tutorials\tutorial.ipynb
 ```
 
 ## TimeSeriesData
 Note that we use our own `TimeSeriesData` object which inherits from `pd.DataFrame`. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
 The class is defined in `ebcpy`, and you can also check the documentation over there. Just a quick intro here:
 
-#### Variables and tags
+### Variables and tags
 ```
 >>> from ebcpy.data_types import TimeSeriesData
 >>> tsd = TimeSeriesData(r"path_to_a_supported_file")
@@ -68,7 +68,7 @@ tsd.loc[:, ("variable_name", "tag_name")]
 # One tag, all variables:
 tsd.xs("tag_name", axis=1, level=1)
 ```
-#### FloatIndex and DateTimeIndex
+### FloatIndex and DateTimeIndex
 Measured data typically holds a datetime stamps (`DateTimeIndex`) while simulation result files hold absolute seconds (`FloatIndex`). 
 You can easily convert back and forth using:
 ```python
