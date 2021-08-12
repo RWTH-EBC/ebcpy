@@ -120,7 +120,7 @@ html_theme_options = {
     'color_primary': 'red',
     'color_accent': 'red',
     # Set the repo location to get a badge with stats
-    'repo_url': 'https://git.rwth-aachen.de/EBC/EBC_all/Python/ebcpy/',
+    'repo_url': 'https://github.com/RWTH-EBC/ebcpy',
     'repo_name': f'{project} library',
     # Visible levels of the global TOC; -1 means unlimited
     'globaltoc_depth': 3,

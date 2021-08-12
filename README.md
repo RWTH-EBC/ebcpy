@@ -24,7 +24,7 @@ We tested this with `cmd` on a *Windows* 10 machine.
 
 Until this is not publically available, you have to install it via:
 ```
-git clone https://git.rwth-aachen.de/EBC/EBC_all/Python/ebcpy
+git clone https://github.com/RWTH-EBC/ebcpy
 pip install -e ebcpy
 ```
 
@@ -84,4 +84,4 @@ tsd.clean_and_space_equally(desired_freq="1s")
 Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/docs).
 
 # Problems?
-Please [raise an issue here](https://git.rwth-aachen.de/EBC/EBC_all/Python/ebcpy/-/issues/new?issue%5Bassignee_id%5D=&issue%5Bmilestone_id%5D=).
+Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy).
