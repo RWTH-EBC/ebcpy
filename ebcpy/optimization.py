@@ -316,7 +316,7 @@ class Optimizer:
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.algorithms.nsga2 import NSGA2
+            from pymoo.factory import get_algorithm
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
 
@@ -341,26 +341,30 @@ class Optimizer:
                 raise ValueError("For pymoo, you need to specify "
                                  "boundaries. Currently, no bounds are specified.")
 
-            if method == "NSGA2":
-                algorithm = NSGA2()
-            else:
-                algorithm = method
-
-            termination = default_kwargs["termination"]
+            termination = default_kwargs.pop("termination")
             if termination is None:
-                termination = ("n_gen", default_kwargs["n_gen"])
+                termination = ("n_gen", default_kwargs.pop("n_gen"))
+            seed = default_kwargs.pop("seed")
+            verbose = default_kwargs.pop("verbose")
+            save_history = default_kwargs.pop("save_history")
+            copy_algorithm = default_kwargs.pop("copy_algorithm")
+            copy_termination = default_kwargs.pop("copy_termination")
+
+            # Init algorithm
+            algorithm = get_algorithm(name=method.lower(),
+                                      **default_kwargs)
 
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),
                 algorithm=algorithm,
                 termination=termination,
-                seed=default_kwargs["seed"],
-                verbose=default_kwargs["verbose"],
+                seed=seed,
+                verbose=verbose,
                 display=None,
                 callback=None,
-                save_history=default_kwargs["save_history"],
-                copy_algorithm=default_kwargs["copy_algorithm"],
-                copy_termination=default_kwargs["copy_termination"],
+                save_history=save_history,
+                copy_algorithm=copy_algorithm,
+                copy_termination=copy_termination,
             )
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=res.X, fun=res.F[0])

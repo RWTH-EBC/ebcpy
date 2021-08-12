@@ -37,3 +37,10 @@ v0.1
    - Use f-strings only
    - Update setup.py and requirements
    - Use `TimeSeriesData` in classes as output in the simulation api
+- v0.2.0:
+   - Prepare JOSS publication. Fixed #48
+   - Prepare workshop using new examples. Fixes #49
+   - Add multiprocessing to Simulation APIs. Fixed #5
+   - Genereal restructuring of examples, tutorials and tests
+   - Several new functions for easier access / utility
+   - Add inputs option for `DymolaAPI`

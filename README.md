@@ -35,7 +35,7 @@ For this, run the following code:
 # If jupyter is not already installed:
 pip install jupyter
 # Go into your ebcpy-folder (cd \path_to_\ebcpy) or change the path to tutorial.ipynb and run:
-jupyter notebook ebcpy\examples\tutorial.ipynb
+jupyter notebook ebcpy\tutorials\tutorial.ipynb
 ```
 
 ## TimeSeriesData

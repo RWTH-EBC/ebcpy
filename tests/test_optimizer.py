@@ -100,13 +100,6 @@ class TestOptimizer(unittest.TestCase):
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
-        # Test own algorithm
-        from pymoo.algorithms.nsga2 import NSGA2
-        nsga2 = NSGA2(pop_size=150)
-        res_de = my_custom_optimizer.optimize(framework="pymoo",
-                                              method=nsga2)
-        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
-        self.assertEqual(0.0, np.round(delta_solution, 3))
 
     def test_error_handler(self):
         """Test if error handling works for each framework"""

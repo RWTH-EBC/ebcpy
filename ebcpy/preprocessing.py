@@ -269,7 +269,7 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
             logger.info("%s has following number of invalid "
                         "values\n %s", name, series_with_na.loc[name])
     # Drop all rows where at least one NA exists
-    df.dropna(how='any', inplace=True)
+    df = df.dropna(how='any')
 
     # Check if DataFrame still has non-numeric-values:
     if not all(df.apply(lambda s: pd.to_numeric(s, errors='coerce').notnull().all())):
@@ -279,7 +279,6 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     df = build_average_on_duplicate_rows(df)
 
     # Make user warning for two cases: Upsampling and data input without a freq:
-    confidence_warning = 0.95
     # Check if the frequency differs
     old_freq = df.index.freq
     if old_freq is None:
@@ -291,16 +290,13 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
                                 scale=st.sem(_artificial_freq))
         # Convert back to timedelta
         cfd_int = pd.to_timedelta(cfd_int)
-        if pd.to_timedelta(desired_freq) < cfd_int[0]:
-            warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is lower than the given confidence interval "
-                          f"({cfd_int.values} (in nano seconds). "
-                          "Carefully check the result to see if you "
-                          "introduced errors to the data.")
-        if pd.to_timedelta(desired_freq) > cfd_int[1]:
-            warnings.warn("Input data has no frequency, but the desired frequency "
-                          f"is higher than the given confidence interval "
-                          f"({cfd_int.values} (in nano seconds). "
+        _td_freq = pd.to_timedelta(desired_freq)
+        if (_td_freq < cfd_int[0]) or (_td_freq > cfd_int[1]):
+            _ns_to_s = 1e9
+            in_seconds = np.array(cfd_int.values.tolist()) / _ns_to_s  # From nanoseconds
+            warnings.warn(f"Input data has no frequency, but the desired frequency "
+                          f"{_td_freq.value / _ns_to_s} seconds is outside the given "
+                          f"confidence interval {in_seconds} (in seconds). "
                           "Carefully check the result to see if you "
                           "introduced errors to the data.")
 
@@ -359,8 +355,10 @@ def low_pass_filter(data, crit_freq, filter_order):
     :param numpy.ndarray data:
         For dataframe e.g. df['a_col_name'].values
     :param float crit_freq:
+        The critical frequency or frequencies.
     :param int filter_order:
-    :return: numpy.ndarray,
+        The order of the filter
+    :return: numpy.ndarray
 
     Example:
 
@@ -373,7 +371,7 @@ def low_pass_filter(data, crit_freq, filter_order):
     >>> plt.show()
 
     """
-    if len(data.shape) > 1: # Check if given data has multiple dimensions
+    if len(data.shape) > 1:  # Check if given data has multiple dimensions
         if data.shape[1] == 1:
             data = data[:, 0]  # Resize to 1D-Array
         else:

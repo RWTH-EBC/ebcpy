@@ -13,6 +13,7 @@ from typing import List, Union, Any
 from datetime import datetime
 from pandas.core.internals import BlockManager
 import pandas as pd
+import numpy as np
 import ebcpy.modelica.simres as sr
 import ebcpy.preprocessing as preprocessing
 # pylint: disable=I1101
@@ -205,15 +206,26 @@ class TimeSeriesData(pd.DataFrame):
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
 
-    def to_df(self):
+    def to_df(self, force_single_index=False):
         """
         Return the dataframe version of the current TimeSeriesData object.
         If all tags are equal, the tags are dropped.
         Else, the object is just converted.
+
+        :param bool force_single_index:
+            If True (not the default), the conversion to a standard
+            DataFrame with a single index column (only variable names)
+            is only done if no variable contains multiple tags.
         """
-        if len(self.get_tags()) == 1:
+        if len(self.get_variables_with_multiple_tags()) == 0:
             return pd.DataFrame(self.droplevel(1, axis=1))
         else:
+            if force_single_index:
+                raise IndexError(
+                    "Can't automatically drop all tags "
+                    "as the following variables contain multiple tags: "
+                    f"{' ,'.join(self.get_variables_with_multiple_tags())}. "
+                )
             return pd.DataFrame(self)
 
     def _load_df_from_file(self):
@@ -257,14 +269,33 @@ class TimeSeriesData(pd.DataFrame):
         """
         Return an alphabetically sorted list of all variables
         :return:
+            List[str]
         """
         return sorted(self.columns.get_level_values(0).unique())
 
-    def get_tags(self) -> List[str]:
+    def get_variables_with_multiple_tags(self) -> List[str]:
+        """
+        Return an alphabetically sorted list of all variables
+        that contain more than one tag.
+        :return:
+            List[str]
+        """
+        var_names = self.columns.get_level_values(0)
+        return sorted(var_names[var_names.duplicated()])
+
+    def get_tags(self, variable: str = None) -> List[str]:
         """
         Return an alphabetically sorted list of all tags
+
+        :param str variable:
+            If given, tags of this variable are returned
+
         :return:
+            List[str]
         """
+        if variable:
+            tags = self.loc[:, variable].columns
+            return sorted(tags)
         return sorted(self.columns.get_level_values(1).unique())
 
     def get_columns_by_tag(self,
@@ -354,6 +385,94 @@ class TimeSeriesData(pd.DataFrame):
         df = preprocessing.clean_and_space_equally_time_series(df=self,
                                                                desired_freq=desired_freq)
         super().__init__(df)
+
+    def low_pass_filter(self, crit_freq, filter_order, variable,
+                        tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.low_pass_filter()
+        See the docstring of this function to know what is happening.
+
+        :param float crit_freq:
+            The critical frequency or frequencies.
+        :param int filter_order:
+            The order of the filter
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.low_pass_filter(
+            data=data,
+            filter_order=filter_order,
+            crit_freq=crit_freq
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def moving_average(self, window, variable,
+                       tag=None, new_tag="low_pass_filter"):
+        """
+        Call to the preprocessing function
+        ebcpy.preprocessing.moving_average()
+        See the docstring of this function to know what is happening.
+
+        :param int window:
+            sample rate of input
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+        :param str new_tag:
+            The new tag to pass to the variable.
+            Default is 'low_pass_filter'
+        """
+        if tag is None:
+            data = self.loc[:, variable].to_numpy()
+        else:
+            data = self.loc[:, (variable, tag)].to_numpy()
+
+        result = preprocessing.moving_average(
+            data=data,
+            window=window,
+        )
+        self.loc[:, (variable, new_tag)] = result
+
+    def number_lines_totally_na(self):
+        """
+        Returns the number of rows in the given dataframe
+        that are filled with NaN-values.
+        """
+        return preprocessing.number_lines_totally_na(self)
+
+    @property
+    def frequency(self):
+        """
+        The frequency of the time series data.
+        Returns's the mean and the standard deviation of
+        the index.
+
+        :returns:
+            float: Mean value
+            float: Standard deviation
+        """
+
+        freq = []
+        for i in range(len(self.index) - 1):
+            delta = self.index[i + 1] - self.index[i]
+            if isinstance(self.index, pd.DatetimeIndex):
+                freq.append(delta.total_seconds())
+            else:
+                freq.append(delta)
+        freq = np.array(freq)
+        return freq.mean(), freq.std()
 
 
 class TimeSeries(pd.Series):
