@@ -63,9 +63,7 @@ class DymolaAPI(SimulationAPI):
     :keyword str dymola_path:
          Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
-    :keyword str dymola_interface_path:
-        Same as for dymola_path. If we can't find the dymola installation,
-        you can pass the path to your dymola.egg via this parameter.
+         Example: "C:\Program Files\Dymola 2020x"
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
@@ -78,6 +76,25 @@ class DymolaAPI(SimulationAPI):
         If True (not the default), the dymola instance is not closed
         on exit of the python script. This allows further debugging in
         dymola itself if API-functions cause a python error.
+    :keyword str mos_script_pre:
+        Path to a valid mos-script for Modelica/Dymola.
+        If given, the script is executed **prior** to laoding any
+        package specified in this API.
+        May be relevant for handling version conflicts.
+    :keyword str mos_script_post:
+        Path to a valid mos-script for Modelica/Dymola.
+        If given, the script is executed before closing Dymola.
+    :keyword str dymola_version:
+        Version of Dymola to use.
+        If not given, newest version will be used.
+        If given, the Version needs to be equal to the folder name
+        of your installation.
+        Example: If you have two version installed at
+        - "C:\Program Files\Dymola 2021" and
+        - "C:\Program Files\Dymola 2020x"
+        and you want to use Dymola 2020x, specify
+        dymola_version='Dymola 2020x'.
+        This parameter is overwritten if dymola_path is specified.
     Example:
 
     >>> import os
@@ -100,10 +117,12 @@ class DymolaAPI(SimulationAPI):
     _supported_kwargs = ["show_window",
                          "get_structural_parameters",
                          "dymola_path",
-                         "dymola_interface_path",
                          "equidistant_output",
-                          "n_restart",
-                         "debug"]
+                         "n_restart",
+                         "debug",
+                         "mos_script_pre",
+                         "mos_script_post",
+                         "dymola_version"]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
@@ -115,6 +134,22 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
+        self.mos_script_pre = self._make_modelica_normpath(kwargs.pop("mos_script_pre", None))
+        self.mos_script_post = self._make_modelica_normpath(kwargs.pop("mos_script_post", None))
+        self.dymola_version = kwargs.pop("dymola_version", None)
+        for mos_script in [self.mos_script_pre, self.mos_script_post]:
+            if mos_script is not None:
+                if not os.path.isfile(mos_script):
+                    raise FileNotFoundError(
+                        f"Given mos_script '{mos_script}' does "
+                        f"not exist."
+                    )
+                if not mos_script.endswith(".mos"):
+                    raise TypeError(
+                        f"Given mos_script '{mos_script}' "
+                        f"is not a valid .mos file."
+                    )
+
         self.dymola = None
 
         super().__init__(cd=cd,
@@ -122,40 +157,40 @@ class DymolaAPI(SimulationAPI):
                          n_cpu=kwargs.pop("n_cpu", 1))
 
         # First import the dymola-interface
-        if "dymola_interface_path" in kwargs:
-            if not kwargs["dymola_interface_path"].endswith(".egg"):
-                raise TypeError("Please provide an .egg-file for the dymola-interface.")
-            dymola_interface_path = kwargs.pop("dymola_interface_path")
-            if not (os.path.isfile(dymola_interface_path) and
-                    os.path.exists(dymola_interface_path)):
-                raise FileNotFoundError(f"Given path {dymola_interface_path} can not be found on "
-                                        "your machine.")
-        else:
-            dymola_interface_path = None
-
         dymola_path = kwargs.pop("dymola_path", None)
         if dymola_path is not None:
-            if not (os.path.isfile(dymola_path) and os.path.exists(dymola_path)):
-                raise FileNotFoundError(f"Given path {dymola_path} can not be found on "
+            if not (os.path.exists(dymola_path)):
+                raise FileNotFoundError(f"Given path '{dymola_path}' can not be found on "
                                         "your machine.")
-
-        if (not dymola_path) or (not dymola_interface_path):
-            # First get the dymola-install-path:
-            _dym_install = self.get_dymola_install_path()
-            if _dym_install:
+            _dym_install = dymola_path
+        else:
+            # Get the dymola-install-path:
+            _dym_installations = self.get_dymola_install_paths()
+            if _dym_installations:
+                if self.dymola_version:
+                    _found_version = False
+                    for _dym_install in _dym_installations:
+                        if _dym_install.endswith(self.dymola_version):
+                            _found_version = True
+                            break
+                    if not _found_version:
+                        raise ValueError(
+                            f"Given dymola_version '{self.dymola_version}' not found in "
+                            f"the list of dymola installations {_dym_installations}"
+                        )
+                else:
+                    _dym_install = _dym_installations[0]  # 0 is the newest
                 self.logger.info("Using dymola installation at %s", _dym_install)
-                if not dymola_path:
-                    dymola_path = self.get_dymola_path(_dym_install)
-                    self.logger.info("Using dymola.exe: %s", dymola_path)
-                if not dymola_interface_path:
-                    dymola_interface_path = self.get_dymola_interface_path(_dym_install)
-                    self.logger.info("Using dymola interface: %s", dymola_interface_path)
             else:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
+        dymola_exe_path = self.get_dymola_path(_dym_install)
+        self.logger.info("Using dymola.exe: %s", dymola_exe_path)
+        dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+        self.logger.info("Using dymola interface: %s", dymola_interface_path)
 
         # Set the path variables:
         self.dymola_interface_path = dymola_interface_path
-        self.dymola_path = dymola_path
+        self.dymola_exe_path = dymola_exe_path
 
         self.packages = []
         if packages is not None:
@@ -548,8 +583,7 @@ class DymolaAPI(SimulationAPI):
                 self.pool.join()
             except ValueError:
                 pass  # Already closed prior to atexit
-        else:
-            self._single_close(dymola=self.dymola)
+        self._single_close(dymola=self.dymola)
         self.dymola = None
 
     def _close_multiprocessing(self, _):
@@ -559,6 +593,12 @@ class DymolaAPI(SimulationAPI):
 
     def _single_close(self, dymola):
         """Closes a single dymola instance"""
+        # Execute the mos-script if given:
+        if self.mos_script_post is not None:
+            self.logger.info("Executing given mos_script_post "
+                             "prior to closing.")
+            dymola.RunScript(self.mos_script_post)
+            self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
         # Change so the atexit function works without an error.
         if dymola is not None:
@@ -617,6 +657,13 @@ class DymolaAPI(SimulationAPI):
             os.makedirs(cd, exist_ok=True)
         else:
             cd = self.cd
+        # Execute the mos-script if given:
+        if self.mos_script_pre is not None:
+            self.logger.info("Executing given mos_script_pre "
+                             "prior to loading packages.")
+            dymola.RunScript(self.mos_script_pre)
+            self.logger.info("Output of mos_script_pre: %s", dymola.getLastErrorLog())
+
         # Also set the cd in the dymola api
         cd_modelica = self._make_modelica_normpath(path=cd)
         res = dymola.cd(cd_modelica)
@@ -652,7 +699,7 @@ class DymolaAPI(SimulationAPI):
             from dymola.dymola_interface import DymolaInterface
             from dymola.dymola_exception import DymolaConnectionException
             return DymolaInterface(showwindow=self.show_window,
-                                   dymolapath=self.dymola_path)
+                                   dymolapath=self.dymola_exe_path)
         except ImportError as error:
             raise ImportError("Given dymola-interface could not be "
                               "loaded:\n %s" % self.dymola_interface_path) from error
@@ -720,8 +767,9 @@ class DymolaAPI(SimulationAPI):
         path_to_egg_file = os.path.normpath("Modelica/Library/python_interface/dymola.egg")
         egg_file = os.path.join(dymola_install_dir, path_to_egg_file)
         if not os.path.isfile(egg_file):
-            raise FileNotFoundError(f"The given dymola installation directory {dymola_install_dir}"
-                                    " has no dymola-interface egg-file.")
+            raise FileNotFoundError(f"The given dymola installation directory "
+                                    f"'{dymola_install_dir}' has no "
+                                    f"dymola-interface egg-file.")
         return egg_file
 
     @staticmethod
@@ -750,20 +798,22 @@ class DymolaAPI(SimulationAPI):
 
         bin_64 = os.path.join(dymola_install_dir, "bin64", dymola_name)
         bin_32 = os.path.join(dymola_install_dir, "bin", dymola_name)
-        if os.path.isfile(bin_64): # First check for 64bit installation
+        if os.path.isfile(bin_64):  # First check for 64bit installation
             dym_file = bin_64
-        elif os.path.isfile(bin_32): # Else use the 32bit version
+        elif os.path.isfile(bin_32):  # Else use the 32bit version
             dym_file = bin_32
         else:
-            raise FileNotFoundError(f"The given dymola file{bin_32} is not found. Either the "
-                                    f"dymola_install_dir, or the dymola_name have false values.")
+            raise FileNotFoundError(
+                f"The given dymola installation has not executable at '{bin_32}'. "
+                f"If your dymola_path exists, please raise an issue."
+            )
 
         return dym_file
 
     @staticmethod
-    def get_dymola_install_path(basedir=None):
+    def get_dymola_install_paths(basedir=None):
         """
-        Function to get the path of the newest dymola installment
+        Function to get all paths of dymola installations
         on the used machine. Supported platforms are:
         * Windows
         * Linux
@@ -811,13 +861,13 @@ class DymolaAPI(SimulationAPI):
         # Find the newest version and return the egg-file
         # This sorting only works with a good Folder structure, eg. Dymola 2020, Dymola 2019 etc.
         dym_versions.sort()
+        valid_paths = []
         for dym_version in reversed(dym_versions):
             for system_path in syspaths:
                 full_path = os.path.join(system_path, dym_version)
                 if os.path.isdir(full_path):
-                    return full_path
-        # If still inside the function, no interface was found
-        return None
+                    valid_paths.append(full_path)
+        return valid_paths
 
     def _check_dymola_instances(self):
         """
@@ -914,7 +964,7 @@ if __name__ == "__main__":
     # Setup the fmu-api:
     model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
     cwd = r"D:\00_temp\test_mp_fmu"
-    dym_api = DymolaAPI(cd=cwd, model_name=model_name, n_cpu=10, show_window=True)
+    dym_api = DymolaAPI(dymola_version="Dymola 2020x", cd=cwd, model_name=model_name, n_cpu=10, show_window=True)
     dym_api.result_names = ["heatCapacitor.T"]
     dym_api.set_sim_setup({"stop_time": 10,
                            "output_interval": 0.001})
