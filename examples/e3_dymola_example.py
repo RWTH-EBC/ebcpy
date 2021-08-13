@@ -51,7 +51,7 @@ def main(
         get_structural_parameters=True
         # Only necessary if you need a specific dymola version
         #dymola_path=None,
-        #dymola_interface_path=None
+        #dymola_version=None
     )
     print("Number of variables:", len(dym_api.variables))
     print("Number of outputs:", len(dym_api.outputs))
