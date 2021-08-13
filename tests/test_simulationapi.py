@@ -95,17 +95,24 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             "solver": "Dassl",
             "tolerance": 0.001
         }
+        # Mos script
+        mos_script = self.data_dir.joinpath("mos_script_test.mos")
+
         # Just for tests in the ci:
         if "linux" in sys.platform:
             dymola_path = "/usr/local/bin/dymola"
         else:
             dymola_path = None
         try:
-            self.sim_api = dymola_api.DymolaAPI(cd=self.example_sim_dir,
-                                                model_name=model_name,
-                                                packages=packages,
-                                                dymola_path=dymola_path,
-                                                n_cpu=self.n_cpu)
+            self.sim_api = dymola_api.DymolaAPI(
+                cd=self.example_sim_dir,
+                model_name=model_name,
+                packages=packages,
+                dymola_path=dymola_path,
+                n_cpu=self.n_cpu,
+                mos_script_pre=mos_script,
+                mos_script_post=mos_script
+            )
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
                           f"on this machine. Error message: {error}")
@@ -116,7 +123,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         self.assertIsNone(self.sim_api.dymola)
 
     def test_wrong_parameters(self):
-        # Test non-existing parameter
+        """Test non-existing parameter"""
         self.parameters.update({"C2": 10})
         with self.assertRaises(KeyError):
             self.sim_api.simulate(parameters=self.parameters,
