@@ -78,6 +78,11 @@ class DymolaAPI(SimulationAPI):
         If True (not the default), the dymola instance is not closed
         on exit of the python script. This allows further debugging in
         dymola itself if API-functions cause a python error.
+    :keyword str mos_script_pre:
+        Path to a valid mos-script for Modelica/Dymola.
+        If given, the script is executed prior to laoding any
+        package specified in this API.
+        May be relevant for handling version conflicts.
     Example:
 
     >>> import os
@@ -102,8 +107,9 @@ class DymolaAPI(SimulationAPI):
                          "dymola_path",
                          "dymola_interface_path",
                          "equidistant_output",
-                          "n_restart",
-                         "debug"]
+                         "n_restart",
+                         "debug",
+                         "mos_script"]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
@@ -115,6 +121,19 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
+        self.mos_script_pre = kwargs.pop("mos_script_pre", None)
+        if self.mos_script_pre is not None:
+            if not os.path.isfile(self.mos_script_pre):
+                raise FileNotFoundError(
+                    f"Given mos_script_pre '{self.mos_script_pre}' does "
+                    f"not exist."
+                )
+            if not str(self.mos_script_pre.endswith(".mos")):
+                raise TypeError(
+                    f"Given mos_script_pre '{self.mos_script_pre}' "
+                    f"is not a valid .mos file."
+                )
+
         self.dymola = None
 
         super().__init__(cd=cd,
@@ -617,6 +636,10 @@ class DymolaAPI(SimulationAPI):
             os.makedirs(cd, exist_ok=True)
         else:
             cd = self.cd
+        # Execute the mos-script if given:
+        if self.mos_script_pre is not None:
+            dymola.RunScript(self.mos_script_pre)
+
         # Also set the cd in the dymola api
         cd_modelica = self._make_modelica_normpath(path=cd)
         res = dymola.cd(cd_modelica)
