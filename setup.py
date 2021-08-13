@@ -30,7 +30,7 @@ setuptools.setup(
                 'functions for different python modules of the '
                 'E.On Insttitute for Energy Efficien Buildings and Indoor '
                 'Climate',
-    url='not set yet',  # TODO: Set when on pypi
+    url='not set yet',  # TODO: Set when on pypi .
     author='RWTH Aachen University, E.ON Energy Research Center, Institute\
                  of Energy Efficient Buildings and Indoor Climate',
     # Specify the Python versions you support here. In particular, ensure
