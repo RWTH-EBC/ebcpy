@@ -12,7 +12,8 @@ Before being able to run these examples, be sure to:
 3. Clone the repository by running `git clone https://github.com/RWTH-EBC/ebcpy`
 4. Clone the AixLib in order to use the models: `git clone https://github.com/RWTH-EBC/AixLib`
    Also check if you're on development using `cd AixLib && git status && cd ..`
-5. Install the library using `pip install -e ebcpy`
+5. Install the library using `pip install -e ebcpy`.
+   In order to execute everything, install the full version using `pip install -e ebcpy[full]`
 
 # What can I learn in the examples?
 

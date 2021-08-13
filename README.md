@@ -27,6 +27,7 @@ Until this is not publically available, you have to install it via:
 git clone https://github.com/RWTH-EBC/ebcpy
 pip install -e ebcpy
 ```
+In order to execute everything, install the full version using `pip install -e ebcpy[full]`. This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
 
 # How to get started?
 We recommend running our jupyter-notebook to be guided through a **helpful tutorial**.  
