@@ -18,7 +18,8 @@ INSTALL_REQUIRES = [
     'tables>=3.6.1',
     'sklearn~=0.0',
     'fmpy>=0.2.27',
-    'pydantic>=1.8.2'
+    'pydantic>=1.8.2',
+    'h5py>=3.3.0'
 ]
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
 
