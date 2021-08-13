@@ -78,9 +78,12 @@ class DymolaAPI(SimulationAPI):
         dymola itself if API-functions cause a python error.
     :keyword str mos_script_pre:
         Path to a valid mos-script for Modelica/Dymola.
-        If given, the script is executed prior to laoding any
+        If given, the script is executed **prior** to laoding any
         package specified in this API.
         May be relevant for handling version conflicts.
+    :keyword str mos_script_post:
+        Path to a valid mos-script for Modelica/Dymola.
+        If given, the script is executed before closing Dymola.
     :keyword str dymola_version:
         Version of Dymola to use.
         If not given, newest version will be used.
@@ -117,7 +120,8 @@ class DymolaAPI(SimulationAPI):
                          "equidistant_output",
                          "n_restart",
                          "debug",
-                         "mos_script",
+                         "mos_script_pre",
+                         "mos_script_post",
                          "dymola_version"]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
@@ -130,19 +134,21 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
-        self.mos_script_pre = kwargs.pop("mos_script_pre", None)
+        self.mos_script_pre = self._make_modelica_normpath(kwargs.pop("mos_script_pre", None))
+        self.mos_script_post = self._make_modelica_normpath(kwargs.pop("mos_script_post", None))
         self.dymola_version = kwargs.pop("dymola_version", None)
-        if self.mos_script_pre is not None:
-            if not os.path.isfile(self.mos_script_pre):
-                raise FileNotFoundError(
-                    f"Given mos_script_pre '{self.mos_script_pre}' does "
-                    f"not exist."
-                )
-            if not str(self.mos_script_pre.endswith(".mos")):
-                raise TypeError(
-                    f"Given mos_script_pre '{self.mos_script_pre}' "
-                    f"is not a valid .mos file."
-                )
+        for mos_script in [self.mos_script_pre, self.mos_script_post]:
+            if mos_script is not None:
+                if not os.path.isfile(mos_script):
+                    raise FileNotFoundError(
+                        f"Given mos_script '{mos_script}' does "
+                        f"not exist."
+                    )
+                if not mos_script.endswith(".mos"):
+                    raise TypeError(
+                        f"Given mos_script '{mos_script}' "
+                        f"is not a valid .mos file."
+                    )
 
         self.dymola = None
 
@@ -587,6 +593,12 @@ class DymolaAPI(SimulationAPI):
 
     def _single_close(self, dymola):
         """Closes a single dymola instance"""
+        # Execute the mos-script if given:
+        if self.mos_script_post is not None:
+            self.logger.info("Executing given mos_script_post "
+                             "prior to closing.")
+            dymola.RunScript(self.mos_script_post)
+            self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
         # Change so the atexit function works without an error.
         if dymola is not None:
@@ -647,7 +659,10 @@ class DymolaAPI(SimulationAPI):
             cd = self.cd
         # Execute the mos-script if given:
         if self.mos_script_pre is not None:
+            self.logger.info("Executing given mos_script_pre "
+                             "prior to loading packages.")
             dymola.RunScript(self.mos_script_pre)
+            self.logger.info("Output of mos_script_pre: %s", dymola.getLastErrorLog())
 
         # Also set the cd in the dymola api
         cd_modelica = self._make_modelica_normpath(path=cd)
