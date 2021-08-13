@@ -81,7 +81,7 @@ class DymolaAPI(SimulationAPI):
         If given, the script is executed prior to laoding any
         package specified in this API.
         May be relevant for handling version conflicts.
-    :keywprd str dymola_version:
+    :keyword str dymola_version:
         Version of Dymola to use.
         If not given, newest version will be used.
         If given, the Version needs to be equal to the folder name
@@ -91,7 +91,7 @@ class DymolaAPI(SimulationAPI):
         - "C:\Program Files\Dymola 2020x"
         and you want to use Dymola 2020x, specify
         dymola_version='Dymola 2020x'.
-        This parameter is overwriten if dymola_path is specified.
+        This parameter is overwritten if dymola_path is specified.
     Example:
 
     >>> import os
