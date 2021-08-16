@@ -82,7 +82,7 @@ tsd.clean_and_space_equally(desired_freq="1s")
 ```
 
 # Documentation
-Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/Python/ebcpy/master/docs).
+Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html).
 
 # Problems?
 Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy).
