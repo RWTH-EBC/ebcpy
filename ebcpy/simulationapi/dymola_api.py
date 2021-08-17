@@ -154,7 +154,7 @@ class DymolaAPI(SimulationAPI):
             self.mos_script_pre = self._make_modelica_normpath(self.mos_script_pre)
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
-
+        # Set empty dymola attribute
         self.dymola = None
 
         super().__init__(cd=cd,
