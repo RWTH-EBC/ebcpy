@@ -134,8 +134,8 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
-        self.mos_script_pre = self._make_modelica_normpath(kwargs.pop("mos_script_pre", None))
-        self.mos_script_post = self._make_modelica_normpath(kwargs.pop("mos_script_post", None))
+        self.mos_script_pre = kwargs.pop("mos_script_pre", None)
+        self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
@@ -144,12 +144,18 @@ class DymolaAPI(SimulationAPI):
                         f"Given mos_script '{mos_script}' does "
                         f"not exist."
                     )
-                if not mos_script.endswith(".mos"):
+                if not str(mos_script).endswith(".mos"):
                     raise TypeError(
                         f"Given mos_script '{mos_script}' "
                         f"is not a valid .mos file."
                     )
 
+        # Convert to modelica path
+        if self.mos_script_pre is not None:
+            self.mos_script_pre = self._make_modelica_normpath(self.mos_script_pre)
+        if self.mos_script_post is not None:
+            self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
+        # Set empty dymola attribute
         self.dymola = None
 
         super().__init__(cd=cd,
@@ -441,6 +447,9 @@ class DymolaAPI(SimulationAPI):
             dymola_cd = str(pathlib.Path(dymola.getLastErrorLog().replace("\n", "")))
             if savepath is None or str(savepath) == dymola_cd:
                 return os.path.join(dymola_cd, _save_name_dsres)
+            if self.use_mp:
+                # Alter path to account for multiprocessing files
+                savepath = os.path.join(savepath, f"worker_{idx_worker}")
             os.makedirs(savepath, exist_ok=True)
             for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
