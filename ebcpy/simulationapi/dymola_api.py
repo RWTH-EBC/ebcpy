@@ -149,6 +149,7 @@ class DymolaAPI(SimulationAPI):
                         f"Given mos_script '{mos_script}' "
                         f"is not a valid .mos file."
                     )
+
         # Convert to modelica path
         if self.mos_script_pre is not None:
             self.mos_script_pre = self._make_modelica_normpath(self.mos_script_pre)

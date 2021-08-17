@@ -1,7 +1,7 @@
 stages:
+  - test
   - doc
   - code_quality
-  - test
   - deploy
 
 variables:
