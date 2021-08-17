@@ -144,7 +144,7 @@ class DymolaAPI(SimulationAPI):
                         f"Given mos_script '{mos_script}' does "
                         f"not exist."
                     )
-                if not mos_script.endswith(".mos"):
+                if not str(mos_script).endswith(".mos"):
                     raise TypeError(
                         f"Given mos_script '{mos_script}' "
                         f"is not a valid .mos file."
