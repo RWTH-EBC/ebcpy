@@ -441,25 +441,32 @@ class DymolaAPI(SimulationAPI):
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
             savepath = kwargs.pop("savepath", None)
-            # Get the cd of the current dymola instance
-            dymola.cd()
-            # Get the value and convert it to a 100 % fitting str-path
-            dymola_cd = str(pathlib.Path(dymola.getLastErrorLog().replace("\n", "")))
-            if savepath is None or str(savepath) == dymola_cd:
-                return os.path.join(dymola_cd, _save_name_dsres)
-            if self.use_mp:
-                # Alter path to account for multiprocessing files
-                savepath = os.path.join(savepath, f"worker_{idx_worker}")
-            os.makedirs(savepath, exist_ok=True)
-            for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
-                # Delete existing files
-                if os.path.isfile(os.path.join(savepath, filename)):
-                    os.remove(os.path.join(savepath, filename))
-                # Move files
-                shutil.copy(os.path.join(dymola_cd, filename),
-                            os.path.join(savepath, filename))
-                os.remove(os.path.join(dymola_cd, filename))
-            return os.path.join(savepath, _save_name_dsres)
+            try:
+                # Get the cd of the current dymola instance
+                dymola.cd()
+                # Get the value and convert it to a 100 % fitting str-path
+                dymola_cd = str(pathlib.Path(dymola.getLastErrorLog().replace("\n", "")))
+                if savepath is None or str(savepath) == dymola_cd:
+                    return os.path.join(dymola_cd, _save_name_dsres)
+                if self.use_mp:
+                    # Alter path to account for multiprocessing files
+                    savepath = os.path.join(savepath, f"worker_{idx_worker}")
+                os.makedirs(savepath, exist_ok=True)
+                for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
+                    # Delete existing files
+                    if os.path.isfile(os.path.join(savepath, filename)):
+                        os.remove(os.path.join(savepath, filename))
+                    # Move files
+                    shutil.copy(os.path.join(dymola_cd, filename),
+                                os.path.join(savepath, filename))
+                    os.remove(os.path.join(dymola_cd, filename))
+                return os.path.join(savepath, _save_name_dsres)
+            except Exception as err:
+                self.logger.error("Could not save the files. Error: %s", str(err))
+                if fail_on_error:
+                    raise err
+                return None
+
         data = res[1]  # Get data
         if return_option == "last_point":
             results = []
