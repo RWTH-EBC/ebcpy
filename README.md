@@ -5,29 +5,28 @@
 
 # ebcpy
 
-This **py**thon package aims to collect generic functions and classes commonly
-used at the Institute of Energy Efficient Buildings and Indoor Climate (**EBC**).
+This **py**thon package provides generic functions and classes commonly
+used for the analysis and optimization of **e**nergy systems, **b**uildings and indoor **c**limate (**EBC**).
 
 Key features are:
 
+* `TimeSeriesData`
+* `SimulationAPI`'s
+* Optimization wrapper
 * Pre-/Postprocessing
-* Conversion
-* SimulationAPI
-* Optimization
-* Statistics Analyzer
-* Logger
-* Data Types (Interface for reoccurring classes in other packages)
+* Modelica utilities
 
 # Installation
-Basic knowlege about **git** and **python** are required to understand the following simple steps.  
+Basic knowledge about **git** and **python** are required to understand the following simple steps.  
 We tested this with `cmd` on a *Windows* 10 machine.
 
-Until this is not publically available, you have to install it via:
+Until this is not publicly available, you have to install it via:
 ```
 git clone https://github.com/RWTH-EBC/ebcpy
 pip install -e ebcpy
 ```
-In order to execute everything, install the full version using `pip install -e ebcpy[full]`. This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
+In order to execute everything, install the full version using `pip install -e ebcpy[full]`. 
+This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
 
 # How to get started?
 We recommend running our jupyter-notebook to be guided through a **helpful tutorial**.  
