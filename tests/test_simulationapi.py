@@ -46,6 +46,49 @@ class PartialTestSimAPI(unittest.TestCase):
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
 
+    def test_savepath_handling(self):
+        """Test correct errors for wrong savepath allocation"""
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        result_names = list(self.sim_api.states.keys())[:5]
+        self.sim_api.result_names = result_names
+        _some_par = list(self.sim_api.parameters.keys())[0]
+        pars = {_some_par: self.sim_api.parameters[_some_par].value}
+        parameters = [pars for i in range(2)]
+        with self.assertRaises(TypeError):
+            res = self.sim_api.simulate(parameters=parameters,
+                                        return_option='savepath')
+        with self.assertRaises(TypeError):
+            res = self.sim_api.simulate(parameters=parameters,
+                                        return_option='savepath',
+                                        result_file_name=["t", "t"],
+                                        savepath=[self.example_sim_dir, self.example_sim_dir])
+
+        # Test multiple result_file_names
+        _saves = [os.path.join(self.example_sim_dir, f"test_{i}") for i in range(len(parameters))]
+        _save_tests = [
+            self.example_sim_dir,
+            _saves,
+            _saves
+        ]
+        _names = [f"test_{i}" for i in range(len(parameters))]
+        _name_tests = [
+            _names,
+            "test",
+            _names
+        ]
+        for _save, _name in zip(_save_tests, _name_tests):
+            res = self.sim_api.simulate(
+                parameters=parameters,
+                return_option="savepath",
+                savepath=_save,
+                result_file_name=_name
+                )
+            for r in res:
+                self.assertTrue(os.path.isfile(r))
+                self.assertIsInstance(r, str)
+
+
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
         # Test the setting of the function

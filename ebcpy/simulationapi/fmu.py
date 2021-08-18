@@ -247,6 +247,8 @@ class FMU_API(simulationapi.SimulationAPI):
 
             if savepath is None:
                 savepath = self.cd
+
+            os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.hdf")
             df.to_hdf(filepath,
                       key="simulation")
