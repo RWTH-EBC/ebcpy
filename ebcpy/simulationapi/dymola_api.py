@@ -95,6 +95,9 @@ class DymolaAPI(SimulationAPI):
         and you want to use Dymola 2020x, specify
         dymola_version='Dymola 2020x'.
         This parameter is overwritten if dymola_path is specified.
+    :keyword str dymola_interface_path:
+        Only relevant for the case when the dymola-exe path
+        differs from the interface path.
     Example:
 
     >>> import os
@@ -122,7 +125,8 @@ class DymolaAPI(SimulationAPI):
                          "debug",
                          "mos_script_pre",
                          "mos_script_post",
-                         "dymola_version"]
+                         "dymola_version",
+                         "dymola_interface_path"]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
@@ -137,6 +141,7 @@ class DymolaAPI(SimulationAPI):
         self.mos_script_pre = kwargs.pop("mos_script_pre", None)
         self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
+        self.dymola_interface_path = kwargs.pop("dymola_interface_path", None)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
                 if not os.path.isfile(mos_script):
@@ -189,14 +194,11 @@ class DymolaAPI(SimulationAPI):
                 self.logger.info("Using dymola installation at %s", _dym_install)
             else:
                 raise FileNotFoundError("Could not find a dymola-interface on your machine.")
-        dymola_exe_path = self.get_dymola_path(_dym_install)
-        self.logger.info("Using dymola.exe: %s", dymola_exe_path)
-        dymola_interface_path = self.get_dymola_interface_path(_dym_install)
-        self.logger.info("Using dymola interface: %s", dymola_interface_path)
-
-        # Set the path variables:
-        self.dymola_interface_path = dymola_interface_path
-        self.dymola_exe_path = dymola_exe_path
+        self.dymola_exe_path = self.get_dymola_path(_dym_install)
+        self.logger.info("Using dymola.exe: %s", self.dymola_exe_path)
+        if self.dymola_interface_path is None:
+            self.dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+        self.logger.info("Using dymola interface: %s", self.dymola_interface_path)
 
         self.packages = []
         if packages is not None:
