@@ -7,7 +7,7 @@ stages:
 
 variables:
   EXLUDE_PYTHON: 36
-  COVERAGE_TYPE: "Dymola"
+  COVERAGE_TYPE: "Not Dymola"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'

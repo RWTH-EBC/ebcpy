@@ -138,10 +138,10 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             self.sim_api.parameters = {}
             self.sim_api.simulate()  # Test with no parameters
 
-#class TestDymolaAPIMultiCore(PartialTestDymolaAPI):
-#    """Test-Class for the DymolaAPI class on single core."""
+class TestDymolaAPIMultiCore(PartialTestDymolaAPI):
+    """Test-Class for the DymolaAPI class on single core."""
 
-#    n_cpu = 2
+    n_cpu = 2
 
 
 class TestDymolaAPISingleCore(PartialTestDymolaAPI):
