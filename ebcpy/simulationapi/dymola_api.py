@@ -8,7 +8,7 @@ import pathlib
 import warnings
 import atexit
 from typing import Union, List
-from pydantic import Field, root_validator
+from pydantic import Field
 import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
@@ -63,7 +63,7 @@ class DymolaAPI(SimulationAPI):
     :keyword str dymola_path:
          Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
-         Example: "C:\Program Files\Dymola 2020x"
+         Example: "C://Program Files//Dymola 2020x"
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
@@ -90,8 +90,8 @@ class DymolaAPI(SimulationAPI):
         If given, the Version needs to be equal to the folder name
         of your installation.
         Example: If you have two version installed at
-        - "C:\Program Files\Dymola 2021" and
-        - "C:\Program Files\Dymola 2020x"
+        - "C://Program Files//Dymola 2021" and
+        - "C://Program Files//Dymola 2020x"
         and you want to use Dymola 2020x, specify
         dymola_version='Dymola 2020x'.
         This parameter is overwritten if dymola_path is specified.
@@ -165,7 +165,7 @@ class DymolaAPI(SimulationAPI):
         # First import the dymola-interface
         dymola_path = kwargs.pop("dymola_path", None)
         if dymola_path is not None:
-            if not (os.path.exists(dymola_path)):
+            if not os.path.exists(dymola_path):
                 raise FileNotFoundError(f"Given path '{dymola_path}' can not be found on "
                                         "your machine.")
             _dym_install = dymola_path
@@ -373,7 +373,7 @@ class DymolaAPI(SimulationAPI):
                     "with no parameters returns no result. "
                     "Call this function using return_option='savepath' to get the results."
                 )
-            elif not parameters:
+            if not parameters:
                 random_name = list(self.parameters.keys())[0]
                 initial_values = [self.parameters[random_name].value]
                 initial_names = [random_name]
@@ -584,14 +584,9 @@ class DymolaAPI(SimulationAPI):
 
     def close(self):
         """Closes dymola."""
-        if self.use_mp:
-            try:
-                self.pool.map(self._close_multiprocessing,
-                              [_ for _ in range(self.n_cpu)])
-                self.pool.close()
-                self.pool.join()
-            except ValueError:
-                pass  # Already closed prior to atexit
+        # Close MP of super class
+        super().close()
+        # Always close main instance
         self._single_close(dymola=self.dymola)
         self.dymola = None
 
@@ -600,8 +595,9 @@ class DymolaAPI(SimulationAPI):
         if wrk_idx in self._dymola_instances:
             self._single_close(dymola=self._dymola_instances.pop(wrk_idx))
 
-    def _single_close(self, dymola):
+    def _single_close(self, **kwargs):
         """Closes a single dymola instance"""
+        dymola = kwargs["dymola"]
         # Execute the mos-script if given:
         if self.mos_script_post is not None:
             self.logger.info("Executing given mos_script_post "
@@ -697,8 +693,7 @@ class DymolaAPI(SimulationAPI):
         if use_mp:
             self._dymola_instances[self.worker_idx] = dymola
             return True
-        else:
-            return dymola
+        return dymola
 
     def _open_dymola_interface(self):
         """Open an instance of dymola and return the API-Object"""
@@ -966,22 +961,3 @@ class DymolaAPI(SimulationAPI):
             self.sim_counter = 1
         else:
             self.sim_counter += 1
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    # Setup the fmu-api:
-    model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
-    cwd = r"D:\00_temp\test_mp_fmu"
-    dym_api = DymolaAPI(dymola_version="Dymola 2020x", cd=cwd, model_name=model_name, n_cpu=10, show_window=True)
-    dym_api.result_names = ["heatCapacitor.T"]
-    dym_api.set_sim_setup({"stop_time": 10,
-                           "output_interval": 0.001})
-    parameters = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(100)]
-    res = dym_api.simulate(parameters=parameters)
-    for idx, _res in enumerate(res):
-        plt.plot(_res["heatCapacitor.T"], label=idx)
-    # Close the api to remove the created files:
-    dym_api.close()
-    plt.legend()
-    plt.show()

@@ -6,8 +6,6 @@ import logging
 import pathlib
 import atexit
 import shutil
-import time
-from itertools import repeat
 from typing import List, Union
 import fmpy
 from fmpy.model_description import read_model_description
@@ -18,12 +16,12 @@ from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
 # pylint: disable=broad-except
 
-#import multiprocessing as mp
-#m = mp.Manager()
-#m.dict()
-
 
 class FMU_Setup(SimulationSetup):
+    """
+    Add's custom setup parameters for simulating FMU's
+    to the basic `SimulationSetup`
+    """
 
     timeout: float = Field(
         title="timeout",
@@ -101,15 +99,10 @@ class FMU_API(simulationapi.SimulationAPI):
         :return: bool
             True on success
         """
-        if self.use_mp:
-            try:
-                self.pool.map(self._close_multiprocessing,
-                              [_ for _ in range(self.n_cpu)])
-                self.pool.close()
-                self.pool.join()
-            except ValueError:
-                pass  # Already closed prior to atexit
-        else:
+        # Close MP of super class
+        super().close()
+        # Close if single process
+        if not self.use_mp:
             if not self._fmu_instances:
                 return  # Already closed
             self._single_close(fmu_instance=self._fmu_instances[0],
@@ -117,7 +110,9 @@ class FMU_API(simulationapi.SimulationAPI):
             self._unzip_dirs = {}
             self._fmu_instances = {}
 
-    def _single_close(self, fmu_instance, unzip_dir):
+    def _single_close(self, **kwargs):
+        fmu_instance = kwargs["fmu_instance"]
+        unzip_dir = kwargs["unzip_dir"]
         try:
             fmu_instance.terminate()
         except Exception as error:  # This is due to fmpy which does not yield a narrow error
@@ -197,7 +192,8 @@ class FMU_API(simulationapi.SimulationAPI):
             # Convert df to structured numpy array for fmpy: simulate_fmu
             inputs.insert(0, column="time", value=inputs.index)
             inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
-            # Try to match the type, default is np.double. 'time' is not in inputs and thus handled separately.
+            # Try to match the type, default is np.double.
+            # 'time' is not in inputs and thus handled separately.
             dtype = [(inputs.columns[0], np.double)] + \
                     [(col,
                       self._type_map.get(self.inputs[col].type, np.double)
@@ -362,22 +358,3 @@ class FMU_API(simulationapi.SimulationAPI):
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
-
-
-if __name__ == "__main__":
-    import matplotlib.pyplot as plt
-    # Setup the fmu-api:
-    model_name = r"E:\04_git\ebcpy\tests\data\PumpAndValve_windows.fmu"
-    cwd = r"D:\00_temp\test_mp_fmu"
-    fmu_api = FMU_API(cd=cwd, model_name=model_name, n_cpu=10)
-    fmu_api.result_names = ["heatCapacitor.T"]
-    fmu_api.set_sim_setup({"stop_time": 10,
-                           "output_interval": 0.001})
-    PARAMETERS = [{"speedRamp.duration": 0.1 + 0.1 * i} for i in range(100)]
-    res = fmu_api.simulate(parameters=PARAMETERS)
-    for idx, _res in enumerate(res):
-        plt.plot(_res["heatCapacitor.T"], label=idx)
-    # Close the api to remove the created files:
-    fmu_api.close()
-    plt.legend()
-    plt.show()

@@ -7,12 +7,11 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 
 import os
 import itertools
-from copy import deepcopy
-import numpy as np
 from typing import Dict, Union, TypeVar, Any, List
-from pydantic import BaseModel, Field, validator
 from abc import abstractmethod
 import multiprocessing as mp
+from pydantic import BaseModel, Field, validator
+import numpy as np
 from ebcpy.utils import setup_logger
 
 
@@ -42,6 +41,10 @@ class Variable(BaseModel):
 
 
 class SimulationSetup(BaseModel):
+    """
+    pydantic BaseModel child to define relevant
+    parameters to setup the simulation.
+    """
     start_time: float = Field(
         default=0,
         description="The start time of the simulation",
@@ -73,6 +76,9 @@ class SimulationSetup(BaseModel):
 
     @validator("solver", always=True, allow_reuse=True)
     def check_valid_solver(cls, solver):
+        """
+        Check if the solver is in the list of valid solvers
+        """
         if not solver:
             return cls.__private_attributes__['_default_solver'].default
         allowed_solvers = cls.__private_attributes__['_allowed_solvers'].default
@@ -82,6 +88,7 @@ class SimulationSetup(BaseModel):
         return solver
 
     class Config:
+        """Overwrite default pydantic Config"""
         extra = 'forbid'
         underscore_attrs_are_private = True
 
@@ -121,6 +128,7 @@ class SimulationAPI:
                              "than the available number of "
                              f"cpus on your machine '{mp.cpu_count()}'")
         if self.n_cpu > 1:
+            # pylint: disable=consider-using-with
             self.pool = mp.Pool(processes=self.n_cpu)
             self.use_mp = True
         else:
@@ -143,6 +151,7 @@ class SimulationAPI:
         _id = mp.current_process()._identity
         if _id:
             return _id[0]
+        return None
 
     def __getstate__(self):
         """Overwrite magic method to allow pickling the api object"""
@@ -156,15 +165,27 @@ class SimulationAPI:
         """Overwrite magic method to allow pickling the api object"""
         self.__dict__.update(state)
 
-    @abstractmethod
     def close(self):
         """Base function for closing the simulation-program."""
-        raise NotImplementedError(f'{self.__class__.__name__}.close function is not defined')
+        if self.use_mp:
+            try:
+                self.pool.map(self._close_multiprocessing,
+                              list(range(self.n_cpu)))
+                self.pool.close()
+                self.pool.join()
+            except ValueError:
+                pass  # Already closed prior to atexit
+
+    @abstractmethod
+    def _close_multiprocessing(self, _):
+        raise NotImplementedError(f'{self.__class__.__name__}.close '
+                                  f'function is not defined')
 
     @abstractmethod
     def _single_close(self, **kwargs):
         """Base function for closing the simulation-program of a single core"""
-        raise NotImplementedError(f'{self.__class__.__name__}._single_close function is not defined')
+        raise NotImplementedError(f'{self.__class__.__name__}._single_close '
+                                  f'function is not defined')
 
     @abstractmethod
     def simulate(self,
@@ -253,7 +274,8 @@ class SimulationAPI:
         """
         Same arguments and function as simulate().
         Used to differ between single- and multi-processing simulation"""
-        raise NotImplementedError(f'{self.__class__.__name__}._single_simulation function is not defined')
+        raise NotImplementedError(f'{self.__class__.__name__}._single_simulation '
+                                  f'function is not defined')
 
     @property
     def sim_setup(self) -> SimulationSetupClass:
@@ -302,7 +324,8 @@ class SimulationAPI:
         Reimplement this to change variables etc.
         based on the new model.
         """
-        raise NotImplementedError(f'{self.__class__.__name__}._update_model function is not defined')
+        raise NotImplementedError(f'{self.__class__.__name__}._update_model '
+                                  f'function is not defined')
 
     def set_cd(self, cd):
         """Base function for changing the current working directory."""
