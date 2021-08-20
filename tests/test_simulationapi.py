@@ -98,7 +98,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         # Mos script
         mos_script = self.data_dir.joinpath("mos_script_test.mos")
 
-        # Just for tests in the ci:
+        # Just for tests in the gitlab-ci:
         if "linux" in sys.platform:
             dymola_path = "/usr/local"
         else:
