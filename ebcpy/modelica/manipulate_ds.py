@@ -1,7 +1,6 @@
 """Functions to manipulate (or extract information of) the
 dsfinal.txt and dsin.txt files created by Modelica."""
 
-import os
 from io import StringIO
 import pandas as pd
 

@@ -2,16 +2,13 @@
 Module with functions to convert
 certain format into other formats.
 """
-import os
 import pathlib
 import scipy.io as spio
 import numpy as np
 import pandas as pd
-from ebcpy import TimeSeriesData
 
 
-def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
-                                offset=0):
+def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
     """
     Function to convert a tsd to a mat-file readable within Dymola.
 
@@ -19,10 +16,10 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
         TimeSeriesData object
     :param str,os.path.normpath save_path_file:
         File path and name where to store the output .mat file.
-    :param list columns:
+    :keyword list columns:
         A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.
-    :param float offset:
+    :keyword float offset:
         Offset for time in seconds, default 0
     :returns mat_file:
         Returns the version 4 mat-file
@@ -53,7 +50,11 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, columns=None,
         raise ValueError("Given savepath for txt-file is not a .mat file!")
 
     # Load the relevant part of the df
-    df_sub, _ = _convert_to_subset(df=tsd, columns=columns, offset=offset)
+    df_sub, _ = _convert_to_subset(
+        df=tsd,
+        columns=kwargs.get("columns", None),
+        offset=kwargs.get("offset", 0)
+    )
 
     # Convert np.array into a list and create a dict with 'table' as matrix name
     new_mat = {'table': df_sub.values.tolist()}
@@ -105,9 +106,7 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     return save_path_file
 
 
-def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
-                                columns=None, offset=0, sep="\t",
-                                with_tag=True):
+def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     """
     Convert a hdf file to modelica readable text. This is especially useful
     for generating input data for a modelica simulation.
@@ -120,14 +119,14 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
         Needed in Modelica to correctly load the file.
     :param str,os.path.normpath save_path_file:
         File path and name where to store the output .txt file.
-    :param list columns:
+    :keyword list columns:
         A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.
-    :param float offset:
+    :keyword float offset:
         Offset for time in seconds, default 0
-    :param str sep:
+    :keyword str sep:
         Separator used to separate values between columns
-    :param Boolean with_tag:
+    :keyword Boolean with_tag:
         Use True each variable and tag is written to the file
         If False, only the variable name is written to the file.
 
@@ -155,13 +154,20 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file,
         raise ValueError("Given savepath for txt-file is not a .txt file!")
 
     # Load the relavant part of the df
-    df_sub, headers = _convert_to_subset(df=tsd, columns=columns, offset=offset)
+    df_sub, headers = _convert_to_subset(
+        df=tsd,
+        columns=kwargs.get("columns", None),
+        offset=kwargs.get("offset", 0)
+    )
+
+    # Unpack kwargs
+    sep = kwargs.get("sep", "\t")
 
     n_cols = len(headers)
     n_rows = len(df_sub.index)
     # Comment header line
     _temp_str = ""
-    if with_tag:
+    if kwargs.get("with_tag", True):
         # Convert ("variable", "tag") to "variable_tag"
         _temp_str = sep.join(["_".join(variable_tag) for variable_tag in headers])
     else:

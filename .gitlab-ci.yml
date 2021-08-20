@@ -2,17 +2,20 @@ stages:
   - test
   - doc
   - code_quality
+  - build
   - deploy
 
 variables:
   EXLUDE_PYTHON: 36
-  COVERAGE_TYPE: "Not Dymola"
+  COVERAGE_TYPE: "Dymola"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/pylint.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/doc/sphinxdoc.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/build/build.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
