@@ -16,11 +16,13 @@ include:
     file: 'python/doc/sphinxdoc.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/build/build.gitlab-ci.yml'
+    ref: 'fix_minor_bugs'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/unittest.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/coverage.gitlab-ci.yml'
+    ref: 'fix_minor_bugs'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
