@@ -42,8 +42,11 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinx.ext.coverage',
               'm2r2',  # Enable .md files
+              'sphinxcontrib.autodoc_pydantic'
               ]
 
+autodoc_pydantic_model_show_json = False
+autodoc_pydantic_model_show_config = False
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
