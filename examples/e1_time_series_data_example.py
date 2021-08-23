@@ -42,7 +42,6 @@ def main(with_plot=True):
     print("TimeSeriesData inherits from", TimeSeriesData.__base__)
 
     # ######################### Processing TimeSeriesData ##########################
-    # TODO Describe what is happening
     # Index changing:
     print(tsd_hdf.index)
     tsd_hdf.to_float_index(offset=0)

@@ -11,12 +11,11 @@ About ebcpy
 .. toctree::
    :maxdepth: 2
 
+   examples
    ebcpy
+   contribution
+   version_his
 
-Version History
--------------------
-
-.. mdinclude::  ../../CHANGELOG.md
 
 Indices and tables
 ==================

@@ -1,11 +1,13 @@
 [![pylint](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.svg )](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.html)
 [![documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/doc.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html)
 [![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage/badge.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![build](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)
 
 
 # ebcpy
 
-This **py**thon package provides generic functions and classes commonly
+This **PY**thon package provides generic functions and classes commonly
 used for the analysis and optimization of **e**nergy systems, **b**uildings and indoor **c**limate (**EBC**).
 
 Key features are:
@@ -29,6 +31,7 @@ In order to execute everything, install the full version using `pip install -e e
 This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
 
 # How to get started?
+
 We recommend running our jupyter-notebook to be guided through a **helpful tutorial**.  
 For this, run the following code:
 ```
@@ -37,6 +40,9 @@ pip install jupyter
 # Go into your ebcpy-folder (cd \path_to_\ebcpy) or change the path to tutorial.ipynb and run:
 jupyter notebook ebcpy\tutorials\tutorial.ipynb
 ```
+
+Or, clone this repo and look at the examples\README.md file.
+Here you will find several examples to execute.
 
 # TimeSeriesData
 Note that we use our own `TimeSeriesData` object which inherits from `pd.DataFrame`. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
@@ -84,4 +90,4 @@ tsd.clean_and_space_equally(desired_freq="1s")
 Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html).
 
 # Problems?
-Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy).
+Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy/new).
