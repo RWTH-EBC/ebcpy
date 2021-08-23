@@ -1,6 +1,11 @@
 ebcpy package
 =============
 
+.. automodule:: ebcpy
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Subpackages
 -----------
 
@@ -33,16 +38,7 @@ ebcpy.optimization module
 ebcpy.preprocessing module
 --------------------------
 
-
 .. automodule:: ebcpy.preprocessing
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: ebcpy
    :members:
    :undoc-members:
    :show-inheritance:

@@ -267,8 +267,8 @@ class TimeSeriesData(pd.DataFrame):
     def get_variable_names(self) -> List[str]:
         """
         Return an alphabetically sorted list of all variables
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         return sorted(self.columns.get_level_values(0).unique())
 
@@ -276,8 +276,8 @@ class TimeSeriesData(pd.DataFrame):
         """
         Return an alphabetically sorted list of all variables
         that contain more than one tag.
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         var_names = self.columns.get_level_values(0)
         return sorted(var_names[var_names.duplicated()])
@@ -289,8 +289,7 @@ class TimeSeriesData(pd.DataFrame):
         :param str variable:
             If given, tags of this variable are returned
 
-        :return:
-            List[str]
+        :return: List[str]
         """
         if variable:
             tags = self.loc[:, variable].columns

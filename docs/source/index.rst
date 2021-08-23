@@ -12,9 +12,6 @@ About ebcpy
    :maxdepth: 2
 
    ebcpy
-   ebcpy.modelica
-   ebcpy.simulationapi
-   ebcpy.utils
 
 Version History
 -------------------

@@ -19,14 +19,8 @@ from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 class DymolaSimulationSetup(SimulationSetup):
     """
-    - You can't use `output_interval`. Instead you
-        have to use `numberOfIntervals`.
-        An attempt is made to convert it internally. For this to work,
-        `output_interval` has to be an even divisor of the interval given
-        by`stop_time-start_time`. In the case of `start_time=0, stop_time=100`,
-        `output_interval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
-        :raises ValueError if `output_interval` is wrong
-
+    Adds ``tolerance`` to the list of possible
+    setup fields.
     """
     tolerance: float = Field(
         title="tolerance",
@@ -63,7 +57,7 @@ class DymolaAPI(SimulationAPI):
     :keyword str dymola_path:
          Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
-         Example: "C://Program Files//Dymola 2020x"
+         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
@@ -89,12 +83,17 @@ class DymolaAPI(SimulationAPI):
         If not given, newest version will be used.
         If given, the Version needs to be equal to the folder name
         of your installation.
-        Example: If you have two version installed at
-        - "C://Program Files//Dymola 2021" and
-        - "C://Program Files//Dymola 2020x"
+
+        **Example:** If you have two version installed at
+
+        - ``C://Program Files//Dymola 2021`` and
+        - ``C://Program Files//Dymola 2020x``
+
         and you want to use Dymola 2020x, specify
-        dymola_version='Dymola 2020x'.
-        This parameter is overwritten if dymola_path is specified.
+        ``dymola_version='Dymola 2020x'``.
+
+        This parameter is overwritten if ``dymola_path`` is specified.
+
     Example:
 
     >>> import os
@@ -109,6 +108,7 @@ class DymolaAPI(SimulationAPI):
     >>>                      "stop_time": 200}
     >>> dym_api.simulate()
     >>> dym_api.close()
+
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
     _dymola_instances: dict = {}
@@ -260,6 +260,7 @@ class DymolaAPI(SimulationAPI):
         Simulate the given parameters.
 
         Additional settings:
+
         :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
         :keyword Boolean squeeze:

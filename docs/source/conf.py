@@ -42,8 +42,11 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.githubpages',
               'sphinx.ext.coverage',
               'm2r2',  # Enable .md files
+              'sphinxcontrib.autodoc_pydantic'
               ]
 
+autodoc_pydantic_model_show_json = False
+autodoc_pydantic_model_show_config = False
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
@@ -66,7 +69,7 @@ author = 'EON EBC'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1'
+version = '0.2'
 # The full version, including alpha/beta/rc tags.
 release = '0.2.0'
 
@@ -94,7 +97,7 @@ todo_include_todos = False
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'sphinx_material'
+html_theme = 'sphinx_rtd_theme'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -105,32 +108,7 @@ html_theme = 'sphinx_material'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
-
-# Material theme options (see theme.conf for more information)
-html_theme_options = {
-    # Set the name of the project to appear in the navigation.
-    'nav_title': project,
-    # Set you GA account ID to enable tracking
-    # 'google_analytics_account': 'UA-XXXXX',
-    # Specify a base_url used to generate sitemap.xml. If not
-    # specified, then no sitemap will be built.
-    # 'base_url': 'https://project.github.io/project',
-    # Set the color and the accent color
-    'color_primary': 'red',
-    'color_accent': 'red',
-    # Set the repo location to get a badge with stats
-    'repo_url': 'https://github.com/RWTH-EBC/ebcpy',
-    'repo_name': f'{project} library',
-    # Visible levels of the global TOC; -1 means unlimited
-    'globaltoc_depth': 3,
-    # If False, expand all TOC entries
-    'globaltoc_collapse': True,
-    # If True, show hidden TOC entries
-    'globaltoc_includehidden': False,
-    # Little logo on top left
-    'logo_icon': '&#xe869',
-}
+html_static_path = []
 
 html_sidebars = {
     "**": ["logo-text.html",
