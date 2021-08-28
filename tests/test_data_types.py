@@ -205,8 +205,39 @@ class TestDataTypes(unittest.TestCase):
                          df.columns.values.tolist())
         self.assertEqual(tsd.to_df().columns.nlevels, 1)
         tsd.loc[:, ("my_variable", "new_tag")] = 5
-        self.assertIsInstance(tsd.to_df(), pd.DataFrame)
+        self.assertIsInstance(tsd.copy().to_df(), pd.DataFrame)
         self.assertEqual(tsd.columns.nlevels, 2)
+        # Test force index:
+        with self.assertRaises(IndexError):
+            tsd.to_df(force_single_index=True)
+
+    def test_frequ(self):
+        """Test frequency property"""
+        df = pd.DataFrame({"my_variable": np.random.rand(5),
+                           "my_variable1": np.random.rand(5)})
+        tsd = data_types.TimeSeriesData(df.copy())
+        fre, std = tsd.frequency
+        self.assertEqual(fre, 1)
+        self.assertEqual(std, 0)
+        tsd.to_datetime_index()
+        fre, std = tsd.frequency
+        self.assertEqual(fre, 1)
+        self.assertEqual(std, 0)
+
+    def test_preprocessing_api(self):
+        """Test function accessed in preprocessing"""
+        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
+                                        key="parameters")
+        # number_lines_totally_na
+        self.assertEqual(tsd.number_lines_totally_na(), 0)
+        tsd.moving_average(window=2, variable="sine.startTime / s")
+        tsd.moving_average(window=5, variable="sine.startTime / s",
+                           tag="raw", new_tag="some_new_tag")
+        tsd.low_pass_filter(crit_freq=0.1, filter_order=2,
+                            variable="sine.amplitude / ")
+        tsd.low_pass_filter(crit_freq=0.1, filter_order=2,
+                            variable="sine.startTime / s",
+                            tag="raw", new_tag="some_new_tag")
 
     def test_time_series(self):
         """Test the time series object"""

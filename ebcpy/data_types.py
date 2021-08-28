@@ -15,7 +15,7 @@ from pandas.core.internals import BlockManager
 import pandas as pd
 import numpy as np
 import ebcpy.modelica.simres as sr
-import ebcpy.preprocessing as preprocessing
+from ebcpy import preprocessing
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
 
@@ -219,14 +219,13 @@ class TimeSeriesData(pd.DataFrame):
         """
         if len(self.get_variables_with_multiple_tags()) == 0:
             return pd.DataFrame(self.droplevel(1, axis=1))
-        else:
-            if force_single_index:
-                raise IndexError(
-                    "Can't automatically drop all tags "
-                    "as the following variables contain multiple tags: "
-                    f"{' ,'.join(self.get_variables_with_multiple_tags())}. "
-                )
-            return pd.DataFrame(self)
+        if force_single_index:
+            raise IndexError(
+                "Can't automatically drop all tags "
+                "as the following variables contain multiple tags: "
+                f"{' ,'.join(self.get_variables_with_multiple_tags())}. "
+            )
+        return pd.DataFrame(self)
 
     def _load_df_from_file(self):
         """Function to load a given filepath into a dataframe"""
@@ -268,8 +267,8 @@ class TimeSeriesData(pd.DataFrame):
     def get_variable_names(self) -> List[str]:
         """
         Return an alphabetically sorted list of all variables
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         return sorted(self.columns.get_level_values(0).unique())
 
@@ -277,8 +276,8 @@ class TimeSeriesData(pd.DataFrame):
         """
         Return an alphabetically sorted list of all variables
         that contain more than one tag.
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         var_names = self.columns.get_level_values(0)
         return sorted(var_names[var_names.duplicated()])
@@ -290,8 +289,7 @@ class TimeSeriesData(pd.DataFrame):
         :param str variable:
             If given, tags of this variable are returned
 
-        :return:
-            List[str]
+        :return: List[str]
         """
         if variable:
             tags = self.loc[:, variable].columns

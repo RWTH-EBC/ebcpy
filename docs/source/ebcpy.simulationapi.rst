@@ -1,6 +1,11 @@
 ebcpy.simulationapi package
 ===========================
 
+.. automodule:: ebcpy.simulationapi
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Submodules
 ----------
 
@@ -16,14 +21,6 @@ ebcpy.simulationapi.fmu module
 ------------------------------
 
 .. automodule:: ebcpy.simulationapi.fmu
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-Module contents
----------------
-
-.. automodule:: ebcpy.simulationapi
    :members:
    :undoc-members:
    :show-inheritance:

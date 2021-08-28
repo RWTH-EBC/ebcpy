@@ -2,7 +2,7 @@
 
 This folder contains several example files which help with the understanding of ebcpy.
 
-# Getting started
+## Getting started
 
 While these examples should run in any IDE, we advise using PyCharm.
 Before being able to run these examples, be sure to:
@@ -15,15 +15,15 @@ Before being able to run these examples, be sure to:
 5. Install the library using `pip install -e ebcpy`.
    In order to execute everything, install the full version using `pip install -e ebcpy[full]`
 
-# What can I learn in the examples?
+## What can I learn in the examples?
 
-## `e1_time_series_data_example.py`
+### `e1_time_series_data_example.py`
 
 1. Learn how to use `TimeSeriesData`
 2. Understand why we use `TimeSeriesData`
 3. Get to know the different processing functions
 
-## `e2_fmu_example.py`
+### `e2_fmu_example.py`
 
 1. Learn how to use the `FMU_API`
 2. Understand model variables
@@ -32,13 +32,13 @@ Before being able to run these examples, be sure to:
 5. Learn how to change inputs of a simulation
 6. Learn how to run simulations in parallel
 
-## `e3_dymola_example.py`
+### `e3_dymola_example.py`
 
 1. Learn how to use the `DymolaAPI`
 2. Learn the different result options of the simulation
 3. Learn how to convert inputs into the Dymola format
 
-## `e4_optimization_example.py`
+### `e4_optimization_example.py`
 
 1. Learn how to create a custom `Optimizer` class
 2. Learn the different optimizer frameworks

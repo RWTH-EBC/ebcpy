@@ -52,13 +52,15 @@ class TestConversion(unittest.TestCase):
         """Test function conversion.convert_hdf_to_modelica_txt().
         For an example, see the doctest in the function."""
         columns = ["sine.y / "]
-        for col in [columns, None]:
+        for col, with_tag in zip([columns, None], [True, False]):
             # Check if successfully converted
             filepath_txt = conversion.convert_tsd_to_modelica_txt(
                 tsd=self.tsd,
-                save_path_file="some_text_data.txt",
+                save_path_file=Path("some_text_data.txt"),
                 table_name="dummy",
-                columns=col)
+                columns=col,
+                with_tag=with_tag
+            )
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
@@ -70,7 +72,7 @@ class TestConversion(unittest.TestCase):
                 tsd=self.tsd,
                 save_path_file="not_a_txt.mat",
                 table_name="dummy",
-                columns=col)
+                columns=columns[0])
 
     def test_conversion_hdf_to_clustering_txt(self):
         """Test function conversion.convert_hdf_to_clustering_txt().
