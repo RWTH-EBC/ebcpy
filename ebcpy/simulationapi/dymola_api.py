@@ -748,11 +748,13 @@ class DymolaAPI(SimulationAPI):
         """
         if isinstance(path, pathlib.Path):
             path = str(path)
+        # Path should be absolute for dymola
+        if not os.path.isabs(path):
+            path = os.path.abspath(path)
 
         # Create base directory:
         _basedir = os.path.dirname(path)
-        if not os.path.isdir(_basedir):
-            os.makedirs(_basedir)
+        os.makedirs(_basedir, exist_ok=True)
 
         path = path.replace("\\", "/")
         # Search for e.g. "D:testzone" and replace it with D:/testzone
