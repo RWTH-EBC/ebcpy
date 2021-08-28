@@ -326,7 +326,13 @@ class DymolaAPI(SimulationAPI):
             )
         initial_names = list(parameters.keys())
         initial_values = list(parameters.values())
-
+        # Convert to float for Boolean and integer types:
+        try:
+            initial_values = [float(v) for v in initial_values]
+        except TypeError as err:
+            raise TypeError("Dymola only accepts float values. "
+                            "Could bot automatically convert the given "
+                            "parameter values to float.") from err
         # Handle inputs
         if inputs is not None:
             # Unpack additional kwargs
@@ -568,15 +574,21 @@ class DymolaAPI(SimulationAPI):
     def cd(self, cd):
         """Set the working directory to the given path"""
         self._cd = cd
-        if not self.dymola:  # Not yet started
+        if self.dymola is None:  # Not yet started
             return
         # Also set the cd in the dymola api
         self.set_dymola_cd(dymola=self.dymola,
                            cd=cd)
         if self.use_mp:
-            self.logger.warning("Won't set the cd for all workers, not yet implemented.")
+            self.logger.warning("Won't set the cd for all workers, "
+                                "not yet implemented.")
 
     def set_dymola_cd(self, dymola, cd):
+        """
+        Set the cd of the Dymola Instance.
+        Before calling the Function, create the path and
+        convert to a modelica-normpath.
+        """
         os.makedirs(cd, exist_ok=True)
         cd_modelica = self._make_modelica_normpath(path=cd)
         res = dymola.cd(cd_modelica)
@@ -660,7 +672,6 @@ class DymolaAPI(SimulationAPI):
         self._check_dymola_instances()
         if use_mp:
             cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
-            os.makedirs(cd, exist_ok=True)
         else:
             cd = self.cd
         # Execute the mos-script if given:
@@ -670,11 +681,8 @@ class DymolaAPI(SimulationAPI):
             dymola.RunScript(self.mos_script_pre)
             self.logger.info("Output of mos_script_pre: %s", dymola.getLastErrorLog())
 
-        # Also set the cd in the dymola api
-        cd_modelica = self._make_modelica_normpath(path=cd)
-        res = dymola.cd(cd_modelica)
-        if not res:
-            raise OSError(f"Could not change working directory to {cd}")
+        # Set the cd in the dymola api
+        self.set_dymola_cd(dymola=dymola, cd=cd)
 
         for package in self.packages:
             self.logger.info("Loading Model %s", os.path.dirname(package).split("\\")[-1])
@@ -744,13 +752,6 @@ class DymolaAPI(SimulationAPI):
         """
         if isinstance(path, pathlib.Path):
             path = str(path)
-        # Path should be absolute for dymola
-        if not os.path.isabs(path):
-            path = os.path.abspath(path)
-
-        # Create base directory:
-        _basedir = os.path.dirname(path)
-        os.makedirs(_basedir, exist_ok=True)
 
         path = path.replace("\\", "/")
         # Search for e.g. "D:testzone" and replace it with D:/testzone
