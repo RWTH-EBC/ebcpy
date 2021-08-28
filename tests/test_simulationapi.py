@@ -179,13 +179,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             self.sim_api.simulate()  # Test with no parameters
 
         # Check wrong type and boolean conversion:
-        res = self.sim_api.simulate(parameters={
+        res_2 = self.sim_api.simulate(parameters={
             "heatConv_b": True,
         }, return_option="last_point")
-        res = self.sim_api.simulate(parameters={
+        res_1 = self.sim_api.simulate(parameters={
             "heatConv_b": 1,
         }, return_option="last_point")
-        self.assertEqual(res, res)
+        self.assertEqual(res_1, res_2)
         with self.assertRaises(TypeError):
             self.sim_api.simulate(parameters={"heatConv_b": "True"})
 

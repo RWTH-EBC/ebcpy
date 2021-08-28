@@ -329,7 +329,7 @@ class DymolaAPI(SimulationAPI):
         # Convert to float for Boolean and integer types:
         try:
             initial_values = [float(v) for v in initial_values]
-        except TypeError as err:
+        except (ValueError, TypeError) as err:
             raise TypeError("Dymola only accepts float values. "
                             "Could bot automatically convert the given "
                             "parameter values to float.") from err
