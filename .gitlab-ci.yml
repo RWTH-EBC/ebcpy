@@ -8,6 +8,7 @@ stages:
 variables:
   EXLUDE_PYTHON: 36
   COVERAGE_TYPE: "Dymola"
+  PAGES_BRANCH: master
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
