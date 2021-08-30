@@ -611,6 +611,8 @@ class DymolaAPI(SimulationAPI):
     def _single_close(self, **kwargs):
         """Closes a single dymola instance"""
         dymola = kwargs["dymola"]
+        if dymola is None:
+            return  # Already closed prior
         # Execute the mos-script if given:
         if self.mos_script_post is not None:
             self.logger.info("Executing given mos_script_post "
@@ -618,9 +620,7 @@ class DymolaAPI(SimulationAPI):
             dymola.RunScript(self.mos_script_post)
             self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
-        # Change so the atexit function works without an error.
-        if dymola is not None:
-            dymola.close()
+        dymola.close()
         self.logger.info('Successfully closed Dymola')
 
     def _close_dummy(self):
