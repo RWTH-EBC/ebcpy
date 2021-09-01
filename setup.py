@@ -26,17 +26,30 @@ SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setu
 setuptools.setup(
     name='ebcpy',
     version='0.2.0',
-    description='EBC Python Library used as a collection of useful '
-                'functions for different python modules of the '
-                'E.On Insttitute for Energy Efficien Buildings and Indoor '
-                'Climate',
-    url='not set yet',  # TODO: Set when on pypi .
-    author='RWTH Aachen University, E.ON Energy Research Center, Institute\
-                 of Energy Efficient Buildings and Indoor Climate',
+    description='Python Library used for different python modules'
+                ' for the analysis and optimization of energy systems, '
+                'buildings and indoor climate ',
+    url='https://github.com/RWTH-EBC/ebcpy',
+    download_url='',
+    license='BSD 3-Clause',
+    author='RWTH Aachen University, E.ON Energy Research Center, Institute '
+           'of Energy Efficient Buildings and Indoor Climate',
+    author_email='fabian.wuellhorst@eonerc.rwth-aachen.de',
     # Specify the Python versions you support here. In particular, ensure
     # that you indicate whether you support Python 2, Python 3 or both.
-    classifiers=['Programming Language :: Python :: 3.7',
-                 'Programming Language :: Python :: 3.8'],
+    classifiers=[
+        'Development Status :: 3 - Alpha',
+        'License :: OSI Approved :: BSD License',
+        'Topic :: Scientific/Engineering',
+        'Intended Audience :: Science/Research',
+        'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8'
+    ],
+    keywords=[
+        'simulation', 'building', 'energy',
+        'time-series-data', 'comfort',
+        'black-box optimization'
+    ],
     packages=setuptools.find_packages(exclude=['img']),
     extras_require=EXTRAS_REQUIRE,
     setup_requires=SETUP_REQUIRES,
