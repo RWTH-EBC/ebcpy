@@ -55,6 +55,7 @@ class TimeSeriesData(pd.DataFrame):
     Examples:
 
     First let's see the usage for a common dataframe.
+
     >>> import numpy as np
     >>> import pandas as pd
     >>> from ebcpy import TimeSeriesData
@@ -66,6 +67,7 @@ class TimeSeriesData(pd.DataFrame):
     Now, let's load the recently created file.
     As we just created the data, we specify the tag
     'sim' to indicate it is some sort of simulated value.
+
     >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
     """
 
