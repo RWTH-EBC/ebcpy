@@ -19,16 +19,24 @@ Key features are:
 * Modelica utilities
 
 # Installation
-Basic knowledge about **git** and **python** are required to understand the following simple steps.  
-We tested this with `cmd` on a *Windows* 10 machine.
 
-Until this is not publicly available, you have to install it via:
+To install, simply run
+```
+pip install ebcpy
+```
+
+In order to use all optional dependencies (e.g. `pymoo` optimization), install via:
+
+```
+pip install ebcpy[full]
+```
+
+In order to help development, install it as an egg:
+
 ```
 git clone https://github.com/RWTH-EBC/ebcpy
 pip install -e ebcpy
 ```
-In order to execute everything, install the full version using `pip install -e ebcpy[full]`. 
-This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
 
 # How to get started?
 

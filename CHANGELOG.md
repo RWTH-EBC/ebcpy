@@ -46,3 +46,5 @@
    - Genereal restructuring of examples, tutorials and tests
    - Several new functions for easier access / utility
    - Add inputs option for `DymolaAPI`
+- v0.2.1:
+   - Fix installation error by using `scikit-learn` instead of `sklearn` 

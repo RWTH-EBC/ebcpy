@@ -16,7 +16,7 @@ INSTALL_REQUIRES = [
     'scipy>=1.5.4',
     'pandas>=1.1.5',
     'tables>=3.6.1',
-    'sklearn~=0.0',
+    'scikit-learn>=0.24.2',
     'fmpy>=0.2.27',
     'pydantic>=1.8.2',
     'h5py>=3.1.0'
@@ -25,12 +25,12 @@ SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setu
 
 setuptools.setup(
     name='ebcpy',
-    version='0.2.0',
+    version='0.2.1',
     description='Python Library used for different python modules'
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
     url='https://github.com/RWTH-EBC/ebcpy',
-    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.0.tar.gz',
+    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.1.tar.gz',
     license='BSD 3-Clause',
     author='RWTH Aachen University, E.ON Energy Research Center, Institute '
            'of Energy Efficient Buildings and Indoor Climate',
