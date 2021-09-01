@@ -30,7 +30,7 @@ setuptools.setup(
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
     url='https://github.com/RWTH-EBC/ebcpy',
-    download_url='',
+    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.0.tar.gz',
     license='BSD 3-Clause',
     author='RWTH Aachen University, E.ON Energy Research Center, Institute '
            'of Energy Efficient Buildings and Indoor Climate',
