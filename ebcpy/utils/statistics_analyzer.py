@@ -12,7 +12,7 @@ class StatisticsAnalyzer:
     StatisticsAnalyzer.calc_METHOD(meas, sim). Where METHOD stands for one
     of the available methods (see below).
 
-    :param str method:
+    :param str method or function:
         One of the following:
             - MAE(Mean absolute error)
             - R2(coefficient of determination)
@@ -33,17 +33,27 @@ class StatisticsAnalyzer:
                               "mse": self.calc_mse,
                               "rmse": self.calc_rmse,
                               "cvrmse": self.calc_cvrmse,
-                              "nrmse": self.calc_nrmse}
+                              "nrmse": self.calc_nrmse,
+                              "user-function": None}
 
         _minimization_factors = {"mae": 1,
                                  "r2": -1,
                                  "mse": 1,
                                  "rmse": 1,
                                  "cvrmse": 1,
-                                 "nrmse": 1}
+                                 "nrmse": 1,
+                                 "user-function": None}
 
-        # Remove case-sensitive input
-        _method_internal = method.lower()
+        # check if method is function or string
+        if not type(method) == str:
+            # double check if it is a callable function
+            if callable(method):
+                # self._calc_internal = method
+                _method_internal = "user-function"
+                _supported_methods[_method_internal] = method
+        else:
+            # Remove case-sensitive input
+            _method_internal = method.lower()
 
         if _method_internal not in _supported_methods:
             raise ValueError(f"The given method {_method_internal} is not supported.\n "
@@ -54,10 +64,10 @@ class StatisticsAnalyzer:
 
     def calc(self, meas, sim):
         """Placeholder class before instantiating the class correctly."""
-        if self.for_minimization:
+        if self.for_minimization and self._min_fac:
             return self._calc_internal(meas, sim) * self._min_fac
-
-        return self._calc_internal(meas, sim)
+        else:
+            return self._calc_internal(meas, sim)
 
     @staticmethod
     def calc_mae(meas, sim):
@@ -163,3 +173,30 @@ class StatisticsAnalyzer:
                              "Choose another method.")
 
         return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+
+    # @staticmethod
+    # def calc_r2_rmse(meas, sim):
+    #     """
+    #     Calculates the MAE (mean absolute error)
+    #     for the given numpy array of measured and simulated data.
+
+    #     :param np.array meas:
+    #         Array with measurement data
+    #     :param np.array sim:
+    #         Array with simulation data
+    #     :return: float MAE:
+    #         R2 of the given data.
+    #     """
+    #     r2 = skmetrics.r2_score(meas, sim)
+    #     if r2 <= 0.0:
+    #         r2 = 0.0
+    #     if np.mean(meas) == 0:
+    #         raise ValueError("The given measurement data has a mean of 0. "
+    #                          "This makes the calculation of the CVRMSE impossible. "
+    #                          "Choose another method.")
+
+    #     cvrmse = np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+
+    #     combination = float(0.5 * (1 - (r2 / 100)) + 0.5 * cvrmse)
+
+    #     return combination
