@@ -173,30 +173,3 @@ class StatisticsAnalyzer:
                              "Choose another method.")
 
         return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
-
-    # @staticmethod
-    # def calc_r2_rmse(meas, sim):
-    #     """
-    #     Calculates the MAE (mean absolute error)
-    #     for the given numpy array of measured and simulated data.
-
-    #     :param np.array meas:
-    #         Array with measurement data
-    #     :param np.array sim:
-    #         Array with simulation data
-    #     :return: float MAE:
-    #         R2 of the given data.
-    #     """
-    #     r2 = skmetrics.r2_score(meas, sim)
-    #     if r2 <= 0.0:
-    #         r2 = 0.0
-    #     if np.mean(meas) == 0:
-    #         raise ValueError("The given measurement data has a mean of 0. "
-    #                          "This makes the calculation of the CVRMSE impossible. "
-    #                          "Choose another method.")
-
-    #     cvrmse = np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
-
-    #     combination = float(0.5 * (1 - (r2 / 100)) + 0.5 * cvrmse)
-
-    #     return combination
