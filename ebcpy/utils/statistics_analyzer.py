@@ -12,14 +12,24 @@ class StatisticsAnalyzer:
     StatisticsAnalyzer.calc_METHOD(meas, sim). Where METHOD stands for one
     of the available methods (see below).
 
-    :param str method or function:
-        One of the following:
+    :param (str, callable) method:
+        If string, it must be one of the following:
             - MAE(Mean absolute error)
             - R2(coefficient of determination)
             - MSE (Mean squared error)
             - RMSE(root mean square error)
             - CVRMSE(variance of RMSE)
             - NRMSE(Normalized RMSE)
+        If callable, the function needs to take
+        exactly two arguments and return a scalar value (e.g. float).
+        The arguments should be able to handle list and numpy arrays.
+
+        Example:
+
+        >>> def my_func(x, y)
+        >>>     return sum(x - y)
+        >>> StatisticsAnalyzer(method=my_func)
+
     :param Boolean for_minimization:
         Default True. To reduce (minimize) the error in given data,
         we either have to minimize or maximize the statistical measure.
