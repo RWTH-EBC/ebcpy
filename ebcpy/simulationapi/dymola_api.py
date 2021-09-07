@@ -309,8 +309,10 @@ class DymolaAPI(SimulationAPI):
                           f"tuner parameters \"annotation(Evaluate=false)\".\n "
                           f"Check for these parameters: {', '.join(self._structural_params)}")
             # Alter the model_name for the next simulation
-            self.model_name = self._alter_model_name(self.sim_setup,
-                                                     self.model_name, self._structural_params)
+            self.model_name, parameters = self._alter_model_name(
+                parameters,
+                self.model_name,
+                self._structural_params)
 
         # Restart Dymola after n_restart iterations
         self._check_restart()
@@ -915,6 +917,8 @@ class DymolaAPI(SimulationAPI):
         :return: str altered_modelName:
             modified model name
         """
+        # the structural parameter needs to be removed from paramters dict
+        new_parameters = parameters
         model_name = model_name.split("(")[0] # Trim old modifier
         if structural_params == [] or parameters == {}:
             return model_name
@@ -926,8 +930,10 @@ class DymolaAPI(SimulationAPI):
                 # extraction of the corresponding initial value
                 val = parameters[structural_para]
                 all_modifiers.append(f"{structural_para} = {val}")
+                # removal of the structural parameter
+                new_parameters.pop(structural_para)
         altered_model_name = f"{model_name}({','.join(all_modifiers)})"
-        return altered_model_name
+        return altered_model_name, new_parameters
 
     @staticmethod
     def _filter_error_log(error_log):
