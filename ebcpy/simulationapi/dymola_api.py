@@ -332,10 +332,15 @@ class DymolaAPI(SimulationAPI):
             )
 
         # Handle structural parameters
+
+        # check if structural parameters is list, otherwise set it
+        # there surely exist a better implementation for that
+        if not isinstance(structural_parameters, list):
+            structural_parameters = [structural_parameters]
+
         if (unsupported_parameters and
                 (self.modify_structural_parameters or
-                 structural_parameters)
-        ):
+                 structural_parameters)):
             # Alter the model_name for the next simulation
             model_name, parameters_new = self._alter_model_name(
                 parameters=parameters,
