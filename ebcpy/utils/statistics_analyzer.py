@@ -42,18 +42,19 @@ class StatisticsAnalyzer:
                                  "rmse": 1,
                                  "cvrmse": 1,
                                  "nrmse": 1,
-                                 "user-function": None}
+                                 "user-function": 1}
 
-        # check if method is function or string
-        if not type(method) == str:
-            # double check if it is a callable function
-            if callable(method):
-                # self._calc_internal = method
-                _method_internal = "user-function"
-                _supported_methods[_method_internal] = method
-        else:
+        # Check if method is function or string
+        if callable(method):
+            _method_internal = "user-function"
+            _supported_methods[_method_internal] = method
+        elif isinstance(method, str):
             # Remove case-sensitive input
             _method_internal = method.lower()
+        else:
+            raise TypeError(
+                f"Given method is of type {type(method)} but should be "
+                f"either string or function.")
 
         if _method_internal not in _supported_methods:
             raise ValueError(f"The given method {_method_internal} is not supported.\n "
@@ -64,10 +65,9 @@ class StatisticsAnalyzer:
 
     def calc(self, meas, sim):
         """Placeholder class before instantiating the class correctly."""
-        if self.for_minimization and self._min_fac:
+        if self.for_minimization:
             return self._calc_internal(meas, sim) * self._min_fac
-        else:
-            return self._calc_internal(meas, sim)
+        return self._calc_internal(meas, sim)
 
     @staticmethod
     def calc_mae(meas, sim):

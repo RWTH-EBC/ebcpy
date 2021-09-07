@@ -185,6 +185,17 @@ class TestStatisticsAnalyzer(unittest.TestCase):
         self.assertIsInstance(stat_analyzer.calc_r2(self.meas_ex, self.sim_ex),
                               float)
 
+    def test_custom_func(self):
+        """Test custom function calc_r2"""
+        def my_func(x, y):
+            return x - y
+
+        stat_meas = statistics_analyzer.StatisticsAnalyzer(method=my_func)
+        self.assertEqual(stat_meas.calc(10, 10), 0)
+        self.assertEqual(stat_meas.calc(20, 10), 10)
+        with self.assertRaises(TypeError):
+            stat_meas.calc(1, 2, 3)
+
 
 class TestLogger(unittest.TestCase):
     """Test-class for the logger function."""
