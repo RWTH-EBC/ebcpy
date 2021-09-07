@@ -337,20 +337,29 @@ class DymolaAPI(SimulationAPI):
                  structural_parameters)
         ):
             # Alter the model_name for the next simulation
-            self.model_name, parameters_new = self._alter_model_name(
+            model_name, parameters_new = self._alter_model_name(
                 parameters=parameters,
                 model_name=self.model_name,
                 structural_params=list(self.states.keys()) + structural_parameters
             )
+            # Trigger translation only if something changed
+            if model_name != self.model_name:
+                _res_names = self.result_names.copy()
+                self.model_name = model_name
+                self.result_names = _res_names  # Restore previous result names
             self.logger.warning(
                 "Warning: Currently, the model is re-translating "
                 "for each simulation. You should add to your Modelica "
                 "parameters \"annotation(Evaluate=false)\".\n "
                 "Check for these parameters: %s",
-                {', '.join(set(parameters.keys()).difference(parameters_new.keys()))}
+                ', '.join(set(parameters.keys()).difference(parameters_new.keys()))
             )
             parameters = parameters_new
-            unsupported_parameters = False
+            # Check again
+            unsupported_parameters = self.check_unsupported_variables(
+                variables=list(parameters.keys()),
+                type_of_var="parameters"
+            )
 
         initial_names = list(parameters.keys())
         initial_values = list(parameters.values())
@@ -949,7 +958,7 @@ class DymolaAPI(SimulationAPI):
             # Check if the variable is in the
             # given list of structural parameters
             if var_name in structural_params:
-                all_modifiers.append(f"{var_name} = {value}")
+                all_modifiers.append(f"{var_name}={value}")
                 # removal of the structural parameter
                 new_parameters.pop(var_name)
         altered_model_name = f"{model_name}({','.join(all_modifiers)})"

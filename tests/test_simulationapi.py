@@ -188,11 +188,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         self.assertEqual(res_1, res_2)
         # Wrong types
         with self.assertRaises(TypeError):
-            self.sim_api.simulate(parameters={"heatConv_b": "True"})
+            self.sim_api.simulate(parameters={"test_bool": "True"})
         # Wrong parameter
         with self.assertRaises(KeyError):
-            self.sim_api.simulate(parameters={"C2": 10},
-                                  return_option='savepath')
+            self.sim_api.simulate(
+                parameters={"C2": 10},
+                return_option='savepath'
+            )
         # Model with no parameters:
         with self.assertRaises(ValueError):
             self.sim_api.parameters = {}
@@ -201,7 +203,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
     def test_structural_parameters(self):
         """Test structural parameters"""
         some_val = np.random.rand()
-        self.sim_api.result_names.extend(["test_local"])
+        self.sim_api.result_names = ["test_local"]
         res = self.sim_api.simulate(
             parameters={"test_real_eval": some_val},
             return_option="last_point"
