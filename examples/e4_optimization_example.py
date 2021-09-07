@@ -100,15 +100,15 @@ def main(statistical_measure="MAE", with_plot=True):
 # define a user-defined statistical measure to optimize
 def calc_r2_rmse(meas, sim):
     """
-    Calculates the MAE (mean absolute error)
-    for the given numpy array of measured and simulated data.
+    Calculates the combination of R2 and RMSE and uses it equally
+    weighted for the minimization of the optimization.
 
     :param np.array meas:
         Array with measurement data
     :param np.array sim:
         Array with simulation data
-    :return: float MAE:
-        R2 of the given data.
+    :return: float combination:
+        combination of R2 and rmse.
     """
     r2 = skmetrics.r2_score(meas, sim)
     if r2 <= 0.0:
@@ -118,9 +118,9 @@ def calc_r2_rmse(meas, sim):
                          "This makes the calculation of the CVRMSE impossible. "
                          "Choose another method.")
 
-    cvrmse = np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+    rmse = np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
 
-    combination = float(0.5 * (1 - (r2 / 100)) + 0.5 * cvrmse)
+    combination = float(0.5 * (1 - (r2 / 100)) + 0.5 * rmse)
 
     return combination
 
