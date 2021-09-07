@@ -25,12 +25,12 @@ SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setu
 
 setuptools.setup(
     name='ebcpy',
-    version='0.2.1',
+    version='0.2.2',
     description='Python Library used for different python modules'
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
     url='https://github.com/RWTH-EBC/ebcpy',
-    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.1.tar.gz',
+    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.2.tar.gz',
     license='BSD 3-Clause',
     author='RWTH Aachen University, E.ON Energy Research Center, Institute '
            'of Energy Efficient Buildings and Indoor Climate',
