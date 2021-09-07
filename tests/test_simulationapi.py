@@ -6,6 +6,7 @@ import sys
 import os
 from pathlib import Path
 import shutil
+import numpy as np
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
@@ -196,6 +197,16 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         with self.assertRaises(ValueError):
             self.sim_api.parameters = {}
             self.sim_api.simulate()  # Test with no parameters
+
+    def test_structural_parameters(self):
+        """Test structural parameters"""
+        some_val = np.random.rand()
+        self.sim_api.result_names.extend(["test_local"])
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
+            return_option="last_point"
+        )
+        self.assertEqual(res["test_local"], some_val)
 
 
 class TestDymolaAPIMultiCore(PartialTestDymolaAPI):

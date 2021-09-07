@@ -940,7 +940,7 @@ class DymolaAPI(SimulationAPI):
             modified model name
         """
         # the structural parameter needs to be removed from paramters dict
-        new_parameters = parameters
+        new_parameters = parameters.copy()
         model_name = model_name.split("(")[0]  # Trim old modifier
         if parameters == {}:
             return model_name
