@@ -290,6 +290,14 @@ class DymolaAPI(SimulationAPI):
             >>>     structural_parameters=["parameterPipe"])
 
         """
+        # Handle special case for structural_parameters
+        if "structural_parameters" in kwargs:
+            _struc_params = kwargs["structural_parameters"]
+            # Check if input is 2-dimensional for multiprocessing.
+            # If not, make it 2-dimensional to avoid list flattening in
+            # the super method.
+            if not isinstance(_struc_params[0], list):
+                kwargs["structural_parameters"] = [_struc_params]
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
     def _single_simulation(self, kwargs):
@@ -332,11 +340,6 @@ class DymolaAPI(SimulationAPI):
             )
 
         # Handle structural parameters
-
-        # check if structural parameters is list, otherwise set it
-        # there surely exist a better implementation for that
-        if not isinstance(structural_parameters, list):
-            structural_parameters = [structural_parameters]
 
         if (unsupported_parameters and
                 (self.modify_structural_parameters or

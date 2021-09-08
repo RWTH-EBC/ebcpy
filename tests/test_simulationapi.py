@@ -206,6 +206,12 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         self.sim_api.result_names = ["test_local"]
         res = self.sim_api.simulate(
             parameters={"test_real_eval": some_val},
+            return_option="last_point",
+            structural_parameters=["test_real_eval"]
+        )
+        self.assertEqual(res["test_local"], some_val)
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
             return_option="last_point"
         )
         self.assertEqual(res["test_local"], some_val)
