@@ -113,7 +113,7 @@ class DymolaAPI(SimulationAPI):
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
     _dymola_instances: dict = {}
-    _items_to_drop = ["pool", "dymola"]
+    _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
     # Default simulation setup
     _supported_kwargs = ["show_window",
                          "modify_structural_parameters",
