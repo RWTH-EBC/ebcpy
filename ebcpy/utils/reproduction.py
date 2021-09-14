@@ -47,25 +47,30 @@ def save_reproduction(file, title, save_path, sim_api=None):
     save_path = pathlib.Path(save_path)
     os.makedirs(save_path, exist_ok=True)
     files_to_save = []
+    files_to_remove = []
     # Start with the file currently running:
     file_running = pathlib.Path(file).absolute()
     file_running_save = save_path.joinpath(file_running.name)
     copy_file(src=file_running, dst=file_running_save)
+    if file_running_save != file_running:
+        files_to_remove.append(file_running_save)
     files_to_save.append(file_running_save)
     # General info
-    files_to_save.append(
-        save_general_information(save_path=save_path)
-    )
+    s_path = save_general_information(save_path=save_path)
+    files_to_remove.append(s_path)
+    files_to_save.append(s_path)
     # Python-Reproduction:
     requirements_path, diff_files = get_python_packages(save_path=save_path)
     files_to_save.extend(diff_files)
+    files_to_remove.extend(diff_files)
     files_to_save.append(requirements_path)
-    files_to_save.append(
-        save_python_reproduction(
+    files_to_remove.append(requirements_path)
+    s_path = save_python_reproduction(
             requirements_path=requirements_path,
             title=title
         )
-    )
+    files_to_remove.append(s_path)
+    files_to_save.append(s_path)
     # Simulation reproduction:
     if isinstance(sim_api, DymolaAPI):
         m_name = sim_api.model_name
@@ -77,6 +82,7 @@ def save_reproduction(file, title, save_path, sim_api=None):
         )
         if res:
             files_to_save.append(f_name)
+            files_to_remove.append(f_name)
         else:
             logger.error("Could not save total model: %s",
                          sim_api.dymola.getLastErrorLog())
@@ -92,6 +98,7 @@ def save_reproduction(file, title, save_path, sim_api=None):
         )
         if res:
             files_to_save.append(res)
+            files_to_remove.append(f_name)
         else:
             logger.error("Could not export fmu: %s",
                          sim_api.dymola.getLastErrorLog())
@@ -102,6 +109,8 @@ def save_reproduction(file, title, save_path, sim_api=None):
         )
         copy_file(src=fmu_name_save, dst=sim_api.model_name)
         files_to_save.append(fmu_name_save)
+        if fmu_name_save != sim_api.model_name:
+            files_to_remove.append(fmu_name_save)
 
     zip_file = save_to_zip(
         files=files_to_save,
@@ -109,9 +118,10 @@ def save_reproduction(file, title, save_path, sim_api=None):
         save_path=save_path
     )
     # Remove created files:
-    for file in files_to_save:
+    for file in files_to_remove:
         os.remove(file)
     return zip_file
+
 
 def save_to_zip(files, title, save_path):
     # Save the study files to a zip for in order to
