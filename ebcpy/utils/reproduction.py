@@ -1,4 +1,4 @@
- """
+"""
 This module contains scripts to extract information
 out of simulation / programming based research and
 enable a reproduction of the results at a later stage.
@@ -11,7 +11,6 @@ Features:
     - Save FMU
     - Git Logger
 """
-
 
 import pathlib
 import sys
@@ -28,25 +27,28 @@ from ebcpy import DymolaAPI, FMU_API
 logger = logging.getLogger(__name__)
 
 
-def register(title=None, save_path=None, sim_api=None):
+def register(file=None, title=None, save_path=None, sim_api=None):
     if save_path is None:
         save_path = os.getcwd()
+    if file is None:
+        file = pathlib.Path(sys.modules['__main__'].__file__).absolute()
     if title is None:
-        title = pathlib.Path(__file__).name.replace(".py", "")
+        title = file.name.replace(".py", "")
     atexit.register(
         save_reproduction,
+        file=file,
         save_path=save_path,
         title=title,
         sim_api=sim_api
     )
 
 
-def save_reproduction(title, save_path, sim_api=None):
+def save_reproduction(file, title, save_path, sim_api=None):
     save_path = pathlib.Path(save_path)
     os.makedirs(save_path, exist_ok=True)
     files_to_save = []
     # Start with the file currently running:
-    file_running = pathlib.Path(__file__).absolute()
+    file_running = pathlib.Path(file).absolute()
     file_running_save = save_path.joinpath(file_running.name)
     copy_file(src=file_running, dst=file_running_save)
     files_to_save.append(file_running_save)
