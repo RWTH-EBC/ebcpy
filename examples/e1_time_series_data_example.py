@@ -74,3 +74,5 @@ def main(with_plot=True):
 
 if __name__ == '__main__':
     main()
+    from ebcpy.utils import reproduction
+    reproduction.save_reproduction()

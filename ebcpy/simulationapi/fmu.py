@@ -360,3 +360,31 @@ class FMU_API(simulationapi.SimulationAPI):
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
+
+    def save_for_reproduction(self,
+                              save_path: str = None,
+                              files: list = None):
+        """
+        Additionally to the basic reproduction, add info
+        for FMU files.
+        """
+        if files is None:
+            files = []
+        if save_path is None:
+            save_path = self.cd
+        save_path = pathlib.Path(save_path)
+        # Directly copy and save the FMU in use:
+        fmu_name_save = save_path.joinpath(
+            pathlib.Path(self.model_name).name
+        )
+        if fmu_name_save != self.model_name:
+            shutil.copy(self.model_name, fmu_name_save)
+            generated_files.append({"file": fmu_name_save,
+                                    "remove": True})
+        else:
+            generated_files.append({"file": self.model_name,
+                                    "remove": False})
+        super().save_for_reproduction(
+            save_path=save_path,
+            files=files
+        )

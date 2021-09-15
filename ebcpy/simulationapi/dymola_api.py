@@ -738,6 +738,82 @@ class DymolaAPI(SimulationAPI):
 
         return config
 
+    def get_packages(self, get_git_info=True):
+        """
+        Get the currently loaded packages of Dymola
+        """
+        packages = self.dymola.ExecuteCommand(
+            'ModelManagement.Structure.AST.ClassesInPackage("");'
+        )
+        valid_packages = {}
+        for pack in packages:
+            current_package = f"modelica://{pack}/package.order"
+            pack_path = self.dymola.ExecuteCommand(
+                f'Modelica.Utilities.Files.loadResource("{current_package}")'
+            )
+            if not isinstance(pack_path, str):
+                self.logger.error("Could not load model resource for package %s", pack)
+            if not os.path.isfile(pack_path):
+                continue
+            if get_git_info:
+                from ebcpy.utils.reproduction import get_git_information
+                repo_info = get_git_information(
+                    name=pack,
+                    save_diff=True,
+                    save_path=self.cd,
+                    path=pack_path
+                )
+                repo_info.update({"path": pack_path})
+                valid_packages[pack] = repo_info
+            else:
+                valid_packages[pack] = pack_path
+        return valid_packages
+
+    def save_for_reproduction(self,
+                              save_path: str = None,
+                              files: list = None):
+        """
+        Additionally to the basic reproduction, add info
+        for Dymola packages.
+        """
+        if files is None:
+            files = []
+        if save_path is None:
+            save_path = self.cd
+        save_path = pathlib.Path(save_path)
+        m_name = self.model_name
+        f_name = save_path.joinpath(f"{m_name}_total.mo")
+        # Total model
+        res = self.dymola.saveTotalModel(
+            fileName=f_name,
+            modelName=m_name
+        )
+        if res:
+            files.append({"file": f_name, "remove": True})
+        else:
+            self.logger.error("Could not save total model: %s",
+                              self.dymola.getLastErrorLog())
+        # FMU
+        res = self.dymola.translateModelFMU(
+            modelToOpen=self.model_name,
+            storeResult=False,
+            modelName='',
+            fmiVersion='1',
+            fmiType='all',
+            includeSource=False,
+            includeImage=0
+        )
+        if res:
+            files.append({"file": f_name, "remove": True})
+        else:
+            self.logger.error("Could not export fmu: %s",
+                              self.dymola.getLastErrorLog())
+
+        super().save_for_reproduction(
+            save_path=save_path,
+            files=files
+        )
+
     @staticmethod
     def _make_modelica_normpath(path):
         """

@@ -19,107 +19,53 @@ import os
 import logging
 import shutil
 import zipfile
-import atexit
 from datetime import datetime
 from git import Repo, InvalidGitRepositoryError, RemoteReference
-from ebcpy import DymolaAPI, FMU_API
 
 logger = logging.getLogger(__name__)
 
 
-def register(file=None, title=None, save_path=None, sim_api=None):
+def save_reproduction(file=None, title=None, save_path=None, files=None):
     if save_path is None:
         save_path = os.getcwd()
     if file is None:
         file = pathlib.Path(sys.modules['__main__'].__file__).absolute()
     if title is None:
         title = file.name.replace(".py", "")
-    atexit.register(
-        save_reproduction,
-        file=file,
-        save_path=save_path,
-        title=title,
-        sim_api=sim_api
-    )
-
-
-def save_reproduction(file, title, save_path, sim_api=None):
     save_path = pathlib.Path(save_path)
     os.makedirs(save_path, exist_ok=True)
-    files_to_save = []
-    files_to_remove = []
+    if files is None:
+        files = []
     # Start with the file currently running:
     file_running = pathlib.Path(file).absolute()
     file_running_save = save_path.joinpath(file_running.name)
     copy_file(src=file_running, dst=file_running_save)
-    if file_running_save != file_running:
-        files_to_remove.append(file_running_save)
-    files_to_save.append(file_running_save)
+    files.append({"file": file_running_save,
+                  "remove": file_running_save != file_running})
     # General info
     s_path = save_general_information(save_path=save_path)
-    files_to_remove.append(s_path)
-    files_to_save.append(s_path)
+    files.append({"file": s_path, "remove": True})
     # Python-Reproduction:
     requirements_path, diff_files = get_python_packages(save_path=save_path)
-    files_to_save.extend(diff_files)
-    files_to_remove.extend(diff_files)
-    files_to_save.append(requirements_path)
-    files_to_remove.append(requirements_path)
+    files.append({"file": requirements_path, "remove": True})
+    for _file in diff_files:
+        files.append({"file": _file, "remove": True})
+
     s_path = save_python_reproduction(
-            requirements_path=requirements_path,
-            title=title
-        )
-    files_to_remove.append(s_path)
-    files_to_save.append(s_path)
-    # Simulation reproduction:
-    if isinstance(sim_api, DymolaAPI):
-        m_name = sim_api.model_name
-        f_name = save_path.joinpath(f"{m_name}_total.mo")
-        # Total model
-        res = sim_api.dymola.saveTotalModel(
-            fileName=f_name,
-            modelName=m_name
-        )
-        if res:
-            files_to_save.append(f_name)
-            files_to_remove.append(f_name)
-        else:
-            logger.error("Could not save total model: %s",
-                         sim_api.dymola.getLastErrorLog())
-        # FMU
-        res = sim_api.dymola.translateModelFMU(
-            modelToOpen=sim_api.model_name,
-            storeResult=False,
-            modelName='',
-            fmiVersion='1',
-            fmiType='all',
-            includeSource=False,
-            includeImage=0
-        )
-        if res:
-            files_to_save.append(res)
-            files_to_remove.append(f_name)
-        else:
-            logger.error("Could not export fmu: %s",
-                         sim_api.dymola.getLastErrorLog())
-    elif isinstance(sim_api, FMU_API):
-        # Directly copy and save the FMU in use:
-        fmu_name_save = save_path.joinpath(
-            pathlib.Path(sim_api.model_name).name
-        )
-        copy_file(src=fmu_name_save, dst=sim_api.model_name)
-        files_to_save.append(fmu_name_save)
-        if fmu_name_save != sim_api.model_name:
-            files_to_remove.append(fmu_name_save)
+        requirements_path=requirements_path,
+        title=title
+    )
+    files.append({"file": s_path, "remove": True})
 
     zip_file = save_to_zip(
-        files=files_to_save,
+        files=[_f["file"] for _f in files],
         title=title,
         save_path=save_path
     )
     # Remove created files:
-    for file in files_to_remove:
-        os.remove(file)
+    for _f in files:
+        if _f["remove"]:
+            os.remove(_f["file"])
     return zip_file
 
 
@@ -183,28 +129,18 @@ def get_python_packages(save_path=None):
     diff_paths = []
     with open(_s_path, "w+") as file:
         for package in installed_packages:
-            if is_git_repo(package.location):
-                repo = get_git_information(package.location)
-                if not repo['clean']:
-                    _s_path_repo = save_path.joinpath(
-                        f"WARNING_GIT_DIFFERENCE_{package.key}_to_local_head.txt"
-                    )
-                    diff_paths.append(_s_path_repo)
-                    with open(_s_path_repo, "w+") as diff_file:
-                        diff_file.write(repo['diff'])
-                if not repo['pushed']:
-                    _s_path_repo = save_path.joinpath(
-                        f"WARNING_GIT_DIFFERENCE_{package.key}_to_remote_main.txt"
-                    )
-                    diff_paths.append(_s_path_repo)
-                    with open(_s_path_repo, "w+") as diff_file:
-                        diff_file.write(repo['diff_remote_main'])
-                    cmt_sha = repo['remote_main_commit']
-                else:
-                    cmt_sha = repo['commit']
-                file.write(f"git+{repo['url']}.git@{cmt_sha}#egg={package.key}\n")
-            else:
+            repo_info = get_git_information(
+                path=package.location,
+                name=package.key,
+                save_path=save_path,
+                save_diff=True
+            )
+            if repo_info is None:
                 file.write(f"{package.key}=={package.version}\n")
+            else:
+                cmt_sha = repo_info["commit"]
+                file.write(f"git+{repo_info['url']}.git@{cmt_sha}#egg={package.key}\n")
+                diff_paths.extend(repo_info["difference_files"])
     return _s_path, diff_paths
 
 
@@ -223,8 +159,11 @@ def save_python_reproduction(requirements_path, title=""):
     return _s_path
 
 
-def get_git_information(path):
-    repo = Repo(path)
+def get_git_information(path, name=None, save_diff=True, save_path=None, ):
+    try:
+        repo = Repo(path)
+    except InvalidGitRepositoryError:
+        return
     commit = repo.head.commit
     commit_hex = commit.hexsha
     diff_last_cmt = repo.git.diff(commit)
@@ -238,23 +177,33 @@ def get_git_information(path):
     data = {
         "url": next(repo.remotes[0].urls),
         "commit": commit_hex,
-        "clean": diff_last_cmt == '',
-        "diff": diff_last_cmt,
-        "pushed": repo.git.branch("-r", contains=commit_hex) != '',
-        "diff_remote_main": diff_remote_main,
-        "remote_main_commit": remote_main_cmt
+        "difference_files": []
     }
+    if not save_diff:
+        return data
+
+    if save_path is None:
+        save_path = pathlib.Path(os.getcwd())
+    if name is None:
+        name = data["url"].split("/")[0].replace(".git", "")  # Get last part of url
+    # Check new files
+    if diff_last_cmt:
+        _s_path_repo = save_path.joinpath(
+            f"WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt"
+        )
+        data["difference_files"].append(_s_path_repo)
+        with open(_s_path_repo, "w+") as diff_file:
+            diff_file.write(diff_last_cmt)
+    # Check if pushed to remote
+    if repo.git.branch("-r", contains=commit_hex):
+        _s_path_repo = save_path.joinpath(
+            f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt"
+        )
+        data["difference_files"].append(_s_path_repo)
+        with open(_s_path_repo, "w+") as diff_file:
+            diff_file.write(diff_remote_main)
+        data["commit"] = remote_main_cmt
     return data
-    # ...
-
-
-def is_git_repo(path):
-    """Return true if given path is a git repo"""
-    try:
-        Repo(path)
-        return True
-    except InvalidGitRepositoryError:
-        return False
 
 
 if __name__ == '__main__':
