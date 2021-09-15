@@ -195,7 +195,7 @@ def get_git_information(path, name=None, save_diff=True, save_path=None, ):
         with open(_s_path_repo, "w+") as diff_file:
             diff_file.write(diff_last_cmt)
     # Check if pushed to remote
-    if repo.git.branch("-r", contains=commit_hex):
+    if not repo.git.branch("-r", contains=commit_hex):
         _s_path_repo = save_path.joinpath(
             f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt"
         )
