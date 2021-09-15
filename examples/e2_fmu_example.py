@@ -143,12 +143,14 @@ def main(
 
     if with_plot:
         plt.show()
-
+    # Save the data for later reproduction
+    file = fmu_api.save_for_reproduction()
+    print("ZIP-File to reproduce all this:", file)
 
 if __name__ == '__main__':
     main(
-        n_cpu=12,
+        n_cpu=1,
         log_fmu=False,
-        n_sim=50,
+        n_sim=5,
         output_interval=100
     )

@@ -809,7 +809,7 @@ class DymolaAPI(SimulationAPI):
             self.logger.error("Could not export fmu: %s",
                               self.dymola.getLastErrorLog())
 
-        super().save_for_reproduction(
+        return super().save_for_reproduction(
             save_path=save_path,
             files=files
         )

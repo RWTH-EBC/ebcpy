@@ -425,7 +425,7 @@ class SimulationAPI:
         saving.
         """
         from ebcpy.utils.reproduction import save_reproduction
-        save_reproduction(
+        return save_reproduction(
             save_path=save_path,
             files=files
         )

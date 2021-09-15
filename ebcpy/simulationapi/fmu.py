@@ -379,12 +379,12 @@ class FMU_API(simulationapi.SimulationAPI):
         )
         if fmu_name_save != self.model_name:
             shutil.copy(self.model_name, fmu_name_save)
-            generated_files.append({"file": fmu_name_save,
-                                    "remove": True})
+            files.append({"file": fmu_name_save,
+                          "remove": True})
         else:
-            generated_files.append({"file": self.model_name,
-                                    "remove": False})
-        super().save_for_reproduction(
+            files.append({"file": self.model_name,
+                          "remove": False})
+        return super().save_for_reproduction(
             save_path=save_path,
             files=files
         )
