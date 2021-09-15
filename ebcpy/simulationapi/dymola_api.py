@@ -785,7 +785,7 @@ class DymolaAPI(SimulationAPI):
         f_name = save_path.joinpath(f"{m_name}_total.mo")
         # Total model
         res = self.dymola.saveTotalModel(
-            fileName=f_name,
+            fileName=str(f_name),
             modelName=m_name
         )
         if res:
@@ -803,11 +803,15 @@ class DymolaAPI(SimulationAPI):
             includeSource=False,
             includeImage=0
         )
-        if res:
-            files.append({"file": f_name, "remove": True})
-        else:
+        if not res:
             self.logger.error("Could not export fmu: %s",
                               self.dymola.getLastErrorLog())
+        else:
+            path = pathlib.Path(self.cd).joinpath(res + ".fmu")
+            if os.path.isfile(path):
+                files.append({"file": path, "remove": True})
+            else:
+                self.logger.error("Could not export fmu:")
 
         return super().save_for_reproduction(
             save_path=save_path,
