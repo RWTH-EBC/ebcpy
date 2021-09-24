@@ -6,6 +6,7 @@ import sys
 import os
 from pathlib import Path
 import shutil
+import numpy as np
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
@@ -187,15 +188,33 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         self.assertEqual(res_1, res_2)
         # Wrong types
         with self.assertRaises(TypeError):
-            self.sim_api.simulate(parameters={"heatConv_b": "True"})
+            self.sim_api.simulate(parameters={"test_bool": "True"})
         # Wrong parameter
         with self.assertRaises(KeyError):
-            self.sim_api.simulate(parameters={"C2": 10},
-                                  return_option='savepath')
+            self.sim_api.simulate(
+                parameters={"C2": 10},
+                return_option='savepath'
+            )
         # Model with no parameters:
         with self.assertRaises(ValueError):
             self.sim_api.parameters = {}
             self.sim_api.simulate()  # Test with no parameters
+
+    def test_structural_parameters(self):
+        """Test structural parameters"""
+        some_val = np.random.rand()
+        self.sim_api.result_names = ["test_local"]
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
+            return_option="last_point",
+            structural_parameters=["test_real_eval"]
+        )
+        self.assertEqual(res["test_local"], some_val)
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
+            return_option="last_point"
+        )
+        self.assertEqual(res["test_local"], some_val)
 
 
 class TestDymolaAPIMultiCore(PartialTestDymolaAPI):
