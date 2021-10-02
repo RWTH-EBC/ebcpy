@@ -2,6 +2,11 @@
 
 import setuptools
 
+# read the contents of your README file
+from pathlib import Path
+readme_path = Path(__file__).parent.joinpath("README.md")
+long_description = readme_path.read_text()
+
 EXTRAS_REQUIRE = {
     'full': [
         'openpyxl>=3.0.5',
@@ -29,6 +34,8 @@ setuptools.setup(
     description='Python Library used for different python modules'
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/RWTH-EBC/ebcpy',
     download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.2.tar.gz',
     license='BSD 3-Clause',
