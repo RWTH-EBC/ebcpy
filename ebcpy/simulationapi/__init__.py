@@ -148,9 +148,10 @@ class SimulationAPI:
     @property
     def worker_idx(self):
         """Index of the current worker"""
-        _id = mp.current_process()._identity
-        if _id:
-            return _id[0]
+        if self.n_cpu > 1:  # Only
+            _id = mp.current_process()._identity
+            if _id:
+                return _id[0]
         return None
 
     def __getstate__(self):

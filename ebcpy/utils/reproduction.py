@@ -136,7 +136,18 @@ def get_python_packages(save_path=None):
                 save_diff=True
             )
             if repo_info is None:
-                file.write(f"{package.key}=={package.version}\n")
+                # Check if in python path:
+                if True:
+                   file.write(f"{package.key}=={package.version}\n")
+                else:
+                    # TODO: Check if package is even on pypi:
+                    from pypisearch.search import Search
+                    res = Search(packakge.key).result
+                    if not res:
+                        raise ImportError(
+                            "Package {package.key} is neither a git "
+                            "repo nor a package on pypi. Can't reproduce it!"
+                        )
             else:
                 cmt_sha = repo_info["commit"]
                 file.write(f"git+{repo_info['url']}.git@{cmt_sha}#egg={package.key}\n")
@@ -185,14 +196,14 @@ def get_git_information(path, name=None, save_diff=True, save_path=None, ):
     if save_path is None:
         save_path = pathlib.Path(os.getcwd())
     if name is None:
-        name = data["url"].split("/")[0].replace(".git", "")  # Get last part of url
+        name = data["url"].split("/")[-1].replace(".git", "")  # Get last part of url
     # Check new files
     if diff_last_cmt:
         _s_path_repo = save_path.joinpath(
             f"WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt"
         )
         data["difference_files"].append(_s_path_repo)
-        with open(_s_path_repo, "w+") as diff_file:
+        with open(_s_path_repo, "w+", encoding='utf-8') as diff_file:
             diff_file.write(diff_last_cmt)
     # Check if pushed to remote
     if not repo.git.branch("-r", contains=commit_hex):
@@ -200,7 +211,7 @@ def get_git_information(path, name=None, save_diff=True, save_path=None, ):
             f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt"
         )
         data["difference_files"].append(_s_path_repo)
-        with open(_s_path_repo, "w+") as diff_file:
+        with open(_s_path_repo, "w+", encoding='utf-8') as diff_file:
             diff_file.write(diff_remote_main)
         data["commit"] = remote_main_cmt
     return data
