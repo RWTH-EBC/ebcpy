@@ -26,7 +26,8 @@ INSTALL_REQUIRES = [
     'pydantic>=1.8.2',
     'h5py>=3.1.0'
 ]
-SETUP_REQUIRES = INSTALL_REQUIRES.copy()  # Add all open-source packages to setup-requires
+# Add all open-source packages to setup-requires
+SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
 setuptools.setup(
     name='ebcpy',
@@ -57,7 +58,7 @@ setuptools.setup(
         'time-series-data', 'comfort',
         'black-box optimization'
     ],
-    packages=setuptools.find_packages(exclude=['img']),
+    packages=setuptools.find_packages(exclude=['tests', 'tests.*', 'img']),
     extras_require=EXTRAS_REQUIRE,
     setup_requires=SETUP_REQUIRES,
     install_requires=INSTALL_REQUIRES,
