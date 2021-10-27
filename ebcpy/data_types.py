@@ -62,13 +62,13 @@ class TimeSeriesData(pd.DataFrame):
     >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
     >>> tsd = TimeSeriesData(df)
     >>> tsd.to_datetime_index()
-    >>> tsd.save("my_new_data.hdf", key="NewData")
+     >>> tsd.save("my_new_data.csv")
 
     Now, let's load the recently created file.
     As we just created the data, we specify the tag
     'sim' to indicate it is some sort of simulated value.
 
-    >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
+    >>> tsd = TimeSeriesData("my_new_data.csv", tag='sim')
     """
 
     # normal properties
@@ -168,8 +168,9 @@ class TimeSeriesData(pd.DataFrame):
     def save(self, filepath: str = None, **kwargs) -> None:
         """
         Save the current time-series-data into the given file-format.
-        Currently supported are .hdf (easy and fast storage) and
-        .csv (easy-readable).
+        Currently supported are .hdf
+        (easy and fast storage, but only on python 3.7 and 3.8)
+        and .csv (easy-readable).
 
         :param str,os.path.normpath filepath:
             Filepath were to store the data. Either .hdf or .csv
