@@ -20,8 +20,19 @@ from ebcpy import preprocessing
 # pylint: disable=too-many-ancestors
 
 __all__ = ['TimeSeries',
-           'TimeSeriesData']
+           'TimeSeriesData',
+           'numeric_indexes',
+           'datetime_indexes']
 
+numeric_indexes = [
+    pd.Float64Index,
+    pd.RangeIndex,
+    pd.Int64Index
+]
+
+datetime_indexes = [
+    pd.DatetimeIndex
+]
 
 class TimeSeriesData(pd.DataFrame):
     """
@@ -45,6 +56,15 @@ class TimeSeriesData(pd.DataFrame):
     :keyword str sep:
         separator for the use of a csv file. If none is provided,
         a comma (",") is used as a default value.
+        See pandas.read_csv() docs for further information.
+    :keyword int, list header:
+        Header columns for .csv files.
+        See pandas.read_csv() docs for further information.
+        Default is first row (0).
+    :keyword int,str index_col:
+        Column to be used as index in .csv files.
+        See pandas.read_csv() docs for further information.
+        Default is first column (0).
     :keyword str sheet_name:
         Name of the sheet you want to load data from. Required keyword
         argument when loading a xlsx-file.
@@ -72,14 +92,19 @@ class TimeSeriesData(pd.DataFrame):
     """
 
     # normal properties
-    _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
+    _metadata = [
+        "_filepath",
+        "_loader_kwargs",
+        "_default_tag",
+        "_multi_col_names"
+    ]
 
     def __init__(self, data: Union[str, Any], **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
         self._filepath = None
         self._loader_kwargs = {}
-        _multi_col_names = ["Variables", "Tags"]
+        self._multi_col_names = ["Variables", "Tags"]
 
         self._default_tag = kwargs.pop("default_tag", "raw")
         if not isinstance(self._default_tag, str):
@@ -106,15 +131,15 @@ class TimeSeriesData(pd.DataFrame):
         if _df_loaded.columns.nlevels == 1:
             # Check if first level is named Tags.
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
-            if _df_loaded.columns.name != _multi_col_names[1]:
+            if _df_loaded.columns.name != self._multi_col_names[1]:
                 multi_col = pd.MultiIndex.from_product(
                     [_df_loaded.columns, [self._default_tag]],
-                    names=_multi_col_names
+                    names=self._multi_col_names
                 )
                 _df_loaded.columns = multi_col
 
         elif _df_loaded.columns.nlevels == 2:
-            if _df_loaded.columns.names != _multi_col_names:
+            if _df_loaded.columns.names != self._multi_col_names:
                 raise TypeError("Loaded dataframe has a different 2-Level "
                                 "header format than it is supported by this "
                                 "class. The names have to match.")
@@ -248,24 +273,53 @@ class TimeSeriesData(pd.DataFrame):
             if key == "":
                 key = None  # Avoid cryptic error in pandas by converting empty string to None
             try:
-                return pd.read_hdf(self.filepath, key=key)
+                df = pd.read_hdf(self.filepath, key=key)
             except (ValueError, KeyError) as error:
                 keys = ", ".join(get_keys_of_hdf_file(self.filepath))
                 raise KeyError(f"key must be provided when HDF5 file contains multiple datasets. "
                                f"Here are all keys in the given hdf-file: {keys}") from error
         elif f_name.endswith("csv"):
-            return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
+            # Check if file was previously a TimeSeriesData object
+            with open(self.filepath, "r") as file:
+                lines = file.readlines()
+                if (lines[0].startswith(self._multi_col_names[0]) and
+                        lines[1].startswith(self._multi_col_names[1])):
+                    _hea_def = [0, 1]
+                else:
+                    _hea_def = 0
+
+            df = pd.read_csv(
+                self.filepath,
+                sep=self._loader_kwargs.get("sep", ","),
+                index_col=self._loader_kwargs.get("index_col", 0),
+                header=self._loader_kwargs.get("header", _hea_def)
+            )
+
         elif f_name.endswith("mat"):
-            return sr.mat_to_pandas(fname=self.filepath, with_unit=False)
+            df = sr.mat_to_pandas(fname=self.filepath, with_unit=False)
         elif f_name.split(".")[-1] in ['xlsx', 'xls', 'odf', 'ods', 'odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:
                 raise KeyError("sheet_name is a required keyword argument to load xlsx-files."
                                "Please pass a string to specify the name "
                                "of the sheet you want to load.")
-            return pd.read_excel(io=self.filepath, sheet_name=sheet_name)
+            df = pd.read_excel(io=self.filepath, sheet_name=sheet_name)
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
+        if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
+            try:
+                df.index = pd.DatetimeIndex(df.index)
+            except Exception as err:
+                raise IndexError(
+                    f"Given data has index of type {type(df.index)}. "
+                    f"Currently only "
+                    f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
+                    f"are supported."
+                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"see error above."
+                ) from err
+        return df
+
 
     def get_variable_names(self) -> List[str]:
         """

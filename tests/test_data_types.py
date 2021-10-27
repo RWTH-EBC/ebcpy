@@ -98,7 +98,7 @@ class TestDataTypes(unittest.TestCase):
             type(pd.DataFrame()))
         # Correctly load the .csv:
         time_series_data = data_types.TimeSeriesData(self.example_data_csv_path,
-                                                     sep=",")
+                                                     sep=";")
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
