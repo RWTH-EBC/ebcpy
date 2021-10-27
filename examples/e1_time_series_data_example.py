@@ -23,9 +23,16 @@ def main(with_plot=True):
     basepath = pathlib.Path(__file__).parents[1].joinpath("tutorial", "data")
 
     # ######################### Instantiation of TimeSeriesData ##########################
-    # First we open an .hdf. Be carful, you have to pass a key!
-    tsd_hdf = TimeSeriesData(basepath.joinpath('measuredData.hdf'), key='test')
-    print(tsd_hdf)
+    # First we open an .hdf.
+    # Be careful, you have to pass a key!
+    # Also, PyTables has to be installed to use this.
+    # As python >3.9 is currently not supported on windows,
+    # this part of the example may fail for you.
+    try:
+        tsd_hdf = TimeSeriesData(basepath.joinpath('measuredData.hdf'), key='test')
+        print(tsd_hdf)
+    except ImportError as err:
+        print(err)
     # Now a simulation result file (.mat)
     tsd_mat = TimeSeriesData(basepath.joinpath('simulatedData.mat'))
     print(tsd_mat)
@@ -43,30 +50,33 @@ def main(with_plot=True):
 
     # ######################### Processing TimeSeriesData ##########################
     # Index changing:
-    print(tsd_hdf.index)
-    tsd_hdf.to_float_index(offset=0)
-    print(tsd_hdf.index)
-    tsd_hdf.to_datetime_index(unit_of_index="s")
-    print(tsd_hdf.index)
+    print(tsd_csv.index)
+    tsd_csv.to_datetime_index(unit_of_index="s")
+    print(tsd_csv.index)
+    tsd_csv.to_float_index(offset=0)
+    print(tsd_csv.index)
     # Some filter options
-    tsd_hdf.low_pass_filter(crit_freq=0.1, filter_order=2,
-                            variable="measured_T", new_tag="lowPass2")
-    print(tsd_hdf)
-    tsd_hdf.moving_average(window=50, variable="measured_T",
+    tsd_csv.low_pass_filter(crit_freq=0.1, filter_order=2,
+                            variable="outputs.TRoom", new_tag="lowPass2")
+    print(tsd_csv)
+    tsd_csv.moving_average(window=50, variable="outputs.TRoom",
                            tag="raw", new_tag="MovingAverage")
-    print(tsd_hdf)
-    for tag in tsd_hdf.get_tags(variable="measured_T")[::-1]:
-        plt.plot(tsd_hdf.loc[:, ("measured_T", tag)], label=tag)
+    print(tsd_csv)
+    for tag in tsd_csv.get_tags(variable="outputs.TRoom")[::-1]:
+        plt.plot(tsd_csv.loc[:, ("outputs.TRoom", tag)], label=tag)
     plt.legend()
 
     # How-to re-sample your data:
-    tsd_hdf_ref = tsd_hdf.copy()  # Create a savecopy to later reference the change.
     # Call the function. Desired frequency is a string (s: seconds), 60: 60 seconds.
     # Play around with this value to see what happens.
-    tsd_hdf.clean_and_space_equally(desired_freq="60s")
+    # First convert to DateTimeIndex (required for this function)
+    tsd_csv.to_datetime_index(unit_of_index="s")
+    # Create a copy to later reference the change.
+    tsd_csv_ref = tsd_csv.copy()
+    tsd_csv.clean_and_space_equally(desired_freq="60s")
     plt.figure()
-    plt.plot(tsd_hdf_ref.loc[:, ("measured_T", "raw")], label="Reference", color="blue")
-    plt.plot(tsd_hdf.loc[:, ("measured_T", "raw")], label="Resampled", color="red")
+    plt.plot(tsd_csv_ref.loc[:, ("outputs.TRoom", "raw")], label="Reference", color="blue")
+    plt.plot(tsd_csv.loc[:, ("outputs.TRoom", "raw")], label="Resampled", color="red")
     plt.legend()
     if with_plot:
         plt.show()
