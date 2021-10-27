@@ -150,6 +150,12 @@ class FMU_API(simulationapi.SimulationAPI):
         Perform the single simulation for the given
         unzip directory and fmu_instance.
         See the docstring of simulate() for information on kwargs.
+
+        Additional kwargs:
+        :keyword str result_file_suffix:
+            Suffix of the result file. Supported options can be extracted
+            from the TimeSeriesData.save() function.
+            Default is 'csv'.
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
@@ -238,14 +244,15 @@ class FMU_API(simulationapi.SimulationAPI):
                             str(self.sim_setup.output_interval)[::-1].find('.'))
 
         if return_option == "savepath":
-            result_file_name = kwargs.get("result_file_name", 'resultFile')
+            result_file_name = kwargs.get("result_file_name", "resultFile")
+            result_file_suffix = kwargs.get("result_file_suffix", "csv")
             savepath = kwargs.get("savepath", None)
 
             if savepath is None:
                 savepath = self.cd
 
             os.makedirs(savepath, exist_ok=True)
-            filepath = os.path.join(savepath, f"{result_file_name}.hdf")
+            filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
             df.to_hdf(filepath,
                       key="simulation")
             return filepath
