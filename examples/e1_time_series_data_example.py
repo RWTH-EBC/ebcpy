@@ -23,17 +23,7 @@ def main(with_plot=True):
     basepath = pathlib.Path(__file__).parents[1].joinpath("tutorial", "data")
 
     # ######################### Instantiation of TimeSeriesData ##########################
-    # First we open an .hdf.
-    # Be careful, you have to pass a key!
-    # Also, PyTables has to be installed to use this.
-    # As python >3.9 is currently not supported on windows,
-    # this part of the example may fail for you.
-    try:
-        tsd_hdf = TimeSeriesData(basepath.joinpath('measuredData.hdf'), key='test')
-        print(tsd_hdf)
-    except ImportError as err:
-        print(err)
-    # Now a simulation result file (.mat)
+    # First we open a simulation result file (.mat)
     tsd_mat = TimeSeriesData(basepath.joinpath('simulatedData.mat'))
     print(tsd_mat)
     # Now a .csv. .xlsx works as well.
