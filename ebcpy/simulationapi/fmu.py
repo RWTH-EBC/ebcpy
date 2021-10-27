@@ -253,8 +253,11 @@ class FMU_API(simulationapi.SimulationAPI):
 
             os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
-            df.to_hdf(filepath,
-                      key="simulation")
+            TimeSeriesData(df).droplevel(1, axis=1).save(
+                filepath=filepath,
+                key="simulation"
+            )
+
             return filepath
         if return_option == "last_point":
             return df.iloc[-1].to_dict()

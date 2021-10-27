@@ -34,13 +34,12 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
     >>> import os
     >>> from ebcpy import TimeSeriesData
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.mat")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
-    >>> tsd = TimeSeriesData(example_file, key=key)
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.hdf")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.mat")
+    >>> cols = ["sine.freqHz / Hz"]
+    >>> tsd = TimeSeriesData(example_file)
     >>> filepath = convert_tsd_to_modelica_mat(tsd,
-    >>>                                        save_path, columns=cols, key=key)
+    >>>                                        save_path, columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -66,7 +65,8 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
 
 def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     """
-    Function to convert a hdf file to a txt-file readable within the TICC-module.
+    Function to convert a TimeSeriesData object
+    to a txt-file readable within the TICC-module.
 
     :param TimeSeriesData tsd:
         TimeSeriesData object
@@ -87,12 +87,11 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
 
     >>> import os
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.hdf")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
+    >>> cols = ["sine.freqHz / Hz"]
     >>> filepath = convert_tsd_to_clustering_txt(example_file,
-    >>>                                          save_path, columns=cols, key=key)
+    >>>                                          save_path, columns=cols)
     >>> os.remove(filepath)
     """
     # Get the subset of the dataFrame
@@ -108,12 +107,11 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
 
 def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     """
-    Convert a hdf file to modelica readable text. This is especially useful
+    Convert a TimeSeriesData object to modelica readable text. This is especially useful
     for generating input data for a modelica simulation.
 
-    :param str,os.path.normpath tsd:
-        String or even os.path.normpath.
-        Must point to a valid hdf file.
+    :param TimeSeriesData tsd:
+        TimeSeriesData object
     :param str table_name:
         Name of the table for modelica.
         Needed in Modelica to correctly load the file.
@@ -140,12 +138,11 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     >>> import os
     >>> from ebcpy import TimeSeriesData
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
-    >>> tsd = TimeSeriesData(example_file, key=key)
-    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols, key=key)
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.hdf")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
+    >>> cols = ["sine.freqHz / Hz"]
+    >>> tsd = TimeSeriesData(example_file)
+    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
