@@ -85,7 +85,7 @@ def main(statistical_measure="MAE", with_plot=True):
         try:
             res = mco.optimize(framework=framework, method=method, **kwargs)
         except ImportError as err:
-            mco.logger.error("Could not optimize due to import error %s", err)
+            mco.logger.error("Could not optimize due to import error: %s", err)
             continue
         plt.figure()
         plt.plot(my_data, my_goal, "r", label="Reference")
