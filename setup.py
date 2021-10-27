@@ -20,7 +20,6 @@ INSTALL_REQUIRES = [
     'matplotlib>=3.3.4',
     'scipy>=1.5.4',
     'pandas>=1.1.5',
-    'tables>=3.6.1',
     'scikit-learn>=0.24.2',
     'fmpy>=0.2.27',
     'pydantic>=1.8.2',
@@ -31,14 +30,14 @@ SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
 setuptools.setup(
     name='ebcpy',
-    version='0.2.2',
+    version='0.2.3',
     description='Python Library used for different python modules'
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/RWTH-EBC/ebcpy',
-    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.2.tar.gz',
+    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.3.tar.gz',
     license='BSD 3-Clause',
     author='RWTH Aachen University, E.ON Energy Research Center, Institute '
            'of Energy Efficient Buildings and Indoor Climate',
