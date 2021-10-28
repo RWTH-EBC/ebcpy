@@ -1,6 +1,7 @@
 """Setup.py script for the ebcpy-framework"""
 
 import setuptools
+import sys
 
 # read the contents of your README file
 from pathlib import Path
@@ -25,6 +26,9 @@ INSTALL_REQUIRES = [
     'pydantic>=1.8.2',
     'h5py>=3.1.0'
 ]
+# TODO: Remove once tables in enables for python >3.9
+if sys.version_info.minor < 9 and sys.version_info.major == 3:
+    INSTALL_REQUIRES.append('tables>=3.6.1')
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
