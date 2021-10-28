@@ -73,6 +73,24 @@ class TestDataTypes(unittest.TestCase):
             tsd.filepath = None
             tsd.save()
 
+    def test_load_save_csv(self):
+        """Test correct loading and saving"""
+        tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
+        filepath = self.savedir.joinpath("test_hdf.csv")
+        tsd_ref.save(filepath=filepath)
+        tsd = data_types.TimeSeriesData(filepath)
+        self.assertTrue(tsd.equals(tsd_ref))
+        # test wrong and multi-index
+        tsd = data_types.TimeSeriesData(filepath, index_col=1)
+        self.assertFalse(tsd.equals(tsd_ref))
+        self.assertEqual(tsd.index.nlevels, 1)
+        with self.assertRaises(IndexError):
+            data_types.TimeSeriesData(filepath, index_col=[0, 1])
+        # Test wrong and single index headers
+        with self.assertRaises(IndexError):
+            data_types.TimeSeriesData(filepath, header=0)
+
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
         # Test if wrong input leads to FileNotFoundError
