@@ -69,10 +69,6 @@ class TestDataTypes(unittest.TestCase):
             filepath = self.savedir.joinpath("test_mat.mat")
             tsd.save(filepath=filepath)
 
-        with self.assertRaises(ValueError):
-            tsd.filepath = None
-            tsd.save()
-
     def test_load_save_csv(self):
         """Test correct loading and saving"""
         tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
