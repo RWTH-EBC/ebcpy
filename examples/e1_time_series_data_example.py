@@ -21,6 +21,8 @@ def main(with_plot=True):
     """
     # First get the path with relevant input files:
     basepath = pathlib.Path(__file__).parents[1].joinpath("tutorial", "data")
+    # Note: We often use pathlib. If you're not familiar and want to learn more,
+    # just search for any of the many tutorials available online.
 
     # ######################### Instantiation of TimeSeriesData ##########################
     # First we open a simulation result file (.mat)

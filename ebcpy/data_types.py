@@ -34,6 +34,7 @@ datetime_indexes = [
     pd.DatetimeIndex
 ]
 
+
 class TimeSeriesData(pd.DataFrame):
     """
     Most data related to energy and building
@@ -82,7 +83,7 @@ class TimeSeriesData(pd.DataFrame):
     >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
     >>> tsd = TimeSeriesData(df)
     >>> tsd.to_datetime_index()
-     >>> tsd.save("my_new_data.csv")
+    >>> tsd.save("my_new_data.csv")
 
     Now, let's load the recently created file.
     As we just created the data, we specify the tag
@@ -194,9 +195,11 @@ class TimeSeriesData(pd.DataFrame):
     def save(self, filepath: str = None, **kwargs) -> None:
         """
         Save the current time-series-data into the given file-format.
-        Currently supported are .hdf
-        (easy and fast storage, but only on python 3.7 and 3.8)
-        and .csv (easy-readable).
+        Currently supported are .hdf, which is an easy and fast storage,
+        but only supported on python 3.7 and 3.8 on all systems.
+        For more information on python 3.9 on windows, check
+        https://github.com/PyTables/PyTables/issues/823.
+        Also, .csv is supported as an easy-readable option.
 
         :param str,os.path.normpath filepath:
             Filepath were to store the data. Either .hdf or .csv
