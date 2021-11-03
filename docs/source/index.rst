@@ -11,15 +11,11 @@ About ebcpy
 .. toctree::
    :maxdepth: 2
 
+   examples
    ebcpy
-   ebcpy.modelica
-   ebcpy.simulationapi
-   ebcpy.utils
+   contribution
+   version_his
 
-Version History
--------------------
-
-.. mdinclude::  ../../CHANGELOG.md
 
 Indices and tables
 ==================

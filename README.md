@@ -1,11 +1,16 @@
+![E.ON EBC RWTH Aachen University](./docs/EBC_Logo.png)
+
+
 [![pylint](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.svg )](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.html)
 [![documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/doc.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html)
 [![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage/badge.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage)
+[![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
+[![build](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)
 
 
 # ebcpy
 
-This **py**thon package provides generic functions and classes commonly
+This **PY**thon package provides generic functions and classes commonly
 used for the analysis and optimization of **e**nergy systems, **b**uildings and indoor **c**limate (**EBC**).
 
 Key features are:
@@ -17,32 +22,53 @@ Key features are:
 * Modelica utilities
 
 # Installation
-Basic knowledge about **git** and **python** are required to understand the following simple steps.  
-We tested this with `cmd` on a *Windows* 10 machine.
 
-Until this is not publicly available, you have to install it via:
+To install, simply run
+```
+pip install ebcpy
+```
+
+In order to use all optional dependencies (e.g. `pymoo` optimization), install via:
+
+```
+pip install ebcpy[full]
+```
+
+If you encounter an error with the installation of `scikit-learn`, first install `scikit-learn` separatly and then install `ebcpy`:
+
+```
+pip install scikit-learn
+pip install ebcpy
+```
+
+If this still does not work, we refer to the troubleshooting section of `scikit-learn`: https://scikit-learn.org/stable/install.html#troubleshooting. Also check [issue 23](https://github.com/RWTH-EBC/ebcpy/issues/23) for updates.
+
+In order to help development, install it as an egg:
+
 ```
 git clone https://github.com/RWTH-EBC/ebcpy
 pip install -e ebcpy
 ```
-In order to execute everything, install the full version using `pip install -e ebcpy[full]`. 
-This installs optional dependencies such as `pymoo` which are only necessary for certain functionalities.
 
 # How to get started?
+
 We recommend running our jupyter-notebook to be guided through a **helpful tutorial**.  
 For this, run the following code:
 ```
 # If jupyter is not already installed:
 pip install jupyter
 # Go into your ebcpy-folder (cd \path_to_\ebcpy) or change the path to tutorial.ipynb and run:
-jupyter notebook ebcpy\tutorials\tutorial.ipynb
+jupyter notebook tutorial\tutorial.ipynb
 ```
 
-## TimeSeriesData
-Note that we use our own `TimeSeriesData` object which inherits from `pd.DataFrame`. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
-The class is defined in `ebcpy`, and you can also check the documentation over there. Just a quick intro here:
+Or, clone this repo and look at the examples\README.md file.
+Here you will find several examples to execute.
 
-### Variables and tags
+# TimeSeriesData
+Note that we use our own `TimeSeriesData` object which inherits from `pd.DataFrame`. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
+Just a quick intro here:
+
+## Variables and tags
 ```
 >>> from ebcpy.data_types import TimeSeriesData
 >>> tsd = TimeSeriesData(r"path_to_a_supported_file")
@@ -68,7 +94,7 @@ tsd.loc[:, ("variable_name", "tag_name")]
 # One tag, all variables:
 tsd.xs("tag_name", axis=1, level=1)
 ```
-### FloatIndex and DateTimeIndex
+## FloatIndex and DateTimeIndex
 Measured data typically holds a datetime stamps (`DateTimeIndex`) while simulation result files hold absolute seconds (`FloatIndex`). 
 You can easily convert back and forth using:
 ```python
@@ -84,4 +110,4 @@ tsd.clean_and_space_equally(desired_freq="1s")
 Visit hour official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html).
 
 # Problems?
-Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy).
+Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy/issues/new).

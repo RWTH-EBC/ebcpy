@@ -19,14 +19,8 @@ from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 class DymolaSimulationSetup(SimulationSetup):
     """
-    - You can't use `output_interval`. Instead you
-        have to use `numberOfIntervals`.
-        An attempt is made to convert it internally. For this to work,
-        `output_interval` has to be an even divisor of the interval given
-        by`stop_time-start_time`. In the case of `start_time=0, stop_time=100`,
-        `output_interval` should be  `1, 2, 4, 5, 10, ...`. `80` would not work.
-        :raises ValueError if `output_interval` is wrong
-
+    Adds ``tolerance`` to the list of possible
+    setup fields.
     """
     tolerance: float = Field(
         title="tolerance",
@@ -53,17 +47,18 @@ class DymolaAPI(SimulationAPI):
         List with path's to the packages needed to simulate the model
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
-    :keyword Boolean get_structural_parameters:
-        True to automatically read the structural parameters of the
-        simulation model and set them via Modelica modifiers. Default
-        is True
+    :keyword Boolean modify_structural_parameters:
+        True to automatically set the structural parameters of the
+        simulation model via Modelica modifiers. Default is True.
+        See also the keyword ``structural_parameters``
+        of the ``simulate`` function.
     :keyword Boolean equidistant_output:
         If True (Default), Dymola stores variables in an
         equisdistant output and does not store variables at events.
     :keyword str dymola_path:
          Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
-         Example: "C://Program Files//Dymola 2020x"
+         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
@@ -89,15 +84,20 @@ class DymolaAPI(SimulationAPI):
         If not given, newest version will be used.
         If given, the Version needs to be equal to the folder name
         of your installation.
-        Example: If you have two version installed at
-        - "C://Program Files//Dymola 2021" and
-        - "C://Program Files//Dymola 2020x"
+
+        **Example:** If you have two version installed at
+
+        - ``C://Program Files//Dymola 2021`` and
+        - ``C://Program Files//Dymola 2020x``
+
         and you want to use Dymola 2020x, specify
-        dymola_version='Dymola 2020x'.
-        This parameter is overwritten if dymola_path is specified.
+        ``dymola_version='Dymola 2020x'``.
+
+        This parameter is overwritten if ``dymola_path`` is specified.
     :keyword str dymola_interface_path:
         Only relevant for the case when the dymola-exe path
         differs from the interface path.
+
     Example:
 
     >>> import os
@@ -112,13 +112,14 @@ class DymolaAPI(SimulationAPI):
     >>>                      "stop_time": 200}
     >>> dym_api.simulate()
     >>> dym_api.close()
+
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
     _dymola_instances: dict = {}
-    _items_to_drop = ["pool", "dymola"]
+    _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
     # Default simulation setup
     _supported_kwargs = ["show_window",
-                         "get_structural_parameters",
+                         "modify_structural_parameters",
                          "dymola_path",
                          "equidistant_output",
                          "n_restart",
@@ -136,7 +137,7 @@ class DymolaAPI(SimulationAPI):
         self.fully_initialized = False
         self.debug = kwargs.pop("debug", False)
         self.show_window = kwargs.pop("show_window", False)
-        self.get_structural_parameters = kwargs.pop("get_structural_parameters", True)
+        self.modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
         self.mos_script_pre = kwargs.pop("mos_script_pre", None)
         self.mos_script_post = kwargs.pop("mos_script_post", None)
@@ -226,7 +227,6 @@ class DymolaAPI(SimulationAPI):
             atexit.register(self._close_dummy)
 
         # List storing structural parameters for later modifying the simulation-name.
-        self._structural_params = []
         # Parameter for raising a warning if to many dymola-instances are running
         self._critical_number_instances = 10 + self.n_cpu
         # Register the function now in case of an error.
@@ -262,6 +262,7 @@ class DymolaAPI(SimulationAPI):
         Simulate the given parameters.
 
         Additional settings:
+
         :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
         :keyword Boolean squeeze:
@@ -275,7 +276,30 @@ class DymolaAPI(SimulationAPI):
             If inputs are given, you have to specify the file_name of the table
             in the instance of CombiTimeTable. In order for the inputs to
             work the value should be equal to the value of 'fileName' in Modelica.
+        :keyword List[str] structural_parameters:
+            A list containing all parameter names which are structural in Modelica.
+            This means a modifier has to be created in order to change
+            the value of this parameter. Internally, the given list
+            is added to the known states of the model. Hence, you only have to
+            specify this keyword argument if your structural parameter
+            does not appear in the dsin.txt file created during translation.
+
+            Example:
+            Changing a record in a model:
+
+            >>> sim_api.simulate(
+            >>>     parameters={"parameterPipe": "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
+            >>>     structural_parameters=["parameterPipe"])
+
         """
+        # Handle special case for structural_parameters
+        if "structural_parameters" in kwargs:
+            _struc_params = kwargs["structural_parameters"]
+            # Check if input is 2-dimensional for multiprocessing.
+            # If not, make it 2-dimensional to avoid list flattening in
+            # the super method.
+            if not isinstance(_struc_params[0], list):
+                kwargs["structural_parameters"] = [_struc_params]
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
     def _single_simulation(self, kwargs):
@@ -287,6 +311,7 @@ class DymolaAPI(SimulationAPI):
         return_option = kwargs.get("return_option")
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
+        structural_parameters = kwargs.get("structural_parameters", [])
 
         # Handle multiprocessing
         if self.use_mp:
@@ -303,16 +328,6 @@ class DymolaAPI(SimulationAPI):
             dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
-        # Handle structural parameters
-        if self._structural_params:
-            warnings.warn(f"Warning: Currently, the model is re-translating "
-                          f"for each simulation. You should add to your Modelica "
-                          f"tuner parameters \"annotation(Evaluate=false)\".\n "
-                          f"Check for these parameters: {', '.join(self._structural_params)}")
-            # Alter the model_name for the next simulation
-            self.model_name = self._alter_model_name(self.sim_setup,
-                                                     self.model_name, self._structural_params)
-
         # Restart Dymola after n_restart iterations
         self._check_restart()
 
@@ -325,9 +340,46 @@ class DymolaAPI(SimulationAPI):
                 variables=list(parameters.keys()),
                 type_of_var="parameters"
             )
+
+        # Handle structural parameters
+
+        if (unsupported_parameters and
+                (self.modify_structural_parameters or
+                 structural_parameters)):
+            # Alter the model_name for the next simulation
+            model_name, parameters_new = self._alter_model_name(
+                parameters=parameters,
+                model_name=self.model_name,
+                structural_params=list(self.states.keys()) + structural_parameters
+            )
+            # Trigger translation only if something changed
+            if model_name != self.model_name:
+                _res_names = self.result_names.copy()
+                self.model_name = model_name
+                self.result_names = _res_names  # Restore previous result names
+            self.logger.warning(
+                "Warning: Currently, the model is re-translating "
+                "for each simulation. You should add to your Modelica "
+                "parameters \"annotation(Evaluate=false)\".\n "
+                "Check for these parameters: %s",
+                ', '.join(set(parameters.keys()).difference(parameters_new.keys()))
+            )
+            parameters = parameters_new
+            # Check again
+            unsupported_parameters = self.check_unsupported_variables(
+                variables=list(parameters.keys()),
+                type_of_var="parameters"
+            )
+
         initial_names = list(parameters.keys())
         initial_values = list(parameters.values())
-
+        # Convert to float for Boolean and integer types:
+        try:
+            initial_values = [float(v) for v in initial_values]
+        except (ValueError, TypeError) as err:
+            raise TypeError("Dymola only accepts float values. "
+                            "Could bot automatically convert the given "
+                            "parameter values to float.") from err
         # Handle inputs
         if inputs is not None:
             # Unpack additional kwargs
@@ -436,10 +488,6 @@ class DymolaAPI(SimulationAPI):
             self.logger.error(msg)
             return None
 
-        if self.get_structural_parameters:
-            # Get the structural parameters based on the error log
-            self._structural_params = self._filter_error_log(dymola.getLastErrorLog())
-
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
             savepath = kwargs.pop("savepath", None)
@@ -449,19 +497,19 @@ class DymolaAPI(SimulationAPI):
             dymola_cd = str(pathlib.Path(dymola.getLastErrorLog().replace("\n", "")))
             if savepath is None or str(savepath) == dymola_cd:
                 return os.path.join(dymola_cd, _save_name_dsres)
-            if self.use_mp:
-                # Alter path to account for multiprocessing files
-                savepath = os.path.join(savepath, f"worker_{idx_worker}")
             os.makedirs(savepath, exist_ok=True)
             for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
-                if os.path.isfile(os.path.join(savepath, filename)):
+                try:
                     os.remove(os.path.join(savepath, filename))
+                except OSError:
+                    pass
                 # Move files
                 shutil.copy(os.path.join(dymola_cd, filename),
                             os.path.join(savepath, filename))
                 os.remove(os.path.join(dymola_cd, filename))
             return os.path.join(savepath, _save_name_dsres)
+
         data = res[1]  # Get data
         if return_option == "last_point":
             results = []
@@ -569,15 +617,21 @@ class DymolaAPI(SimulationAPI):
     def cd(self, cd):
         """Set the working directory to the given path"""
         self._cd = cd
-        if not self.dymola:  # Not yet started
+        if self.dymola is None:  # Not yet started
             return
         # Also set the cd in the dymola api
         self.set_dymola_cd(dymola=self.dymola,
                            cd=cd)
         if self.use_mp:
-            self.logger.warning("Won't set the cd for all workers, not yet implemented.")
+            self.logger.warning("Won't set the cd for all workers, "
+                                "not yet implemented.")
 
     def set_dymola_cd(self, dymola, cd):
+        """
+        Set the cd of the Dymola Instance.
+        Before calling the Function, create the path and
+        convert to a modelica-normpath.
+        """
         os.makedirs(cd, exist_ok=True)
         cd_modelica = self._make_modelica_normpath(path=cd)
         res = dymola.cd(cd_modelica)
@@ -600,6 +654,8 @@ class DymolaAPI(SimulationAPI):
     def _single_close(self, **kwargs):
         """Closes a single dymola instance"""
         dymola = kwargs["dymola"]
+        if dymola is None:
+            return  # Already closed prior
         # Execute the mos-script if given:
         if self.mos_script_post is not None:
             self.logger.info("Executing given mos_script_post "
@@ -607,9 +663,7 @@ class DymolaAPI(SimulationAPI):
             dymola.RunScript(self.mos_script_post)
             self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
-        # Change so the atexit function works without an error.
-        if dymola is not None:
-            dymola.close()
+        dymola.close()
         self.logger.info('Successfully closed Dymola')
 
     def _close_dummy(self):
@@ -661,7 +715,6 @@ class DymolaAPI(SimulationAPI):
         self._check_dymola_instances()
         if use_mp:
             cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
-            os.makedirs(cd, exist_ok=True)
         else:
             cd = self.cd
         # Execute the mos-script if given:
@@ -671,11 +724,8 @@ class DymolaAPI(SimulationAPI):
             dymola.RunScript(self.mos_script_pre)
             self.logger.info("Output of mos_script_pre: %s", dymola.getLastErrorLog())
 
-        # Also set the cd in the dymola api
-        cd_modelica = self._make_modelica_normpath(path=cd)
-        res = dymola.cd(cd_modelica)
-        if not res:
-            raise OSError(f"Could not change working directory to {cd}")
+        # Set the cd in the dymola api
+        self.set_dymola_cd(dymola=dymola, cd=cd)
 
         for package in self.packages:
             self.logger.info("Loading Model %s", os.path.dirname(package).split("\\")[-1])
@@ -745,11 +795,6 @@ class DymolaAPI(SimulationAPI):
         """
         if isinstance(path, pathlib.Path):
             path = str(path)
-
-        # Create base directory:
-        _basedir = os.path.dirname(path)
-        if not os.path.isdir(_basedir):
-            os.makedirs(_basedir)
 
         path = path.replace("\\", "/")
         # Search for e.g. "D:testzone" and replace it with D:/testzone
@@ -913,45 +958,21 @@ class DymolaAPI(SimulationAPI):
         :return: str altered_modelName:
             modified model name
         """
-        model_name = model_name.split("(")[0] # Trim old modifier
-        if structural_params == [] or parameters == {}:
+        # the structural parameter needs to be removed from paramters dict
+        new_parameters = parameters.copy()
+        model_name = model_name.split("(")[0]  # Trim old modifier
+        if parameters == {}:
             return model_name
         all_modifiers = []
-        for structural_para in structural_params:
-            # Checks if the structural parameter is inside the initialNames to be altered
-            if structural_para in parameters.keys():
-                # Get the location of the parameter for
-                # extraction of the corresponding initial value
-                val = parameters[structural_para]
-                all_modifiers.append(f"{structural_para} = {val}")
+        for var_name, value in parameters.items():
+            # Check if the variable is in the
+            # given list of structural parameters
+            if var_name in structural_params:
+                all_modifiers.append(f"{var_name}={value}")
+                # removal of the structural parameter
+                new_parameters.pop(var_name)
         altered_model_name = f"{model_name}({','.join(all_modifiers)})"
-        return altered_model_name
-
-    @staticmethod
-    def _filter_error_log(error_log):
-        """
-        Filters the error log to detect recurring errors or structural parameters.
-        Each structural parameter will raise this warning:
-        'Warning: Setting n has no effect in model.\n
-        After translation you can only set literal start-values\n
-        and non-evaluated parameters.'
-        Filtering of this string will extract 'n' in the given case.
-
-        :param str error_log:
-            Error log from the dymola_interface.getLastErrorLog() function
-        :return: str filtered_log:
-        """
-        _trigger_string = "After translation you can only set " \
-                          "literal start-values and non-evaluated parameters"
-        structural_params = []
-        split_error = error_log.split("\n")
-        for i in range(1, len(split_error)):  # First line will never match the string
-            if _trigger_string in split_error[i]:
-                prev_line = split_error[i - 1]
-                prev_line = prev_line.replace("Warning: Setting ", "")
-                param = prev_line.replace(" has no effect in model.", "")
-                structural_params.append(param)
-        return structural_params
+        return altered_model_name, new_parameters
 
     def _check_restart(self):
         """Restart Dymola every n_restart iterations in order to free memory"""

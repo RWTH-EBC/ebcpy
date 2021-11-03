@@ -6,8 +6,9 @@ stages:
   - deploy
 
 variables:
-  EXLUDE_PYTHON: 36
-  COVERAGE_TYPE: "Not Dymola"
+  EXLUDE_PYTHON: 39
+  COVERAGE_TYPE: "Dymola"
+  PAGES_BRANCH: master
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'

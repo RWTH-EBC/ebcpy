@@ -6,6 +6,7 @@ import sys
 import os
 from pathlib import Path
 import shutil
+import numpy as np
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu
 from ebcpy import TimeSeriesData
@@ -46,6 +47,49 @@ class PartialTestSimAPI(unittest.TestCase):
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
 
+    def test_savepath_handling(self):
+        """Test correct errors for wrong savepath allocation"""
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        result_names = list(self.sim_api.states.keys())[:5]
+        self.sim_api.result_names = result_names
+        _some_par = list(self.sim_api.parameters.keys())[0]
+        pars = {_some_par: self.sim_api.parameters[_some_par].value}
+        parameters = [pars for i in range(2)]
+        with self.assertRaises(TypeError):
+            res = self.sim_api.simulate(parameters=parameters,
+                                        return_option='savepath')
+        with self.assertRaises(TypeError):
+            res = self.sim_api.simulate(parameters=parameters,
+                                        return_option='savepath',
+                                        result_file_name=["t", "t"],
+                                        savepath=[self.example_sim_dir, self.example_sim_dir])
+
+        # Test multiple result_file_names
+        _saves = [os.path.join(self.example_sim_dir, f"test_{i}") for i in range(len(parameters))]
+        _save_tests = [
+            self.example_sim_dir,
+            _saves,
+            _saves
+        ]
+        _names = [f"test_{i}" for i in range(len(parameters))]
+        _name_tests = [
+            _names,
+            "test",
+            _names
+        ]
+        for _save, _name in zip(_save_tests, _name_tests):
+            res = self.sim_api.simulate(
+                parameters=parameters,
+                return_option="savepath",
+                savepath=_save,
+                result_file_name=_name
+                )
+            for r in res:
+                self.assertTrue(os.path.isfile(r))
+                self.assertIsInstance(r, str)
+
+
     def test_set_cd(self):
         """Test set_cd functionality of dymola api"""
         # Test the setting of the function
@@ -84,12 +128,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         super().setUp()
         if self.__class__ == PartialTestDymolaAPI:
             self.skipTest("Just a partial class")
-        ebcpy_test_package_dir = self.data_dir.joinpath("TestModel.mo")
+        ebcpy_test_package_dir = self.data_dir.joinpath("TestModelVariables.mo")
         packages = [ebcpy_test_package_dir]
-        model_name = "AixCalTest_TestModel"
-        self.parameters = {"C": 2000,
-                           "heatConv_a": 5,
-                           "heatConv_b": 5,
+        model_name = "TestModelVariables"
+        self.parameters = {"test_real": 10.0,
+                           "test_int": 5,
+                           "test_bool": 0,
+                           "test_enum": 2
                            }
         self.new_sim_setup = {
             "solver": "Dassl",
@@ -125,18 +170,55 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         self.sim_api.close()
         self.assertIsNone(self.sim_api.dymola)
 
-    def test_wrong_parameters(self):
+    def test_parameters(self):
         """Test non-existing parameter"""
-        self.parameters.update({"C2": 10})
+        self.sim_api.result_names.extend(list(self.parameters.keys()))
+        self.sim_api.result_names.extend(["test_out", "test_local"])
+        res = self.sim_api.simulate(parameters=self.parameters,
+                                    return_option="last_point")
+        for k, v in res.items():
+            if k in self.parameters:
+                self.assertEqual(v, self.parameters[k])
+        self.assertEqual(res["test_local"], 0)
+        self.assertEqual(res["test_out"], self.parameters["test_int"])
+        # Check boolean conversion:
+        res_2 = self.sim_api.simulate(parameters={
+            "test_bool": True,
+        }, return_option="last_point")
+        res_1 = self.sim_api.simulate(parameters={
+            "test_bool": 1,
+        }, return_option="last_point")
+        self.assertEqual(res_1, res_2)
+        # Wrong types
+        with self.assertRaises(TypeError):
+            self.sim_api.simulate(parameters={"test_bool": "True"})
+        # Wrong parameter
         with self.assertRaises(KeyError):
-            self.sim_api.simulate(parameters=self.parameters,
-                                  return_option='savepath')
-        # Does not raise anything
-        self.sim_api.simulate(parameters=self.parameters)
+            self.sim_api.simulate(
+                parameters={"C2": 10},
+                return_option='savepath'
+            )
         # Model with no parameters:
         with self.assertRaises(ValueError):
             self.sim_api.parameters = {}
             self.sim_api.simulate()  # Test with no parameters
+
+    def test_structural_parameters(self):
+        """Test structural parameters"""
+        some_val = np.random.rand()
+        self.sim_api.result_names = ["test_local"]
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
+            return_option="last_point",
+            structural_parameters=["test_real_eval"]
+        )
+        self.assertEqual(res["test_local"], some_val)
+        res = self.sim_api.simulate(
+            parameters={"test_real_eval": some_val},
+            return_option="last_point"
+        )
+        self.assertEqual(res["test_local"], some_val)
+
 
 class TestDymolaAPIMultiCore(PartialTestDymolaAPI):
     """Test-Class for the DymolaAPI class on single core."""

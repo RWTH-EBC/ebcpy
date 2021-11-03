@@ -55,6 +55,7 @@ class TimeSeriesData(pd.DataFrame):
     Examples:
 
     First let's see the usage for a common dataframe.
+
     >>> import numpy as np
     >>> import pandas as pd
     >>> from ebcpy import TimeSeriesData
@@ -66,6 +67,7 @@ class TimeSeriesData(pd.DataFrame):
     Now, let's load the recently created file.
     As we just created the data, we specify the tag
     'sim' to indicate it is some sort of simulated value.
+
     >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
     """
 
@@ -267,8 +269,8 @@ class TimeSeriesData(pd.DataFrame):
     def get_variable_names(self) -> List[str]:
         """
         Return an alphabetically sorted list of all variables
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         return sorted(self.columns.get_level_values(0).unique())
 
@@ -276,8 +278,8 @@ class TimeSeriesData(pd.DataFrame):
         """
         Return an alphabetically sorted list of all variables
         that contain more than one tag.
-        :return:
-            List[str]
+
+        :return: List[str]
         """
         var_names = self.columns.get_level_values(0)
         return sorted(var_names[var_names.duplicated()])
@@ -289,8 +291,7 @@ class TimeSeriesData(pd.DataFrame):
         :param str variable:
             If given, tags of this variable are returned
 
-        :return:
-            List[str]
+        :return: List[str]
         """
         if variable:
             tags = self.loc[:, variable].columns
