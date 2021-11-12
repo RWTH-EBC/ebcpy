@@ -18,17 +18,17 @@ class TestConversion(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("data")
-        self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
-        self.tsd = TimeSeriesData(self.example_data_hdf_path, key="trajectories")
+        self.example_data_hdf_path = self.example_dir.joinpath("example_data.csv")
+        self.tsd = TimeSeriesData(self.example_data_hdf_path, sep=";")
+        self.columns = ["sine.freqHz / Hz"]
 
-    def test_conversion_hdf_to_mat(self):
-        """Test function conversion.convert_hdf_to_modelica_mat().
+    def test_conversion_tsd_to_mat(self):
+        """Test function conversion.convert_tsd_to_modelica_mat().
         For an example, see the doctest in the function."""
         # First convert the file
         save_path = self.example_dir.joinpath("example_data_converted.mat")
-        columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
-        for col in [columns, None]:
+        for col in [self.columns, None]:
             filepath_mat = conversion.convert_tsd_to_modelica_mat(
                 tsd=self.tsd,
                 save_path_file=save_path,
@@ -48,11 +48,10 @@ class TestConversion(unittest.TestCase):
                 save_path_file="not_a_mat_file.txt",
                 columns=col)
 
-    def test_conversion_hdf_to_modelica_txt(self):
-        """Test function conversion.convert_hdf_to_modelica_txt().
+    def test_conversion_tsd_to_modelica_txt(self):
+        """Test function conversion.convert_tsd_to_modelica_txt().
         For an example, see the doctest in the function."""
-        columns = ["sine.y / "]
-        for col, with_tag in zip([columns, None], [True, False]):
+        for col, with_tag in zip([self.columns, None], [True, False]):
             # Check if successfully converted
             filepath_txt = conversion.convert_tsd_to_modelica_txt(
                 tsd=self.tsd,
@@ -72,16 +71,15 @@ class TestConversion(unittest.TestCase):
                 tsd=self.tsd,
                 save_path_file="not_a_txt.mat",
                 table_name="dummy",
-                columns=columns[0])
+                columns=self.columns[0])
 
-    def test_conversion_hdf_to_clustering_txt(self):
-        """Test function conversion.convert_hdf_to_clustering_txt().
+    def test_conversion_tsd_to_clustering_txt(self):
+        """Test function conversion.convert_tsd_to_clustering_txt().
         For an example, see the doctest in the function."""
         # First convert the file
         save_path = os.path.normpath(os.path.join(self.example_dir, "example_data_converted.txt"))
-        columns = ["sine.y / "]
         # Test both conversion with specification of columns and without passing the names.
-        for col in [columns, None]:
+        for col in [self.columns, None]:
             filepath_txt = conversion.convert_tsd_to_clustering_txt(
                 tsd=self.tsd,
                 save_path_file=save_path,
