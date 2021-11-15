@@ -6,7 +6,6 @@ stages:
   - deploy
 
 variables:
-  EXLUDE_PYTHON: 36
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
 

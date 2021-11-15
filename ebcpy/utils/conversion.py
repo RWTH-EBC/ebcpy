@@ -7,6 +7,8 @@ import scipy.io as spio
 import numpy as np
 import pandas as pd
 
+from ebcpy.data_types import numeric_indexes, datetime_indexes
+
 
 def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
     """
@@ -34,13 +36,12 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
     >>> import os
     >>> from ebcpy import TimeSeriesData
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.mat")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
-    >>> tsd = TimeSeriesData(example_file, key=key)
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.mat")
+    >>> cols = ["sine.freqHz / Hz"]
+    >>> tsd = TimeSeriesData(example_file, sep=";")
     >>> filepath = convert_tsd_to_modelica_mat(tsd,
-    >>>                                        save_path, columns=cols, key=key)
+    >>>                                        save_path, columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -66,7 +67,8 @@ def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
 
 def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
     """
-    Function to convert a hdf file to a txt-file readable within the TICC-module.
+    Function to convert a TimeSeriesData object
+    to a txt-file readable within the TICC-module.
 
     :param TimeSeriesData tsd:
         TimeSeriesData object
@@ -87,12 +89,12 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
 
     >>> import os
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
-    >>> filepath = convert_tsd_to_clustering_txt(example_file,
-    >>>                                          save_path, columns=cols, key=key)
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
+    >>> cols = ["sine.freqHz / Hz"]
+    >>> tsd = TimeSeriesData(example_file, sep=";")
+    >>> filepath = convert_tsd_to_clustering_txt(tsd,
+    >>>                                          save_path, columns=cols)
     >>> os.remove(filepath)
     """
     # Get the subset of the dataFrame
@@ -108,12 +110,11 @@ def convert_tsd_to_clustering_txt(tsd, save_path_file, columns=None):
 
 def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     """
-    Convert a hdf file to modelica readable text. This is especially useful
+    Convert a TimeSeriesData object to modelica readable text. This is especially useful
     for generating input data for a modelica simulation.
 
-    :param str,os.path.normpath tsd:
-        String or even os.path.normpath.
-        Must point to a valid hdf file.
+    :param TimeSeriesData tsd:
+        TimeSeriesData object
     :param str table_name:
         Name of the table for modelica.
         Needed in Modelica to correctly load the file.
@@ -140,12 +141,11 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     >>> import os
     >>> from ebcpy import TimeSeriesData
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
-    >>> example_file = os.path.normpath(project_dir + "//examples//data//example_data.hdf")
-    >>> save_path = os.path.normpath(project_dir + "//examples//data//example_data_converted.txt")
-    >>> cols = ["sine.y / "]
-    >>> key = "trajectories"
-    >>> tsd = TimeSeriesData(example_file, key=key)
-    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols, key=key)
+    >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
+    >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
+    >>> cols = ["sine.freqHz / Hz"]
+    >>> tsd = TimeSeriesData(example_file, sep=";")
+    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -207,15 +207,14 @@ def _convert_to_subset(df, columns, offset):
     _time_header = ('time', 'in_s')
     headers.insert(0, _time_header)  # Ensure time will be at first place
 
-    if isinstance(df.index, pd.DatetimeIndex):
+    if isinstance(df.index, tuple(datetime_indexes)):
         df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
         df[_time_header] = df.index.total_seconds() + offset
-    elif isinstance(df.index, (pd.Float64Index, pd.RangeIndex, pd.Int64Index)):
+    elif isinstance(df.index, tuple(numeric_indexes)):
         df[_time_header] = df.index - df.iloc[0].name + offset
     else:
-        raise IndexError(f"Given data has index of type {type(df.index)}. "
-                         f"Currently only DatetimeIndex, Float64Index "
-                         f", RangeIndex and Int64Index are supported.")
+        # Should not happen as error is raised in data_types. But just to be sure:
+        raise IndexError(f"Given index of type {type(df.index)} is not supported.")
     # Avoid 1e-8 errors in timedelta calculation.
     df[_time_header] = df[_time_header].round(4)
 

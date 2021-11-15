@@ -18,7 +18,7 @@ class TestDataTypes(unittest.TestCase):
         """
         self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.hdf")
-        self.example_data_csv_path = self.example_dir.joinpath("example_data.CSV")
+        self.example_data_csv_path = self.example_dir.joinpath("example_data.csv")
         self.example_data_mat_path = self.example_dir.joinpath("example_mat_data.mat")
         self.example_data_xls_path = self.example_dir.joinpath("example_data.xls")
         self.savedir = self.example_dir.joinpath("test_save")
@@ -26,8 +26,8 @@ class TestDataTypes(unittest.TestCase):
 
     def test_default_tag(self):
         """Test the default_tag property"""
-        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
-                                        key="parameters")
+        tsd = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
         self.assertIsInstance(tsd.default_tag, str)
         with self.assertRaises(KeyError):
             tsd.default_tag = "Not in current keys"
@@ -48,14 +48,17 @@ class TestDataTypes(unittest.TestCase):
 
     def test_save(self):
         """Test fp property"""
-        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
-                                        key="parameters")
+        tsd = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
 
         filepath = self.savedir.joinpath("test_hdf.hdf")
         with self.assertRaises(KeyError):
             tsd.save(filepath=filepath)
-        tsd.save(filepath=filepath, key="test")
-        self.assertTrue(os.path.isfile(filepath))
+        try:
+            tsd.save(filepath=filepath, key="test")
+            self.assertTrue(os.path.isfile(filepath))
+        except ImportError:
+            pass   # Skip the optional part
         # Test csv and the setter.
         filepath = self.savedir.joinpath("test_hdf.csv")
         tsd.filepath = filepath
@@ -66,9 +69,23 @@ class TestDataTypes(unittest.TestCase):
             filepath = self.savedir.joinpath("test_mat.mat")
             tsd.save(filepath=filepath)
 
-        with self.assertRaises(ValueError):
-            tsd.filepath = None
-            tsd.save()
+    def test_load_save_csv(self):
+        """Test correct loading and saving"""
+        tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
+        filepath = self.savedir.joinpath("test_hdf.csv")
+        tsd_ref.save(filepath=filepath)
+        tsd = data_types.TimeSeriesData(filepath)
+        self.assertTrue(tsd.equals(tsd_ref))
+        # test wrong and multi-index
+        tsd = data_types.TimeSeriesData(filepath, index_col=1)
+        self.assertFalse(tsd.equals(tsd_ref))
+        self.assertEqual(tsd.index.nlevels, 1)
+        with self.assertRaises(IndexError):
+            data_types.TimeSeriesData(filepath, index_col=[0, 1])
+        # Test wrong and single index headers
+        with self.assertRaises(IndexError):
+            data_types.TimeSeriesData(filepath, header=0)
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
@@ -80,25 +97,28 @@ class TestDataTypes(unittest.TestCase):
             a_python_file = __file__
             data_types.TimeSeriesData(a_python_file)
         # If no key is provided, a KeyError has to be raised
-        with self.assertRaises(KeyError):
-            data_types.TimeSeriesData(self.example_data_hdf_path)
-        with self.assertRaises(KeyError):
-            data_types.TimeSeriesData(self.example_data_hdf_path,
-                                      key="wrong_key")
-        with self.assertRaises(KeyError):
-            data_types.TimeSeriesData(self.example_data_hdf_path,
-                                      key="")
-        with self.assertRaises(KeyError):
-            data_types.TimeSeriesData(self.example_data_xls_path)
-        # Correctly load the .hdf:
-        time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path,
-                                                     key="parameters")
-        self.assertIsInstance(
-            time_series_data,
-            type(pd.DataFrame()))
+        try:
+            with self.assertRaises(KeyError):
+                data_types.TimeSeriesData(self.example_data_hdf_path)
+            with self.assertRaises(KeyError):
+                data_types.TimeSeriesData(self.example_data_hdf_path,
+                                          key="wrong_key")
+            with self.assertRaises(KeyError):
+                data_types.TimeSeriesData(self.example_data_hdf_path,
+                                          key="")
+            with self.assertRaises(KeyError):
+                data_types.TimeSeriesData(self.example_data_xls_path)
+            # Correctly load the .hdf:
+            time_series_data = data_types.TimeSeriesData(self.example_data_hdf_path,
+                                                         key="parameters")
+            self.assertIsInstance(
+                time_series_data,
+                type(pd.DataFrame()))
+        except ImportError:
+            pass   # Skip the optional part
         # Correctly load the .csv:
         time_series_data = data_types.TimeSeriesData(self.example_data_csv_path,
-                                                     sep=",")
+                                                     sep=";")
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
@@ -119,8 +139,8 @@ class TestDataTypes(unittest.TestCase):
             df,
             type(pd.DataFrame()))
         # Test converters:
-        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
-                                        key="parameters")
+        tsd = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
         tsd.to_datetime_index()
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
         tsd.to_datetime_index()
@@ -226,8 +246,8 @@ class TestDataTypes(unittest.TestCase):
 
     def test_preprocessing_api(self):
         """Test function accessed in preprocessing"""
-        tsd = data_types.TimeSeriesData(self.example_data_hdf_path,
-                                        key="parameters")
+        tsd = data_types.TimeSeriesData(self.example_data_csv_path,
+                                        sep=";")
         # number_lines_totally_na
         self.assertEqual(tsd.number_lines_totally_na(), 0)
         tsd.moving_average(window=2, variable="sine.startTime / s")

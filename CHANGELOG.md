@@ -47,4 +47,11 @@
    - Several new functions for easier access / utility
    - Add inputs option for `DymolaAPI`
 - v0.2.1:
-   - Fix installation error by using `scikit-learn` instead of `sklearn` 
+   - Fix installation error by using `scikit-learn` instead of `sklearn`
+- v0.2.2:
+   - Allow custom methods in `StatisticsAnalyzer`
+   - Allow structural parameter changes in `DymolaAPI`
+- v0.2.3:
+   - Fix bad import in `setup.py`
+   - Remove requirement for PyTables to enable support on python >3.9 #5
+   - Add further save- and load functions for .csv

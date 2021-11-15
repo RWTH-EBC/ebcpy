@@ -12,14 +12,24 @@ class StatisticsAnalyzer:
     StatisticsAnalyzer.calc_METHOD(meas, sim). Where METHOD stands for one
     of the available methods (see below).
 
-    :param str method:
-        One of the following:
+    :param (str, callable) method:
+        If string, it must be one of the following:
             - MAE(Mean absolute error)
             - R2(coefficient of determination)
             - MSE (Mean squared error)
             - RMSE(root mean square error)
             - CVRMSE(variance of RMSE)
             - NRMSE(Normalized RMSE)
+        If callable, the function needs to take
+        exactly two arguments and return a scalar value (e.g. float).
+        The arguments should be able to handle list and numpy arrays.
+
+        Example:
+
+        >>> def my_func(x, y)
+        >>>     return sum(x - y)
+        >>> StatisticsAnalyzer(method=my_func)
+
     :param Boolean for_minimization:
         Default True. To reduce (minimize) the error in given data,
         we either have to minimize or maximize the statistical measure.
@@ -33,17 +43,28 @@ class StatisticsAnalyzer:
                               "mse": self.calc_mse,
                               "rmse": self.calc_rmse,
                               "cvrmse": self.calc_cvrmse,
-                              "nrmse": self.calc_nrmse}
+                              "nrmse": self.calc_nrmse,
+                              "user-function": None}
 
         _minimization_factors = {"mae": 1,
                                  "r2": -1,
                                  "mse": 1,
                                  "rmse": 1,
                                  "cvrmse": 1,
-                                 "nrmse": 1}
+                                 "nrmse": 1,
+                                 "user-function": 1}
 
-        # Remove case-sensitive input
-        _method_internal = method.lower()
+        # Check if method is function or string
+        if callable(method):
+            _method_internal = "user-function"
+            _supported_methods[_method_internal] = method
+        elif isinstance(method, str):
+            # Remove case-sensitive input
+            _method_internal = method.lower()
+        else:
+            raise TypeError(
+                f"Given method is of type {type(method)} but should be "
+                f"either string or function.")
 
         if _method_internal not in _supported_methods:
             raise ValueError(f"The given method {_method_internal} is not supported.\n "
@@ -56,7 +77,6 @@ class StatisticsAnalyzer:
         """Placeholder class before instantiating the class correctly."""
         if self.for_minimization:
             return self._calc_internal(meas, sim) * self._min_fac
-
         return self._calc_internal(meas, sim)
 
     @staticmethod

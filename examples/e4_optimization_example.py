@@ -8,6 +8,7 @@ Goals of this part of the examples:
 # Start by importing all relevant packages
 import matplotlib.pyplot as plt
 import numpy as np
+import sklearn.metrics as skmetrics
 # Imports from ebcpy
 from ebcpy.optimization import Optimizer
 from ebcpy.utils.statistics_analyzer import StatisticsAnalyzer
@@ -84,7 +85,7 @@ def main(statistical_measure="MAE", with_plot=True):
         try:
             res = mco.optimize(framework=framework, method=method, **kwargs)
         except ImportError as err:
-            mco.logger.error("Could not optimize due to import error %s", err)
+            mco.logger.error("Could not optimize due to import error: %s", err)
             continue
         plt.figure()
         plt.plot(my_data, my_goal, "r", label="Reference")
@@ -96,5 +97,33 @@ def main(statistical_measure="MAE", with_plot=True):
         plt.show()
 
 
+# define a user-defined statistical measure to optimize
+def calc_r2_rmse(meas, sim):
+    """
+    Calculates the combination of R2 and RMSE and uses it equally
+    weighted for the minimization of the optimization.
+
+    :param np.array meas:
+        Array with measurement data
+    :param np.array sim:
+        Array with simulation data
+    :return: float combination:
+        combination of R2 and rmse.
+    """
+    r2 = skmetrics.r2_score(meas, sim)
+    if r2 <= 0.0:
+        r2 = 0.0
+    if np.mean(meas) == 0:
+        raise ValueError("The given measurement data has a mean of 0. "
+                         "This makes the calculation of the CVRMSE impossible. "
+                         "Choose another method.")
+
+    rmse = np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+
+    combination = float(0.5 * (1 - (r2 / 100)) + 0.5 * rmse)
+
+    return combination
+
 if __name__ == '__main__':
     main(statistical_measure="R2")
+    main(statistical_measure=calc_r2_rmse)

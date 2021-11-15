@@ -20,7 +20,19 @@ from ebcpy import preprocessing
 # pylint: disable=too-many-ancestors
 
 __all__ = ['TimeSeries',
-           'TimeSeriesData']
+           'TimeSeriesData',
+           'numeric_indexes',
+           'datetime_indexes']
+
+numeric_indexes = [
+    pd.Float64Index,
+    pd.RangeIndex,
+    pd.Int64Index
+]
+
+datetime_indexes = [
+    pd.DatetimeIndex
+]
 
 
 class TimeSeriesData(pd.DataFrame):
@@ -45,6 +57,15 @@ class TimeSeriesData(pd.DataFrame):
     :keyword str sep:
         separator for the use of a csv file. If none is provided,
         a comma (",") is used as a default value.
+        See pandas.read_csv() docs for further information.
+    :keyword int, list header:
+        Header columns for .csv files.
+        See pandas.read_csv() docs for further information.
+        Default is first row (0).
+    :keyword int,str index_col:
+        Column to be used as index in .csv files.
+        See pandas.read_csv() docs for further information.
+        Default is first column (0).
     :keyword str sheet_name:
         Name of the sheet you want to load data from. Required keyword
         argument when loading a xlsx-file.
@@ -62,24 +83,29 @@ class TimeSeriesData(pd.DataFrame):
     >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
     >>> tsd = TimeSeriesData(df)
     >>> tsd.to_datetime_index()
-    >>> tsd.save("my_new_data.hdf", key="NewData")
+    >>> tsd.save("my_new_data.csv")
 
     Now, let's load the recently created file.
     As we just created the data, we specify the tag
     'sim' to indicate it is some sort of simulated value.
 
-    >>> tsd = TimeSeriesData("my_new_data.hdf", tag='sim')
+    >>> tsd = TimeSeriesData("my_new_data.csv", tag='sim')
     """
 
     # normal properties
-    _metadata = ["_filepath", "_loader_kwargs", "_default_tag"]
+    _metadata = [
+        "_filepath",
+        "_loader_kwargs",
+        "_default_tag",
+        "_multi_col_names"
+    ]
 
     def __init__(self, data: Union[str, Any], **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
         self._filepath = None
         self._loader_kwargs = {}
-        _multi_col_names = ["Variables", "Tags"]
+        self._multi_col_names = ["Variables", "Tags"]
 
         self._default_tag = kwargs.pop("default_tag", "raw")
         if not isinstance(self._default_tag, str):
@@ -99,22 +125,23 @@ class TimeSeriesData(pd.DataFrame):
                                       dtype=kwargs.get("dtype", None),
                                       copy=kwargs.get("copy", False))
         else:
-            self._filepath = str(data)
+            file = Path(data)
             self._loader_kwargs = kwargs.copy()
-            _df_loaded = self._load_df_from_file()
+            _df_loaded = self._load_df_from_file(file=file)
+            self._filepath = file
 
         if _df_loaded.columns.nlevels == 1:
             # Check if first level is named Tags.
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
-            if _df_loaded.columns.name != _multi_col_names[1]:
+            if _df_loaded.columns.name != self._multi_col_names[1]:
                 multi_col = pd.MultiIndex.from_product(
                     [_df_loaded.columns, [self._default_tag]],
-                    names=_multi_col_names
+                    names=self._multi_col_names
                 )
                 _df_loaded.columns = multi_col
 
         elif _df_loaded.columns.nlevels == 2:
-            if _df_loaded.columns.names != _multi_col_names:
+            if _df_loaded.columns.names != self._multi_col_names:
                 raise TypeError("Loaded dataframe has a different 2-Level "
                                 "header format than it is supported by this "
                                 "class. The names have to match.")
@@ -144,7 +171,7 @@ class TimeSeriesData(pd.DataFrame):
     @filepath.setter
     def filepath(self, filepath: str):
         """Set the filepath associated with the time series data"""
-        self._filepath = filepath
+        self._filepath = Path(filepath)
 
     @property
     def default_tag(self) -> str:
@@ -168,8 +195,11 @@ class TimeSeriesData(pd.DataFrame):
     def save(self, filepath: str = None, **kwargs) -> None:
         """
         Save the current time-series-data into the given file-format.
-        Currently supported are .hdf (easy and fast storage) and
-        .csv (easy-readable).
+        Currently supported are .hdf, which is an easy and fast storage,
+        but only supported on python 3.7 and 3.8 on all systems.
+        For more information on python 3.9 on windows, check
+        https://github.com/PyTables/PyTables/issues/823.
+        Also, .csv is supported as an easy-readable option.
 
         :param str,os.path.normpath filepath:
             Filepath were to store the data. Either .hdf or .csv
@@ -187,22 +217,21 @@ class TimeSeriesData(pd.DataFrame):
         # Set filepath if not given
         if filepath is None:
             filepath = self.filepath
+        else:
+            filepath = Path(filepath)
         # Check if filepath is still None (if no filepath was used in init)
         if filepath is None:
             raise ValueError("Current TimeSeriesData instance "
                              "has no filepath, please specify one.")
 
-        if isinstance(filepath, Path):
-            filepath = str(filepath)
-
         # Save based on file suffix
-        if filepath.lower().endswith(".hdf"):
+        if filepath.suffix == ".hdf":
             if "key" not in kwargs:
                 raise KeyError("Argument 'key' must be "
                                "specified to save a .hdf file")
             pd.DataFrame(self).to_hdf(filepath, key=kwargs.get("key"))
 
-        elif filepath.lower().endswith(".csv"):
+        elif filepath.suffix == ".csv":
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         else:
             raise TypeError("Given file-format is not supported."
@@ -229,17 +258,16 @@ class TimeSeriesData(pd.DataFrame):
             )
         return pd.DataFrame(self)
 
-    def _load_df_from_file(self):
+    def _load_df_from_file(self, file):
         """Function to load a given filepath into a dataframe"""
         # Check whether the file exists
-        if not os.path.isfile(self.filepath):
+        if not os.path.isfile(file):
             raise FileNotFoundError(
-                f"The given filepath {self.filepath} could not be opened")
+                f"The given filepath {file} could not be opened")
 
         # Open based on file suffix.
         # Currently, hdf, csv, and Modelica result files (mat) are supported.
-        f_name = self.filepath.lower()
-        if f_name.endswith("hdf"):
+        if file.suffix == ".hdf":
             # Load the current file as a hdf to a dataframe.
             # As specifying the key can be a problem, the user will
             # get all keys of the file if one is necessary but not provided.
@@ -247,24 +275,53 @@ class TimeSeriesData(pd.DataFrame):
             if key == "":
                 key = None  # Avoid cryptic error in pandas by converting empty string to None
             try:
-                return pd.read_hdf(self.filepath, key=key)
+                df = pd.read_hdf(file, key=key)
             except (ValueError, KeyError) as error:
-                keys = ", ".join(get_keys_of_hdf_file(self.filepath))
+                keys = ", ".join(get_keys_of_hdf_file(file))
                 raise KeyError(f"key must be provided when HDF5 file contains multiple datasets. "
                                f"Here are all keys in the given hdf-file: {keys}") from error
-        elif f_name.endswith("csv"):
-            return pd.read_csv(self.filepath, sep=self._loader_kwargs.get("sep", ","))
-        elif f_name.endswith("mat"):
-            return sr.mat_to_pandas(fname=self.filepath, with_unit=False)
-        elif f_name.split(".")[-1] in ['xlsx', 'xls', 'odf', 'ods', 'odt']:
+        elif file.suffix == ".csv":
+            # Check if file was previously a TimeSeriesData object
+            with open(file, "r") as _f:
+                lines = [_f.readline() for _ in range(2)]
+                if (lines[0].startswith(self._multi_col_names[0]) and
+                        lines[1].startswith(self._multi_col_names[1])):
+                    _hea_def = [0, 1]
+                else:
+                    _hea_def = 0
+
+            df = pd.read_csv(
+                file,
+                sep=self._loader_kwargs.get("sep", ","),
+                index_col=self._loader_kwargs.get("index_col", 0),
+                header=self._loader_kwargs.get("header", _hea_def)
+            )
+
+        elif file.suffix == ".mat":
+            df = sr.mat_to_pandas(fname=file, with_unit=False)
+        elif file.suffix in ['.xlsx', '.xls', '.odf', '.ods', '.odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:
                 raise KeyError("sheet_name is a required keyword argument to load xlsx-files."
                                "Please pass a string to specify the name "
                                "of the sheet you want to load.")
-            return pd.read_excel(io=self.filepath, sheet_name=sheet_name)
+            df = pd.read_excel(io=file, sheet_name=sheet_name)
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
+        if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
+            try:
+                df.index = pd.DatetimeIndex(df.index)
+            except Exception as err:
+                raise IndexError(
+                    f"Given data has index of type {type(df.index)}. "
+                    f"Currently only "
+                    f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
+                    f"are supported."
+                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"see error above."
+                ) from err
+        return df
+
 
     def get_variable_names(self) -> List[str]:
         """
