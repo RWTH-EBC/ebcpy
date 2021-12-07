@@ -188,7 +188,7 @@ class SimulationAPI:
                                   f'function is not defined')
 
     @abstractmethod
-    def simulate(self,
+    def simulate(self, work_id,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
@@ -269,21 +269,18 @@ class SimulationAPI:
                  **{key: value[_idx] for key, value in new_kwargs.items()}
                  }
             )
-        # Decide between mp and single core
-        if self.use_mp:
-            results = self.pool.map(self._single_simulation, kwargs)
-        else:
-            results = [self._single_simulation(kwargs={
-                "parameters": _single_kwargs["parameters"],
-                "return_option": _single_kwargs["return_option"],
-                **_single_kwargs
-            }) for _single_kwargs in kwargs]
+        # Simulate
+        results = [self._single_simulation(work_id, kwargs={
+            "parameters": _single_kwargs["parameters"],
+            "return_option": _single_kwargs["return_option"],
+            **_single_kwargs
+        }) for _single_kwargs in kwargs]
         if len(results) == 1:
             return results[0]
         return results
 
     @abstractmethod
-    def _single_simulation(self, kwargs):
+    def _single_simulation(self, work_id, kwargs):
         """
         Same arguments and function as simulate().
         Used to differ between single- and multi-processing simulation"""

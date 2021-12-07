@@ -52,7 +52,7 @@ class Optimizer:
         self.bounds = kwargs.get("bounds", None)
 
     @abstractmethod
-    def obj(self, xk, *args):
+    def obj(self, xk, work_id, *args):
         """
         Base objective function. Overload this function and create your own
         objective function. Make sure that the return value is a scalar.
@@ -60,8 +60,20 @@ class Optimizer:
 
         :param np.array xk:
             Array with parameters for optimization
+        :param int work_id:
+            Integer for assigning to Dymola Instances
         :return: float result:
             A scalar (float/ 1d) value for the optimization framework.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
+
+    @abstractmethod
+    def mp_obj(self, x, *args):
+        """
+        Objective function for Multiprocessing.
+
+        :param np.array x:
+            Array with parameters for optimization
         """
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
@@ -334,7 +346,8 @@ class Optimizer:
                                  )
 
             def _evaluate(self, x, out, *args, **kwargs):
-                out["F"] = np.array([self.ebcpy_class.obj(xk=_x, *args) for _x in x])
+                out["F"] = self.ebcpy_class.mp_obj(x, *args)
+                #out["F"] = np.array([self.ebcpy_class.obj(xk=_x, *args) for _x in x])
 
         try:
             if self.bounds is None:
