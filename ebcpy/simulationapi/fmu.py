@@ -292,10 +292,13 @@ class FMU_API(simulationapi.SimulationAPI):
             return value
         self.logger.info("Reading model variables")
 
-        _types = {"Enumeration": int,
-                  "Integer": int,
-                  "Real": float,
-                  "Boolean": bool, }
+        _types = {
+            "Enumeration": int,
+            "Integer": int,
+            "Real": float,
+            "Boolean": bool,
+            "String": str
+        }
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
             if var.start is not None:
