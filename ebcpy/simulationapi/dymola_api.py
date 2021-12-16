@@ -314,7 +314,7 @@ class DymolaAPI(SimulationAPI):
         # Handle multiprocessing
         if self.use_mp:
             print(self.worker_idx)
-            idx_worker = work_id
+            idx_worker = self.worker_idx
             if idx_worker not in self._dymola_instances:
                 self._setup_dymola_interface(use_mp=True)
             dymola = self._dymola_instances[idx_worker]

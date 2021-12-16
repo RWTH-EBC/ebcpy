@@ -52,7 +52,7 @@ class Optimizer:
         self.bounds = kwargs.get("bounds", None)
 
     @abstractmethod
-    def obj(self, xk, work_id, *args):
+    def obj(self, xk, paras, work_id, *args):
         """
         Base objective function. Overload this function and create your own
         objective function. Make sure that the return value is a scalar.
@@ -347,7 +347,7 @@ class Optimizer:
 
             def _evaluate(self, x, out, *args, **kwargs):
                 out["F"] = self.ebcpy_class.mp_obj(x, *args)
-                #out["F"] = np.array([self.ebcpy_class.obj(xk=_x, *args) for _x in x])
+                #out["F"] = np.array([self.ebcpy_class.obj(xk=_x, work_id=1, *args) for _x in x])
 
         try:
             if self.bounds is None:
