@@ -1,15 +1,12 @@
-```python
-"""
-Goals of this part of the examples:
+ # FMU Example:
+ Goals of this part of the examples:
 
-1. Learn how to use the `FMU_API`
-2. Understand model variables
-3. Learn how to change variables to store (`result_names`)
-4. Learn how to change parameters of a simulation
-5. Learn how to change inputs of a simulation
-6. Learn how to run simulations in parallel
-"""
-```
+ 1. Learn how to use the `FMU_API`
+ 2. Understand model variables
+ 3. Learn how to change variables to store (`result_names`)
+ 4. Learn how to change parameters of a simulation
+ 5. Learn how to change inputs of a simulation
+ 6. Learn how to run simulations in parallel
  Start by importing all relevant packages
 ```python
 import pathlib
@@ -36,7 +33,7 @@ if cd is None:
     cd = pathlib.Path(__file__).parent.joinpath("results")
 
 ```
- ######################### Simulation API Instantiation ##########################
+ ### Simulation API Instantiation
  %% Setup the FMU-API:
 ```python
 model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
@@ -53,7 +50,7 @@ print("Variables to store when simulating:", fmu_api.result_names)
 print("Outputs of the fmu", fmu_api.outputs)
 
 ```
- ######################### Simulation Setup Part ##########################
+ ### Simulation Setup Part
  Change the simulation settings:
  Which settings can I change?
 ```python
@@ -70,7 +67,7 @@ simulation_setup = {"start_time": 0,
 fmu_api.set_sim_setup(sim_setup=simulation_setup)
 
 ```
- ######################### Parameters ##########################
+ ### Parameters
  Let's get some parameter to change, e.g. the capacity of the thermal mass:
 ```python
 print(fmu_api.parameters['heaCap.C'])
@@ -84,7 +81,7 @@ for sizing in sizings:
     parameters.append({"heaCap.C": hea_cap_c * sizing})
 
 ```
- ######################### Inputs ##########################
+ ### Inputs
  Let's also change the input of the simulation:
 ```python
 print("Inputs names are:", fmu_api.inputs)
@@ -108,7 +105,7 @@ df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
  It only goes to show that inputs to the simulation must contain clear
  tags.
  df_inputs[('TDryBul', 'constant_0_degC')] = 275.15
- ######################### Results to store ##########################
+ ### Results to store
  As we vary the heating capacity,
  let's plot the influence on the temperature of said capacity:
  Per default, all outputs will be stored:
@@ -129,14 +126,14 @@ fmu_api.result_names = ["heaCap.T", "TDryBul"]
 print("Results that will be stored", fmu_api.result_names)
 
 ```
- ######################### Execute simulation ##########################
+ ### Execute simulation
  Pass the created list to the simulate function
 ```python
 results = fmu_api.simulate(parameters=parameters,
                            inputs=df_inputs)
 
 ```
- ######################### Closing ##########################
+ ### Closing
  Close the fmu. If you forget to do so,
  we call this function at the exit of your script.
  It deleted all extracted FMU files.
@@ -144,7 +141,7 @@ results = fmu_api.simulate(parameters=parameters,
 fmu_api.close()
 
 ```
- ######################### Visualization ##########################
+ ### Visualization
  Plot the result
 ```python
 fig, ax = plt.subplots(2, sharex=True)
