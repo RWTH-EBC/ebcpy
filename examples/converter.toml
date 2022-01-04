@@ -1,0 +1,23 @@
+[[ExampleFile]]
+# Add the path of where data is
+filename = "examples/e1_time_series_data_example.py"
+func_name = "main"
+docstrings = true
+
+[[ExampleFile]]
+# Add the path of where data is
+filename = "examples/e2_fmu_example.py"
+func_name = "main"
+docstrings = true
+
+[[ExampleFile]]
+# Add the path of where data is
+filename = "examples/e3_dymola_example.py"
+func_name = "main"
+docstrings = true
+
+[[ExampleFile]]
+# Add the path of where data is
+filename = "examples/e4_optimization_example.py"
+func_name = "main"
+docstrings = true
