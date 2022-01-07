@@ -346,8 +346,11 @@ class Optimizer:
                                  )
 
             def _evaluate(self, x, out, *args, **kwargs):
-                out["F"] = self.ebcpy_class.mp_obj(x, *args)
-                #out["F"] = np.array([self.ebcpy_class.obj(xk=_x, work_id=1, *args) for _x in x])
+                use_mp = True
+                if use_mp:
+                    out["F"] = self.ebcpy_class.mp_obj(x, *args)
+                else:
+                    out["F"] = np.array([self.ebcpy_class.obj(xk=_x, paras=[1, 2],  work_id=1, *args) for _x in x])
 
         try:
             if self.bounds is None:
