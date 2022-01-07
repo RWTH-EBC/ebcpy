@@ -211,6 +211,9 @@ class FMU_API(simulationapi.SimulationAPI):
             self.check_unsupported_variables(variables=list(parameters.keys()),
                                              type_of_var="parameters")
         try:
+            # reset the FMU instance instead of creating a new one
+            fmu_instance.reset()
+            # Simulate
             res = fmpy.simulate_fmu(
                 filename=unzip_dir,
                 start_time=self.sim_setup.start_time,
@@ -230,7 +233,6 @@ class FMU_API(simulationapi.SimulationAPI):
                 fmu_instance=fmu_instance,
                 fmi_type=self._fmi_type,
             )
-            fmu_instance.reset()
 
         except Exception as error:
             self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
