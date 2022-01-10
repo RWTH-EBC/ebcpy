@@ -116,6 +116,7 @@ class SimulationAPI:
     _items_to_drop = [
         'pool',
     ]
+    worker_id = 0
 
     def __init__(self, cd, model_name, **kwargs):
         # Setup the logger
@@ -129,7 +130,7 @@ class SimulationAPI:
                              f"cpus on your machine '{mp.cpu_count()}'")
         if self.n_cpu > 1:
             # pylint: disable=consider-using-with
-            self.pool = mp.Pool(processes=self.n_cpu)
+            #self.pool = mp.Pool(processes=self.n_cpu)
             self.use_mp = True
         else:
             self.pool = None
@@ -148,9 +149,9 @@ class SimulationAPI:
     @property
     def worker_idx(self):
         """Index of the current worker"""
-        _id = mp.current_process()._identity
+        _id = self.worker_id #mp.current_process()._identity
         if _id:
-            return _id[0]
+            return _id #[0]
         return None
 
     def __getstate__(self):

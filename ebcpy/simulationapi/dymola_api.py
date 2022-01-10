@@ -15,6 +15,7 @@ from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
+import multiprocessing as mp
 
 
 class DymolaSimulationSetup(SimulationSetup):
@@ -125,6 +126,7 @@ class DymolaAPI(SimulationAPI):
                          "mos_script_post",
                          "dymola_version"]
 
+
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
 
@@ -230,10 +232,12 @@ class DymolaAPI(SimulationAPI):
         # Register the function now in case of an error.
         if not self.debug:
             atexit.register(self.close)
-        if self.use_mp:
-            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(use_mp=False)
+        if self.use_mp:
+            self.pool = mp.Pool(processes=self.n_cpu)
+            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+
         self.fully_initialized = True
         # Trigger on init.
         self._update_model()
@@ -310,7 +314,8 @@ class DymolaAPI(SimulationAPI):
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
         structural_parameters = kwargs.get("structural_parameters", [])
-
+        # Declare worker_id
+        self.worker_id = work_id+1
         # Handle multiprocessing
         if self.use_mp:
             print(self.worker_idx)
