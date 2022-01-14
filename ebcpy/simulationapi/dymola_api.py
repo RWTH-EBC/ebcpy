@@ -336,7 +336,6 @@ class DymolaAPI(SimulationAPI):
         structural_parameters = kwargs.get("structural_parameters", [])
         # Handle multiprocessing
         if self.use_mp:
-            print(self.worker_idx)
             idx_worker = self.worker_idx
             if idx_worker not in self._dymola_instances:
                 self._setup_dymola_interface(use_mp=True)
