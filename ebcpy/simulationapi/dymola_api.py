@@ -235,8 +235,16 @@ class DymolaAPI(SimulationAPI):
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(use_mp=False)
         if self.use_mp:
-            self.pool = mp.Pool(processes=self.n_cpu)
-            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+            if self.use_mp:
+                self.pool = mp.Pool(processes=self.n_cpu)
+                self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+            # for _ in range(self.n_cpu):
+            #     self._dymola_instances[_+1] = self._setup_dymola_interface(use_mp=True)
+            # self.pool = mp.Pool(processes=self.n_cpu)
+            # Not pickleable
+            # dymola_pool = self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+            # for i in range(len(dymola_pool)):
+            #     self._dymola_instances[i] = dymola_pool[i]
 
         self.fully_initialized = True
         # Trigger on init.
@@ -255,6 +263,18 @@ class DymolaAPI(SimulationAPI):
         # if the user wants to:
         if self.extract_variables and self.fully_initialized:
             self.extract_model_variables()
+
+    def multi_simulate(self, work_id,
+                     parameter_list,
+                     inputs,
+                     **kwargs):
+
+        results = self.pool.starmap(self.simulate, [(1,
+                        parameters,
+                        inputs,
+                        *kwargs) for parameters in parameter_list])
+
+        return results
 
     def simulate(self, work_id,
                  parameters: Union[dict, List[dict]] = None,
@@ -314,8 +334,6 @@ class DymolaAPI(SimulationAPI):
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
         structural_parameters = kwargs.get("structural_parameters", [])
-        # Declare worker_id
-        self.worker_id = work_id+1
         # Handle multiprocessing
         if self.use_mp:
             print(self.worker_idx)
