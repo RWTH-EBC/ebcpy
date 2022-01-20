@@ -160,6 +160,9 @@ def main(
     plt.title("Input of CombiTimeTable 'timTab'")
     if with_plot:
         plt.show()
+    # Save the data for later reproduction
+    file = dym_api.save_for_reproduction()
+    print("ZIP-File to reproduce all this:", file)
 
 
 if __name__ == '__main__':

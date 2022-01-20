@@ -148,9 +148,10 @@ class SimulationAPI:
     @property
     def worker_idx(self):
         """Index of the current worker"""
-        _id = mp.current_process()._identity
-        if _id:
-            return _id[0]
+        if self.n_cpu > 1:  # Only
+            _id = mp.current_process()._identity
+            if _id:
+                return _id[0]
         return None
 
     def __getstate__(self):
@@ -413,3 +414,19 @@ class SimulationAPI:
     def get_simulation_setup_fields(cls):
         """Return all fields in the chosen SimulationSetup class."""
         return list(cls._sim_setup_class.__fields__.keys())
+
+    def save_for_reproduction(self,
+                              save_path: str = None,
+                              files: list = None):
+        """
+        Save the settings of the SimulationAPI in order to
+        reproduce the settings of the used simulation.
+
+        Should be extended by child-classes to allow custom
+        saving.
+        """
+        from ebcpy.utils.reproduction import save_reproduction
+        return save_reproduction(
+            save_path=save_path,
+            files=files
+        )
