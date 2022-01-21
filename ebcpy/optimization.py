@@ -144,10 +144,6 @@ class Optimizer:
         :return: res
             Optimization result.
         """
-        # Check if pymoo is being used for Multiprocessing
-        if not framework == "pymoo":
-            raise Warning(f"Given framework {framework} does not support Multiprocessing."
-                            f" We recommend using pymoo as your framework.")
         # Choose the framework
         minimize_func, requires_method = self._choose_framework(framework)
         if method is None and requires_method:
