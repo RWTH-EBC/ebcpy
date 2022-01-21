@@ -188,18 +188,24 @@ class SimulationAPI:
                                   f'function is not defined')
 
     @abstractmethod
-    def multi_simulate(self, work_id,
-                     parameter_list,
-                     inputs,
-                     **kwargs):
+    def multi_simulate(self,
+                       parameter_list,
+                       inputs,
+                       **kwargs):
         """
-        Same arguments and function as simulate().
+        Same arguments and function as simulate() except for parameter_list.
+
+        :param list parameter_list:
+            List with Parameters to simulate.
+        :param _SpecialForm inputs:
+            Inputs for simulation.
+
         Used to differ between single- and multi-processing simulation"""
         raise NotImplementedError(f'{self.__class__.__name__}._multi_simulation '
                                   f'function is not defined')
 
     @abstractmethod
-    def simulate(self, work_id,
+    def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
@@ -281,7 +287,7 @@ class SimulationAPI:
                  }
             )
         # Simulate
-        results = [self._single_simulation(work_id, kwargs={
+        results = [self._single_simulation(kwargs={
             "parameters": _single_kwargs["parameters"],
             "return_option": _single_kwargs["return_option"],
             **_single_kwargs
@@ -291,7 +297,7 @@ class SimulationAPI:
         return results
 
     @abstractmethod
-    def _single_simulation(self, work_id, kwargs):
+    def _single_simulation(self, kwargs):
         """
         Same arguments and function as simulate().
         Used to differ between single- and multi-processing simulation"""

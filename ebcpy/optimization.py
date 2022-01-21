@@ -68,12 +68,14 @@ class Optimizer:
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
     @abstractmethod
-    def mp_obj(self, x, *args):
+    def mp_obj(self, x, n_cpu, *args):
         """
         Objective function for Multiprocessing.
 
         :param np.array x:
             Array with parameters for optimization
+        :param int n_cpu:
+            Number of logical Processors to run optimization on.
         """
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
@@ -142,6 +144,10 @@ class Optimizer:
         :return: res
             Optimization result.
         """
+        # Check if pymoo is being used for Multiprocessing
+        if not framework == "pymoo":
+            raise Warning(f"Given framework {framework} does not support Multiprocessing."
+                            f" We recommend using pymoo as your framework.")
         # Choose the framework
         minimize_func, requires_method = self._choose_framework(framework)
         if method is None and requires_method:
@@ -324,11 +330,10 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
-        default_kwargs.update(kwargs)
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_algorithm
+            from pymoo.factory import get_algorithm, get_sampling
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
 
@@ -346,11 +351,11 @@ class Optimizer:
                                  )
 
             def _evaluate(self, x, out, *args, **kwargs):
-                use_mp = True
-                if use_mp:
-                    out["F"] = self.ebcpy_class.mp_obj(x, *args)
+                n_cpu = kwargs["n_cpu"]
+                if n_cpu > 1:
+                    out["F"] = self.ebcpy_class.mp_obj(x, n_cpu, *args)
                 else:
-                    out["F"] = np.array([self.ebcpy_class.obj(xk=_x, paras=[1, 2],  work_id=1, *args) for _x in x])
+                    out["F"] = np.array([self.ebcpy_class.obj(xk=_x, *args) for _x in x])
 
         try:
             if self.bounds is None:
@@ -366,9 +371,24 @@ class Optimizer:
             copy_algorithm = default_kwargs.pop("copy_algorithm")
             copy_termination = default_kwargs.pop("copy_termination")
 
+            # Get kwargs for algorithm
+            pop_size = kwargs["pop_size"]
+            sampling = kwargs["sampling"]
+            variant = kwargs["variant"]
+            F = kwargs["F"]
+            CR = kwargs["CR"]
+            dither = kwargs["dither"]
+            jitter = kwargs["jitter"]
             # Init algorithm
             algorithm = get_algorithm(name=method.lower(),
-                                      **default_kwargs)
+                                      **default_kwargs)(pop_size=pop_size,
+                                                        sampling=get_sampling(name=sampling, **default_kwargs),
+                                                        variant=variant,
+                                                        F=F,
+                                                        CR=CR,
+                                                        dither=dither,
+                                                        jitter=jitter
+                                                        )
 
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),

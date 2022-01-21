@@ -264,19 +264,16 @@ class DymolaAPI(SimulationAPI):
         if self.extract_variables and self.fully_initialized:
             self.extract_model_variables()
 
-    def multi_simulate(self, work_id,
-                     parameter_list,
-                     inputs,
-                     **kwargs):
-
-        results = self.pool.starmap(self.simulate, [(1,
-                        parameters,
-                        inputs,
+    def multi_simulate(self, parameter_list, inputs, **kwargs):
+        """
+        Simulate in multiprocessing.
+        """
+        results = self.pool.starmap(self.simulate, [(parameters, inputs,
                         *kwargs) for parameters in parameter_list])
 
         return results
 
-    def simulate(self, work_id,
+    def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
                  **kwargs):
@@ -322,9 +319,9 @@ class DymolaAPI(SimulationAPI):
             # the super method.
             if not isinstance(_struc_params[0], list):
                 kwargs["structural_parameters"] = [_struc_params]
-        return super().simulate(work_id=work_id, parameters=parameters, return_option=return_option, **kwargs)
+        return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
-    def _single_simulation(self, work_id, kwargs):
+    def _single_simulation(self, kwargs):
         # Unpack kwargs
         show_eventlog = kwargs.get("show_eventlog", False)
         squeeze = kwargs.get("squeeze", True)
