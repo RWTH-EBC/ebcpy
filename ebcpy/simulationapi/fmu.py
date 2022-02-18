@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
+import multiprocessing as mp
 # pylint: disable=broad-except
 
 
@@ -141,6 +142,15 @@ class FMU_API(simulationapi.SimulationAPI):
                            unzip_dir=self._unzip_dirs[idx_worker])
         self._unzip_dirs = {}
         self._fmu_instances = {}
+
+    def multi_simulate(self, parameter_list, inputs, **kwargs):
+        """
+        Simulate in multiprocessing.
+        """
+        results = self.pool.starmap(self.simulate, [(parameters,
+                        *kwargs) for parameters in parameter_list])
+
+        return results
 
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,

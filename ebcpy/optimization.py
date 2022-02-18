@@ -326,10 +326,11 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
+        n_cpu = kwargs["n_cpu"]
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_algorithm, get_sampling
+            from pymoo.factory import get_algorithm, get_sampling, get_mutation, get_crossover, get_selection
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
 
@@ -347,7 +348,6 @@ class Optimizer:
                                  )
 
             def _evaluate(self, x, out, *args, **kwargs):
-                n_cpu = kwargs["n_cpu"]
                 if n_cpu > 1:
                     out["F"] = self.ebcpy_class.mp_obj(x, n_cpu, *args)
                 else:
@@ -369,22 +369,28 @@ class Optimizer:
 
             # Get kwargs for algorithm
             pop_size = kwargs["pop_size"]
-            sampling = kwargs["sampling"]
-            variant = kwargs["variant"]
-            F = kwargs["F"]
-            CR = kwargs["CR"]
-            dither = kwargs["dither"]
-            jitter = kwargs["jitter"]
+            # GA:
+            sampling = get_sampling(name=kwargs["sampling"])
+            selection = get_selection(name=kwargs["selection"])
+            crossover = get_crossover(name=kwargs["crossover"])
+            mutation = get_mutation(name=kwargs["mutation"])
+            eliminate_duplicates = kwargs["eliminate_duplicates"]
+            n_offsprings = kwargs["n_offsprings"]
+
             # Init algorithm
-            algorithm = get_algorithm(name=method.lower(),
-                                      **default_kwargs)(pop_size=pop_size,
-                                                        sampling=get_sampling(name=sampling, **default_kwargs),
-                                                        variant=variant,
-                                                        F=F,
-                                                        CR=CR,
-                                                        dither=dither,
-                                                        jitter=jitter
-                                                        )
+            if method.lower() == "ga":
+                from pymoo.algorithms.soo.nonconvex.ga import GA
+                algorithm = GA(pop_size=pop_size,
+                               sampling=sampling,
+                               selection=selection,
+                               crossover=crossover,
+                               mutation=mutation,
+                               eliminate_duplicates=eliminate_duplicates,
+                               n_offsprings=n_offsprings
+                               )
+            else:
+                algorithm = get_algorithm(name=method.lower(),
+                                          **default_kwargs)
 
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),

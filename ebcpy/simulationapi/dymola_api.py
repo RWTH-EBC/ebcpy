@@ -235,16 +235,9 @@ class DymolaAPI(SimulationAPI):
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(use_mp=False)
         if self.use_mp:
-            if self.use_mp:
-                self.pool = mp.Pool(processes=self.n_cpu)
-                self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
-            # for _ in range(self.n_cpu):
-            #     self._dymola_instances[_+1] = self._setup_dymola_interface(use_mp=True)
-            # self.pool = mp.Pool(processes=self.n_cpu)
-            # Not pickleable
-            # dymola_pool = self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
-            # for i in range(len(dymola_pool)):
-            #     self._dymola_instances[i] = dymola_pool[i]
+            self.pool = mp.Pool(processes=self.n_cpu)
+            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+
 
         self.fully_initialized = True
         # Trigger on init.
@@ -268,7 +261,7 @@ class DymolaAPI(SimulationAPI):
         """
         Simulate in multiprocessing.
         """
-        results = self.pool.starmap(self.simulate, [(parameters, inputs,
+        results = self.pool.starmap(self.simulate, [(parameters,
                         *kwargs) for parameters in parameter_list])
 
         return results
