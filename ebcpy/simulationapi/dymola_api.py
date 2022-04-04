@@ -126,7 +126,6 @@ class DymolaAPI(SimulationAPI):
                          "mos_script_post",
                          "dymola_version"]
 
-
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
 
@@ -235,9 +234,7 @@ class DymolaAPI(SimulationAPI):
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(use_mp=False)
         if self.use_mp:
-            self.pool = mp.Pool(processes=self.n_cpu)
             self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
-
 
         self.fully_initialized = True
         # Trigger on init.

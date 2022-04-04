@@ -14,7 +14,6 @@ import pandas as pd
 import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
-import multiprocessing as mp
 # pylint: disable=broad-except
 
 

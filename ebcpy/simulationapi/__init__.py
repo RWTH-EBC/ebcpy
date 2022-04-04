@@ -269,12 +269,15 @@ class SimulationAPI:
                  **{key: value[_idx] for key, value in new_kwargs.items()}
                  }
             )
-        # Simulate
-        results = [self._single_simulation(kwargs={
-            "parameters": _single_kwargs["parameters"],
-            "return_option": _single_kwargs["return_option"],
-            **_single_kwargs
-        }) for _single_kwargs in kwargs]
+        # Decide between mp and single core
+        if self.use_mp:
+            results = self.pool.map(self._single_simulation, kwargs)
+        else:
+            results = [self._single_simulation(kwargs={
+                "parameters": _single_kwargs["parameters"],
+                "return_option": _single_kwargs["return_option"],
+                **_single_kwargs
+            }) for _single_kwargs in kwargs]
         if len(results) == 1:
             return results[0]
         return results
