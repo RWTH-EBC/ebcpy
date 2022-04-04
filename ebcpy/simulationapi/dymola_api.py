@@ -257,15 +257,6 @@ class DymolaAPI(SimulationAPI):
         if self.extract_variables and self.fully_initialized:
             self.extract_model_variables()
 
-    def multi_simulate(self, parameter_list, inputs, **kwargs):
-        """
-        Simulate in multiprocessing.
-        """
-        results = self.pool.starmap(self.simulate, [(parameters,
-                        *kwargs) for parameters in parameter_list])
-
-        return results
-
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",

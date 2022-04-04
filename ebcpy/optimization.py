@@ -52,7 +52,7 @@ class Optimizer:
         self.bounds = kwargs.get("bounds", None)
 
     @abstractmethod
-    def obj(self, xk, paras, work_id, *args):
+    def obj(self, xk, *args):
         """
         Base objective function. Overload this function and create your own
         objective function. Make sure that the return value is a scalar.
@@ -60,20 +60,22 @@ class Optimizer:
 
         :param np.array xk:
             Array with parameters for optimization
-        :param int work_id:
-            Integer for assigning to Dymola Instances
+
         :return: float result:
             A scalar (float/ 1d) value for the optimization framework.
         """
         raise NotImplementedError(f'{self.__class__.__name__}.obj function is not defined')
 
     @abstractmethod
-    def mp_obj(self, x, n_cpu, *args):
+    def mp_obj(self, x, *args):
         """
         Objective function for Multiprocessing.
 
         :param np.array x:
-            Array with parameters for optimization
+            Array with parameters for optimization.
+            Shape of the array is (number_of_evaluations x number_of_variables).
+            For instance, optimizating 10 variables and evaluating
+            900 objectives in parallel, the shape would be 900 x 10.
         :param int n_cpu:
             Number of logical Processors to run optimization on.
         """
@@ -111,7 +113,7 @@ class Optimizer:
         """Set the boundaries to the optimization variables"""
         self._bounds = bounds
 
-    def optimize(self, framework, method=None, **kwargs):
+    def optimize(self, framework, method=None, n_cpu=1, **kwargs):
         """
         Perform the optimization based on the given method and framework.
 
@@ -132,6 +134,10 @@ class Optimizer:
             strategy.
             For the pymoo function, method is equal to the
             algorithm.
+        :param int n_cpu:
+            Number of parallel processes used for the evaluation.
+            Ignored if the framework-method combination does not
+            support multi-processing.
 
         Keyword arguments:
             Depending on the framework an method you use, you can fine-tune the
@@ -150,7 +156,7 @@ class Optimizer:
             raise ValueError(f"{framework} requires a method, but None is "
                              f"provided. Please choose one.")
         # Perform minimization
-        res = minimize_func(method, **kwargs)
+        res = minimize_func(method=method, n_cpu=n_cpu, **kwargs)
         return res
 
     def _choose_framework(self, framework):
@@ -175,7 +181,7 @@ class Optimizer:
             return self._pymoo, True
         raise TypeError(f"Given framework {framework} is currently not supported.")
 
-    def _scipy_minimize(self, method, **kwargs):
+    def _scipy_minimize(self, method, n_cpu=1, **kwargs):
         """
         Possible kwargs for the scipy minimize function with default values:
 
@@ -216,7 +222,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _dlib_minimize(self, _, **kwargs):
+    def _dlib_minimize(self, _, n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -265,7 +271,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _scipy_differential_evolution(self, method="best1bin", **kwargs):
+    def _scipy_differential_evolution(self, method="best1bin", n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -311,7 +317,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _pymoo(self, method="NSGA2", **kwargs):
+    def _pymoo(self, method="NSGA2", n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -326,7 +332,7 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
-        n_cpu = kwargs["n_cpu"]
+
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem

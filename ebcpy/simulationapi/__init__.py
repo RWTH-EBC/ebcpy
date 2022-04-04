@@ -188,23 +188,6 @@ class SimulationAPI:
                                   f'function is not defined')
 
     @abstractmethod
-    def multi_simulate(self,
-                       parameter_list,
-                       inputs,
-                       **kwargs):
-        """
-        Same arguments and function as simulate() except for parameter_list.
-
-        :param list parameter_list:
-            List with Parameters to simulate.
-        :param _SpecialForm inputs:
-            Inputs for simulation.
-
-        Used to differ between single- and multi-processing simulation"""
-        raise NotImplementedError(f'{self.__class__.__name__}._multi_simulation '
-                                  f'function is not defined')
-
-    @abstractmethod
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",

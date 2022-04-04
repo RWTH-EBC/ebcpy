@@ -32,16 +32,18 @@ if sys.version_info.minor < 9 and sys.version_info.major == 3:
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
+VERSION = "0.3.0"
+
 setuptools.setup(
     name='ebcpy',
-    version='0.2.3',
+    version=VERSION,
     description='Python Library used for different python modules'
                 ' for the analysis and optimization of energy systems, '
                 'buildings and indoor climate ',
     long_description=long_description,
     long_description_content_type='text/markdown',
     url='https://github.com/RWTH-EBC/ebcpy',
-    download_url='https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/0.2.3.tar.gz',
+    download_url=f'https://github.com/RWTH-EBC/ebcpy/archive/refs/tags/{VERSION}.tar.gz',
     license='BSD 3-Clause',
     author='RWTH Aachen University, E.ON Energy Research Center, Institute '
            'of Energy Efficient Buildings and Indoor Climate',

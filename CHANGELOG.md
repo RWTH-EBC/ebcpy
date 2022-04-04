@@ -55,3 +55,5 @@
    - Fix bad import in `setup.py`
    - Remove requirement for PyTables to enable support on python >3.9 #5
    - Add further save- and load functions for .csv
+- v0.3.0:
+   - Add parallelization option for optimization backends
