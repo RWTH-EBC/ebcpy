@@ -4,7 +4,7 @@ simulations for energy and building climate related models.
 Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.
 """
-
+import logging
 import os
 import itertools
 from typing import Dict, Union, TypeVar, Any, List
@@ -118,6 +118,10 @@ class SimulationAPI:
     ]
 
     def __init__(self, cd, model_name, **kwargs):
+        # Private helper attrs for multiprocessing
+        self._n_sim_counter = 0
+        self._n_sim_total = 0
+        self._progress_int = 0
         # Setup the logger
         self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
@@ -271,7 +275,23 @@ class SimulationAPI:
             )
         # Decide between mp and single core
         if self.use_mp:
-            results = self.pool.map(self._single_simulation, kwargs)
+            self._n_sim_counter = 0
+            self._n_sim_total = len(kwargs)
+            self._progress_int = 0
+            self.logger.info("Starting %s simulations on %s cores",
+                             self._n_sim_total, self.n_cpu)
+            _async_jobs = []
+            for _kwarg in kwargs:
+                _async_jobs.append(
+                    self.pool.apply_async(
+                        func=self._single_simulation,
+                        args=(_kwarg,),
+                        callback=self._log_simulation_process)
+                )
+            results = []
+            for _async_job in _async_jobs:
+                _async_job.wait()
+                results.append(_async_job.get())
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
@@ -281,6 +301,15 @@ class SimulationAPI:
         if len(results) == 1:
             return results[0]
         return results
+
+    def _log_simulation_process(self, _):
+        """Log the simulation progress"""
+        self._n_sim_counter += 1
+        progress = int(self._n_sim_counter / self._n_sim_total * 100)
+        if progress == self._progress_int + 10:
+            if self.logger.isEnabledFor(level=logging.INFO):
+                self.logger.info(f"Finished {progress} % of all {self._n_sim_total} simulations")
+            self._progress_int = progress
 
     @abstractmethod
     def _single_simulation(self, kwargs):
