@@ -15,7 +15,6 @@ from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
-import multiprocessing as mp
 
 
 class DymolaSimulationSetup(SimulationSetup):
@@ -231,10 +230,10 @@ class DymolaAPI(SimulationAPI):
         # Register the function now in case of an error.
         if not self.debug:
             atexit.register(self.close)
-        # For translation etc. always setup a default dymola instance
-        self.dymola = self._setup_dymola_interface(use_mp=False)
         if self.use_mp:
             self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+        # For translation etc. always setup a default dymola instance
+        self.dymola = self._setup_dymola_interface(use_mp=False)
 
         self.fully_initialized = True
         # Trigger on init.
@@ -312,6 +311,7 @@ class DymolaAPI(SimulationAPI):
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
         structural_parameters = kwargs.get("structural_parameters", [])
+
         # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx

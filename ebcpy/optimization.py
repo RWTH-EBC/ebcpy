@@ -222,7 +222,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _dlib_minimize(self, _, n_cpu=1, **kwargs):
+    def _dlib_minimize(self, method=None, n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -373,19 +373,17 @@ class Optimizer:
             copy_algorithm = default_kwargs.pop("copy_algorithm")
             copy_termination = default_kwargs.pop("copy_termination")
 
-            # Get kwargs for algorithm
-            pop_size = kwargs["pop_size"]
-            # GA:
-            sampling = get_sampling(name=kwargs["sampling"])
-            selection = get_selection(name=kwargs["selection"])
-            crossover = get_crossover(name=kwargs["crossover"])
-            mutation = get_mutation(name=kwargs["mutation"])
-            eliminate_duplicates = kwargs["eliminate_duplicates"]
-            n_offsprings = kwargs["n_offsprings"]
-
             # Init algorithm
             if method.lower() == "ga":
                 from pymoo.algorithms.soo.nonconvex.ga import GA
+                # GA:
+                pop_size = kwargs["pop_size"]
+                sampling = get_sampling(name=kwargs["sampling"])
+                selection = get_selection(name=kwargs["selection"])
+                crossover = get_crossover(name=kwargs["crossover"])
+                mutation = get_mutation(name=kwargs["mutation"])
+                eliminate_duplicates = kwargs["eliminate_duplicates"]
+                n_offsprings = kwargs["n_offsprings"]
                 algorithm = GA(pop_size=pop_size,
                                sampling=sampling,
                                selection=selection,
@@ -395,6 +393,7 @@ class Optimizer:
                                n_offsprings=n_offsprings
                                )
             else:
+                default_kwargs.update(kwargs)
                 algorithm = get_algorithm(name=method.lower(),
                                           **default_kwargs)
 
