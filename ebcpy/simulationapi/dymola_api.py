@@ -237,6 +237,8 @@ class DymolaAPI(SimulationAPI):
         self.fully_initialized = True
         # Trigger on init.
         self._update_model()
+        # Set result_names to output variables.
+        self.result_names = list(self.outputs.keys())
 
         # Check if some kwargs are still present. If so, inform the user about
         # false usage of kwargs:
