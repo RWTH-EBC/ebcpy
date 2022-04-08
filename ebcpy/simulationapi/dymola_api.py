@@ -234,6 +234,7 @@ class DymolaAPI(SimulationAPI):
             self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(use_mp=False)
+
         self.fully_initialized = True
         # Trigger on init.
         self._update_model()
