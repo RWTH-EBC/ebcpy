@@ -264,6 +264,10 @@ class DymolaAPI(SimulationAPI):
 
         Additional settings:
 
+        :keyword List[str] model_names:
+            List of Dymola model-names to simulate. Should be either the size
+            of parameters or parameters needs to be sized 1.
+            Keep in mind that different models may use different parameters!
         :keyword Boolean show_eventlog:
             Default False. True to show evenlog of simulation (advanced)
         :keyword Boolean squeeze:
@@ -301,6 +305,15 @@ class DymolaAPI(SimulationAPI):
             # the super method.
             if not isinstance(_struc_params[0], list):
                 kwargs["structural_parameters"] = [_struc_params]
+        if "model_names" in kwargs:
+            model_names = kwargs["model_names"]
+            if not isinstance(model_names, list):
+                raise TypeError("model_names needs to be a list.")
+            if isinstance(parameters, dict):
+                # Make an array of parameters to enable correct use of super function.
+                parameters = [parameters] * len(model_names)
+            if parameters is None:
+                parameters = [{}] * len(model_names)
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
     def _single_simulation(self, kwargs):
@@ -310,6 +323,7 @@ class DymolaAPI(SimulationAPI):
         result_file_name = kwargs.get("result_file_name", 'resultFile')
         parameters = kwargs.get("parameters")
         return_option = kwargs.get("return_option")
+        model_names = kwargs.get("model_names")
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
         structural_parameters = kwargs.get("structural_parameters", [])
@@ -319,18 +333,33 @@ class DymolaAPI(SimulationAPI):
             idx_worker = self.worker_idx
             if idx_worker not in self._dymola_instances:
                 self._setup_dymola_interface(use_mp=True)
-            dymola = self._dymola_instances[idx_worker]
-        else:
-            dymola = self.dymola
+            self.dymola = self._dymola_instances[idx_worker]
 
         # Handle eventlog
         if show_eventlog:
-            dymola.experimentSetupOutput(events=True)
-            dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
-            dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
+            self.dymola.experimentSetupOutput(events=True)
+            self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
+            self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
         # Restart Dymola after n_restart iterations
         self._check_restart()
+
+        # Handle custom model_names
+        if model_names is not None:
+            # Custom model_name setting
+            _res_names = self.result_names.copy()
+            self._model_name = model_names
+            self._update_model_variables()
+            if _res_names != self.result_names:
+                self.logger.info(
+                    "Result names changed due to setting the new model. "
+                    "If you do not expect custom result names, ignore this warning."
+                    "If you do expect them, please raise an issue to add the "
+                    "option when using the model_names keyword.")
+                self.logger.info(
+                    "Difference: %s",
+                    " ,".join(list(set(_res_names).difference(self.result_names)))
+                )
 
         # Handle parameters:
         if parameters is None:
@@ -358,13 +387,13 @@ class DymolaAPI(SimulationAPI):
                 _res_names = self.result_names.copy()
                 self.model_name = model_name
                 self.result_names = _res_names  # Restore previous result names
-            self.logger.warning(
-                "Warning: Currently, the model is re-translating "
-                "for each simulation. You should add to your Modelica "
-                "parameters \"annotation(Evaluate=false)\".\n "
-                "Check for these parameters: %s",
-                ', '.join(set(parameters.keys()).difference(parameters_new.keys()))
-            )
+                self.logger.warning(
+                    "Warning: Currently, the model is re-translating "
+                    "for each simulation. You should add to your Modelica "
+                    "parameters \"annotation(Evaluate=false)\".\n "
+                    "Check for these parameters: %s",
+                    ', '.join(set(parameters.keys()).difference(parameters_new.keys()))
+                )
             parameters = parameters_new
             # Check again
             unsupported_parameters = self.check_unsupported_variables(
@@ -381,6 +410,7 @@ class DymolaAPI(SimulationAPI):
             raise TypeError("Dymola only accepts float values. "
                             "Could bot automatically convert the given "
                             "parameter values to float.") from err
+
         # Handle inputs
         if inputs is not None:
             # Unpack additional kwargs
@@ -409,7 +439,7 @@ class DymolaAPI(SimulationAPI):
                                "names for option return_type='savepath'. "
                                "To use this option, delete unsupported "
                                "parameters from your setup.")
-            res = dymola.simulateExtendedModel(
+            res = self.dymola.simulateExtendedModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
@@ -455,7 +485,7 @@ class DymolaAPI(SimulationAPI):
                     "numberOfIntervals or a value for output_interval "
                     "which can be converted to numberOfIntervals.")
 
-            res = dymola.simulateMultiResultsModel(
+            res = self.dymola.simulateMultiResultsModel(
                 self.model_name,
                 startTime=self.sim_setup.start_time,
                 stopTime=self.sim_setup.stop_time,
@@ -471,7 +501,7 @@ class DymolaAPI(SimulationAPI):
         if not res[0]:
             self.logger.error("Simulation failed!")
             self.logger.error("The last error log from Dymola:")
-            log = dymola.getLastErrorLog()
+            log = self.dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
             dslog_path = os.path.join(self.cd, 'dslog.txt')
@@ -493,9 +523,9 @@ class DymolaAPI(SimulationAPI):
             _save_name_dsres = f"{result_file_name}.mat"
             savepath = kwargs.pop("savepath", None)
             # Get the cd of the current dymola instance
-            dymola.cd()
+            self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_cd = str(pathlib.Path(dymola.getLastErrorLog().replace("\n", "")))
+            dymola_cd = str(pathlib.Path(self.dymola.getLastErrorLog().replace("\n", "")))
             if savepath is None or str(savepath) == dymola_cd:
                 return os.path.join(dymola_cd, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)

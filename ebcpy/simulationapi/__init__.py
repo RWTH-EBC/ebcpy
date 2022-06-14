@@ -352,6 +352,12 @@ class SimulationAPI:
         # Empty all variables again.
         if self.worker_idx:
             return
+        self._update_model_variables()
+
+    def _update_model_variables(self):
+        """
+        Function to empty all variables and update them again
+        """
         self.outputs = {}
         self.parameters = {}
         self.states = {}
