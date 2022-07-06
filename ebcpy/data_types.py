@@ -25,9 +25,9 @@ __all__ = ['TimeSeries',
            'datetime_indexes']
 
 numeric_indexes = [
-    pd.Float64Index,
+    type(pd.Index([], dtype="float64")),
     pd.RangeIndex,
-    pd.Int64Index
+    type(pd.Index([], dtype="int64"))
 ]
 
 datetime_indexes = [
