@@ -142,7 +142,6 @@ def main(
         _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
 
     if with_plot:
-        plt.tight_layout()
         plt.show()
 
 
