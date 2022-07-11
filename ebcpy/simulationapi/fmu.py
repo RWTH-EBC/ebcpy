@@ -392,6 +392,71 @@ class FMU_API(simulationapi.SimulationAPI):
     # - Pandas append depreciated
     # -
 
+    def set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: how to deal with idx worker
+        """
+        Sets multiple variables.
+        var_dict is a dict with variable names in keys.
+        """
+        for key, value in var_dict.items():
+            var = self.vrs[key]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                self._fmu_instances[idx_worker].setReal(vr, [float(value)])
+            elif var.type in ['Integer', 'Enumeration']:
+                self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
+            elif var.type == 'Boolean':
+                self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value or value == "True"])
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+    def read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: how to deal with idx worker
+        """
+        Reads multiple variable values of FMU.
+        vrs_list as list of strings
+        Method returns a dict with FMU variable names as key
+        """
+
+        # initialize dict for results of simulation step
+        res = {}
+
+        for name in vrs_list:
+            var = self.vrs[name]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                res[name] = self._fmu_instances[idx_worker].getReal(vr)[0]
+            elif var.type in ['Integer', 'Enumeration']:
+                res[name] = self._fmu_instances[idx_worker].getInteger(vr)[0]
+            elif var.type == 'Boolean':
+                value = self._fmu_instances[idx_worker].getBoolean(vr)[0]
+                res[name] = value != 0
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+            res['SimTime'] = self.current_time
+
+        return res
+
+    def do_step(self, idx_worker: int = 0):  # todo: how to deal with idx worker
+        """
+        perform simulation step; return True if stop time reached
+        """
+        # check if stop time is reached
+        if self.current_time < self.sim_setup.stop_time:
+            # do simulation step
+            status = self._fmu_instances[idx_worker].doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.sim_setup.output_interval)
+            # update current time and determine status
+            self.current_time += self.sim_setup.output_interval
+            finished = False
+        else:
+            print('Simulation finished')
+            finished = True
+        return finished
+
+
     def initialize_fmu_for_do_step(self,
                                    parameters: Optional[dict] = None,
                                    init_values: Optional[dict] = None,
@@ -440,19 +505,8 @@ class FMU_API(simulationapi.SimulationAPI):
         start_values = init_values.copy()
         start_values.update(parameters)
 
-        # write parameters and initial values to fmu # todo: extra function like in fmu_handler by aku?
-        for key, value in start_values.items():
-            var = self.vrs[key]
-            vr = [var.valueReference]
-
-            if var.type == 'Real':
-                self._fmu_instances[idx_worker].setReal(vr, [float(value)])
-            elif var.type in ['Integer', 'Enumeration']:
-                self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
-            elif var.type == 'Boolean':
-                self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value or value == "True"])
-            else:
-                raise Exception("Unsupported type: %s" % var.type)
+        # write parameters and initial values to fmu
+        self.set_variables(var_dict=start_values, idx_worker=idx_worker)
 
         # Finalise initialisation
         self._fmu_instances[idx_worker].enterInitializationMode()
@@ -465,7 +519,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         return res
 
-    def do_step(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None):
+    def do_step_read_write(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None):
         """
         Function do perform a single simulation step (useful for co-simulation or control).
         1. read variables from FMU  # todo: discuss order!!
@@ -514,25 +568,8 @@ class FMU_API(simulationapi.SimulationAPI):
             self.n_cpu = 1
         idx_worker = 0
 
-        # initialize dict for results of simulation step
-        res = {}
-
         # read variables from fmu # todo: extra function like in fmu_handler by aku?  # todo: discuss order/overwriting
-        for name in self.result_names:
-            var = self.vrs[name]
-            vr = [var.valueReference]
-
-            if var.type == 'Real':
-                res[name] = self._fmu_instances[idx_worker].getReal(vr)[0]
-            elif var.type in ['Integer', 'Enumeration']:
-                res[name] = self._fmu_instances[idx_worker].getInteger(vr)[0]
-            elif var.type == 'Boolean':
-                value = self._fmu_instances[idx_worker].getBoolean(vr)[0]
-                res[name] = value != 0
-            else:
-                raise Exception("Unsupported type: %s" % var.type)
-
-            res['SimTime'] = self.current_time
+        res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
 
         # reshape res dictionary for tsd format
         res_tsd = {}
@@ -555,30 +592,20 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # write inputs to fmu  # todo: extra function like in fmu_handler by aku?  ä also used in initialisation
         if single_input:
-            for key, value in single_input.items():
-                var = self.vrs[key]
-                vr = [var.valueReference]
+            self.set_variables(var_dict=single_input, idx_worker=idx_worker)
 
-                if var.type == 'Real':
-                    self._fmu_instances[idx_worker].setReal(vr, [float(value)])
-                elif var.type in ['Integer', 'Enumeration']:
-                    self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
-                elif var.type == 'Boolean':
-                    self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value == True or value == "True"])
-                else:
-                    raise Exception("Unsupported type: %s" % var.type)
-
-        if self.current_time < self.sim_setup.stop_time:
-            # do simulation step
-            status = self._fmu_instances[idx_worker].doStep(
-                currentCommunicationPoint=self.current_time,
-                communicationStepSize=self.sim_setup.output_interval)
-            # update current time and determine status
-            self.current_time += self.sim_setup.output_interval
-            finished = False
-        else:
-            print('Simulation finished')
-            finished = True
+        finished = self.do_step(idx_worker=idx_worker)
+        # if self.current_time < self.sim_setup.stop_time:
+        #     # do simulation step
+        #     status = self._fmu_instances[idx_worker].doStep(
+        #         currentCommunicationPoint=self.current_time,
+        #         communicationStepSize=self.sim_setup.output_interval)
+        #     # update current time and determine status
+        #     self.current_time += self.sim_setup.output_interval
+        #     finished = False
+        # else:
+        #     print('Simulation finished')
+        #     finished = True
 
         return res_tsd, finished
 
