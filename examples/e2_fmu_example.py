@@ -142,13 +142,14 @@ def main(
         _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
 
     if with_plot:
+        plt.tight_layout()
         plt.show()
 
 
 if __name__ == '__main__':
     main(
-        n_cpu=12,
+        n_cpu=2,
         log_fmu=False,
-        n_sim=50,
+        n_sim=5,
         output_interval=100
     )

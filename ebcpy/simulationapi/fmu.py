@@ -14,6 +14,8 @@ import pandas as pd
 import numpy as np
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
+from typing import Optional
+import warnings
 # pylint: disable=broad-except
 
 
@@ -77,6 +79,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmi_type = None
         self.log_fmu = kwargs.get("log_fmu", True)
         self._single_unzip_dir: str = None
+        self.current_time = None  # Used in simulation/initialisation using do_step()
+        self.vrs = None  # Used in simulation/initialisation using do_step()
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -375,3 +379,207 @@ class FMU_API(simulationapi.SimulationAPI):
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
+
+    """
+    New function: do_step + additional functions related to it: 
+    The do_step() function allows to perform a single simulation step of an FMU. 
+    Using the function in a loop, a whole simulation can be conducted. 
+    Compared to the simulate() function this offers the possibility for co-simulation with other FMUs 
+    or the use of inputs that are dependent from the system behaviour during the simulation (e.g. applying control).
+    """
+
+    # TODO:
+    # - Pandas append depreciated
+    # -
+
+    def initialize_fmu_for_do_step(self,
+                                   parameters: Optional[dict] = None,
+                                   init_values: Optional[dict] = None,
+                                   tolerance: Optional[float] = None):  # todo: tol is not a user input in simulate()
+        """
+        Initialisation of FMU. To be called before using the do_step() function.
+        Parameters and initial values can be set. An empty tsd object is created to store the results.
+        """
+
+        # FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
+        # - Read model description
+        # - extract .fmu file
+        # - Create FMU2 Slave
+        # - instantiate fmu instance (instead of fmu_instance.instantiate(), instantiate_fmu() is used)
+
+        # Create dict of variable names with variable references from model description
+        self.vrs = {}
+        for variable in self._model_description.modelVariables:
+            self.vrs[variable.name] = variable
+
+        # Check for mp setting
+        if self.use_mp:  # todo: check if this is enough to turn of falsely activated mp
+            warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
+                          'Multi processing turned off')
+            self.use_mp = False
+            self.n_cpu = 1
+        idx_worker = 0
+
+        # Reset FMU instance
+        self._fmu_instances[idx_worker].reset()
+
+        # Set up experiment
+        self._fmu_instances[idx_worker].setupExperiment(startTime=self.sim_setup.start_time,
+                                                        stopTime=self.sim_setup.stop_time,
+                                                        tolerance=tolerance)
+
+        # initialize current time for use in do_step function
+        self.current_time = self.sim_setup.start_time
+
+        # Set parameters and initial values
+        if init_values is None:
+            init_values = {}
+        if parameters is None:
+            parameters = {}
+        # merge initial values and parameters in one dict as they are treated similarly
+        start_values = init_values.copy()
+        start_values.update(parameters)
+
+        # write parameters and initial values to fmu # todo: extra function like in fmu_handler by aku?
+        for key, value in start_values.items():
+            var = self.vrs[key]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                self._fmu_instances[idx_worker].setReal(vr, [float(value)])
+            elif var.type in ['Integer', 'Enumeration']:
+                self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
+            elif var.type == 'Boolean':
+                self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value or value == "True"])
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+        # Finalise initialisation
+        self._fmu_instances[idx_worker].enterInitializationMode()
+        self._fmu_instances[idx_worker].exitInitializationMode()
+
+        # Initialize TimeSeriesObject to store results
+        df = pd.DataFrame(columns=self.result_names)
+        res = TimeSeriesData(df, default_tag="sim")
+        # res.rename_axis('time').rename_axis(['Variables', 'Tags'], axis='columns')
+
+        return res
+
+    def do_step(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None):
+        """
+        Function do perform a single simulation step (useful for co-simulation or control).
+        1. read variables from FMU  # todo: discuss order!!
+        2. write values to FMU
+        3. perform simulation step
+        Different types of inputs can be specified. Either as a tsd table (input_table) that contains values for the whole simulation
+        or as inputs that are used for the specific step only (input_step).
+        If both are given, input_step overwrites input_table.
+        Returns dict of results for single step (res_tsd) and the boolean finished that indicates the simulation status
+        """
+        def bisection(arr,
+                      val):  # todo: give alternative route in case the steps match or set simulation step based on iput step
+            """
+            Returns an index j such that val is between arr[j]
+            and arr[j+1]. arr must be monotonic increasing.
+            If val exceeds the last arr entry, the index of the last array entry is returned.
+            Used in do_step to find correct value in input data table.
+            """
+
+            n = len(arr)
+            if val < arr[0]:
+                raise Exception('Fist entry in time table is above current time')
+            elif val > arr[n - 1]:
+                warnings.warn('Current time exceeds last val of input time table. Last val is hold')
+            jl = 0  # Initialize lower
+            ju = n - 1  # and upper limits.
+            while ju - jl > 1:  # If we are not yet done,
+                jm = (ju + jl) >> 1  # compute a midpoint with a bitshift  # todo: how does this binary operation work?
+                if val >= arr[jm]:
+                    jl = jm  # and replace either the lower limit
+                else:
+                    ju = jm  # or the upper limit, as appropriate.
+                # Repeat until the test condition is satisfied.
+            if val == arr[0]:  # edge cases at bottom
+                return 0
+            elif val == arr[n - 1]:  # and top
+                return n - 1
+            else:
+                return jl
+
+        # Check for mp setting  # todo: duplicate to initialize_fmu_for_do_step()
+        if self.use_mp:  # todo: check if this is enough to turn off falsely activated mp
+            warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
+                          'Multi processing turned off')
+            self.use_mp = False
+            self.n_cpu = 1
+        idx_worker = 0
+
+        # initialize dict for results of simulation step
+        res = {}
+
+        # read variables from fmu # todo: extra function like in fmu_handler by aku?  # todo: discuss order/overwriting
+        for name in self.result_names:
+            var = self.vrs[name]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                res[name] = self._fmu_instances[idx_worker].getReal(vr)[0]
+            elif var.type in ['Integer', 'Enumeration']:
+                res[name] = self._fmu_instances[idx_worker].getInteger(vr)[0]
+            elif var.type == 'Boolean':
+                value = self._fmu_instances[idx_worker].getBoolean(vr)[0]
+                res[name] = value != 0
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+            res['SimTime'] = self.current_time
+
+        # reshape res dictionary for tsd format
+        res_tsd = {}
+        for key, value in res.items():
+            res_tsd[(key, 'sim')] = value
+
+        # get input from input table (overwrite with specific input for single step)
+        single_input = {}
+        if input_table is not None:
+            # extract value from input time table
+            input_time_index = input_table.index
+            idx_low = bisection(input_time_index, self.current_time)
+            if isinstance(input_table, TimeSeriesData):
+                input_table = input_table.to_df(force_single_index=True)
+            single_input = input_table.iloc[idx_low].to_dict()#(orient='records')
+
+        if input_step is not None:
+            # overwrite with input for step
+            single_input.update(input_step)
+
+        # write inputs to fmu  # todo: extra function like in fmu_handler by aku?  ä also used in initialisation
+        if single_input:
+            for key, value in single_input.items():
+                var = self.vrs[key]
+                vr = [var.valueReference]
+
+                if var.type == 'Real':
+                    self._fmu_instances[idx_worker].setReal(vr, [float(value)])
+                elif var.type in ['Integer', 'Enumeration']:
+                    self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
+                elif var.type == 'Boolean':
+                    self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value == True or value == "True"])
+                else:
+                    raise Exception("Unsupported type: %s" % var.type)
+
+        if self.current_time < self.sim_setup.stop_time:
+            # do simulation step
+            status = self._fmu_instances[idx_worker].doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.sim_setup.output_interval)
+            # update current time and determine status
+            self.current_time += self.sim_setup.output_interval
+            finished = False
+        else:
+            print('Simulation finished')
+            finished = True
+
+        return res_tsd, finished
+
+
