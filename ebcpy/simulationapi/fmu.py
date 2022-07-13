@@ -392,7 +392,7 @@ class FMU_API(simulationapi.SimulationAPI):
     # - Pandas append depreciated
     # -
 
-    def set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: how to deal with idx worker
+    def set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: how to deal with idx worker?
         """
         Sets multiple variables.
         var_dict is a dict with variable names in keys.
@@ -410,7 +410,7 @@ class FMU_API(simulationapi.SimulationAPI):
             else:
                 raise Exception("Unsupported type: %s" % var.type)
 
-    def read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: how to deal with idx worker
+    def read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: how to deal with idx worker?
         """
         Reads multiple variable values of FMU.
         vrs_list as list of strings
@@ -438,7 +438,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         return res
 
-    def do_step(self, idx_worker: int = 0):  # todo: how to deal with idx worker
+    def do_step(self, idx_worker: int = 0):  # todo: how to deal with idx worker?
         """
         perform simulation step; return True if stop time reached
         """
@@ -519,7 +519,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         return res
 
-    def do_step_read_write(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None):
+    def do_step_read_write(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None, interp_input_table: bool = False):
         """
         Function do perform a single simulation step (useful for co-simulation or control).
         1. read variables from FMU  # todo: discuss order!!
@@ -530,45 +530,60 @@ class FMU_API(simulationapi.SimulationAPI):
         If both are given, input_step overwrites input_table.
         Returns dict of results for single step (res_tsd) and the boolean finished that indicates the simulation status
         """
-        def bisection(arr,
-                      val):  # todo: give alternative route in case the steps match or set simulation step based on iput step
-            """
-            Returns an index j such that val is between arr[j]
-            and arr[j+1]. arr must be monotonic increasing.
-            If val exceeds the last arr entry, the index of the last array entry is returned.
-            Used in do_step to find correct value in input data table.
-            """
 
-            n = len(arr)
-            if val < arr[0]:
-                raise Exception('Fist entry in time table is above current time')
-            elif val > arr[n - 1]:
-                warnings.warn('Current time exceeds last val of input time table. Last val is hold')
-            jl = 0  # Initialize lower
-            ju = n - 1  # and upper limits.
-            while ju - jl > 1:  # If we are not yet done,
-                jm = (ju + jl) >> 1  # compute a midpoint with a bitshift  # todo: how does this binary operation work?
-                if val >= arr[jm]:
-                    jl = jm  # and replace either the lower limit
-                else:
-                    ju = jm  # or the upper limit, as appropriate.
-                # Repeat until the test condition is satisfied.
-            if val == arr[0]:  # edge cases at bottom
-                return 0
-            elif val == arr[n - 1]:  # and top
-                return n - 1
+        def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False):  # todo: does it make sense using it as inner function?
+            """
+            The function returns the values of the dataframe at a given index.
+            If the index is not present in the dataframe, either the next lower index
+            is chosen or values are interpolated. If the last or first index value is exceeded the
+            value is hold. In both cases a warning is printed.
+            """
+            # todo: consider check if step of input time stap matches communication step size
+            #  (or is at given at a higher but aligned frequency).
+            #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
+
+            # initialize dict that represents row in dataframe with interpolated or hold values
+            row = {}
+
+            # catch values that are out of bound
+            if t < df.index[0]:
+                row.update(df.iloc[0].to_dict())
+                warnings.warn(
+                    'Time {} s is below the first entry of the dataframe {} s, which is hold. Please check input data!'.format(
+                        t, df.index[0]))
+            elif t >= df.index[-1]:
+                row.update(df.iloc[-1].to_dict())
+                # a time mathing the last index value causes problems with interpolation but should not raise a warning
+                if t > df.index[-1]:
+                    warnings.warn(
+                        'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
+                            t, df.index[-1]))
+            # either hold value of last index or interpolate
             else:
-                return jl
+                # look for next lower index
+                idx_l = df.index.get_indexer([t], method='pad')[0]  # get_loc() depreciated
+
+                # return values at lower index
+                if not interpolate:
+                    row = df.iloc[idx_l].to_dict()
+
+                # return interpolated values
+                else:
+                    idx_r = idx_l + 1
+                    for column in df.columns:
+                        row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
+                                                      df[column].iloc[idx_l:idx_r + 1])})
+            return row
 
         # Check for mp setting  # todo: duplicate to initialize_fmu_for_do_step()
-        if self.use_mp:  # todo: check if this is enough to turn off falsely activated mp
+        if self.use_mp:  # todo: check if this is enough to turn off falsely activated mp -> Its not!!
             warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
                           'Multi processing turned off')
             self.use_mp = False
             self.n_cpu = 1
         idx_worker = 0
 
-        # read variables from fmu # todo: extra function like in fmu_handler by aku?  # todo: discuss order/overwriting
+        # read variables from fmu  # todo: discuss order/overwriting
         res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
 
         # reshape res dictionary for tsd format
@@ -580,32 +595,19 @@ class FMU_API(simulationapi.SimulationAPI):
         single_input = {}
         if input_table is not None:
             # extract value from input time table
-            input_time_index = input_table.index
-            idx_low = bisection(input_time_index, self.current_time)
             if isinstance(input_table, TimeSeriesData):
                 input_table = input_table.to_df(force_single_index=True)
-            single_input = input_table.iloc[idx_low].to_dict()#(orient='records')
+            single_input = interp_df(t=self.current_time, df=input_table, interpolate=interp_input_table)
 
         if input_step is not None:
             # overwrite with input for step
             single_input.update(input_step)
 
-        # write inputs to fmu  # todo: extra function like in fmu_handler by aku?  ä also used in initialisation
+        # write inputs to fmu
         if single_input:
             self.set_variables(var_dict=single_input, idx_worker=idx_worker)
 
         finished = self.do_step(idx_worker=idx_worker)
-        # if self.current_time < self.sim_setup.stop_time:
-        #     # do simulation step
-        #     status = self._fmu_instances[idx_worker].doStep(
-        #         currentCommunicationPoint=self.current_time,
-        #         communicationStepSize=self.sim_setup.output_interval)
-        #     # update current time and determine status
-        #     self.current_time += self.sim_setup.output_interval
-        #     finished = False
-        # else:
-        #     print('Simulation finished')
-        #     finished = True
 
         return res_tsd, finished
 
