@@ -80,7 +80,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self.log_fmu = kwargs.get("log_fmu", True)
         self._single_unzip_dir: str = None
         self.current_time = None  # Used in simulation/initialisation using do_step()
-        self.vrs = None  # Used in simulation/initialisation using do_step()
+        self.var_refs = None  # Used in simulation/initialisation using do_step()
+        self.res = None # Used in simulation/initialisation using do_step()  # todo: also use for continuous simulation
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -398,7 +399,7 @@ class FMU_API(simulationapi.SimulationAPI):
         var_dict is a dict with variable names in keys.
         """
         for key, value in var_dict.items():
-            var = self.vrs[key]
+            var = self.var_refs[key]
             vr = [var.valueReference]
 
             if var.type == 'Real':
@@ -421,7 +422,7 @@ class FMU_API(simulationapi.SimulationAPI):
         res = {}
 
         for name in vrs_list:
-            var = self.vrs[name]
+            var = self.var_refs[name]
             vr = [var.valueReference]
 
             if var.type == 'Real':
@@ -473,12 +474,12 @@ class FMU_API(simulationapi.SimulationAPI):
         # - instantiate fmu instance (instead of fmu_instance.instantiate(), instantiate_fmu() is used)
 
         # Create dict of variable names with variable references from model description
-        self.vrs = {}
+        self.var_refs = {}
         for variable in self._model_description.modelVariables:
-            self.vrs[variable.name] = variable
+            self.var_refs[variable.name] = variable
 
         # Check for mp setting
-        if self.use_mp:  # todo: check if this is enough to turn of falsely activated mp
+        if self.use_mp:  # todo: check if this is enough to turn of falsely activated mp # fixme: its not
             warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
                           'Multi processing turned off')
             self.use_mp = False
@@ -512,12 +513,11 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmu_instances[idx_worker].enterInitializationMode()
         self._fmu_instances[idx_worker].exitInitializationMode()
 
-        # Initialize TimeSeriesObject to store results
-        df = pd.DataFrame(columns=self.result_names)
-        res = TimeSeriesData(df, default_tag="sim")
+        # Initialize dataframe to store results
+        self.res = pd.DataFrame(columns=self.result_names)
+        # self.res = TimeSeriesData(df, default_tag="sim")
         # res.rename_axis('time').rename_axis(['Variables', 'Tags'], axis='columns')
 
-        return res
 
     def do_step_read_write(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None, interp_input_table: bool = False):
         """
@@ -587,9 +587,10 @@ class FMU_API(simulationapi.SimulationAPI):
         res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
 
         # reshape res dictionary for tsd format
-        res_tsd = {}
-        for key, value in res.items():
-            res_tsd[(key, 'sim')] = value
+        res_tsd = res
+        # res_tsd = {}
+        # for key, value in res.items():
+        #     res_tsd[(key, 'sim')] = value
 
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -607,8 +608,25 @@ class FMU_API(simulationapi.SimulationAPI):
         if single_input:
             self.set_variables(var_dict=single_input, idx_worker=idx_worker)
 
+        self.res = pd.concat([self.res, pd.DataFrame.from_records([res_tsd], index=[res_tsd['SimTime']],
+                                                                        columns=self.res.columns)])  # , ignore_index=True )  # because frame.append will be depreciated
+
         finished = self.do_step(idx_worker=idx_worker)
 
+
+
         return res_tsd, finished
+
+    def get_results(self, tsd_format: bool = False):
+        """
+        returns the simulation results either as pd.DataFrame or as TimeSeriesData
+        """
+        if not tsd_format:
+            results = self.res
+        else:
+            results = TimeSeriesData(self.res, default_tag="sim")
+            results.rename_axis(['Variables', 'Tags'], axis='columns')
+            results.index.names = ['Time']
+        return results
 
 
