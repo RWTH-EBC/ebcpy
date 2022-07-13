@@ -457,6 +457,23 @@ class FMU_API(simulationapi.SimulationAPI):
             finished = True
         return finished
 
+    def add_input_output_to_result_names(self):
+        vars_to_read = []
+        vars_to_read.extend(list(self.inputs.keys()))
+        vars_to_read.extend(list(self.outputs.keys()))
+        self.result_names = vars_to_read
+        print("Added FMU in- and outputs to the list of variables to read for results")
+
+    # def find_vars(self, start_str: str):  # fixme: adjust names
+    #     """
+    #     Retruns all variables starting with start_str
+    #     """
+    #     key = list(self.variables.keys())
+    #     key_list = []
+    #     for i in range(len(key)):
+    #         if key[i].startswith(start_str):
+    #             key_list.append(key[i])
+    #     return key_list
 
     def initialize_fmu_for_do_step(self,
                                    parameters: Optional[dict] = None,
@@ -512,6 +529,9 @@ class FMU_API(simulationapi.SimulationAPI):
         # Finalise initialisation
         self._fmu_instances[idx_worker].enterInitializationMode()
         self._fmu_instances[idx_worker].exitInitializationMode()
+
+        # add inputs- and outputs to result_names
+        self.add_input_output_to_result_names()
 
         # Initialize dataframe to store results
         self.res = pd.DataFrame(columns=self.result_names)
