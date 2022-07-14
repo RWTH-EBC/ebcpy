@@ -464,21 +464,22 @@ class FMU_API(simulationapi.SimulationAPI):
         self.result_names = vars_to_read
         print("Added FMU in- and outputs to the list of variables to read for results")
 
-    # def find_vars(self, start_str: str):  # fixme: adjust names
-    #     """
-    #     Retruns all variables starting with start_str
-    #     """
-    #     key = list(self.variables.keys())
-    #     key_list = []
-    #     for i in range(len(key)):
-    #         if key[i].startswith(start_str):
-    #             key_list.append(key[i])
-    #     return key_list
+    def find_vars(self, start_str: str):
+        """
+        Retruns all variables starting with start_str
+        """
+        key = list(self.var_refs.keys())
+        key_list = []
+        for i in range(len(key)):
+            if key[i].startswith(start_str):
+                key_list.append(key[i])
+        return key_list
 
     def initialize_fmu_for_do_step(self,
                                    parameters: Optional[dict] = None,
                                    init_values: Optional[dict] = None,
-                                   tolerance: Optional[float] = None):  # todo: tol is not a user input in simulate()
+                                   tolerance: Optional[float] = None,
+                                   read_in_out: Optional[bool] = True):  # todo: tol is not a user input in simulate()
         """
         Initialisation of FMU. To be called before using the do_step() function.
         Parameters and initial values can be set. An empty tsd object is created to store the results.
@@ -531,7 +532,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmu_instances[idx_worker].exitInitializationMode()
 
         # add inputs- and outputs to result_names
-        self.add_input_output_to_result_names()
+        if read_in_out:
+            self.add_input_output_to_result_names()
 
         # Initialize dataframe to store results
         self.res = pd.DataFrame(columns=self.result_names)
