@@ -1,0 +1,34 @@
+14.07.2022-13:06:41 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+14.07.2022-13:06:41 INFO FMU_API: Extracting fmu and reading fmu model description
+14.07.2022-13:06:42 INFO FMU_API: Reading model variables
+14.07.2022-13:06:42 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+14.07.2022-13:06:45 INFO FMU_API: Instantiated fmu's on all processes.
+14.07.2022-13:06:45 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+14.07.2022-13:06:45 INFO FMU_API: Starting 50 simulations on 2 cores
+14.07.2022-13:06:45 INFO FMU_API: Finished 10 % of all 50 simulations
+14.07.2022-13:06:46 INFO FMU_API: Finished 20 % of all 50 simulations
+14.07.2022-13:06:46 INFO FMU_API: Finished 30 % of all 50 simulations
+14.07.2022-13:06:47 INFO FMU_API: Finished 40 % of all 50 simulations
+14.07.2022-13:06:47 INFO FMU_API: Finished 50 % of all 50 simulations
+14.07.2022-13:06:48 INFO FMU_API: Finished 60 % of all 50 simulations
+14.07.2022-13:06:48 INFO FMU_API: Finished 70 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API: Finished 80 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API: Finished 90 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API: Finished 100 % of all 50 simulations
+14.07.2022-13:06:56 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+14.07.2022-13:06:56 INFO FMU_API: Extracting fmu and reading fmu model description
+14.07.2022-13:06:57 INFO FMU_API: Reading model variables
+14.07.2022-13:06:57 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+14.07.2022-13:06:59 INFO FMU_API: Instantiated fmu's on all processes.
+14.07.2022-13:06:59 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+14.07.2022-13:06:59 INFO FMU_API: Starting 50 simulations on 2 cores
+14.07.2022-13:07:00 INFO FMU_API: Finished 10 % of all 50 simulations
+14.07.2022-13:07:00 INFO FMU_API: Finished 20 % of all 50 simulations
+14.07.2022-13:07:01 INFO FMU_API: Finished 30 % of all 50 simulations
+14.07.2022-13:07:01 INFO FMU_API: Finished 40 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API: Finished 50 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API: Finished 60 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API: Finished 70 % of all 50 simulations
+14.07.2022-13:07:03 INFO FMU_API: Finished 80 % of all 50 simulations
+14.07.2022-13:07:03 INFO FMU_API: Finished 90 % of all 50 simulations
+14.07.2022-13:07:04 INFO FMU_API: Finished 100 % of all 50 simulations

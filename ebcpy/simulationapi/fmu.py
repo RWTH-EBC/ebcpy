@@ -79,9 +79,11 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmi_type = None
         self.log_fmu = kwargs.get("log_fmu", True)
         self._single_unzip_dir: str = None
-        self.current_time = None  # Used in simulation/initialisation using do_step()
-        self.var_refs = None  # Used in simulation/initialisation using do_step()
-        self.res = None # Used in simulation/initialisation using do_step()  # todo: also use for continuous simulation
+        # used for stepwise simulation
+        self.current_time = None
+        self.communication_step_size = None
+        self.var_refs = None
+        self.sim_res = None  # todo: also use for continuous simulation
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -389,15 +391,12 @@ class FMU_API(simulationapi.SimulationAPI):
     or the use of inputs that are dependent from the system behaviour during the simulation (e.g. applying control).
     """
 
-    # TODO:
-    # - Pandas append depreciated
-    # -
-
-    def set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: how to deal with idx worker?
+    def set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: idx_worker not nice
         """
         Sets multiple variables.
         var_dict is a dict with variable names in keys.
         """
+
         for key, value in var_dict.items():
             var = self.var_refs[key]
             vr = [var.valueReference]
@@ -411,7 +410,7 @@ class FMU_API(simulationapi.SimulationAPI):
             else:
                 raise Exception("Unsupported type: %s" % var.type)
 
-    def read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: how to deal with idx worker?
+    def read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: idx_worker not nice
         """
         Reads multiple variable values of FMU.
         vrs_list as list of strings
@@ -439,18 +438,19 @@ class FMU_API(simulationapi.SimulationAPI):
 
         return res
 
-    def do_step(self, idx_worker: int = 0):  # todo: how to deal with idx worker?
+    def do_step(self, idx_worker: int = 0):  # todo: idx worker not nice
         """
         perform simulation step; return True if stop time reached
         """
+
         # check if stop time is reached
         if self.current_time < self.sim_setup.stop_time:
             # do simulation step
             status = self._fmu_instances[idx_worker].doStep(
                 currentCommunicationPoint=self.current_time,
-                communicationStepSize=self.sim_setup.output_interval)
+                communicationStepSize=self.communication_step_size)
             # update current time and determine status
-            self.current_time += self.sim_setup.output_interval
+            self.current_time += self.communication_step_size
             finished = False
         else:
             print('Simulation finished')
@@ -458,16 +458,20 @@ class FMU_API(simulationapi.SimulationAPI):
         return finished
 
     def add_input_output_to_result_names(self):
+        """
+        Inputs and output variables are added to the result_names (names of variables that are read from the fmu)
+        """
         vars_to_read = []
         vars_to_read.extend(list(self.inputs.keys()))
         vars_to_read.extend(list(self.outputs.keys()))
         self.result_names = vars_to_read
-        print("Added FMU in- and outputs to the list of variables to read for results")
+        print("Added FMU in- and outputs to the list of variables to read from the fmu")
 
     def find_vars(self, start_str: str):
         """
-        Retruns all variables starting with start_str
+        Returns all variables starting with start_str
         """
+
         key = list(self.var_refs.keys())
         key_list = []
         for i in range(len(key)):
@@ -478,18 +482,19 @@ class FMU_API(simulationapi.SimulationAPI):
     def initialize_fmu_for_do_step(self,
                                    parameters: Optional[dict] = None,
                                    init_values: Optional[dict] = None,
+                                   css: Optional[int] = None,
                                    tolerance: Optional[float] = None,
                                    read_in_out: Optional[bool] = True):  # todo: tol is not a user input in simulate()
         """
-        Initialisation of FMU. To be called before using the do_step() function.
-        Parameters and initial values can be set. An empty tsd object is created to store the results.
+        Initialisation of FMU. To be called before using stepwise simulation
+        Parameters and initial values can be set.
         """
 
-        # FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
+        # THE FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
         # - Read model description
         # - extract .fmu file
         # - Create FMU2 Slave
-        # - instantiate fmu instance (instead of fmu_instance.instantiate(), instantiate_fmu() is used)
+        # - instantiate fmu instance  # todo: (instead of fmu_instance.instantiate(), instantiate_fmu() is used)??
 
         # Create dict of variable names with variable references from model description
         self.var_refs = {}
@@ -497,11 +502,9 @@ class FMU_API(simulationapi.SimulationAPI):
             self.var_refs[variable.name] = variable
 
         # Check for mp setting
-        if self.use_mp:  # todo: check if this is enough to turn of falsely activated mp # fixme: its not
-            warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
-                          'Multi processing turned off')
-            self.use_mp = False
-            self.n_cpu = 1
+        if self.use_mp:
+            raise Exception('Multi processing not available for stepwise FMU simulation')
+
         idx_worker = 0
 
         # Reset FMU instance
@@ -512,8 +515,12 @@ class FMU_API(simulationapi.SimulationAPI):
                                                         stopTime=self.sim_setup.stop_time,
                                                         tolerance=tolerance)
 
-        # initialize current time for use in do_step function
+        # initialize current time and communication step size for stepwise FMU simulation
         self.current_time = self.sim_setup.start_time
+        if css is None:
+            self.communication_step_size = self.sim_setup.output_interval
+        else:
+            self.communication_step_size = css
 
         # Set parameters and initial values
         if init_values is None:
@@ -524,7 +531,7 @@ class FMU_API(simulationapi.SimulationAPI):
         start_values = init_values.copy()
         start_values.update(parameters)
 
-        # write parameters and initial values to fmu
+        # write parameters and initial values to FMU
         self.set_variables(var_dict=start_values, idx_worker=idx_worker)
 
         # Finalise initialisation
@@ -536,32 +543,33 @@ class FMU_API(simulationapi.SimulationAPI):
             self.add_input_output_to_result_names()
 
         # Initialize dataframe to store results
-        self.res = pd.DataFrame(columns=self.result_names)
-        # self.res = TimeSeriesData(df, default_tag="sim")
-        # res.rename_axis('time').rename_axis(['Variables', 'Tags'], axis='columns')
+        self.sim_res = pd.DataFrame(columns=self.result_names)
 
-
-    def do_step_read_write(self, input_step: Optional[dict] = None, input_table: Optional[TimeSeriesData] = None, interp_input_table: bool = False):
+    def do_step_read_write(self,
+                           input_step: Optional[dict] = None,
+                           input_table: Optional[Union[TimeSeriesData, pd.DataFrame]] = None,
+                           interp_input_table: bool = False):
         """
-        Function do perform a single simulation step (useful for co-simulation or control).
-        1. read variables from FMU  # todo: discuss order!!
+        Function to perform a single simulation step (useful for co-simulation or control).
+        1. read variables from FMU (append to result attribute)
         2. write values to FMU
         3. perform simulation step
-        Different types of inputs can be specified. Either as a tsd table (input_table) that contains values for the whole simulation
-        or as inputs that are used for the specific step only (input_step).
-        If both are given, input_step overwrites input_table.
-        Returns dict of results for single step (res_tsd) and the boolean finished that indicates the simulation status
+        Two different types of inputs can be specified.
+        a. A frame containing values relevant for the entire simulation (input_table)
+        b. An input dict with values that represent inputs for the specific step only (input_step)
+        If a variable is set both ways, input_step overwrites input_table.
+        Returns dict of results for the single step (res) and the boolean finished that indicates the simulation status
         """
 
         def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False):  # todo: does it make sense using it as inner function?
             """
-            The function returns the values of the dataframe at a given index.
+            The function returns the values of the dataframe (row) at a given index.
             If the index is not present in the dataframe, either the next lower index
             is chosen or values are interpolated. If the last or first index value is exceeded the
             value is hold. In both cases a warning is printed.
             """
             # todo: consider check if step of input time stap matches communication step size
-            #  (or is at given at a higher but aligned frequency).
+            #  (or is given at a higher but aligned frequency).
             #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
 
             # initialize dict that represents row in dataframe with interpolated or hold values
@@ -597,22 +605,11 @@ class FMU_API(simulationapi.SimulationAPI):
                                                       df[column].iloc[idx_l:idx_r + 1])})
             return row
 
-        # Check for mp setting  # todo: duplicate to initialize_fmu_for_do_step()
-        if self.use_mp:  # todo: check if this is enough to turn off falsely activated mp -> Its not!!
-            warnings.warn('Multi processing not available for step-by-step simulation using do_step. '
-                          'Multi processing turned off')
-            self.use_mp = False
-            self.n_cpu = 1
+        # no mp in stepwise simulation
         idx_worker = 0
 
         # read variables from fmu  # todo: discuss order/overwriting
         res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
-
-        # reshape res dictionary for tsd format
-        res_tsd = res
-        # res_tsd = {}
-        # for key, value in res.items():
-        #     res_tsd[(key, 'sim')] = value
 
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -630,25 +627,26 @@ class FMU_API(simulationapi.SimulationAPI):
         if single_input:
             self.set_variables(var_dict=single_input, idx_worker=idx_worker)
 
-        self.res = pd.concat([self.res, pd.DataFrame.from_records([res_tsd], index=[res_tsd['SimTime']],
-                                                                        columns=self.res.columns)])  # , ignore_index=True )  # because frame.append will be depreciated
+        # store results in df
+        if self.current_time % self.sim_setup.output_interval == 0:
+            self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
+                                                                              index=[res['SimTime']],
+                                                                              columns=self.sim_res.columns)])
 
         finished = self.do_step(idx_worker=idx_worker)
 
-
-
-        return res_tsd, finished
+        return res, finished
 
     def get_results(self, tsd_format: bool = False):
         """
         returns the simulation results either as pd.DataFrame or as TimeSeriesData
         """
         if not tsd_format:
-            results = self.res
+            results = self.sim_res
         else:
-            results = TimeSeriesData(self.res, default_tag="sim")
+            results = TimeSeriesData(self.sim_res, default_tag="sim")
             results.rename_axis(['Variables', 'Tags'], axis='columns')
-            results.index.names = ['Time']
+            results.index.names = ['Time']  # todo: in ebcpy tsd example only sometimes
         return results
 
 
