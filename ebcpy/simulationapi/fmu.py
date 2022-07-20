@@ -84,6 +84,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self.communication_step_size = None
         self.var_refs = None
         self.sim_res = None  # todo: also use for continuous simulation
+        self.finished = None
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -455,6 +456,8 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             print('Simulation finished')
             finished = True
+            # close FMU
+            self.close()
         return finished
 
     def add_input_output_to_result_names(self):
@@ -545,71 +548,98 @@ class FMU_API(simulationapi.SimulationAPI):
         # Initialize dataframe to store results
         self.sim_res = pd.DataFrame(columns=self.result_names)
 
-    def do_step_read_write(self,
-                           input_step: Optional[dict] = None,
-                           input_table: Optional[Union[TimeSeriesData, pd.DataFrame]] = None,
-                           interp_input_table: bool = False):
+        # initialize status indicator
+        self.finished = False
+
+
+
+    def get_results(self, tsd_format: bool = False):
         """
-        Function to perform a single simulation step (useful for co-simulation or control).
-        1. read variables from FMU (append to result attribute)
-        2. write values to FMU
-        3. perform simulation step
-        Two different types of inputs can be specified.
-        a. A frame containing values relevant for the entire simulation (input_table)
-        b. An input dict with values that represent inputs for the specific step only (input_step)
-        If a variable is set both ways, input_step overwrites input_table.
-        Returns dict of results for the single step (res) and the boolean finished that indicates the simulation status
+        returns the simulation results either as pd.DataFrame or as TimeSeriesData
         """
+        # delete duplicates
+        res_clean = self.sim_res
+        res_clean['SimTime'] = res_clean.index.to_list()
+        res_clean.drop_duplicates(inplace=True)
+        res_clean.drop(columns=['SimTime'], inplace=True)
+        # check if there is still entries with the same index/time
+        index_as_list = res_clean.index.to_list()
+        if len(index_as_list) > len(set(index_as_list)):
+            raise Exception('The simulation results contain ambigious entries. '
+                            'Check the use and order of read_variables() and set_variables()')
 
-        def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False):  # todo: does it make sense using it as inner function?
-            """
-            The function returns the values of the dataframe (row) at a given index.
-            If the index is not present in the dataframe, either the next lower index
-            is chosen or values are interpolated. If the last or first index value is exceeded the
-            value is hold. In both cases a warning is printed.
-            """
-            # todo: consider check if step of input time stap matches communication step size
-            #  (or is given at a higher but aligned frequency).
-            #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
 
-            # initialize dict that represents row in dataframe with interpolated or hold values
-            row = {}
+        if not tsd_format:
+            results = res_clean
+        else:
+            results = TimeSeriesData(res_clean, default_tag="sim")
+            results.rename_axis(['Variables', 'Tags'], axis='columns')
+            results.index.names = ['Time']  # todo: in ebcpy tsd example only sometimes
+        return results
 
-            # catch values that are out of bound
-            if t < df.index[0]:
-                row.update(df.iloc[0].to_dict())
+    def interp_df(self, t: int, df: pd.DataFrame,
+                  interpolate: bool = False):  # todo: does it make sense using it as inner function?
+        """
+        The function returns the values of the dataframe (row) at a given index.
+        If the index is not present in the dataframe, either the next lower index
+        is chosen or values are interpolated. If the last or first index value is exceeded the
+        value is hold. In both cases a warning is printed.
+        """
+        # todo: consider check if step of input time stap matches communication step size
+        #  (or is given at a higher but aligned frequency).
+        #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
+
+        # initialize dict that represents row in dataframe with interpolated or hold values
+        row = {}
+
+        # catch values that are out of bound
+        if t < df.index[0]:
+            row.update(df.iloc[0].to_dict())
+            warnings.warn(
+                'Time {} s is below the first entry of the dataframe {} s, which is hold. Please check input data!'.format(
+                    t, df.index[0]))
+        elif t >= df.index[-1]:
+            row.update(df.iloc[-1].to_dict())
+            # a time mathing the last index value causes problems with interpolation but should not raise a warning
+            if t > df.index[-1]:
                 warnings.warn(
-                    'Time {} s is below the first entry of the dataframe {} s, which is hold. Please check input data!'.format(
-                        t, df.index[0]))
-            elif t >= df.index[-1]:
-                row.update(df.iloc[-1].to_dict())
-                # a time mathing the last index value causes problems with interpolation but should not raise a warning
-                if t > df.index[-1]:
-                    warnings.warn(
-                        'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
-                            t, df.index[-1]))
-            # either hold value of last index or interpolate
+                    'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
+                        t, df.index[-1]))
+        # either hold value of last index or interpolate
+        else:
+            # look for next lower index
+            idx_l = df.index.get_indexer([t], method='pad')[0]  # get_loc() depreciated
+
+            # return values at lower index
+            if not interpolate:
+                row = df.iloc[idx_l].to_dict()
+
+            # return interpolated values
             else:
-                # look for next lower index
-                idx_l = df.index.get_indexer([t], method='pad')[0]  # get_loc() depreciated
+                idx_r = idx_l + 1
+                for column in df.columns:
+                    row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
+                                                  df[column].iloc[idx_l:idx_r + 1])})
+        return row
 
-                # return values at lower index
-                if not interpolate:
-                    row = df.iloc[idx_l].to_dict()
+    def read_variables_wr(self, save_results: bool = True):
 
-                # return interpolated values
-                else:
-                    idx_r = idx_l + 1
-                    for column in df.columns:
-                        row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
-                                                      df[column].iloc[idx_l:idx_r + 1])})
-            return row
+        # read results for current time from FMU
+        res_step = self.read_variables(vrs_list=self.result_names)
 
-        # no mp in stepwise simulation
-        idx_worker = 0
+        # store results in df
+        if save_results:
+            if self.current_time % self.sim_setup.output_interval == 0:
+                self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
+                                                                                  index=[res_step['SimTime']],
+                                                                                  columns=self.sim_res.columns)])
+        return res_step
 
-        # read variables from fmu  # todo: discuss order/overwriting
-        res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
+    def set_variables_wr(self,
+                         input_step: dict = None,
+                         input_table: pd.DataFrame = None,
+                         interp_table: bool = False,
+                         do_step: bool = True):
 
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -617,7 +647,7 @@ class FMU_API(simulationapi.SimulationAPI):
             # extract value from input time table
             if isinstance(input_table, TimeSeriesData):
                 input_table = input_table.to_df(force_single_index=True)
-            single_input = interp_df(t=self.current_time, df=input_table, interpolate=interp_input_table)
+            single_input = self.interp_df(t=self.current_time, df=input_table, interpolate=interp_table)
 
         if input_step is not None:
             # overwrite with input for step
@@ -625,28 +655,104 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # write inputs to fmu
         if single_input:
-            self.set_variables(var_dict=single_input, idx_worker=idx_worker)
+            self.set_variables(var_dict=single_input)
 
-        # store results in df
-        if self.current_time % self.sim_setup.output_interval == 0:
-            self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
-                                                                              index=[res['SimTime']],
-                                                                              columns=self.sim_res.columns)])
+        # optional: perform simulation step
+        if do_step:
+            self.finished = self.do_step()
 
-        finished = self.do_step(idx_worker=idx_worker)
 
-        return res, finished
+    # OBSOLETE
 
-    def get_results(self, tsd_format: bool = False):
-        """
-        returns the simulation results either as pd.DataFrame or as TimeSeriesData
-        """
-        if not tsd_format:
-            results = self.sim_res
-        else:
-            results = TimeSeriesData(self.sim_res, default_tag="sim")
-            results.rename_axis(['Variables', 'Tags'], axis='columns')
-            results.index.names = ['Time']  # todo: in ebcpy tsd example only sometimes
-        return results
-
+    # def do_step_read_write(self,
+    #                        input_step: Optional[dict] = None,
+    #                        input_table: Optional[Union[TimeSeriesData, pd.DataFrame]] = None,
+    #                        interp_input_table: bool = False):
+    #     """
+    #     Function to perform a single simulation step (useful for co-simulation or control).
+    #     1. read variables from FMU (append to result attribute)
+    #     2. write values to FMU
+    #     3. perform simulation step
+    #     Two different types of inputs can be specified.
+    #     a. A frame containing values relevant for the entire simulation (input_table)
+    #     b. An input dict with values that represent inputs for the specific step only (input_step)
+    #     If a variable is set both ways, input_step overwrites input_table.
+    #     Returns dict of results for the single step (res) and the boolean finished that indicates the simulation status
+    #     """
+    #
+    #     def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False):  # todo: does it make sense using it as inner function?
+    #         """
+    #         The function returns the values of the dataframe (row) at a given index.
+    #         If the index is not present in the dataframe, either the next lower index
+    #         is chosen or values are interpolated. If the last or first index value is exceeded the
+    #         value is hold. In both cases a warning is printed.
+    #         """
+    #         # todo: consider check if step of input time stap matches communication step size
+    #         #  (or is given at a higher but aligned frequency).
+    #         #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
+    #
+    #         # initialize dict that represents row in dataframe with interpolated or hold values
+    #         row = {}
+    #
+    #         # catch values that are out of bound
+    #         if t < df.index[0]:
+    #             row.update(df.iloc[0].to_dict())
+    #             warnings.warn(
+    #                 'Time {} s is below the first entry of the dataframe {} s, which is hold. Please check input data!'.format(
+    #                     t, df.index[0]))
+    #         elif t >= df.index[-1]:
+    #             row.update(df.iloc[-1].to_dict())
+    #             # a time mathing the last index value causes problems with interpolation but should not raise a warning
+    #             if t > df.index[-1]:
+    #                 warnings.warn(
+    #                     'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
+    #                         t, df.index[-1]))
+    #         # either hold value of last index or interpolate
+    #         else:
+    #             # look for next lower index
+    #             idx_l = df.index.get_indexer([t], method='pad')[0]  # get_loc() depreciated
+    #
+    #             # return values at lower index
+    #             if not interpolate:
+    #                 row = df.iloc[idx_l].to_dict()
+    #
+    #             # return interpolated values
+    #             else:
+    #                 idx_r = idx_l + 1
+    #                 for column in df.columns:
+    #                     row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
+    #                                                   df[column].iloc[idx_l:idx_r + 1])})
+    #         return row
+    #
+    #     # no mp in stepwise simulation
+    #     idx_worker = 0
+    #
+    #     # read variables from fmu  # todo: discuss order/overwriting
+    #     res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
+    #
+    #     # get input from input table (overwrite with specific input for single step)
+    #     single_input = {}
+    #     if input_table is not None:
+    #         # extract value from input time table
+    #         if isinstance(input_table, TimeSeriesData):
+    #             input_table = input_table.to_df(force_single_index=True)
+    #         single_input = interp_df(t=self.current_time, df=input_table, interpolate=interp_input_table)
+    #
+    #     if input_step is not None:
+    #         # overwrite with input for step
+    #         single_input.update(input_step)
+    #
+    #     # write inputs to fmu
+    #     if single_input:
+    #         self.set_variables(var_dict=single_input, idx_worker=idx_worker)
+    #
+    #     # store results in df
+    #     if self.current_time % self.sim_setup.output_interval == 0:
+    #         self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
+    #                                                                           index=[res['SimTime']],
+    #                                                                           columns=self.sim_res.columns)])
+    #
+    #     finished = self.do_step(idx_worker=idx_worker)
+    #
+    #     return res, finished
 
