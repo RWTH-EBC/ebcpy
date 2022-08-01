@@ -1,7 +1,7 @@
 """
 Goals of this part of the examples:
 
-1. Learn how to use the `FMU_API`
+1. Learn how to use the `FMU_API_continuous`
 2. Understand model variables
 3. Learn how to change variables to store (`result_names`)
 4. Learn how to change parameters of a simulation
@@ -13,7 +13,7 @@ import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
 # Imports from ebcpy
-from ebcpy import FMU_API, TimeSeriesData
+from ebcpy import FMU_API_continuous, TimeSeriesData
 
 
 def main(
@@ -48,10 +48,10 @@ def main(
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
-    fmu_api = FMU_API(model_name=model_name,
-                      cd=cd,
-                      n_cpu=n_cpu,
-                      log_fmu=log_fmu)
+    fmu_api = FMU_API_continuous(model_name=model_name,
+                                 cd=cd,
+                                 n_cpu=n_cpu,
+                                 log_fmu=log_fmu)
     print("Number of variables:", len(fmu_api.variables))
     print("Number of outputs:", len(fmu_api.outputs))
     print("Number of inputs:", len(fmu_api.inputs))

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import math
 # Imports from ebcpy
-from ebcpy import FMU_API
+from ebcpy import FMU_API_stepwise
 # import for controller
 import time
 
@@ -123,7 +123,7 @@ work_dir = pathlib.Path(__file__).parent.joinpath("results")
 # path to fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_bus.fmu")
 # create FMU API object
-sys = FMU_API(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+sys = FMU_API_stepwise(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 # set custom simulation setup
 sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property function in v0.1.7??
 
@@ -181,7 +181,7 @@ sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
 # ------ Instantiate and initialize controller FMU-----
 # path of fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "PI_1_bus.fmu")
-ctr = FMU_API(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+ctr = FMU_API_stepwise(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 ctr.set_sim_setup(sim_setup=simulation_setup)
 ctr.initialize_fmu_for_do_step(parameters=None,  # Not required for controller
                                init_values=None,  # not required for controller

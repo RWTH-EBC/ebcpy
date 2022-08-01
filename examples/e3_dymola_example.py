@@ -10,7 +10,7 @@ import time
 import numpy as np
 import matplotlib.pyplot as plt
 # Imports from ebcpy
-from ebcpy import DymolaAPI, TimeSeriesData, FMU_API
+from ebcpy import DymolaAPI, TimeSeriesData, FMU_API_continuous
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 
@@ -64,7 +64,7 @@ def main(
     # As both simulation_apis are based on the same class, most interfaces are equal.
     # Only difference is the simulation setup:
     print("Fields of DymolaAPISetup", DymolaAPI.get_simulation_setup_fields())
-    print("Fields of FMU_APISetup", FMU_API.get_simulation_setup_fields())
+    print("Fields of FMU_APISetup", FMU_API_continuous.get_simulation_setup_fields())
 
     simulation_setup = {"start_time": 0,
                         "stop_time": 3600,

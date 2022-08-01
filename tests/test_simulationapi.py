@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import numpy as np
 from pydantic import ValidationError
-from ebcpy.simulationapi import dymola_api, fmu
+from ebcpy.simulationapi import dymola_api, fmu_continuous
 from ebcpy import TimeSeriesData
 
 
@@ -245,8 +245,8 @@ class TestFMUAPI(PartialTestSimAPI):
         else:
             model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
 
-        self.sim_api = fmu.FMU_API(cd=self.example_sim_dir,
-                                   model_name=model_name)
+        self.sim_api = fmu.FMU_API_continuous(cd=self.example_sim_dir,
+                                              model_name=model_name)
 
     def test_close(self):
         """Test close functionality of fmu api"""
@@ -256,13 +256,13 @@ class TestFMUAPI(PartialTestSimAPI):
 
 
 class TestFMUAPISingleCore(TestFMUAPI):
-    """Test-Class for the FMU_API class on single core"""
+    """Test-Class for the FMU_API_continuous class on single core"""
 
     n_cpu = 1
 
 
 class TestFMUAPIMultiCore(TestFMUAPI):
-    """Test-Class for the FMU_API class on multi core"""
+    """Test-Class for the FMU_API_continuous class on multi core"""
 
     n_cpu = 2
 

@@ -25,7 +25,7 @@ Before being able to run these examples, be sure to:
 
 ### `e2_fmu_example.py`
 
-1. Learn how to use the `FMU_API`
+1. Learn how to use the `FMU_API_continuous`
 2. Understand model variables
 3. Learn how to change variables to store (`result_names`)
 4. Learn how to change parameters of a simulation

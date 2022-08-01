@@ -442,3 +442,72 @@ class SimulationAPI:
     def get_simulation_setup_fields(cls):
         """Return all fields in the chosen SimulationSetup class."""
         return list(cls._sim_setup_class.__fields__.keys())
+
+class FMU:
+    """
+    Base class for simulations with FMUs.
+    """
+    def __init__(self):
+        self.var_refs = None
+        pass
+
+    def _set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: idx_worker not nice
+        """
+        Sets multiple variables.
+        var_dict is a dict with variable names in keys.
+        """
+
+        for key, value in var_dict.items():
+            var = self.var_refs[key]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                self._fmu_instances[idx_worker].setReal(vr, [float(value)])
+            elif var.type in ['Integer', 'Enumeration']:
+                self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
+            elif var.type == 'Boolean':
+                self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value or value == "True"])
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+    def _read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: idx_worker not nice
+        """
+        Reads multiple variable values of FMU.
+        vrs_list as list of strings
+        Method returns a dict with FMU variable names as key
+        """
+
+        # initialize dict for results of simulation step
+        res = {}
+
+        for name in vrs_list:
+            var = self.var_refs[name]
+            vr = [var.valueReference]
+
+            if var.type == 'Real':
+                res[name] = self._fmu_instances[idx_worker].getReal(vr)[0]
+            elif var.type in ['Integer', 'Enumeration']:
+                res[name] = self._fmu_instances[idx_worker].getInteger(vr)[0]
+            elif var.type == 'Boolean':
+                value = self._fmu_instances[idx_worker].getBoolean(vr)[0]
+                res[name] = value != 0
+            else:
+                raise Exception("Unsupported type: %s" % var.type)
+
+        res['SimTime'] = self.current_time
+
+        return res
+
+
+    def _find_vars(self, start_str: str):
+        """
+        Returns all variables starting with start_str
+        """
+
+        key = list(self.var_refs.keys())
+        key_list = []
+        for i in range(len(key)):
+            if key[i].startswith(start_str):
+                key_list.append(key[i])
+        return key_list
+

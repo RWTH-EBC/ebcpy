@@ -1,58 +1,58 @@
-14.07.2022-13:06:41 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-14.07.2022-13:06:41 INFO FMU_API: Extracting fmu and reading fmu model description
-14.07.2022-13:06:42 INFO FMU_API: Reading model variables
-14.07.2022-13:06:42 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
-14.07.2022-13:06:45 INFO FMU_API: Instantiated fmu's on all processes.
-14.07.2022-13:06:45 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
-14.07.2022-13:06:45 INFO FMU_API: Starting 50 simulations on 2 cores
-14.07.2022-13:06:45 INFO FMU_API: Finished 10 % of all 50 simulations
-14.07.2022-13:06:46 INFO FMU_API: Finished 20 % of all 50 simulations
-14.07.2022-13:06:46 INFO FMU_API: Finished 30 % of all 50 simulations
-14.07.2022-13:06:47 INFO FMU_API: Finished 40 % of all 50 simulations
-14.07.2022-13:06:47 INFO FMU_API: Finished 50 % of all 50 simulations
-14.07.2022-13:06:48 INFO FMU_API: Finished 60 % of all 50 simulations
-14.07.2022-13:06:48 INFO FMU_API: Finished 70 % of all 50 simulations
-14.07.2022-13:06:49 INFO FMU_API: Finished 80 % of all 50 simulations
-14.07.2022-13:06:49 INFO FMU_API: Finished 90 % of all 50 simulations
-14.07.2022-13:06:49 INFO FMU_API: Finished 100 % of all 50 simulations
-14.07.2022-13:06:56 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-14.07.2022-13:06:56 INFO FMU_API: Extracting fmu and reading fmu model description
-14.07.2022-13:06:57 INFO FMU_API: Reading model variables
-14.07.2022-13:06:57 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
-14.07.2022-13:06:59 INFO FMU_API: Instantiated fmu's on all processes.
-14.07.2022-13:06:59 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
-14.07.2022-13:06:59 INFO FMU_API: Starting 50 simulations on 2 cores
-14.07.2022-13:07:00 INFO FMU_API: Finished 10 % of all 50 simulations
-14.07.2022-13:07:00 INFO FMU_API: Finished 20 % of all 50 simulations
-14.07.2022-13:07:01 INFO FMU_API: Finished 30 % of all 50 simulations
-14.07.2022-13:07:01 INFO FMU_API: Finished 40 % of all 50 simulations
-14.07.2022-13:07:02 INFO FMU_API: Finished 50 % of all 50 simulations
-14.07.2022-13:07:02 INFO FMU_API: Finished 60 % of all 50 simulations
-14.07.2022-13:07:02 INFO FMU_API: Finished 70 % of all 50 simulations
-14.07.2022-13:07:03 INFO FMU_API: Finished 80 % of all 50 simulations
-14.07.2022-13:07:03 INFO FMU_API: Finished 90 % of all 50 simulations
-14.07.2022-13:07:04 INFO FMU_API: Finished 100 % of all 50 simulations
-26.07.2022-13:56:29 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-26.07.2022-13:56:29 INFO FMU_API: Extracting fmu and reading fmu model description
-26.07.2022-13:56:29 INFO FMU_API: Reading model variables
-26.07.2022-13:56:29 INFO FMU_API: Instantiating fmu for worker 0
-26.07.2022-13:56:40 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-26.07.2022-13:56:40 INFO FMU_API: Extracting fmu and reading fmu model description
-26.07.2022-13:56:40 INFO FMU_API: Reading model variables
-26.07.2022-13:56:40 INFO FMU_API: Instantiating fmu for worker 0
-26.07.2022-13:58:06 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-26.07.2022-13:58:06 INFO FMU_API: Extracting fmu and reading fmu model description
-26.07.2022-13:58:06 INFO FMU_API: Reading model variables
-26.07.2022-13:58:06 INFO FMU_API: Instantiating fmu for worker 0
-26.07.2022-13:58:17 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-26.07.2022-13:58:17 INFO FMU_API: Extracting fmu and reading fmu model description
-26.07.2022-13:58:17 INFO FMU_API: Reading model variables
-26.07.2022-13:58:17 INFO FMU_API: Instantiating fmu for worker 0
-29.07.2022-15:32:28 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-29.07.2022-15:32:28 INFO FMU_API: Extracting fmu and reading fmu model description
-29.07.2022-15:32:28 INFO FMU_API: Reading model variables
-29.07.2022-15:32:28 INFO FMU_API: Instantiating fmu for worker 0
-29.07.2022-15:32:38 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-29.07.2022-15:32:38 INFO FMU_API: Extracting fmu and reading fmu model description
-29.07.2022-15:32:38 INFO FMU_API: Reading model variables
-29.07.2022-15:32:38 INFO FMU_API: Instantiating fmu for worker 0
+14.07.2022-13:06:41 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+14.07.2022-13:06:41 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+14.07.2022-13:06:42 INFO FMU_API_continuous: Reading model variables
+14.07.2022-13:06:42 INFO FMU_API_continuous: Extracting fmu 2 times for multiprocessing on 2 processes
+14.07.2022-13:06:45 INFO FMU_API_continuous: Instantiated fmu's on all processes.
+14.07.2022-13:06:45 WARNING FMU_API_continuous: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+14.07.2022-13:06:45 INFO FMU_API_continuous: Starting 50 simulations on 2 cores
+14.07.2022-13:06:45 INFO FMU_API_continuous: Finished 10 % of all 50 simulations
+14.07.2022-13:06:46 INFO FMU_API_continuous: Finished 20 % of all 50 simulations
+14.07.2022-13:06:46 INFO FMU_API_continuous: Finished 30 % of all 50 simulations
+14.07.2022-13:06:47 INFO FMU_API_continuous: Finished 40 % of all 50 simulations
+14.07.2022-13:06:47 INFO FMU_API_continuous: Finished 50 % of all 50 simulations
+14.07.2022-13:06:48 INFO FMU_API_continuous: Finished 60 % of all 50 simulations
+14.07.2022-13:06:48 INFO FMU_API_continuous: Finished 70 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API_continuous: Finished 80 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API_continuous: Finished 90 % of all 50 simulations
+14.07.2022-13:06:49 INFO FMU_API_continuous: Finished 100 % of all 50 simulations
+14.07.2022-13:06:56 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+14.07.2022-13:06:56 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+14.07.2022-13:06:57 INFO FMU_API_continuous: Reading model variables
+14.07.2022-13:06:57 INFO FMU_API_continuous: Extracting fmu 2 times for multiprocessing on 2 processes
+14.07.2022-13:06:59 INFO FMU_API_continuous: Instantiated fmu's on all processes.
+14.07.2022-13:06:59 WARNING FMU_API_continuous: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+14.07.2022-13:06:59 INFO FMU_API_continuous: Starting 50 simulations on 2 cores
+14.07.2022-13:07:00 INFO FMU_API_continuous: Finished 10 % of all 50 simulations
+14.07.2022-13:07:00 INFO FMU_API_continuous: Finished 20 % of all 50 simulations
+14.07.2022-13:07:01 INFO FMU_API_continuous: Finished 30 % of all 50 simulations
+14.07.2022-13:07:01 INFO FMU_API_continuous: Finished 40 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API_continuous: Finished 50 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API_continuous: Finished 60 % of all 50 simulations
+14.07.2022-13:07:02 INFO FMU_API_continuous: Finished 70 % of all 50 simulations
+14.07.2022-13:07:03 INFO FMU_API_continuous: Finished 80 % of all 50 simulations
+14.07.2022-13:07:03 INFO FMU_API_continuous: Finished 90 % of all 50 simulations
+14.07.2022-13:07:04 INFO FMU_API_continuous: Finished 100 % of all 50 simulations
+26.07.2022-13:56:29 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+26.07.2022-13:56:29 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+26.07.2022-13:56:29 INFO FMU_API_continuous: Reading model variables
+26.07.2022-13:56:29 INFO FMU_API_continuous: Instantiating fmu for worker 0
+26.07.2022-13:56:40 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+26.07.2022-13:56:40 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+26.07.2022-13:56:40 INFO FMU_API_continuous: Reading model variables
+26.07.2022-13:56:40 INFO FMU_API_continuous: Instantiating fmu for worker 0
+26.07.2022-13:58:06 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+26.07.2022-13:58:06 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+26.07.2022-13:58:06 INFO FMU_API_continuous: Reading model variables
+26.07.2022-13:58:06 INFO FMU_API_continuous: Instantiating fmu for worker 0
+26.07.2022-13:58:17 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+26.07.2022-13:58:17 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+26.07.2022-13:58:17 INFO FMU_API_continuous: Reading model variables
+26.07.2022-13:58:17 INFO FMU_API_continuous: Instantiating fmu for worker 0
+29.07.2022-15:32:28 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+29.07.2022-15:32:28 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+29.07.2022-15:32:28 INFO FMU_API_continuous: Reading model variables
+29.07.2022-15:32:28 INFO FMU_API_continuous: Instantiating fmu for worker 0
+29.07.2022-15:32:38 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+29.07.2022-15:32:38 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+29.07.2022-15:32:38 INFO FMU_API_continuous: Reading model variables
+29.07.2022-15:32:38 INFO FMU_API_continuous: Instantiating fmu for worker 0

@@ -1,0 +1,6 @@
+01.08.2022-09:19:49 INFO FMU_API_stepwise: -------------------------Initializing class FMU_API_stepwise-------------------------
+01.08.2022-09:19:49 INFO FMU_API_stepwise: Extracting fmu and reading fmu model description
+01.08.2022-09:19:49 INFO FMU_API_stepwise: Reading model variables
+01.08.2022-09:19:49 INFO FMU_API_stepwise: Instantiating fmu for worker 0
+01.08.2022-09:20:46 INFO FMU_API_stepwise: -------------------------Initializing class FMU_API_stepwise-------------------------
+01.08.2022-09:20:46 INFO FMU_API_stepwise: Extracting fmu and reading fmu model description
