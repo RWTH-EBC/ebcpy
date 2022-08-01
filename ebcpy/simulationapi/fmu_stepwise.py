@@ -20,18 +20,22 @@ import warnings
 # pylint: disable=broad-except
 
 
-class FMU_Setup(SimulationSetup):
+class FMU_Setup_Stepwise(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMU's
+    Add's custom setup parameters for simulating FMU's stepwise
     to the basic `SimulationSetup`
     """
-
-    timeout: float = Field(
-        title="timeout",
-        default=np.inf,
-        description="Timeout after which the simulation stops."
+    communication_step_size: float = Field(
+        title="communication step size",
+        default=1,
+        description="step size in which the do_step() function is called"
     )
 
+    tolerance: float = Field(
+        title="tolerance",
+        default=0.0001,
+        description="Absolute tolerance of integration"
+    )
     _default_solver = "CVode"
     _allowed_solvers = ["CVode", "Euler"]
 
@@ -64,7 +68,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
     .. versionadded:: 0.1.7
     """
 
-    _sim_setup_class: SimulationSetupClass = FMU_Setup
+    _sim_setup_class: SimulationSetupClass = FMU_Setup_Stepwise
     # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
     # _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
 
@@ -79,7 +83,6 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
         # Init instance attributes
         # used for stepwise simulation
         self.current_time = None
-        self.communication_step_size = None
         self.sim_res = None
         self.finished = None
 
@@ -167,9 +170,10 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
             # do simulation step
             status = self._fmu_instances[idx_worker].doStep(
                 currentCommunicationPoint=self.current_time,
-                communicationStepSize=self.communication_step_size)
+                communicationStepSize=self.sim_setup.communication_step_size
+                )
             # update current time and determine status
-            self.current_time += self.communication_step_size
+            self.current_time += self.sim_setup.communication_step_size
             self.finished = False
         else:
             self.finished = True
@@ -190,8 +194,6 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
     def initialize_fmu_for_do_step(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
-                                   css: float = None,
-                                   tolerance: float = None,  # todo: tol is not a user input in simulate()
                                    store_input: bool = True):
         """
         Initialisation of FMU. To be called before using stepwise simulation
@@ -221,14 +223,10 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
         # Set up experiment
         self._fmu_instances[idx_worker].setupExperiment(startTime=self.sim_setup.start_time,
                                                         stopTime=self.sim_setup.stop_time,
-                                                        tolerance=tolerance)
+                                                        tolerance=self.sim_setup.tolerance)
 
-        # initialize current time and communication step size for stepwise FMU simulation
+        # initialize current time for stepwise FMU simulation
         self.current_time = self.sim_setup.start_time
-        if css is None:
-            self.communication_step_size = self.sim_setup.output_interval
-        else:
-            self.communication_step_size = css
 
         # Set parameters and initial values
         if init_values is None:

@@ -63,16 +63,13 @@ class SimulationSetup(BaseModel):
                     "thus also output interval of results.",
         title="output_interval"
     )
-    fixedstepsize: float = Field(
-        title="fixedstepsize",
-        default=0.0,
-        description="Fixed step size for Euler"
-    )
+
     solver: str = Field(
         title="solver",
         default="",  # Is added in the validator
         description="The solver to be used for numerical integration."
     )
+
     _default_solver: str = None
     _allowed_solvers: list = []
 

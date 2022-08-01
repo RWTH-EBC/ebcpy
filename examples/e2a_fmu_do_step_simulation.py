@@ -98,7 +98,10 @@ comm_step = 60/3  # step size of FMU communication in seconds (in this interval,
 start = 0  # start time
 stop = 86400 * 3  # stop time
 # store simulation setup as dict  # fixme: add comm_step??
-simulation_setup = {"start_time": start, "stop_time": stop, "output_interval": output_step}
+simulation_setup = {"start_time": start,
+                    "stop_time": stop,
+                    "output_interval": output_step,
+                    "communication_step_size": comm_step}
 
 # ---- Input data table--------
 # Input data, that is known in advance will be passed as an input data table:
@@ -133,8 +136,6 @@ sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property funct
 # --- Initialize system FMU ------
 sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
                                init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
-                               css=comm_step,  # communication step size
-                               tolerance=None,  # preset value will be used
                                store_input=True)  # default; the FMU inputs are added to the simulation results
 
 # By default, the FMU in- and outputs are also added to the list of variables to read
@@ -174,8 +175,6 @@ results_study_A = sys.get_results(tsd_format=False)  # optional; the results are
 # reinitialization resets the results
 sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
                                    init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
-                                   css=comm_step,  # communication step size
-                                   tolerance=None,  # preset value will be used
                                    store_input=True)  # default; the FMU inputs are added to the simulation results
 
 # ------ Instantiate and initialize controller FMU-----
@@ -185,8 +184,6 @@ ctr = FMU_API_stepwise(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # 
 ctr.set_sim_setup(sim_setup=simulation_setup)
 ctr.initialize_fmu_for_do_step(parameters=None,  # Not required for controller
                                init_values=None,  # not required for controller
-                               css=comm_step,  # communication step size
-                               tolerance=None,  # preset value will be used
                                store_input=False)  # optional; the FMU inputs are not added to the results
 
 # ------ Simulation Loop -------

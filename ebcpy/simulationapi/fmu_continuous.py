@@ -19,11 +19,22 @@ import warnings
 # pylint: disable=broad-except
 
 
-class FMU_Setup(SimulationSetup):
+class FMU_Setup_Continuous(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMU's
+    Add's custom setup parameters for simulating FMU's continuously
     to the basic `SimulationSetup`
     """
+    tolerance: float = Field(
+        title="tolerance",
+        default=0.0001,
+        description="Total tolerance of integration"
+    )
+
+    fixedstepsize: float = Field(
+        title="fixedstepsize",
+        default=0.0,
+        description="Fixed step size for Euler"
+    )
 
     timeout: float = Field(
         title="timeout",
@@ -63,7 +74,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
     .. versionadded:: 0.1.7
     """
 
-    _sim_setup_class: SimulationSetupClass = FMU_Setup
+    _sim_setup_class: SimulationSetupClass = FMU_Setup_Continuous
     _fmu_instances: dict = {}
     _unzip_dirs: dict = {}
 
@@ -220,7 +231,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
                 stop_time=self.sim_setup.stop_time,
                 solver=self.sim_setup.solver,
                 step_size=self.sim_setup.fixedstepsize,
-                relative_tolerance=None,
+                relative_tolerance=sim_setup.tolerance,
                 output_interval=self.sim_setup.output_interval,
                 record_events=False,  # Used for an equidistant output
                 start_values=parameters,

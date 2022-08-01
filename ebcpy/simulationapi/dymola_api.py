@@ -19,14 +19,19 @@ from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 class DymolaSimulationSetup(SimulationSetup):
     """
-    Adds ``tolerance`` to the list of possible
-    setup fields.
     """
     tolerance: float = Field(
         title="tolerance",
         default=0.0001,
         description="Tolerance of integration"
     )
+
+    fixedstepsize: float = Field(
+        title="fixedstepsize",
+        default=0.0,
+        description="Fixed step size for Euler"
+    )
+
 
     _default_solver = "Dassl"
     _allowed_solvers = ["Dassl", "Euler", "Cerk23", "Cerk34", "Cerk45",
