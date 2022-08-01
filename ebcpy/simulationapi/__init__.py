@@ -13,6 +13,8 @@ import multiprocessing as mp
 from pydantic import BaseModel, Field, validator
 import numpy as np
 from ebcpy.utils import setup_logger
+import fmpy
+from fmpy.model_description import read_model_description
 
 
 class Variable(BaseModel):
@@ -447,9 +449,124 @@ class FMU:
     """
     Base class for simulations with FMUs.
     """
-    def __init__(self):
+    def __init__(self, **kwargs):
+        self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
+        self._unzip_dirs: dict = {}
+        self._single_unzip_dir: str = None
+        self._model_description = None
+        self._fmi_type = None
+        self.log_fmu = kwargs.get("log_fmu", True)
         self.var_refs = None
-        pass
+
+    def setup_fmu_instance(self):
+        """
+        Manually set up and extract the data to
+        avoid this step in the simulate function.
+        """
+        self.logger.info("Extracting fmu and reading fmu model description")
+        # First load model description and extract variables
+        self._single_unzip_dir = os.path.join(self.cd,
+                                              os.path.basename(self.model_name)[:-4] + "_extracted")
+        os.makedirs(self._single_unzip_dir, exist_ok=True)
+        self._single_unzip_dir = fmpy.extract(self.model_name,
+                                         unzipdir=self._single_unzip_dir)
+        self._model_description = read_model_description(self._single_unzip_dir,
+                                                         validate=True)
+
+        if self._model_description.coSimulation is None:
+            self._fmi_type = 'ModelExchange'
+        else:
+            self._fmi_type = 'CoSimulation'
+
+        def _to_bound(value):
+            if value is None or \
+                    not isinstance(value, (float, int, bool)):
+                return np.inf
+            return value
+        self.logger.info("Reading model variables")
+
+        _types = {
+            "Enumeration": int,
+            "Integer": int,
+            "Real": float,
+            "Boolean": bool,
+            "String": str
+        }
+        # Extract inputs, outputs & tuner (lists from parent classes will be appended)
+        for var in self._model_description.modelVariables:
+            if var.start is not None:
+                var.start = _types[var.type](var.start)
+
+            _var_ebcpy = Variable(
+                min=-_to_bound(var.min),
+                max=_to_bound(var.max),
+                value=var.start,
+                type=_types[var.type]
+            )
+            if var.causality == 'input':
+                self.inputs[var.name] = _var_ebcpy
+            elif var.causality == 'output':
+                self.outputs[var.name] = _var_ebcpy
+            elif var.causality == 'parameter' or var.causality == 'calculatedParameter':
+                self.parameters[var.name] = _var_ebcpy
+            elif var.causality == 'local':
+                self.states[var.name] = _var_ebcpy
+            else:
+                self.logger.error(f"Could not map causality {var.causality}"
+                                  f" to any variable type.")
+
+        if self.use_mp:
+            self.logger.info("Extracting fmu %s times for "
+                             "multiprocessing on %s processes",
+                             self.n_cpu, self.n_cpu)
+            self.pool.map(
+                self._setup_single_fmu_instance,
+                [True for _ in range(self.n_cpu)]
+            )
+            self.logger.info("Instantiated fmu's on all processes.")
+        else:
+            self._setup_single_fmu_instance(use_mp=False)
+
+    def _setup_single_fmu_instance(self, use_mp):
+        if not use_mp:
+            wrk_idx = 0
+        else:
+            wrk_idx = self.worker_idx
+            if wrk_idx in self._fmu_instances:
+                return True
+        if use_mp:
+            unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
+            unzip_dir = fmpy.extract(self.model_name,
+                                     unzipdir=unzip_dir)
+        else:
+            unzip_dir = self._single_unzip_dir
+        self.logger.info("Instantiating fmu for worker %s", wrk_idx)
+        self._fmu_instances.update({wrk_idx: fmpy.instantiate_fmu(
+            unzipdir=unzip_dir,
+            model_description=self._model_description,
+            fmi_type=self._fmi_type,
+            visible=False,
+            debug_logging=False,
+            logger=self._custom_logger,
+            fmi_call_logger=None)})
+        self._unzip_dirs.update({
+            wrk_idx: unzip_dir
+        })
+        return True
+
+    def _custom_logger(self, component, instanceName, status, category, message):
+        """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
+        # pylint: disable=unused-argument, invalid-name
+        label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
+        _level_map = {'OK': logging.INFO,
+                      'WARNING': logging.WARNING,
+                      'DISCARD': logging.WARNING,
+                      'ERROR': logging.ERROR,
+                      'FATAL': logging.FATAL,
+                      'PENDING': logging.FATAL}
+        if self.log_fmu:
+            self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
+
 
     def _set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: idx_worker not nice
         """
@@ -497,7 +614,6 @@ class FMU:
         res['SimTime'] = self.current_time
 
         return res
-
 
     def _find_vars(self, start_str: str):
         """

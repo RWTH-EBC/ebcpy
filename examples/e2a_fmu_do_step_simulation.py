@@ -242,7 +242,7 @@ for i in range(len(cases)):
         axes[2].set_ylabel('Ambient temperature / °C')
     if i == 1:
         axes[0].set_title('System FMU - Controller FMU')
-        axes[0].legend(loc='upper right')
+        axes[0].legend(loc='lower right')
     # grid
     for ax in axes:
         ax.grid(True, 'both')
