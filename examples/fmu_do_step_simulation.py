@@ -254,10 +254,16 @@ plt.tight_layout()
 plt.show()
 
 # Comment on the results:
+
 # Only a heating device is implemented in the Thermal zone.
 # Therefore, the output of the relative heating power is limited to 0.
 # Consequently, the controller is unable to cool down the thermal zone.
-# This explains most of the set point deviation.
+# This explains most of the control deviation.
+
+# In case you experience oscillating signals, check if the sampling time (communication step size)
+# is appropriate for the controller settings
+
+
 
 
 

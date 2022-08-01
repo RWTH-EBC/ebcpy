@@ -32,3 +32,27 @@
 14.07.2022-13:07:03 INFO FMU_API: Finished 80 % of all 50 simulations
 14.07.2022-13:07:03 INFO FMU_API: Finished 90 % of all 50 simulations
 14.07.2022-13:07:04 INFO FMU_API: Finished 100 % of all 50 simulations
+26.07.2022-13:56:29 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+26.07.2022-13:56:29 INFO FMU_API: Extracting fmu and reading fmu model description
+26.07.2022-13:56:29 INFO FMU_API: Reading model variables
+26.07.2022-13:56:29 INFO FMU_API: Instantiating fmu for worker 0
+26.07.2022-13:56:40 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+26.07.2022-13:56:40 INFO FMU_API: Extracting fmu and reading fmu model description
+26.07.2022-13:56:40 INFO FMU_API: Reading model variables
+26.07.2022-13:56:40 INFO FMU_API: Instantiating fmu for worker 0
+26.07.2022-13:58:06 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+26.07.2022-13:58:06 INFO FMU_API: Extracting fmu and reading fmu model description
+26.07.2022-13:58:06 INFO FMU_API: Reading model variables
+26.07.2022-13:58:06 INFO FMU_API: Instantiating fmu for worker 0
+26.07.2022-13:58:17 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+26.07.2022-13:58:17 INFO FMU_API: Extracting fmu and reading fmu model description
+26.07.2022-13:58:17 INFO FMU_API: Reading model variables
+26.07.2022-13:58:17 INFO FMU_API: Instantiating fmu for worker 0
+29.07.2022-15:32:28 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+29.07.2022-15:32:28 INFO FMU_API: Extracting fmu and reading fmu model description
+29.07.2022-15:32:28 INFO FMU_API: Reading model variables
+29.07.2022-15:32:28 INFO FMU_API: Instantiating fmu for worker 0
+29.07.2022-15:32:38 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+29.07.2022-15:32:38 INFO FMU_API: Extracting fmu and reading fmu model description
+29.07.2022-15:32:38 INFO FMU_API: Reading model variables
+29.07.2022-15:32:38 INFO FMU_API: Instantiating fmu for worker 0
