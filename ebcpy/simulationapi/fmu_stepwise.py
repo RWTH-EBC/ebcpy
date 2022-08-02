@@ -69,8 +69,6 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
     """
 
     _sim_setup_class: SimulationSetupClass = FMU_Setup_Stepwise
-    # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
-    # _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
 
     _type_map = {
         float: np.double,
@@ -81,6 +79,8 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
     def __init__(self, cd, model_name, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
+        self._fmu_instances: dict = {}
+        self._unzip_dirs: dict = {}
         # used for stepwise simulation
         self.current_time = None
         self.sim_res = None

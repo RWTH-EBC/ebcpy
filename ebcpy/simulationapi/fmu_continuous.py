@@ -75,7 +75,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
     """
 
     _sim_setup_class: SimulationSetupClass = FMU_Setup_Continuous
-    _fmu_instances: dict = {}
+    _fmu_instances: dict = {}  # needs to be class attribute for mp
     _unzip_dirs: dict = {}
 
     _type_map = {

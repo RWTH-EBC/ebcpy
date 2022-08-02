@@ -447,8 +447,6 @@ class FMU:
     Base class for simulations with FMUs.
     """
     def __init__(self, **kwargs):
-        self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
-        self._unzip_dirs: dict = {}
         self._single_unzip_dir: str = None
         self._model_description = None
         self._fmi_type = None

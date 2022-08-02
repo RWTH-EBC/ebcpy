@@ -1,0 +1,5 @@
+02.08.2022-09:10:22 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+02.08.2022-09:10:22 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+02.08.2022-09:10:22 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+02.08.2022-09:10:22 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+02.08.2022-09:10:25 INFO DymolaAPI: Loading Model AixLib

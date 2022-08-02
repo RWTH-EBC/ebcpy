@@ -1,0 +1,7 @@
+02.08.2022-09:03:34 INFO FMU_API_continuous: -------------------------Initializing class FMU_API_continuous-------------------------
+02.08.2022-09:03:34 INFO FMU_API_continuous: Extracting fmu and reading fmu model description
+02.08.2022-09:03:35 INFO FMU_API_continuous: Reading model variables
+02.08.2022-09:03:35 INFO FMU_API_continuous: Extracting fmu 2 times for multiprocessing on 2 processes
+02.08.2022-09:03:37 INFO FMU_API_continuous: Instantiated fmu's on all processes.
+02.08.2022-09:03:37 WARNING FMU_API_continuous: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+02.08.2022-09:03:37 INFO FMU_API_continuous: Starting 50 simulations on 2 cores
