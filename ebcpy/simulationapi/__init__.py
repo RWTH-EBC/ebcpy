@@ -15,6 +15,8 @@ import numpy as np
 from ebcpy.utils import setup_logger
 import fmpy
 from fmpy.model_description import read_model_description
+import pathlib
+from pydantic import FilePath
 
 
 class Variable(BaseModel):
@@ -219,7 +221,7 @@ class SimulationAPI:
             Name of the result file. Default is 'resultFile'.
             Only relevant if return_option equals 'savepath'.
         :keyword (TimeSeriesData, pd.DataFrame) inputs:
-            Pandas.Dataframe of the input data for simulating the FMU with fmpy
+            Pandas.Dataframe of the input data for simulating the FMU_Handler with fmpy
         :keyword Boolean fail_on_error:
             If True, an error in fmpy will trigger an error in this script.
             Default is True
@@ -442,7 +444,7 @@ class SimulationAPI:
         """Return all fields in the chosen SimulationSetup class."""
         return list(cls._sim_setup_class.__fields__.keys())
 
-class FMU:
+class FMU_Handler:
     """
     Base class for simulations with FMUs.
     """
@@ -556,7 +558,7 @@ class FMU:
         return True
 
     def _custom_logger(self, component, instanceName, status, category, message):
-        """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
+        """ Print the FMU_Handler's log messages to the command line (works for both FMI 1.0 and 2.0) """
         # pylint: disable=unused-argument, invalid-name
         label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
         _level_map = {'OK': logging.INFO,
@@ -589,9 +591,9 @@ class FMU:
 
     def _read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: idx_worker not nice
         """
-        Reads multiple variable values of FMU.
+        Reads multiple variable values of FMU_Handler.
         vrs_list as list of strings
-        Method returns a dict with FMU variable names as key
+        Method returns a dict with FMU_Handler variable names as key
         """
 
         # initialize dict for results of simulation step

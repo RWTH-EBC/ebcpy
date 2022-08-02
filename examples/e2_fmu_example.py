@@ -32,7 +32,7 @@ def main(
     :param int n_cpu:
         Number of processes to use
     :param bool log_fmu:
-        Whether to get the FMU log output
+        Whether to get the FMU_Handler log output
     :param int n_sim:
         Number of simulations to run
     :param int output_interval:
@@ -46,7 +46,7 @@ def main(
         cd = pathlib.Path(__file__).parent.joinpath("results")
 
     # ######################### Simulation API Instantiation ##########################
-    # %% Setup the FMU-API:
+    # %% Setup the FMU_Handler-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
     fmu_api = FMU_API_continuous(model_name=model_name,
                                  cd=cd,
@@ -125,7 +125,7 @@ def main(
     # ######################### Closing ##########################
     # Close the fmu. If you forget to do so,
     # we call this function at the exit of your script.
-    # It deleted all extracted FMU files.
+    # It deleted all extracted FMU_Handler files.
     fmu_api.close()
 
     # ######################### Visualization ##########################

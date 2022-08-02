@@ -22,7 +22,7 @@ import warnings
 
 class FMU_Setup_Stepwise(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMU's stepwise
+    Add's custom setup parameters for simulating FMU_Handler's stepwise
     to the basic `SimulationSetup`
     """
     communication_step_size: float = Field(
@@ -40,7 +40,7 @@ class FMU_Setup_Stepwise(SimulationSetup):
     _allowed_solvers = ["CVode", "Euler"]
 
 
-class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
+class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU_Handler):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
@@ -89,7 +89,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
         if cd is None:
             cd = os.path.dirname(fmu_path)
 
-        simulationapi.FMU.__init__(self, **kwargs)
+        simulationapi.FMU_Handler.__init__(self, fmu_path=fmu_path)
         simulationapi.SimulationAPI.__init__(self,
                                              cd=cd,
                                              model_name=self.fmu_path,
@@ -156,7 +156,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
 
     """
     New function: do_step + additional functions related to it: 
-    The do_step() function allows to perform a single simulation step of an FMU. 
+    The do_step() function allows to perform a single simulation step of an FMU_Handler. 
     Using the function in a loop, a whole simulation can be conducted. 
     Compared to the simulate() function this offers the possibility for co-simulation with other FMUs 
     or the use of inputs that are dependent from the system behaviour during the simulation (e.g. applying control).
@@ -179,11 +179,11 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
             self.finished = False
         else:
             self.finished = True
-            print('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
+            print('Simulation of FMU_Handler "{}" finished'.format(self._model_description.modelName))
             if automatic_close:
-                # close FMU
+                # close FMU_Handler
                 self.close()
-                print('FMU "{}" closed'.format(self._model_description.modelName))
+                print('FMU_Handler "{}" closed'.format(self._model_description.modelName))
         return self.finished
 
     def _add_inputs_to_result_names(self):
@@ -191,18 +191,18 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
         Inputs and output variables are added to the result_names (names of variables that are read from the fmu)
         """
         self.result_names.extend(list(self.inputs.keys()))
-        print("Added FMU inputs to the list of variables to read from the fmu")
+        print("Added FMU_Handler inputs to the list of variables to read from the fmu")
 
     def initialize_fmu_for_do_step(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
                                    store_input: bool = True):
         """
-        Initialisation of FMU. To be called before using stepwise simulation
+        Initialisation of FMU_Handler. To be called before using stepwise simulation
         Parameters and initial values can be set.
         """
 
-        # THE FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
+        # THE FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU_Handler API:
         # - Read model description
         # - extract .fmu file
         # - Create FMU2 Slave
@@ -215,11 +215,11 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
 
         # Check for mp setting
         if self.use_mp:
-            raise Exception('Multi processing not available for stepwise FMU simulation')
+            raise Exception('Multi processing not available for stepwise FMU_Handler simulation')
 
         idx_worker = 0
 
-        # Reset FMU instance
+        # Reset FMU_Handler instance
         self._fmu_instances[idx_worker].reset()
 
         # Set up experiment
@@ -227,7 +227,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
                                                         stopTime=self.sim_setup.stop_time,
                                                         tolerance=self.sim_setup.tolerance)
 
-        # initialize current time for stepwise FMU simulation
+        # initialize current time for stepwise FMU_Handler simulation
         self.current_time = self.sim_setup.start_time
 
         # Set parameters and initial values
@@ -239,8 +239,8 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
         start_values = init_values.copy()
         start_values.update(parameters)
 
-        # write parameters and initial values to FMU
-        self._set_variables(var_dict=start_values, idx_worker=idx_worker)
+        # write parameters and initial values to FMU_Handler
+        self._set_variables(var_dict=start_values)
 
         # Finalise initialisation
         self._fmu_instances[idx_worker].enterInitializationMode()
@@ -284,7 +284,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
 
     def read_variables_wr(self, save_results: bool = True):
 
-        # read results for current time from FMU
+        # read results for current time from FMU_Handler
         res_step = self._read_variables(vrs_list=self.result_names)
 
         # store results in df
@@ -308,7 +308,7 @@ class FMU_API_stepwise(simulationapi.SimulationAPI, simulationapi.FMU):
             # extract value from input time table
             if isinstance(input_table, TimeSeriesData):
                 input_table = input_table.to_df(force_single_index=True)
-            # only consider columns in input table that refer to inputs of the FMU
+            # only consider columns in input table that refer to inputs of the FMU_Handler
             input_matches = list(set(self.inputs.keys()).intersection(set(input_table.columns)))
             input_table_filt = input_table[input_matches]
             single_input = interp_df(t=self.current_time, df=input_table_filt, interpolate=interp_table)

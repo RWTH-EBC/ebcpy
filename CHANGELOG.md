@@ -24,7 +24,7 @@
    - Add regex functions for extraction of modelica variables
    - Add option to directly return results as a dataframe using simulateMultiResultsModel.
 - v0.1.7:
-   - Issue13: Add an FMU API as simulation api
+   - Issue13: Add an FMU_Handler API as simulation api
    - Issue36: Use Python Logging as default logger in all modules
    - Issue38: Fix future warning in pandas loffset
    - Issue39: Add simres from modelicares to avoid version errors with matplotlib.

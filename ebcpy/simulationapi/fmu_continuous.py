@@ -21,7 +21,7 @@ import warnings
 
 class FMU_Setup_Continuous(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMU's continuously
+    Add's custom setup parameters for simulating FMU_Handler's continuously
     to the basic `SimulationSetup`
     """
     tolerance: float = Field(
@@ -46,7 +46,7 @@ class FMU_Setup_Continuous(SimulationSetup):
     _allowed_solvers = ["CVode", "Euler"]
 
 
-class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
+class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU_Handler):
     """
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
@@ -90,7 +90,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
         if cd is None:
             cd = os.path.dirname(fmu_path)
 
-        simulationapi.FMU.__init__(self, fmu_path=fmu_path)
+        simulationapi.FMU_Handler.__init__(self, fmu_path=fmu_path)
         simulationapi.SimulationAPI.__init__(self,
                                              cd=cd,
                                              model_name=self.fmu_path,
@@ -222,7 +222,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
             self.check_unsupported_variables(variables=list(parameters.keys()),
                                              type_of_var="parameters")
         try:
-            # reset the FMU instance instead of creating a new one
+            # reset the FMU_Handler instance instead of creating a new one
             fmu_instance.reset()
             # Simulate
             res = fmpy.simulate_fmu(
@@ -246,7 +246,7 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
             )
 
         except Exception as error:
-            self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
+            self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU_Handler: \n {error}")
             if fail_on_error:
                 raise error
             return None
