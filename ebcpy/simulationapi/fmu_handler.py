@@ -7,16 +7,107 @@ from abc import abstractmethod
 import pydantic
 from typing import Union, Optional
 from pydantic import FilePath, DirectoryPath
+from typing import Dict, Union, TypeVar, Any, List
+
+
+class SimulationSetup(BaseModel):
+    """
+    pydantic BaseModel child to define relevant
+    parameters to setup the simulation.
+    """
+    start_time: float = Field(
+        default=0,
+        description="The start time of the simulation",
+        title="start_time"
+    )
+    stop_time: float = Field(
+        default=1,
+        description="The stop / end time of the simulation",
+        title="stop_time"
+    )
+    output_interval: float = Field(
+        default=1,
+        description="The step size of the simulation and "
+                    "thus also output interval of results.",
+        title="output_interval"
+    )
+    communication_step_size: float = Field(
+        title="communication step size",
+        default=1,
+        description="step size in which the do_step() function is called"
+    )
+
+class ExperimentConfiguration(BaseModel):
+    # file_path: Optional[FilePath]
+    wd: Optional[DirectoryPath]
+    # package: Optional[FilePath]
+    # model_name: Optional[str]
+    sim_setup: Optional[SimulationSetup]
+
+class ExperimentConfigurationFMU(ExperimentConfiguration):
+    file_path: Optional[FilePath]
+
+class FMU_SetupContinuous(SimulationSetup):
+    """
+    Add's custom setup parameters for simulating FMU_Handler's continuously
+    to the basic `SimulationSetup`
+    """
+    tolerance: float = Field(
+        title="tolerance",
+        default=0.0001,
+        description="Total tolerance of integration"
+    )
+
+    fixedstepsize: float = Field(
+        title="fixedstepsize",
+        default=0.0,
+        description="Fixed step size for Euler"
+    )
+
+    timeout: float = Field(
+        title="timeout",
+        default=np.inf,
+        description="Timeout after which the simulation stops."
+    )
+
+    _default_solver = "CVode"
+    _allowed_solvers = ["CVode", "Euler"]
+
+
+SimulationSetupClass = TypeVar("SimulationSetupClass", bound=SimulationSetup)
+ExperimentConfigurationClass = TypeVar("ExperimentConfigurationClass", bound=ExperimentConfiguration)
+
+
+class Model:
+    def __init__(self, config):
+        # read config
+        self.config = self._exp_config_class.parse_obj(config)
+        self.path = self.config.file_path  # todo: does it make sense to extract the entries of the config again?, how to automate??
+        self.wd = self.config.wd
+        self.sim_setup = self.config.sim_setup
+        # initialize model variables
+        self.inputs: Dict[str, Variable] = {}  # Inputs of model
+        self.outputs: Dict[str, Variable] = {}  # Outputs of model
+        self.parameters: Dict[str, Variable] = {}  # Parameter of model
+        self.states: Dict[str, Variable] = {}  # States of model
+        # results
+        self.result_names = []
+
+        @abstractmethod
+        def _read_model_vars(self):
+            raise NotImplementedError(f'{self.__class__.__name__}._read_model_vars '
+                                      f'function is not defined')
 
 
 class FMU:
-    def __init__(self, path, work_dir, n_instances):
-        self.n_instances = None  # number of instances of the same fmu for multiprocessing
-        self.fmu_path = path  # path to fmu file
+
+    _exp_config_class : ExperimentConfigurationClass = ExperimentConfigurationFMU
+
+    def __init__(self, n_instances):
+        self.n_instances = n_instances  # number of instances of the same fmu for multiprocessing
         self._fmu_instances = None  # Dict of FMU instances
-        self._unzip_dirs = None
+        self._unzip_dirs = None  # List of directories for fmu extraction
         self._var_refs = None  # Dict of variables and their references
-        self.wd = work_dir
         self._model_description = None
         self._fmi_type = None
 
@@ -159,73 +250,16 @@ class FMU:
                                   f" to any variable type.")
 
 
-class SimulationSetup(BaseModel):
-    """
-    pydantic BaseModel child to define relevant
-    parameters to setup the simulation.
-    """
-    start_time: float = Field(
-        default=0,
-        description="The start time of the simulation",
-        title="start_time"
-    )
-    stop_time: float = Field(
-        default=1,
-        description="The stop / end time of the simulation",
-        title="stop_time"
-    )
-    output_interval: float = Field(
-        default=1,
-        description="The step size of the simulation and "
-                    "thus also output interval of results.",
-        title="output_interval"
-    )
-    communication_step_size: float = Field(
-        title="communication step size",
-        default=1,
-        description="step size in which the do_step() function is called"
-    )
+class FMU_stepwise(Model, FMU):
 
+    _sim_setup_class: SimulationSetupClass = FMU_SetupContinuous
 
-
-class Experiment_Configuration(BaseModel):
-    file_path: Optional[FilePath]  # todo: find nice solution to consider FMUs and Dymola models in packages maybe declare in lower level like sim_settings
-    wd: Optional[DirectoryPath]
-    package: Optional[FilePath]
-    model_name: Optional[str]
-    sim_setup: Optional[SimulationSetup]
-
-
-class Model:
     def __init__(self, config):
-        # read config
-        self.config = Experiment_Configuration.parse_obj(config_obj)
-        self.path = self.config.file_path  # todo: does it make sense to extract the entries of the config again?
-        self.wd = self.config.wd
-        self.sim_setup = self.config.sim_setup
-        # initialize model variables
-        self.inputs: Dict[str, Variable] = {}  # Inputs of model
-        self.outputs: Dict[str, Variable] = {}  # Outputs of model
-        self.parameters: Dict[str, Variable] = {}  # Parameter of model
-        self.states: Dict[str, Variable] = {}  # States of model
-        # results
-        self.result_names = []
+        Model.__init__(self, config)
+        FMU.__init__(self, n_instances=1)  # no mp for stepwise FMU simulation
 
-
-
-
-
-
-    @abstractmethod
-    def _read_model_vars(self):
-        raise NotImplementedError(f'{self.__class__.__name__}._read_model_vars '
-                                  f'function is not defined')
 
 if __name__ == '__main__':
-    sim_setup_dict = {"start_time": 0,
-                      "stop_time": 100,
-                      "output_interval": 10,
-                      "communication_step_size": 1}
 
     config_obj = {
                   'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
@@ -236,14 +270,6 @@ if __name__ == '__main__':
                               "communication_step_size": 1}
                   }
 
-    m = Model(config_obj)
+    fmu_model = FMU_stepwise(config_obj)
 
 
-
-    # sim_setup = SimulationSetup.parse_obj(sim_setup_dict)
-
-    config = Experiment_Configuration.parse_obj(config_obj)
-
-    #
-    #
-    # m = Model()
