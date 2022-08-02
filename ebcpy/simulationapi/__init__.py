@@ -446,12 +446,18 @@ class FMU:
     """
     Base class for simulations with FMUs.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, fmu_path, **kwargs):
         self._single_unzip_dir: str = None
         self._model_description = None
         self._fmi_type = None
         self.log_fmu = kwargs.get("log_fmu", True)
         self.var_refs = None
+
+        if isinstance(fmu_path, pathlib.Path):
+            fmu_path = str(fmu_path)
+        if not fmu_path.lower().endswith(".fmu"):
+            raise ValueError(f"{fmu_path} is not a valid fmu file!")
+        self.fmu_path = fmu_path
 
     def setup_fmu_instance(self):
         """
@@ -561,7 +567,6 @@ class FMU:
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
-
 
     def _set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: idx_worker not nice
         """

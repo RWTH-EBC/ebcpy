@@ -3,3 +3,460 @@
 02.08.2022-09:10:22 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
 02.08.2022-09:10:22 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
 02.08.2022-09:10:25 INFO DymolaAPI: Loading Model AixLib
+02.08.2022-09:21:14 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+02.08.2022-09:21:14 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+02.08.2022-09:21:14 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+02.08.2022-09:21:14 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+02.08.2022-09:21:16 INFO DymolaAPI: Loading Model AixLib
+02.08.2022-09:21:18 INFO DymolaAPI: Loaded modules
+02.08.2022-09:21:18 INFO DymolaAPI: Translating model 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem' to extract model variables 
+02.08.2022-09:21:19 ERROR DymolaAPI: Translation failed!
+02.08.2022-09:21:19 ERROR DymolaAPI: The last error log from Dymola:
+02.08.2022-09:21:19 ERROR DymolaAPI: Translation of <a href="Modelica://AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem">AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem</a>:
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 20
+ Component context: vol.m_flow_nominal
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_nominal in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 26
+ Component context: vol.m_flow_small
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_small in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Volume not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 32
+ Component context: vol.V
+  Component declared as Modelica.SIunits.Volume V in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Pressure not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 42
+ Component context: vol.p
+  Component declared as Modelica.SIunits.Pressure p in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFraction not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 45
+ Component context: vol.Xi
+  Component declared as Modelica.SIunits.MassFraction Xi in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 8
+ Component context: vol.steBal.m_flow_nominal
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_nominal in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 11
+ Component context: vol.steBal.m_flow_small
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_small in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 21
+ Component context: vol.steBal.m_flow
+  Component declared as Modelica.SIunits.MassFlowRate m_flow in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 24
+ Component context: vol.steBal.dp
+  Component declared as Modelica.SIunits.PressureDifference dp in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 40
+ Component context: vol.steBal._m_flow_start
+  Component declared as Modelica.SIunits.MassFlowRate _m_flow_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 42
+ Component context: vol.steBal._dp_start
+  Component declared as Modelica.SIunits.PressureDifference _dp_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 67
+ Component context: vol.steBal.mXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate mXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificHeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 98
+ Component context: vol.steBal.cp_default
+  Component declared as Modelica.SIunits.SpecificHeatCapacity cp_default in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.TemperatureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 101
+ Component context: vol.steBal.dTMax
+  Component declared as Modelica.SIunits.TemperatureDifference dTMax in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Class or component 'm_flow_nominal' not found in StaticTwoPortConservationEquation steBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 55
+ Component context: vol.steBal
+  Component declared as StaticTwoPortConservationEquation steBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Class or component 'm_flow_small' not found in StaticTwoPortConservationEquation steBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 55
+ Component context: vol.steBal
+  Component declared as StaticTwoPortConservationEquation steBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Component type specifier Modelica.SIunits.Energy not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 86
+ Component context: vol.dynBal.U
+  Component declared as Modelica.SIunits.Energy U in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 94
+ Component context: vol.dynBal.m
+  Component declared as Modelica.SIunits.Mass m in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 100
+ Component context: vol.dynBal.mXi
+  Component declared as Modelica.SIunits.Mass mXi in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 103
+ Component context: vol.dynBal.mC
+  Component declared as Modelica.SIunits.Mass mC in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 111
+ Component context: vol.dynBal.mb_flow
+  Component declared as Modelica.SIunits.MassFlowRate mb_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 112
+ Component context: vol.dynBal.mbXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate mbXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.EnthalpyFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 116
+ Component context: vol.dynBal.Hb_flow
+  Component declared as Modelica.SIunits.EnthalpyFlowRate Hb_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Volume not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 120
+ Component context: vol.dynBal.fluidVolume
+  Component declared as Modelica.SIunits.Volume fluidVolume in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.HeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 121
+ Component context: vol.dynBal.CSen
+  Component declared as Modelica.SIunits.HeatCapacity CSen in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 126
+ Component context: vol.dynBal.ports_mXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate ports_mXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificHeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 128
+ Component context: vol.dynBal.cp_default
+  Component declared as Modelica.SIunits.SpecificHeatCapacity cp_default in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 131
+ Component context: vol.dynBal.rho_start
+  Component declared as Modelica.SIunits.Density rho_start in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 145
+ Component context: vol.dynBal.rho_default
+  Component declared as Modelica.SIunits.Density rho_default in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificEnthalpy not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 154
+ Component context: vol.dynBal.hStart
+  Component declared as Modelica.SIunits.SpecificEnthalpy hStart in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Class or component 'fluidVolume' not found in ConservationEquation dynBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 68
+ Component context: vol.dynBal
+  Component declared as ConservationEquation dynBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Class or component 'm' not found in ConservationEquation dynBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 68
+ Component context: vol.dynBal
+  Component declared as ConservationEquation dynBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 87
+ Component context: vol.rho_start
+  Component declared as Modelica.SIunits.Density rho_start in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 94
+ Component context: vol.rho_default
+  Component declared as Modelica.SIunits.Density rho_default in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Class or component 'V' not found in MixingVolume vol
+  File: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 5
+ Component context: vol
+  Component declared as MixingVolume vol in <a href="Modelica://AixLib.Fluid.MixingVolumes">AixLib.Fluid.MixingVolumes</a>
+  Attempted modification in <a href="Modelica://AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem">AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 2
+Error: Class or component 'm_flow_nominal' not found in MixingVolume vol
+  File: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 5
+ Component context: vol
+  Component declared as MixingVolume vol in <a href="Modelica://AixLib.Fluid.MixingVolumes">AixLib.Fluid.MixingVolumes</a>
+  Attempted modification in <a href="Modelica://AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem">AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 2
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 21
+ Component context: BaseProperties.d
+  Component declared as Modelica.SIunits.Density d in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Missing base class Modelica.SIunits.AbsolutePressure
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 50
+  Context: <a href="Modelica://AixLib.Media.Water.BaseProperties.InputAbsolutePressure">AixLib.Media.Water.BaseProperties.InputAbsolutePressure</a>
+Error: Missing base class Modelica.SIunits.MassFraction
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 54
+  Context: <a href="Modelica://AixLib.Media.Water.BaseProperties.InputMassFraction">AixLib.Media.Water.BaseProperties.InputMassFraction</a>
+Error: Missing base class Modelica.SIunits.MassFraction
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 54
+  Context: <a href="Modelica://AixLib.Media.Water.BaseProperties.InputMassFraction">AixLib.Media.Water.BaseProperties.InputMassFraction</a>
+Error: Class or component 'value' not found in InputMassFraction Xi
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 26
+ Component context: BaseProperties.Xi
+  Component declared as InputMassFraction Xi in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+  Attempted modification in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 15
+Definition missing in <a href="Modelica://Modelica.SIunits.MassFraction">Modelica.SIunits.MassFraction</a>.
+Error: Missing base class Modelica.SIunits.SpecificEnthalpy
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 52
+  Context: <a href="Modelica://AixLib.Media.Water.BaseProperties.InputSpecificEnthalpy">AixLib.Media.Water.BaseProperties.InputSpecificEnthalpy</a>
+Error: Component type specifier Modelica.SIunits.SpecificInternalEnergy not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 29
+ Component context: BaseProperties.u
+  Component declared as Modelica.SIunits.SpecificInternalEnergy u in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Component type specifier Modelica.SIunits.MassFraction not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 32
+ Component context: BaseProperties.X
+  Component declared as Modelica.SIunits.MassFraction X in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Component type specifier Modelica.SIunits.SpecificHeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 34
+ Component context: BaseProperties.R
+  Component declared as Modelica.SIunits.SpecificHeatCapacity R in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Component type specifier Modelica.SIunits.MolarMass not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 36
+ Component context: BaseProperties.MM
+  Component declared as Modelica.SIunits.MolarMass MM in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Component type specifier Modelica.SIunits.Conversions.NonSIunits.Temperature_degC not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 42
+ Component context: BaseProperties.T_degC
+  Component declared as Modelica.SIunits.Conversions.NonSIunits.Temperature_degC T_degC in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Component type specifier Modelica.SIunits.Conversions.NonSIunits.Pressure_bar not found
+  File: D:/02_workshop/AixLib/AixLib/Media/Water.mo, line 45
+ Component context: BaseProperties.p_bar
+  Component declared as Modelica.SIunits.Conversions.NonSIunits.Pressure_bar p_bar in <a href="Modelica://AixLib.Media.Water.BaseProperties">AixLib.Media.Water.BaseProperties</a>
+Error: Redeclaration requires a subtype
+ But missing component d.
+  In redeclaration of BaseProperties.
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 8
+ Component context: rad.m_flow_nominal
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_nominal in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 11
+ Component context: rad.m_flow_small
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_small in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 21
+ Component context: rad.m_flow
+  Component declared as Modelica.SIunits.MassFlowRate m_flow in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 24
+ Component context: rad.dp
+  Component declared as Modelica.SIunits.PressureDifference dp in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 40
+ Component context: rad._m_flow_start
+  Component declared as Modelica.SIunits.MassFlowRate _m_flow_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 42
+ Component context: rad._dp_start
+  Component declared as Modelica.SIunits.PressureDifference _dp_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Class or component 'm_flow_nominal' not found in PartialTwoPortInterface
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 3
+  Context: <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 27
+Error: Component type specifier Modelica.SIunits.Power not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 21
+ Component context: rad.Q_flow_nominal
+  Component declared as Modelica.SIunits.Power Q_flow_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Temperature not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 24
+ Component context: rad.T_a_nominal
+  Component declared as Modelica.SIunits.Temperature T_a_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Temperature not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 27
+ Component context: rad.T_b_nominal
+  Component declared as Modelica.SIunits.Temperature T_b_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Temperature not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 30
+ Component context: rad.TAir_nominal
+  Component declared as Modelica.SIunits.Temperature TAir_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Temperature not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 33
+ Component context: rad.TRad_nominal
+  Component declared as Modelica.SIunits.Temperature TRad_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Volume not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 38
+ Component context: rad.VWat
+  Component declared as Modelica.SIunits.Volume VWat in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 41
+ Component context: rad.mDry
+  Component declared as Modelica.SIunits.Mass mDry in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 54
+ Component context: rad.dp_nominal
+  Component declared as Modelica.SIunits.PressureDifference dp_nominal in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.HeatFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 62
+ Component context: rad.QCon_flow
+  Component declared as Modelica.SIunits.HeatFlowRate QCon_flow in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.HeatFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 64
+ Component context: rad.QRad_flow
+  Component declared as Modelica.SIunits.HeatFlowRate QRad_flow in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.HeatFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 66
+ Component context: rad.Q_flow
+  Component declared as Modelica.SIunits.HeatFlowRate Q_flow in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 20
+ Component context: rad.vol.m_flow_nominal
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_nominal in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 26
+ Component context: rad.vol.m_flow_small
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_small in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Volume not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 32
+ Component context: rad.vol.V
+  Component declared as Modelica.SIunits.Volume V in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Pressure not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 42
+ Component context: rad.vol.p
+  Component declared as Modelica.SIunits.Pressure p in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFraction not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 45
+ Component context: rad.vol.Xi
+  Component declared as Modelica.SIunits.MassFraction Xi in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 8
+ Component context: rad.vol.steBal.m_flow_nominal
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_nominal in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 11
+ Component context: rad.vol.steBal.m_flow_small
+  Component declared as Modelica.SIunits.MassFlowRate m_flow_small in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 21
+ Component context: rad.vol.steBal.m_flow
+  Component declared as Modelica.SIunits.MassFlowRate m_flow in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 24
+ Component context: rad.vol.steBal.dp
+  Component declared as Modelica.SIunits.PressureDifference dp in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 40
+ Component context: rad.vol.steBal._m_flow_start
+  Component declared as Modelica.SIunits.MassFlowRate _m_flow_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.PressureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/PartialTwoPortInterface.mo, line 42
+ Component context: rad.vol.steBal._dp_start
+  Component declared as Modelica.SIunits.PressureDifference _dp_start in <a href="Modelica://AixLib.Fluid.Interfaces.PartialTwoPortInterface">AixLib.Fluid.Interfaces.PartialTwoPortInterface</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 67
+ Component context: rad.vol.steBal.mXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate mXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificHeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 98
+ Component context: rad.vol.steBal.cp_default
+  Component declared as Modelica.SIunits.SpecificHeatCapacity cp_default in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.TemperatureDifference not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/StaticTwoPortConservationEquation.mo, line 101
+ Component context: rad.vol.steBal.dTMax
+  Component declared as Modelica.SIunits.TemperatureDifference dTMax in <a href="Modelica://AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation">AixLib.Fluid.Interfaces.StaticTwoPortConservationEquation</a>
+Error: Class or component 'm_flow_nominal' not found in StaticTwoPortConservationEquation steBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 55
+ Component context: rad.vol.steBal
+  Component declared as StaticTwoPortConservationEquation steBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Class or component 'm_flow_small' not found in StaticTwoPortConservationEquation steBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 55
+ Component context: rad.vol.steBal
+  Component declared as StaticTwoPortConservationEquation steBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Component type specifier Modelica.SIunits.Energy not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 86
+ Component context: rad.vol.dynBal.U
+  Component declared as Modelica.SIunits.Energy U in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 94
+ Component context: rad.vol.dynBal.m
+  Component declared as Modelica.SIunits.Mass m in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 100
+ Component context: rad.vol.dynBal.mXi
+  Component declared as Modelica.SIunits.Mass mXi in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Mass not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 103
+ Component context: rad.vol.dynBal.mC
+  Component declared as Modelica.SIunits.Mass mC in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 111
+ Component context: rad.vol.dynBal.mb_flow
+  Component declared as Modelica.SIunits.MassFlowRate mb_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 112
+ Component context: rad.vol.dynBal.mbXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate mbXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.EnthalpyFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 116
+ Component context: rad.vol.dynBal.Hb_flow
+  Component declared as Modelica.SIunits.EnthalpyFlowRate Hb_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Volume not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 120
+ Component context: rad.vol.dynBal.fluidVolume
+  Component declared as Modelica.SIunits.Volume fluidVolume in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.HeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 121
+ Component context: rad.vol.dynBal.CSen
+  Component declared as Modelica.SIunits.HeatCapacity CSen in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.MassFlowRate not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 126
+ Component context: rad.vol.dynBal.ports_mXi_flow
+  Component declared as Modelica.SIunits.MassFlowRate ports_mXi_flow in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificHeatCapacity not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 128
+ Component context: rad.vol.dynBal.cp_default
+  Component declared as Modelica.SIunits.SpecificHeatCapacity cp_default in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 131
+ Component context: rad.vol.dynBal.rho_start
+  Component declared as Modelica.SIunits.Density rho_start in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 145
+ Component context: rad.vol.dynBal.rho_default
+  Component declared as Modelica.SIunits.Density rho_default in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Component type specifier Modelica.SIunits.SpecificEnthalpy not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/Interfaces/ConservationEquation.mo, line 154
+ Component context: rad.vol.dynBal.hStart
+  Component declared as Modelica.SIunits.SpecificEnthalpy hStart in <a href="Modelica://AixLib.Fluid.Interfaces.ConservationEquation">AixLib.Fluid.Interfaces.ConservationEquation</a>
+Error: Class or component 'fluidVolume' not found in ConservationEquation dynBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 68
+ Component context: rad.vol.dynBal
+  Component declared as ConservationEquation dynBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Class or component 'm' not found in ConservationEquation dynBal
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 68
+ Component context: rad.vol.dynBal
+  Component declared as ConservationEquation dynBal in <a href="Modelica://AixLib.Fluid.Interfaces">AixLib.Fluid.Interfaces</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/MixingVolume.mo, line 4
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 87
+ Component context: rad.vol.rho_start
+  Component declared as Modelica.SIunits.Density rho_start in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Component type specifier Modelica.SIunits.Density not found
+  File: D:/02_workshop/AixLib/AixLib/Fluid/MixingVolumes/BaseClasses/PartialMixingVolume.mo, line 94
+ Component context: rad.vol.rho_default
+  Component declared as Modelica.SIunits.Density rho_default in <a href="Modelica://AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume">AixLib.Fluid.MixingVolumes.BaseClasses.PartialMixingVolume</a>
+Error: Class or component 'V' not found in MixingVolume vol
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 77
+ Component context: rad.vol
+  Component declared as MixingVolume vol in <a href="Modelica://AixLib.Fluid.MixingVolumes">AixLib.Fluid.MixingVolumes</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 27
+Error: Class or component 'm_flow_nominal' not found in MixingVolume vol
+  File: D:/02_workshop/AixLib/AixLib/Fluid/HeatExchangers/Radiators/RadiatorEN442_2.mo, line 77
+ Component context: rad.vol
+  Component declared as MixingVolume vol in <a href="Modelica://AixLib.Fluid.MixingVolumes">AixLib.Fluid.MixingVolumes</a>
+  Attempted modification in <a href="Modelica://AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2">AixLib.Fluid.HeatExchangers.Radiators.RadiatorEN442_2</a>.
+  Near file: D:/02_workshop/AixLib/AixLib/Systems/HeatPumpSystems/Examples/HeatPumpSystem.mo, line 27
+Error: ERRORS have been issued.
+
+02.08.2022-09:23:08 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+02.08.2022-09:23:08 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+02.08.2022-09:23:08 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+02.08.2022-09:23:08 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+02.08.2022-09:23:11 INFO DymolaAPI: Loading Model AixLib
+02.08.2022-09:23:11 INFO DymolaAPI: Loaded modules
+02.08.2022-09:23:11 INFO DymolaAPI: Translating model 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem' to extract model variables 
+02.08.2022-09:23:20 ERROR DymolaAPI: You passed the following kwargs which are not part of the supported kwargs and have thus no effect: get_structural_parameters.
+02.08.2022-09:23:20 WARNING DymolaAPI: Variables 'timTab.y[1]' not found in model 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem'. Will most probably trigger an error when simulating.
+02.08.2022-09:23:20 INFO DymolaAPI: Successfully created Dymola input file at D:\02_workshop\AixLib\AixLib\Resources\my_custom_input.txt

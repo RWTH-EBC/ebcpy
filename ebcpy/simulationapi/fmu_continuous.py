@@ -84,18 +84,18 @@ class FMU_API_continuous(simulationapi.SimulationAPI, simulationapi.FMU):
         int: np.int_
     }
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, cd, fmu_path, **kwargs):
         """Instantiate class parameters"""
 
-        if isinstance(model_name, pathlib.Path):
-            model_name = str(model_name)
-        if not model_name.lower().endswith(".fmu"):
-            raise ValueError(f"{model_name} is not a valid fmu file!")
         if cd is None:
-            cd = os.path.dirname(model_name)
+            cd = os.path.dirname(fmu_path)
 
-        simulationapi.FMU.__init__(self)
-        simulationapi.SimulationAPI.__init__(self, cd, model_name, **kwargs)
+        simulationapi.FMU.__init__(self, fmu_path=fmu_path)
+        simulationapi.SimulationAPI.__init__(self,
+                                             cd=cd,
+                                             model_name=self.fmu_path,
+                                             ncp=1,
+                                             **kwargs)
         # Register exit option
         atexit.register(self.close)
 
