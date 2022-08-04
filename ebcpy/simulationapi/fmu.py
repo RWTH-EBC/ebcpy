@@ -62,7 +62,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     .. versionadded:: 0.1.7
     """
-
+    objs = []
     _sim_setup_class: SimulationSetupClass = FMU_Setup
     # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation but needed for mp continuous simulation!!!
     # _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
@@ -73,9 +73,10 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, cd, model_name, interp_input_table: bool = False, **kwargs):
+    def __init__(self, cd, model_name, input_data = None, interp_input_table: bool = False, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
+        FMU_API.objs.append(self)
         self._model_description = None
         self._fmi_type = None
         self.log_fmu = kwargs.get("log_fmu", True)
@@ -88,7 +89,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self.finished = None
         self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation. But its mandatory to be class attribute for mp in continuous FMU simulation
         self._unzip_dirs: dict = {}
-        self._input_table = None  # inputs that hold for the whole (or longer parts) of the simulation (property)
+        # define input data (can be adjusted during simulation using the setter)
+        self.input_table = input_data
         self.interp_input_table = interp_input_table
 
         if isinstance(model_name, pathlib.Path):
@@ -122,6 +124,14 @@ class FMU_API(simulationapi.SimulationAPI):
         # Setup the fmu instance
         self.setup_fmu_instance()
 
+    @classmethod
+    def close_all(cls):
+        """
+        close multiple FMUs at once. Useful for co-simulation
+        """
+        for obj in cls.objs:
+            obj.close()
+
     def close(self):
         """
         Closes the fmu.
@@ -129,6 +139,7 @@ class FMU_API(simulationapi.SimulationAPI):
         :return: bool
             True on success
         """
+        print('FMU "{}" closed'.format(self._model_description.modelName))  # fixme: adjust for mp
         # Close MP of super class
         super().close()
         # Close if single process
@@ -461,7 +472,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         return res
 
-    def do_step(self, automatic_close: bool = False, idx_worker: int = 0):  # todo: idx worker not nice
+    def do_step(self, idx_worker: int = 0):  # todo: idx worker not nice
         """
         perform simulation step; return True if stop time reached
         """
@@ -478,10 +489,6 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             self.finished = True
             print('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
-            if automatic_close:
-                # close FMU
-                self.close()
-                print('FMU "{}" closed'.format(self._model_description.modelName))
         return self.finished
 
     def add_inputs_to_result_names(self):
@@ -506,7 +513,6 @@ class FMU_API(simulationapi.SimulationAPI):
     def initialize_fmu_for_do_step(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
-                                   input_table = None,
                                    css: float = None,
                                    tolerance: float = None,  # todo: tol is not a user input in simulate()
                                    store_input: bool = True):
@@ -567,8 +573,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if store_input:
             self.add_inputs_to_result_names()
 
-        # define input data (can be adjusted during simulation using the setter)
-        self.input_table = input_table
+
 
         # Initialize dataframe to store results
         self.sim_res = pd.DataFrame(columns=self.result_names)
@@ -662,8 +667,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def set_variables_wr(self,
                          input_step: dict = None,
-                         do_step: bool = True,
-                         automatic_close: bool = False):
+                         do_step: bool = True):
 
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -684,7 +688,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         # optional: perform simulation step
         if do_step:
-            self.do_step(automatic_close=automatic_close)
+            self.do_step()
 
 
 

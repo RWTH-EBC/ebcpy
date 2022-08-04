@@ -27,6 +27,8 @@ bus.disturbance[1]:     ambient air temperature
 During the stepwise simulation, two different input types can be applied onto an FMU: 
 An input table with preassigned values (in this case bus.setPoint and bus.disturbance[1]) 
 and input that is only valid for one step (bus.controlOutput, and in case of the controller FMU bus.processVar).
+
+For co-simulation with more than 2 FMUs consider the use of AgentLib
 """
 
 
@@ -96,7 +98,7 @@ class PID:
 output_step = 60*10  # step size of simulation results in seconds (resolution of results data)
 comm_step = 60/3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
 start = 0  # start time
-stop = 86400 * 3  # stop time
+stop = 86400 * 0.25  # stop time
 # store simulation setup as dict  # fixme: add comm_step??
 simulation_setup = {"start_time": start, "stop_time": stop, "output_interval": output_step}
 
@@ -112,7 +114,7 @@ for idx in range(len(time_index)):
     if sec_of_day > 3600 * 8 and sec_of_day < 3600 * 17:
         setpoint[idx] = 293.15
 # Store input data as pandas DataFrame
-input_data = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)
+input_data = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)  # todo: print warning that only the variables that match with fmu vars are set
 
 # --- Initial values and parameters ------
 t_start = 293.15 - 5
@@ -123,7 +125,7 @@ work_dir = pathlib.Path(__file__).parent.joinpath("results")
 # path to fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_bus.fmu")
 # create FMU API object
-sys = FMU_API(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+sys = FMU_API(model_name=path, cd=work_dir, input_data=input_data, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 # set custom simulation setup
 sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property function in v0.1.7??
 
@@ -133,7 +135,6 @@ sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property funct
 # --- Initialize system FMU ------
 sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
                                init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
-                               input_table=input_data,
                                css=comm_step,  # communication step size
                                tolerance=None,  # preset value will be used
                                store_input=True)  # default; the FMU inputs are added to the simulation results
@@ -159,8 +160,8 @@ while not sys.finished:
     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time]['bus.setPoint'])#.values[0])
     # write controller output to system FMU as well as pre-known inputs and perform step
     sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action},
-                         do_step=True,  # default; a simulation step is performed after writing
-                         automatic_close=False)  # default; the FMU is not closed when finished for second study
+                         do_step=True  # default; a simulation step is performed after writing
+                    )  # default; the FMU is not closed when finished for second study
 
 # ---- Results ---------
 # return simulation results as pd data frame
@@ -180,7 +181,7 @@ sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
 # ------ Instantiate and initialize controller FMU-----
 # path of fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "PI_1_bus.fmu")
-ctr = FMU_API(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+ctr = FMU_API(model_name=path, cd=work_dir, input_data=input_data, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 ctr.set_sim_setup(sim_setup=simulation_setup)
 ctr.initialize_fmu_for_do_step(parameters=None,  # Not required for controller
                                init_values=None,  # not required for controller
@@ -196,10 +197,11 @@ while not sys.finished:
     ctr.set_variables_wr(input_step= {'bus.processVar': res_step['bus.processVar']})
     ctr_action = ctr.read_variables_wr(save_results=False)['bus.controlOutput']  # results of controller are not saved
     # write controller output to system FMU as well as pre-known inputs and perform step
-    sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action},
-                         automatic_close=True)  # optional; fmu is closed as not needed anymore
+    sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action})  # optional; fmu is closed as not needed anymore
 
-ctr.close()  # controller FMU closed explicitly because it can not be closed in the while loop
+# sys.close()
+# ctr.close()
+FMU_API.close_all()
 
 # return simulation results as pd data frame
 results_study_B = sys.get_results(tsd_format=False)
