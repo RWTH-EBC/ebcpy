@@ -56,3 +56,42 @@
 29.07.2022-15:32:38 INFO FMU_API: Extracting fmu and reading fmu model description
 29.07.2022-15:32:38 INFO FMU_API: Reading model variables
 29.07.2022-15:32:38 INFO FMU_API: Instantiating fmu for worker 0
+02.08.2022-09:05:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+02.08.2022-09:05:10 INFO FMU_API: Extracting fmu and reading fmu model description
+02.08.2022-09:05:11 INFO FMU_API: Reading model variables
+02.08.2022-09:05:11 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+02.08.2022-09:05:59 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+02.08.2022-09:05:59 INFO FMU_API: Extracting fmu and reading fmu model description
+02.08.2022-09:05:59 INFO FMU_API: Reading model variables
+02.08.2022-09:05:59 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+02.08.2022-09:06:26 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+02.08.2022-09:06:26 INFO FMU_API: Extracting fmu and reading fmu model description
+02.08.2022-09:06:26 INFO FMU_API: Reading model variables
+02.08.2022-09:06:26 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+02.08.2022-09:06:28 INFO FMU_API: Instantiated fmu's on all processes.
+02.08.2022-09:06:28 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+02.08.2022-09:06:28 INFO FMU_API: Starting 50 simulations on 2 cores
+02.08.2022-09:07:16 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+02.08.2022-09:07:16 INFO FMU_API: Extracting fmu and reading fmu model description
+02.08.2022-09:07:17 INFO FMU_API: Reading model variables
+02.08.2022-09:07:17 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+02.08.2022-09:07:19 INFO FMU_API: Instantiated fmu's on all processes.
+02.08.2022-09:07:19 WARNING FMU_API: Variables 'heatCap.T' not found in model 'D:\pst-kbe\tasks\07_ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating.
+02.08.2022-09:07:19 INFO FMU_API: Starting 50 simulations on 2 cores
+02.08.2022-09:07:19 INFO FMU_API: Finished 10 % of all 50 simulations
+02.08.2022-09:07:19 INFO FMU_API: Finished 20 % of all 50 simulations
+02.08.2022-09:07:20 INFO FMU_API: Finished 30 % of all 50 simulations
+02.08.2022-09:07:20 INFO FMU_API: Finished 40 % of all 50 simulations
+02.08.2022-09:07:20 INFO FMU_API: Finished 50 % of all 50 simulations
+02.08.2022-09:07:21 INFO FMU_API: Finished 60 % of all 50 simulations
+02.08.2022-09:07:21 INFO FMU_API: Finished 70 % of all 50 simulations
+02.08.2022-09:07:21 INFO FMU_API: Finished 80 % of all 50 simulations
+02.08.2022-09:07:22 INFO FMU_API: Finished 90 % of all 50 simulations
+02.08.2022-09:07:22 INFO FMU_API: Finished 100 % of all 50 simulations
+04.08.2022-11:54:30 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+04.08.2022-12:02:21 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+04.08.2022-12:02:27 INFO FMU_API: Extracting fmu and reading fmu model description
+04.08.2022-12:02:27 INFO FMU_API: Reading model variables
+04.08.2022-12:02:27 INFO FMU_API: Instantiating fmu for worker 0
+04.08.2022-12:02:48 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+04.08.2022-12:02:53 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------

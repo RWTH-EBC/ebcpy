@@ -64,7 +64,7 @@ class FMU_API(simulationapi.SimulationAPI):
     """
 
     _sim_setup_class: SimulationSetupClass = FMU_Setup
-    # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
+    # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation but needed for mp continuous simulation!!!
     # _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
 
     _type_map = {
@@ -86,7 +86,6 @@ class FMU_API(simulationapi.SimulationAPI):
         self.var_refs = None
         self.sim_res = None  # todo: also use for continuous simulation
         self.finished = None
-        self.fmu_instance_TEMP = None  # fixme: kbe remove
         self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
         self._unzip_dirs: dict = {}
 
@@ -370,7 +369,6 @@ class FMU_API(simulationapi.SimulationAPI):
             debug_logging=False,
             logger=self._custom_logger,
             fmi_call_logger=None)})
-        self.fmu_instance_TEMP = self._fmu_instances[0]  # fixme: kbe delete
         self._unzip_dirs.update({
             wrk_idx: unzip_dir
         })
