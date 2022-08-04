@@ -73,7 +73,7 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, cd, model_name, interp_input_table: bool = False, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
         self._model_description = None
@@ -86,8 +86,10 @@ class FMU_API(simulationapi.SimulationAPI):
         self.var_refs = None
         self.sim_res = None  # todo: also use for continuous simulation
         self.finished = None
-        self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
+        self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation. But its mandatory to be class attribute for mp in continuous FMU simulation
         self._unzip_dirs: dict = {}
+        self._input_table = None  # inputs that hold for the whole (or longer parts) of the simulation (property)
+        self.interp_input_table = interp_input_table
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -98,6 +100,23 @@ class FMU_API(simulationapi.SimulationAPI):
         super().__init__(cd, model_name, **kwargs)
         # Register exit option
         atexit.register(self.close)
+
+    @property
+    def input_table(self):
+        """
+        input data that holds for longer parts of the simulation
+        """
+        return self._input_table
+
+    @input_table.setter
+    def input_table(self, input_data):
+        """
+        setter allows the input data to change during discrete simulation
+        """
+        if isinstance(input_data, TimeSeriesData):
+            input_data = input_table.to_df(force_single_index=True)
+        self._input_table = input_data
+
 
     def _update_model(self):
         # Setup the fmu instance
@@ -487,6 +506,7 @@ class FMU_API(simulationapi.SimulationAPI):
     def initialize_fmu_for_do_step(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
+                                   input_table = None,
                                    css: float = None,
                                    tolerance: float = None,  # todo: tol is not a user input in simulate()
                                    store_input: bool = True):
@@ -546,6 +566,9 @@ class FMU_API(simulationapi.SimulationAPI):
         # add inputs to result_names
         if store_input:
             self.add_inputs_to_result_names()
+
+        # define input data (can be adjusted during simulation using the setter)
+        self.input_table = input_table
 
         # Initialize dataframe to store results
         self.sim_res = pd.DataFrame(columns=self.result_names)
@@ -639,21 +662,17 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def set_variables_wr(self,
                          input_step: dict = None,
-                         input_table: pd.DataFrame = None,
-                         interp_table: bool = False,
                          do_step: bool = True,
                          automatic_close: bool = False):
 
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
-        if input_table is not None:
+        if self.input_table is not None:
             # extract value from input time table
-            if isinstance(input_table, TimeSeriesData):
-                input_table = input_table.to_df(force_single_index=True)
             # only consider columns in input table that refer to inputs of the FMU
-            input_matches = list(set(self.inputs.keys()).intersection(set(input_table.columns)))
-            input_table_filt = input_table[input_matches]
-            single_input = self.interp_df(t=self.current_time, df=input_table_filt, interpolate=interp_table)
+            input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
+            input_table_filt = self.input_table[input_matches]
+            single_input = self.interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
 
         if input_step is not None:
             # overwrite with input for step

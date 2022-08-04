@@ -133,6 +133,7 @@ sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property funct
 # --- Initialize system FMU ------
 sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
                                init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
+                               input_table=input_data,
                                css=comm_step,  # communication step size
                                tolerance=None,  # preset value will be used
                                store_input=True)  # default; the FMU inputs are added to the simulation results
@@ -158,8 +159,6 @@ while not sys.finished:
     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time]['bus.setPoint'])#.values[0])
     # write controller output to system FMU as well as pre-known inputs and perform step
     sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action},
-                         input_table=input_data,  # the system reads the ambient temperature as 'bus.disturbance[1]'
-                         interp_table=False,  # default; last value of input data is hold, instead interpolated
                          do_step=True,  # default; a simulation step is performed after writing
                          automatic_close=False)  # default; the FMU is not closed when finished for second study
 
@@ -194,11 +193,10 @@ while not sys.finished:
     # read system state from system FMU
     res_step = sys.read_variables_wr()
     # call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-    ctr.set_variables_wr(input_step= {'bus.processVar': res_step['bus.processVar']}, input_table=input_data)
+    ctr.set_variables_wr(input_step= {'bus.processVar': res_step['bus.processVar']})
     ctr_action = ctr.read_variables_wr(save_results=False)['bus.controlOutput']  # results of controller are not saved
     # write controller output to system FMU as well as pre-known inputs and perform step
     sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action},
-                         input_table=input_data,
                          automatic_close=True)  # optional; fmu is closed as not needed anymore
 
 ctr.close()  # controller FMU closed explicitly because it can not be closed in the while loop
