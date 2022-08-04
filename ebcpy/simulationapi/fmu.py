@@ -73,7 +73,7 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, cd, model_name, input_data = None, interp_input_table: bool = False, **kwargs):
+    def __init__(self, cd, model_name,  **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
         FMU_API.objs.append(self)
@@ -90,8 +90,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation. But its mandatory to be class attribute for mp in continuous FMU simulation
         self._unzip_dirs: dict = {}
         # define input data (can be adjusted during simulation using the setter)
-        self.input_table = input_data
-        self.interp_input_table = interp_input_table
+        self.input_table = None
+        self.interp_input_table = None
 
         if isinstance(model_name, pathlib.Path):
             model_name = str(model_name)
@@ -510,9 +510,11 @@ class FMU_API(simulationapi.SimulationAPI):
                 key_list.append(key[i])
         return key_list
 
-    def initialize_fmu_for_do_step(self,
+    def initialize_discrete_sim(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
+                                   input_data=None,
+                                   interp_input_table: bool = None,
                                    css: float = None,
                                    tolerance: float = None,  # todo: tol is not a user input in simulate()
                                    store_input: bool = True):
@@ -573,10 +575,14 @@ class FMU_API(simulationapi.SimulationAPI):
         if store_input:
             self.add_inputs_to_result_names()
 
-
+        # initialize long term input data -> can be adjusted during simulation by setter
+        self.interp_input_table = interp_input_table
+        self.input_table = input_data
 
         # Initialize dataframe to store results
         self.sim_res = pd.DataFrame(columns=self.result_names)
+
+
 
         # initialize status indicator
         self.finished = False

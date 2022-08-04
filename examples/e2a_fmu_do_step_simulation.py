@@ -24,7 +24,7 @@ bus.setPoint:           zone temperature set point
 bus.controlOutput:      relative heating power
 bus.disturbance[1]:     ambient air temperature
 
-During the stepwise simulation, two different input types can be applied onto an FMU: 
+During the stepwise simulation, two different input types are applied onto an FMU: 
 An input table with preassigned values (in this case bus.setPoint and bus.disturbance[1]) 
 and input that is only valid for one step (bus.controlOutput, and in case of the controller FMU bus.processVar).
 
@@ -125,7 +125,7 @@ work_dir = pathlib.Path(__file__).parent.joinpath("results")
 # path to fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_bus.fmu")
 # create FMU API object
-sys = FMU_API(model_name=path, cd=work_dir, input_data=input_data, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+sys = FMU_API(model_name=path, cd=work_dir, n_cpu=1, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 # set custom simulation setup
 sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property function in v0.1.7??
 
@@ -133,11 +133,10 @@ sys.set_sim_setup(sim_setup=simulation_setup)  # Todo: Changed to property funct
 # ----- Study A: System FMU - Python controller ---------------------------------------------
 
 # --- Initialize system FMU ------
-sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
-                               init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
-                               css=comm_step,  # communication step size
-                               tolerance=None,  # preset value will be used
-                               store_input=True)  # default; the FMU inputs are added to the simulation results
+sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb},
+                            input_data=input_data, interp_input_table=False,
+                            css=comm_step, tolerance=None,
+                            store_input=True)  # default; the FMU inputs are added to the simulation results
 
 # By default, the FMU in- and outputs are also added to the list of variables to read
 print("Variables to store when simulating:", sys.result_names)
@@ -172,22 +171,17 @@ results_study_A = sys.get_results(tsd_format=False)  # optional; the results are
 
 # --- Initialize system FMU ------
 # reinitialization resets the results
-sys.initialize_fmu_for_do_step(parameters={'T_start': t_start},
-                                   init_values={'bus.disturbance[1]': t_start_amb},  # fixme: does this impact the simulation or the output only??
-                                   css=comm_step,  # communication step size
-                                   tolerance=None,  # preset value will be used
-                                   store_input=True)  # default; the FMU inputs are added to the simulation results
+sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb},
+                            css=comm_step, tolerance=None,
+                            store_input=True)  # default; the FMU inputs are added to the simulation results
 
 # ------ Instantiate and initialize controller FMU-----
 # path of fmu file  # todo: move settings to FMU class and config file maybe
 path = pathlib.Path(__file__).parent.joinpath("data", "PI_1_bus.fmu")
-ctr = FMU_API(model_name=path, cd=work_dir, input_data=input_data, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
+ctr = FMU_API(model_name=path, cd=work_dir, log_fmu=False)  # Todo: allow path as expected type for model_name additionaly
 ctr.set_sim_setup(sim_setup=simulation_setup)
-ctr.initialize_fmu_for_do_step(parameters=None,  # Not required for controller
-                               init_values=None,  # not required for controller
-                               css=comm_step,  # communication step size
-                               tolerance=None,  # preset value will be used
-                               store_input=False)  # optional; the FMU inputs are not added to the results
+ctr.initialize_discrete_sim(parameters=None, init_values=None, input_data=input_data, interp_input_table=False, css=comm_step, tolerance=None,
+                            store_input=False)  # optional; the FMU inputs are not added to the results
 
 # ------ Simulation Loop -------
 while not sys.finished:
