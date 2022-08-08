@@ -103,7 +103,8 @@ class PID:
 output_step = 60*10  # step size of simulation results in seconds (resolution of results data)
 comm_step = 60/3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
 start = 0  # start time
-stop = 86400 * 0.25  # stop time
+stop = 86400 * 3
+# stop time
 # store simulation setup as dict  # fixme: add comm_step??
 simulation_setup = {"start_time": start, "stop_time": stop, "output_interval": output_step}
 
