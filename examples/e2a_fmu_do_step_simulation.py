@@ -31,6 +31,11 @@ and input that is only valid for one step (bus.controlOutput, and in case of the
 For co-simulation with more than 2 FMUs consider the use of AgentLib
 """
 
+# todo_
+# get rid of arguments
+# new understanding of set step read
+# append res after step as ground trhuth
+
 
 class PID:
     '''
@@ -152,26 +157,25 @@ ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=60)  # todo: 
 # 2. set_variables_wr writes the values in the input data table and inputs for the specific step to the FMU.
 # Values from the input data table are either hold or interpolated.
 # By default, a simulation step is performed after writing. Optionally, the FMU can be closed when stop time is reached.
+# initialize var with system state to provide the controller
+res_step = sys.sim_res.iloc[-1]
 while not sys.finished:
-    # Read system state from FMU
-    res_step = sys.read_variables_wr(save_results=True)  # default; the results are appended to fmu_api.sim_res
     # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-    ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time]['bus.setPoint'])#.values[0])
-    # write controller output to system FMU as well as pre-known inputs and perform step
-    sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action},
-                         do_step=True  # default; a simulation step is performed after writing
-                    )  # default; the FMU is not closed when finished for second study
+    ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time]['bus.setPoint'])  # .values[0])  # fixme: only makes sense if
+    # Apply control action to system and perform simulation step
+    res_step = sys.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})  # # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
 
 # ---- Results ---------
 # return simulation results as pd data frame
 results_study_A = sys.get_results(tsd_format=False)  # optional; the results are returned as pandas DataFrame
 
 
-# ----- Study B: System FMU - Controller FMU ---------------------------------------------
-
+# # ----- Study B: System FMU - Controller FMU ---------------------------------------------
+#
 # --- Initialize system FMU ------
 # reinitialization resets the results
 sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb},
+                            input_data=input_data, interp_input_table=False,
                             css=comm_step, tolerance=None,
                             store_input=True)  # default; the FMU inputs are added to the simulation results
 
@@ -183,15 +187,13 @@ ctr.set_sim_setup(sim_setup=simulation_setup)
 ctr.initialize_discrete_sim(parameters=None, init_values=None, input_data=input_data, interp_input_table=False, css=comm_step, tolerance=None,
                             store_input=False)  # optional; the FMU inputs are not added to the results
 
+res_step = sys.sim_res.iloc[-1]
 # ------ Simulation Loop -------
 while not sys.finished:
-    # read system state from system FMU
-    res_step = sys.read_variables_wr()
     # call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-    ctr.set_variables_wr(input_step= {'bus.processVar': res_step['bus.processVar']})
-    ctr_action = ctr.read_variables_wr(save_results=False)['bus.controlOutput']  # results of controller are not saved
+    ctr_action = ctr.do_step_wrapper(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig
     # write controller output to system FMU as well as pre-known inputs and perform step
-    sys.set_variables_wr(input_step={'bus.controlOutput': ctr_action})  # optional; fmu is closed as not needed anymore
+    res_step = sys.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})
 
 # sys.close()
 # ctr.close()

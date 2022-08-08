@@ -491,12 +491,48 @@ class FMU_API(simulationapi.SimulationAPI):
             print('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
         return self.finished
 
-    def add_inputs_to_result_names(self):
+    def do_step_wrapper(self, input_step: dict = None, skip_append: bool = False):
+        # collect inputs
+        # get input from input table (overwrite with specific input for single step)
+        single_input = {}
+        if self.input_table is not None:
+            # extract value from input time table
+            # only consider columns in input table that refer to inputs of the FMU
+            input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
+            input_table_filt = self.input_table[input_matches]
+            single_input = self.interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
+
+        if input_step is not None:
+            # overwrite with input for step
+            single_input.update(input_step)
+
+        # write inputs to fmu
+        if single_input:
+            self.set_variables(var_dict=single_input)
+
+        # perform simulation step
+        self.do_step()
+
+
+        # append results  # fixme: order first current_time += or first read vars?
+        # read results
+        res_step = self.read_variables(vrs_list=self.result_names)
+        if not self.finished:  # fixme: is this needed?
+            if not skip_append:
+                # append
+                if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values?
+                    self.sim_res = pd.concat(
+                        [self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
+                                                                 index=[res_step['SimTime']],
+                                                                 columns=self.sim_res.columns)])
+        return res_step
+
+    def add_inputs_to_result_names(self):  # todo: place functionality in object oriented class structure
         """
         Inputs and output variables are added to the result_names (names of variables that are read from the fmu)
         """
         self.result_names.extend(list(self.inputs.keys()))
-        print("Added FMU inputs to the list of variables to read from the fmu")
+        print("Added FMU inputs to the list of variables to read from the fmu")  #
 
     def find_vars(self, start_str: str):
         """
@@ -513,11 +549,11 @@ class FMU_API(simulationapi.SimulationAPI):
     def initialize_discrete_sim(self,
                                    parameters: dict = None,
                                    init_values: dict = None,
-                                   input_data=None,
-                                   interp_input_table: bool = None,
-                                   css: float = None,
-                                   tolerance: float = None,  # todo: tol is not a user input in simulate()
-                                   store_input: bool = True):
+                                   input_data=None,   #  todo: consider this as attribute anyways. It should be set with with the other settings and modified by a setter
+                                   interp_input_table: bool = False,  # todo: ""
+                                   css: float = None,  # todo: move to overall settings
+                                   tolerance: float = None,  # # todo: move to overall settings
+                                   store_input: bool = True):  # todo: just do it for discrete simulation. Do it at an other place
         """
         Initialisation of FMU. To be called before using stepwise simulation
         Parameters and initial values can be set.
@@ -580,9 +616,14 @@ class FMU_API(simulationapi.SimulationAPI):
         self.input_table = input_data
 
         # Initialize dataframe to store results
-        self.sim_res = pd.DataFrame(columns=self.result_names)
-
-
+        # empty
+        # self.sim_res = pd.DataFrame(columns=self.result_names)
+        # initialized
+        res = self.read_variables(vrs_list=self.result_names)
+        self.sim_res = pd.DataFrame(res,
+                                    index=[res['SimTime']],
+                                    columns=self.result_names
+                                    )
 
         # initialize status indicator
         self.finished = False
@@ -658,121 +699,33 @@ class FMU_API(simulationapi.SimulationAPI):
                                                   df[column].iloc[idx_l:idx_r + 1])})
         return row
 
-    def read_variables_wr(self, save_results: bool = True):
+    ### OBSOLETE ###
 
-        # read results for current time from FMU
-        res_step = self.read_variables(vrs_list=self.result_names)
-
-        # store results in df
-        if save_results:
-            if self.current_time % self.sim_setup.output_interval == 0:
-                self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
-                                                                                  index=[res_step['SimTime']],
-                                                                                  columns=self.sim_res.columns)])
-        return res_step
-
-    def set_variables_wr(self,
-                         input_step: dict = None,
-                         do_step: bool = True):
-
-        # get input from input table (overwrite with specific input for single step)
-        single_input = {}
-        if self.input_table is not None:
-            # extract value from input time table
-            # only consider columns in input table that refer to inputs of the FMU
-            input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
-            input_table_filt = self.input_table[input_matches]
-            single_input = self.interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
-
-        if input_step is not None:
-            # overwrite with input for step
-            single_input.update(input_step)
-
-        # write inputs to fmu
-        if single_input:
-            self.set_variables(var_dict=single_input)
-
-        # optional: perform simulation step
-        if do_step:
-            self.do_step()
-
-
-
-    # OBSOLETE
-
-    # def do_step_read_write(self,
-    #                        input_step: Optional[dict] = None,
-    #                        input_table: Optional[Union[TimeSeriesData, pd.DataFrame]] = None,
-    #                        interp_input_table: bool = False):
-    #     """
-    #     Function to perform a single simulation step (useful for co-simulation or control).
-    #     1. read variables from FMU (append to result attribute)
-    #     2. write values to FMU
-    #     3. perform simulation step
-    #     Two different types of inputs can be specified.
-    #     a. A frame containing values relevant for the entire simulation (input_table)
-    #     b. An input dict with values that represent inputs for the specific step only (input_step)
-    #     If a variable is set both ways, input_step overwrites input_table.
-    #     Returns dict of results for the single step (res) and the boolean finished that indicates the simulation status
-    #     """
+    # def read_variables_wr(self, save_results: bool = True):
     #
-    #     def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False):  # todo: does it make sense using it as inner function?
-    #         """
-    #         The function returns the values of the dataframe (row) at a given index.
-    #         If the index is not present in the dataframe, either the next lower index
-    #         is chosen or values are interpolated. If the last or first index value is exceeded the
-    #         value is hold. In both cases a warning is printed.
-    #         """
-    #         # todo: consider check if step of input time stap matches communication step size
-    #         #  (or is given at a higher but aligned frequency).
-    #         #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
+    #     # read results for current time from FMU
+    #     res_step = self.read_variables(vrs_list=self.result_names)
     #
-    #         # initialize dict that represents row in dataframe with interpolated or hold values
-    #         row = {}
+    #     # store results in df
+    #     if save_results:
+    #         if self.current_time % self.sim_setup.output_interval == 0:
+    #             self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
+    #                                                                               index=[res_step['SimTime']],
+    #                                                                               columns=self.sim_res.columns)])
+    #     return res_step
     #
-    #         # catch values that are out of bound
-    #         if t < df.index[0]:
-    #             row.update(df.iloc[0].to_dict())
-    #             warnings.warn(
-    #                 'Time {} s is below the first entry of the dataframe {} s, which is hold. Please check input data!'.format(
-    #                     t, df.index[0]))
-    #         elif t >= df.index[-1]:
-    #             row.update(df.iloc[-1].to_dict())
-    #             # a time mathing the last index value causes problems with interpolation but should not raise a warning
-    #             if t > df.index[-1]:
-    #                 warnings.warn(
-    #                     'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
-    #                         t, df.index[-1]))
-    #         # either hold value of last index or interpolate
-    #         else:
-    #             # look for next lower index
-    #             idx_l = df.index.get_indexer([t], method='pad')[0]  # get_loc() depreciated
-    #
-    #             # return values at lower index
-    #             if not interpolate:
-    #                 row = df.iloc[idx_l].to_dict()
-    #
-    #             # return interpolated values
-    #             else:
-    #                 idx_r = idx_l + 1
-    #                 for column in df.columns:
-    #                     row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
-    #                                                   df[column].iloc[idx_l:idx_r + 1])})
-    #         return row
-    #
-    #     # no mp in stepwise simulation
-    #     idx_worker = 0
-    #
-    #     # read variables from fmu  # todo: discuss order/overwriting
-    #     res = self.read_variables(vrs_list=self.result_names, idx_worker=idx_worker)
+    # def set_variables_wr(self,
+    #                      input_step: dict = None,
+    #                      do_step: bool = True):
     #
     #     # get input from input table (overwrite with specific input for single step)
     #     single_input = {}
-    #     if input_table is not None:
+    #     if self.input_table is not None:
     #         # extract value from input time table
-    #         if isinstance(input_table, TimeSeriesData):
-    #             input_table = input_table.to_df(force_single_index=True)
-    #         single_input = interp_df(t=self.current_time, df=input_table, interpolate=interp_input_table)
+    #         # only consider columns in input table that refer to inputs of the FMU
+    #         input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
+    #         input_table_filt = self.input_table[input_matches]
+    #         single_input = self.interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
     #
     #     if input_step is not None:
     #         # overwrite with input for step
@@ -780,15 +733,10 @@ class FMU_API(simulationapi.SimulationAPI):
     #
     #     # write inputs to fmu
     #     if single_input:
-    #         self.set_variables(var_dict=single_input, idx_worker=idx_worker)
+    #         self.set_variables(var_dict=single_input)
     #
-    #     # store results in df
-    #     if self.current_time % self.sim_setup.output_interval == 0:
-    #         self.sim_res = pd.concat([self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
-    #                                                                           index=[res['SimTime']],
-    #                                                                           columns=self.sim_res.columns)])
-    #
-    #     finished = self.do_step(idx_worker=idx_worker)
-    #
-    #     return res, finished
+    #     # optional: perform simulation step
+    #     if do_step:
+    #         self.do_step()
+
 
