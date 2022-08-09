@@ -12,11 +12,15 @@ import fmpy
 from fmpy.model_description import read_model_description
 import matplotlib.pyplot as plt
 import shutil
+from ebcpy.utils import setup_logger
 
 # todo:
+# - easy: add simple side functions cd setter etc.
 # - discuss update_model and model_name triggering other functions
-# - add inputs to resultnames for discrete simulation
 # - Frage: wie genau funktioniert setter und _ notation
+# - discuss output step, comm step
+# - is log_fmu woirking? or is it only for contoinuous simulation
+# - logger: instance name/index additionally to class name for co simulation? Alternatively FMU name
 
 
 class PID:  # todo: used for testing; remove once done and move to example
@@ -297,6 +301,15 @@ class Model:
         # update sim setup with config entries if given
         if hasattr(self.config, 'sim_setup'):
             self.set_sim_setup(self.config.sim_setup)
+        # current directory
+        if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now  # todo: not nice
+            if hasattr(self.config, 'cd'):
+                self.cd = self.config.cd
+            else:
+                self.cd = pathlib.Path(__file__).parent.joinpath("results")
+        # Setup the logger
+        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
+        self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # initialize model variables
         self.inputs: Dict[str, Variable] = {}  # Inputs of model
         self.outputs: Dict[str, Variable] = {}  # Outputs of model
@@ -352,11 +365,6 @@ class Model:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    @ abstractmethod
-    def close(self):
-        raise NotImplementedError(f'{self.__class__.__name__}.close '
-                                  f'function is not defined')
-
     @property
     def model_name(self) -> str:
         """Name of the model being simulated"""
@@ -393,12 +401,17 @@ class Model:
         """
         self.result_names = list(self.outputs.keys())
 
+    @ abstractmethod
+    def close(self):
+        raise NotImplementedError(f'{self.__class__.__name__}.close '
+                                  f'function is not defined')
+
 
 class FMU:
 
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU
 
-    def __init__(self, use_mp):
+    def __init__(self, use_mp, **kwargs):
         path = self.config.file_path
         if isinstance(self.config.file_path, pathlib.Path):
             path = str(self.config.file_path)
@@ -409,6 +422,7 @@ class FMU:
             self.cd = self.config.cd
         else:
             self.cd = os.path.dirname(fmu_path)
+        self.log_fmu = kwargs.get("log_fmu", True)  # todo consider moving to config
         self._fmu_instances: dict = {}  # Dict of FMU instances
         self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction
         self._var_refs: dict = None  # Dict of variables and their references
@@ -416,49 +430,20 @@ class FMU:
         self._fmi_type = None
         self._single_unzip_dir: str = None
         self.use_mp = use_mp
+        self.log_fmu = None
 
-    def close(self):
-        """
-        Closes the fmu.
-
-        :return: bool
-            True on success
-        """
-        print('FMU "{}" closed'.format(self._model_description.modelName))  # fixme: adjust for mp, use logger, move to appropriate position
-        # Close MP of super class
-        # super().close()  # fixme:..back in
-        # Close if single process
-        if not self.use_mp:
-            if not self._fmu_instances:
-                return  # Already closed
-            self._single_close(fmu_instance=self._fmu_instances[0],
-                               unzip_dir=self._unzip_dirs[0])
-            self._unzip_dirs = {}
-            self._fmu_instances = {}
-
-    def _single_close(self, **kwargs):
-        fmu_instance = kwargs["fmu_instance"]
-        unzip_dir = kwargs["unzip_dir"]
-        try:
-            fmu_instance.terminate()
-        except Exception as error:  # This is due to fmpy which does not yield a narrow error
-            # self.logger.error(f"Could not terminate fmu instance: {error}")
-            print()  # fixme:..
-        try:
-            fmu_instance.freeInstance()
-        except OSError as error:
-            # self.logger.error(f"Could not free fmu instance: {error}")
-            print()  # fixme:..
-        # Remove the extracted files
-        if unzip_dir is not None:
-            try:
-                shutil.rmtree(unzip_dir)
-            except FileNotFoundError:
-                pass  # Nothing to delete
-            except PermissionError:
-                # self.logger.error("Could not delete unzipped fmu "
-                #                   "in location %s. Delete it yourself.", unzip_dir)
-                print()  # fixme:..
+    def _custom_logger(self, component, instanceName, status, category, message):
+        """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
+        # pylint: disable=unused-argument, invalid-name
+        label = ['OK', 'WARNING', 'DISCARD', 'ERROR', 'FATAL', 'PENDING'][status]
+        _level_map = {'OK': logging.INFO,
+                      'WARNING': logging.WARNING,
+                      'DISCARD': logging.WARNING,
+                      'ERROR': logging.ERROR,
+                      'FATAL': logging.FATAL,
+                      'PENDING': logging.FATAL}
+        if self.log_fmu:
+            self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
 
     def find_vars(self, start_str: str):
         """
@@ -528,8 +513,7 @@ class FMU:
         Manually set up and extract the data to
         avoid this step in the simulate function.
         """
-        # self.logger.info("Extracting fmu and reading fmu model description")  # todo: reactivate
-        # First load model description and extract variables
+        self.logger.info("Extracting fmu and reading fmu model description")
         self._single_unzip_dir = os.path.join(self.cd,
                                               os.path.basename(self.model_name)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
@@ -543,12 +527,17 @@ class FMU:
         else:
             self._fmi_type = 'CoSimulation'
 
+        # Create dict of variable names with variable references from model description
+        self.var_refs = {}
+        for variable in self._model_description.modelVariables:
+            self.var_refs[variable.name] = variable
+
         def _to_bound(value):
             if value is None or \
                     not isinstance(value, (float, int, bool)):
                 return np.inf
             return value
-        # self.logger.info("Reading model variables")  # todo: reactivate
+        self.logger.info("Reading model variables")
 
         _types = {
             "Enumeration": int,
@@ -577,19 +566,19 @@ class FMU:
             elif var.causality == 'local':
                 self.states[var.name] = _var_ebcpy
             else:
-                # self.logger.error(f"Could not map causality {var.causality}"
-                #                   f" to any variable type.")  # todo: reactivate
+                self.logger.error(f"Could not map causality {var.causality}"
+                                  f" to any variable type.")
                 print()
 
         if self.use_mp:
-            # self.logger.info("Extracting fmu %s times for "
-            #                  "multiprocessing on %s processes",
-            #                  self.n_cpu, self.n_cpu)  # todo: reactivate
+            self.logger.info("Extracting fmu %s times for "
+                             "multiprocessing on %s processes",
+                             self.n_cpu, self.n_cpu)
             self.pool.map(
                 self._setup_single_fmu_instance,
                 [True for _ in range(self.n_cpu)]
             )
-            # self.logger.info("Instantiated fmu's on all processes.")  # todo: reactivate
+            self.logger.info("Instantiated fmu's on all processes.")
         else:
             self._setup_single_fmu_instance(use_mp=False)
 
@@ -606,28 +595,68 @@ class FMU:
                                      unzipdir=unzip_dir)
         else:
             unzip_dir = self._single_unzip_dir
-        # self.logger.info("Instantiating fmu for worker %s", wrk_idx)  # todo: reactivate
+        self.logger.info("Instantiating fmu for worker %s", wrk_idx)
         self._fmu_instances.update({wrk_idx: fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
             model_description=self._model_description,
             fmi_type=self._fmi_type,
             visible=False,
             debug_logging=False,
-            #logger=self._custom_logger,  # todo: reactivate
+            logger=self._custom_logger,
             fmi_call_logger=None)})
         self._unzip_dirs.update({
             wrk_idx: unzip_dir
         })
         return True
 
+    def close(self):
+        """
+        Closes the fmu.
+
+        :return: bool
+            True on success
+        """
+        # Close MP of super class
+        # super().close()  # fixme:..back in? does super work? -> fmu is parent class
+        # Close if single process
+        if not self.use_mp:
+            if not self._fmu_instances:
+                return  # Already closed
+            self._single_close(fmu_instance=self._fmu_instances[0],
+                               unzip_dir=self._unzip_dirs[0])
+            self._unzip_dirs = {}
+            self._fmu_instances = {}
+
+    def _single_close(self, **kwargs):
+        fmu_instance = kwargs["fmu_instance"]
+        unzip_dir = kwargs["unzip_dir"]
+        try:
+            fmu_instance.terminate()
+        except Exception as error:  # This is due to fmpy which does not yield a narrow error
+            self.logger.error(f"Could not terminate fmu instance: {error}")
+        try:
+            fmu_instance.freeInstance()
+        except OSError as error:
+            self.logger.error(f"Could not free fmu instance: {error}")
+        # Remove the extracted files
+        self.logger.info('FMU "{}" closed'.format(self._model_description.modelName))
+        if unzip_dir is not None:
+            try:
+                shutil.rmtree(unzip_dir)
+            except FileNotFoundError:
+                pass  # Nothing to delete
+            except PermissionError:
+                self.logger.error("Could not delete unzipped fmu "
+                                  "in location %s. Delete it yourself.", unzip_dir)
+
 
 class FMU_Discrete(FMU, Model):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Discrete
 
-    def __init__(self, config):
+    def __init__(self, config, **kwargs):
         self.config = self._exp_config_class.parse_obj(config)
-        FMU.__init__(self, use_mp=False)  # no mp for stepwise FMU simulation
+        FMU.__init__(self, use_mp=False, **kwargs)  # no mp for stepwise FMU simulation
         Model.__init__(self, model_name=self.config.file_path)  # todo: in case of fmu: file path, in case of dym: model_name, find better way to deal with; consider getting rid of model_name. For now it is to make the old methods work
         # used for stepwise simulation
         self.current_time = None
@@ -640,6 +669,7 @@ class FMU_Discrete(FMU, Model):
                   'Setter method can still be used to set input data to "input_table" attribute')
             self.input_table = None
         self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
+        self.step_count = None  # counting simulation steps
 
     @property
     def input_table(self):
@@ -672,16 +702,7 @@ class FMU_Discrete(FMU, Model):
         # - Create FMU2 Slave
         # - instantiate fmu instance
 
-        # Create dict of variable names with variable references from model description
-        self.var_refs = {}  # todo: consider extra function, belonging to fmu class and called within fmu setup. Because the fmu handler functions require var_refs and this way can also be acessed while continuous simulation
-        for variable in self._model_description.modelVariables:
-            self.var_refs[variable.name] = variable
-
-        # Check for mp setting
-        if self.use_mp:  # todo: move to instantiation/init
-            raise Exception('Multi processing not available for stepwise FMU simulation')
-
-        idx_worker = 0
+        idx_worker = 0  # no mp for discrete simulation
 
         # Reset FMU instance
         self._fmu_instances[idx_worker].reset()
@@ -720,27 +741,51 @@ class FMU_Discrete(FMU, Model):
                                     columns=self.result_names
                                     )
 
+        self.logger.info('FMU "{}" initialized for discrete simulation'.format(self._model_description.modelName))
+
         # initialize status indicator
         self.finished = False
 
-    def _do_step(self, idx_worker: int = 0):  # todo: idx worker not nice  # todo: append to results here. This way its safe to cath anything
+        # reset step count
+        self.step_count = 0
+
+    def _do_step(self, ret_res: bool = False, idx_worker: int = 0):
         """
-        perform simulation step; return True if stop time reached
+        perform simulation step; return True if stop time reached.
+        The results are appended to the sim_res results frame, just after the step -> ground truth
+        If ret_res, additionally the results of the step are returned
         """
 
         # check if stop time is reached
         if self.current_time < self.sim_setup.stop_time:
+            if self.step_count == 0:
+                self.logger.info('Starting simulation of FMU "{}"'.format(self._model_description.modelName))
             # do simulation step
             status = self._fmu_instances[idx_worker].doStep(
                 currentCommunicationPoint=self.current_time,
                 communicationStepSize=self.sim_setup.comm_step_size)
+            # step count
+            self.step_count+=1
             # update current time and determine status
             self.current_time += self.sim_setup.comm_step_size
             self.finished = False
         else:
             self.finished = True
-            print('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
-        return self.finished
+            self.logger.info('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
+        # read results
+        res = self._read_variables(
+            vrs_list=self.result_names)
+        if not self.finished:
+            # append
+            if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
+                self.sim_res = pd.concat(
+                    [self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
+                                                             index=[res_step['SimTime']],
+                                                             columns=self.sim_res.columns)])
+        if ret_res:
+            return self.finished, res
+        else:
+            return self.finished
 
     def do_step_wrapper(self, input_step: dict = None):
         # collect inputs
@@ -750,7 +795,7 @@ class FMU_Discrete(FMU, Model):
             # extract value from input time table
             # only consider columns in input table that refer to inputs of the FMU
             input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
-            input_table_filt = self.input_table[input_matches]  # todo: consider moving to setter for efficiency
+            input_table_filt = self.input_table[input_matches]  # todo: consider moving to setter for efficiency, if so, inputs must be identified before
             single_input = interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
 
         if input_step is not None:
@@ -762,18 +807,8 @@ class FMU_Discrete(FMU, Model):
             self._set_variables(var_dict=single_input)
 
         # perform simulation step
-        self._do_step()
+        res_step = self._do_step(ret_res=True)[1]
 
-        # append results
-        # read results
-        res_step = self._read_variables(vrs_list=self.result_names)  # fixme: consider reading and appending in _do_step with css step and downsampling the output -> this way, every step the result is read and stored!
-        if not self.finished:
-            # append
-            if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
-                self.sim_res = pd.concat(
-                    [self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
-                                                             index=[res_step['SimTime']],
-                                                                 columns=self.sim_res.columns)])
         return res_step
 
     def _set_result_names(self):
@@ -806,12 +841,12 @@ if __name__ == '__main__':
                   'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
                   'sim_setup': simulation_setup,
                   'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
-                  }  # todo: start values/parameters in config?
+                  }
 
     sys = FMU_Discrete(config_obj)
     ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
 
-    sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})  # todo: inititalize at first step automatically? (in do step function)
+    sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
 
     res_step = sys.sim_res.iloc[-1]
     while not sys.finished:
