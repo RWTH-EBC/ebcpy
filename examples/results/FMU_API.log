@@ -1,0 +1,16 @@
+09.08.2022-10:44:15 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+09.08.2022-10:44:15 INFO FMU_API: Extracting fmu and reading fmu model description
+09.08.2022-10:44:15 INFO FMU_API: Reading model variables
+09.08.2022-10:44:15 INFO FMU_API: Instantiating fmu for worker 0
+09.08.2022-10:44:26 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+09.08.2022-10:44:26 INFO FMU_API: Extracting fmu and reading fmu model description
+09.08.2022-10:44:26 INFO FMU_API: Reading model variables
+09.08.2022-10:44:26 INFO FMU_API: Instantiating fmu for worker 0
+09.08.2022-10:46:33 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+09.08.2022-10:46:33 INFO FMU_API: Extracting fmu and reading fmu model description
+09.08.2022-10:46:33 INFO FMU_API: Reading model variables
+09.08.2022-10:46:33 INFO FMU_API: Instantiating fmu for worker 0
+09.08.2022-10:46:43 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+09.08.2022-10:46:43 INFO FMU_API: Extracting fmu and reading fmu model description
+09.08.2022-10:46:43 INFO FMU_API: Reading model variables
+09.08.2022-10:46:43 INFO FMU_API: Instantiating fmu for worker 0

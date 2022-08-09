@@ -645,7 +645,6 @@ class FMU_API(simulationapi.SimulationAPI):
             raise Exception('The simulation results contain ambigious entries. '
                             'Check the use and order of read_variables() and set_variables()')
 
-
         if not tsd_format:
             results = res_clean
         else:

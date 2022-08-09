@@ -8,6 +8,7 @@ from ebcpy import FMU_API
 # import for controller
 import time
 
+
 """
 Demonstration of stepwise FMU simulation.
 Stepwise FMU simulation is common for control tasks or co-simulation
@@ -35,7 +36,6 @@ For co-simulation with more than 2 FMUs consider the use of AgentLib
 # get rid of arguments
 # new understanding of set step read
 # append res after step as ground trhuth
-
 
 class PID:
     '''
@@ -121,7 +121,14 @@ for idx in range(len(time_index)):
         setpoint[idx] = 293.15
 # Store input data as pandas DataFrame
 input_data = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)  # todo: print warning that only the variables that match with fmu vars are set
-
+# # create csv (alternative to setting pd frame directly)
+# dict = {
+#     'timestamp': time_index,
+#     'bus.setPoint': setpoint,
+#     'bus.disturbance[1]': dist
+# }
+# df = pd.DataFrame(dict)
+# df.to_csv('data/ThermalZone_input.csv', index=False)
 # --- Initial values and parameters ------
 t_start = 293.15 - 5
 t_start_amb = 293.15 - 15
@@ -148,7 +155,7 @@ sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.d
 print("Variables to store when simulating:", sys.result_names)
 
 # ---- Initialize controller ----------
-ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=60)  # todo: why not possible to use other PID notation? Problem then with kp<1
+ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)  # todo: why not possible to use other PID notation? Problem then with kp<1
 
 # ------ Simulation Loop -------
 # The central FMU functions used in the loop are read_variables_wr() and set_variables_wr()
