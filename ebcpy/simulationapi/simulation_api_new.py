@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field#, validator
 from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
-from typing import TypeVar, Dict, Any#, List
+from typing import TypeVar, Dict, Any, List
 import numpy as np
 from abc import abstractmethod
 import pathlib
@@ -13,6 +13,10 @@ from fmpy.model_description import read_model_description
 import matplotlib.pyplot as plt
 import shutil
 from ebcpy.utils import setup_logger
+import multiprocessing as mp
+import logging
+import itertools
+import atexit
 
 # todo:
 # - easy: add simple side functions cd setter etc.
@@ -21,6 +25,7 @@ from ebcpy.utils import setup_logger
 # - discuss output step, comm step
 # - is log_fmu woirking? or is it only for contoinuous simulation
 # - logger: instance name/index additionally to class name for co simulation? Alternatively FMU name
+# - decompose disctete fmu sim iniialize func to inbtegfrate given mehtods that atre already use for continuous sim
 
 
 class PID:  # todo: used for testing; remove once done and move to example
@@ -184,6 +189,13 @@ class SimulationSetup(BaseModel):
         default=1,
         description="step size in which the do_step() function is called"
     )
+    solver: str = Field(
+        title="solver",
+        default="",  # Is added in the validator
+        description="The solver to be used for numerical integration."
+    )
+    _default_solver: str = None
+    _allowed_solvers: list = []
 
 
 class SimulationSetupDymola(SimulationSetup):
@@ -315,7 +327,7 @@ class Model:
         self.outputs: Dict[str, Variable] = {}  # Outputs of model
         self.parameters: Dict[str, Variable] = {}  # Parameter of model
         self.states: Dict[str, Variable] = {}  # States of model
-        self.worker_idx = False  # todo: evaluate if needed here
+        # self.worker_idx = False  # todo: evaluate if needed here
         # results
         self.result_names = []  # initialize list of tracked variables
         self.model_name = model_name  # todo: discuss setting model name triggers further functions
@@ -356,15 +368,6 @@ class Model:
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
 
-    @abstractmethod
-    def _update_model(self):
-        """
-        Reimplement this to change variables etc.
-        based on the new model.
-        """
-        raise NotImplementedError(f'{self.__class__.__name__}._update_model '
-                                  f'function is not defined')
-
     @property
     def model_name(self) -> str:
         """Name of the model being simulated"""
@@ -401,6 +404,69 @@ class Model:
         """
         self.result_names = list(self.outputs.keys())
 
+    @abstractmethod
+    def _update_model(self):
+        """
+        Reimplement this to change variables etc.
+        based on the new model.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}._update_model '
+                                  f'function is not defined')
+
+    @property
+    def result_names(self) -> List[str]:
+        """
+        The variables names which to store in results.
+
+        Returns:
+            list: List of string where the string is the
+            name of the variable to store in the result.
+        """
+        return self._result_names
+
+    @result_names.setter
+    def result_names(self, result_names):
+        """
+        Set the result names. If the name is not supported,
+        an error is logged.
+        """
+        self.check_unsupported_variables(variables=result_names,
+                                         type_of_var="variables")
+        self._result_names = result_names
+
+    @property
+    def variables(self):
+        """
+        All variables of the simulation model
+        """
+        return list(itertools.chain(self.parameters.keys(),
+                                    self.outputs.keys(),
+                                    self.inputs.keys(),
+                                    self.states.keys()))
+
+    def check_unsupported_variables(self, variables: List[str], type_of_var: str):  # todo: use this functionality in discrete simulation!!
+        """Log warnings if variables are not supported."""
+        if type_of_var == "parameters":
+            ref = self.parameters.keys()
+        elif type_of_var == "outputs":
+            ref = self.outputs.keys()
+        elif type_of_var == "inputs":
+            ref = self.inputs.keys()
+        elif type_of_var == "inputs":
+            ref = self.states.keys()
+        else:
+            ref = self.variables
+
+        diff = set(variables).difference(ref)
+        if diff:
+            self.logger.warning(
+                "Variables '%s' not found in model '%s'. "
+                "Will most probably trigger an error when simulating.",
+                ', '.join(diff), self.model_name
+            )
+            return True
+        return False
+
     @ abstractmethod
     def close(self):
         raise NotImplementedError(f'{self.__class__.__name__}.close '
@@ -410,8 +476,10 @@ class Model:
 class FMU:
 
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU
+    _fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
+    _unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
 
-    def __init__(self, use_mp, **kwargs):
+    def __init__(self, log_fmu: bool = True):
         path = self.config.file_path
         if isinstance(self.config.file_path, pathlib.Path):
             path = str(self.config.file_path)
@@ -422,14 +490,13 @@ class FMU:
             self.cd = self.config.cd
         else:
             self.cd = os.path.dirname(fmu_path)
-        self.log_fmu = kwargs.get("log_fmu", True)  # todo consider moving to config
-        self._fmu_instances: dict = {}  # Dict of FMU instances
-        self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction
+        self.log_fmu = log_fmu  # todo consider moving to config
+        # self._fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
+        # self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
         self._var_refs: dict = None  # Dict of variables and their references
         self._model_description = None
         self._fmi_type = None
         self._single_unzip_dir: str = None
-        self.use_mp = use_mp
         self.log_fmu = None
 
     def _custom_logger(self, component, instanceName, status, category, message):
@@ -609,23 +676,23 @@ class FMU:
         })
         return True
 
-    def close(self):
-        """
-        Closes the fmu.
-
-        :return: bool
-            True on success
-        """
-        # Close MP of super class
-        # super().close()  # fixme:..back in? does super work? -> fmu is parent class
-        # Close if single process
-        if not self.use_mp:
-            if not self._fmu_instances:
-                return  # Already closed
-            self._single_close(fmu_instance=self._fmu_instances[0],
-                               unzip_dir=self._unzip_dirs[0])
-            self._unzip_dirs = {}
-            self._fmu_instances = {}
+    # def close(self):
+    #     """
+    #     Closes the fmu.
+    #
+    #     :return: bool
+    #         True on success
+    #     """
+    #     # Close MP of super class
+    #     # super().close()  # fixme:..back in? does super work? -> fmu is parent class; otherwise consider only single close in fmu class here
+    #     # Close if single process
+    #     if not self.use_mp:
+    #         if not self._fmu_instances:
+    #             return  # Already closed
+    #         self._single_close(fmu_instance=self._fmu_instances[0],
+    #                            unzip_dir=self._unzip_dirs[0])
+    #         self._unzip_dirs = {}
+    #         self._fmu_instances = {}
 
     def _single_close(self, **kwargs):
         fmu_instance = kwargs["fmu_instance"]
@@ -654,9 +721,11 @@ class FMU_Discrete(FMU, Model):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Discrete
 
-    def __init__(self, config, **kwargs):
+    def __init__(self, config, log_fmu: bool = True):
+        self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
-        FMU.__init__(self, use_mp=False, **kwargs)  # no mp for stepwise FMU simulation
+        self.worker_idx = None  # todo: evaluate where to place
+        FMU.__init__(self, log_fmu)
         Model.__init__(self, model_name=self.config.file_path)  # todo: in case of fmu: file path, in case of dym: model_name, find better way to deal with; consider getting rid of model_name. For now it is to make the old methods work
         # used for stepwise simulation
         self.current_time = None
@@ -787,7 +856,7 @@ class FMU_Discrete(FMU, Model):
         else:
             return self.finished
 
-    def do_step_wrapper(self, input_step: dict = None):
+    def do_step_wrapper(self, input_step: dict = None):  # todo: consider automatic close in here again. after results are read there is no need for the fmu to stay
         # collect inputs
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -818,93 +887,516 @@ class FMU_Discrete(FMU, Model):
         self.result_names = list(self.outputs.keys()) + list(self.inputs.keys())
 
 
+class ContinuousSimulation(Model):
+
+    _items_to_drop = [
+        'pool',
+    ]
+
+    def __init__(self, model_name, n_cpu: int = 1):
+
+        # Private helper attrs for multiprocessing
+        self._n_sim_counter = 0
+        self._n_sim_total = 0
+        self._progress_int = 0
+        # Check multiprocessing
+        self.n_cpu = n_cpu
+        if self.n_cpu > mp.cpu_count():
+            raise ValueError(f"Given n_cpu '{self.n_cpu}' is greater "
+                             "than the available number of "
+                             f"cpus on your machine '{mp.cpu_count()}'")
+        if self.n_cpu > 1:
+            # pylint: disable=consider-using-with
+            self.pool = mp.Pool(processes=self.n_cpu)
+            self.use_mp = True
+        else:
+            self.pool = None
+            self.use_mp = False
+
+        super().__init__(model_name=model_name)
+
+    # MP-Functions
+    @property
+    def worker_idx(self):
+        """Index of the current worker"""
+        _id = mp.current_process()._identity
+        if _id:
+            return _id[0]
+        return None
+
+    def __getstate__(self):
+        """Overwrite magic method to allow pickling the api object"""
+        self_dict = self.__dict__.copy()
+        for item in self._items_to_drop:
+            del self_dict[item]
+        # return deepcopy(self_dict)
+        return self_dict
+
+    def __setstate__(self, state):
+        """Overwrite magic method to allow pickling the api object"""
+        self.__dict__.update(state)
+
+    def close(self):  # todo: check if this is overwritten anyway?? Counts only for MP?? whats happending at else??
+        """Base function for closing the simulation-program."""
+        if self.use_mp:
+            try:
+                self.pool.map(self._close_multiprocessing,
+                              list(range(self.n_cpu)))
+                self.pool.close()
+                self.pool.join()
+            except ValueError:
+                pass  # Already closed prior to atexit
+
+    @abstractmethod
+    def _close_multiprocessing(self, _):
+        raise NotImplementedError(f'{self.__class__.__name__}.close '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def _single_close(self, **kwargs):
+        """Base function for closing the simulation-program of a single core"""
+        raise NotImplementedError(f'{self.__class__.__name__}._single_close '
+                                  f'function is not defined')
+
+    @abstractmethod  # todo: why abstract method?
+    def simulate(self,
+                 parameters: Union[dict, List[dict]] = None,
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Base function for simulating the simulation-model.
+
+        :param dict parameters:
+            Parameters to simulate.
+            Names of parameters are key, values are value of the dict.
+            Default is an empty dict.
+        :param str return_option:
+            How to handle the simulation results. Options are:
+            - 'time_series': Returns a DataFrame with the results and does not store anything.
+            Only variables specified in result_names will be returned.
+            - 'last_point': Returns only the last point of the simulation.
+            Relevant for integral metrics like energy consumption.
+            Only variables specified in result_names will be returned.
+            - 'savepath': Returns the savepath where the results are stored.
+            Depending on the API, different kwargs may be used to specify file type etc.
+        :keyword str,os.path.normpath savepath:
+            If path is provided, the relevant simulation results will be saved
+            in the given directory.
+            Only relevant if return_option equals 'savepath' .
+        :keyword str result_file_name:
+            Name of the result file. Default is 'resultFile'.
+            Only relevant if return_option equals 'savepath'.
+        :keyword (TimeSeriesData, pd.DataFrame) inputs:
+            Pandas.Dataframe of the input data for simulating the FMU with fmpy
+        :keyword Boolean fail_on_error:
+            If True, an error in fmpy will trigger an error in this script.
+            Default is True
+
+        :return: str,os.path.normpath filepath:
+            Only if return_option equals 'savepath'.
+            Filepath of the result file.
+        :return: dict:
+            Only if return_option equals 'last_point'.
+        :return: Union[List[pd.DataFrame],pd.DataFrame]:
+            If parameters are scalar and squeeze=True,
+            a DataFrame with the columns being equal to
+            self.result_names.
+            If multiple set's of initial values are given, one
+            dataframe for each set is returned in a list
+        """
+        # Convert inputs to equally sized objects of lists:
+        if parameters is None:
+            parameters = [{}]
+        if isinstance(parameters, dict):
+            parameters = [parameters]
+        new_kwargs = {}
+        kwargs["return_option"] = return_option  # Update with arg
+        # Handle special case for saving files:
+        if return_option == "savepath" and len(parameters) > 1:
+            savepath = kwargs.get("savepath", [])
+            result_file_name = kwargs.get("result_file_name", [])
+            if (len(set(savepath)) != len(parameters) and
+                    len(set(result_file_name)) != len(parameters)):
+                raise TypeError(
+                    "Simulating multiple parameter set's on "
+                    "the same savepath will overwrite old "
+                    "results or even cause errors. "
+                    "Specify a result_file_name or savepath for each "
+                    "parameter combination"
+                )
+        for key, value in kwargs.items():
+            if isinstance(value, list):
+                if len(value) != len(parameters):
+                    raise ValueError(f"Mismatch in multiprocessing of "
+                                     f"given parameters ({len(parameters)}) "
+                                     f"and given {key} ({len(value)})")
+                new_kwargs[key] = value
+            else:
+                new_kwargs[key] = [value] * len(parameters)
+        kwargs = []
+        for _idx, _parameters in enumerate(parameters):
+            kwargs.append(
+                {"parameters": _parameters,
+                 **{key: value[_idx] for key, value in new_kwargs.items()}
+                 }
+            )
+        # Decide between mp and single core
+        if self.use_mp:
+            self._n_sim_counter = 0
+            self._n_sim_total = len(kwargs)
+            self._progress_int = 0
+            self.logger.info("Starting %s simulations on %s cores",
+                             self._n_sim_total, self.n_cpu)
+            _async_jobs = []
+            for _kwarg in kwargs:
+                _async_jobs.append(
+                    self.pool.apply_async(
+                        func=self._single_simulation,
+                        args=(_kwarg,),
+                        callback=self._log_simulation_process)
+                )
+            results = []
+            for _async_job in _async_jobs:
+                _async_job.wait()
+                results.append(_async_job.get())
+        else:
+            results = [self._single_simulation(kwargs={
+                "parameters": _single_kwargs["parameters"],
+                "return_option": _single_kwargs["return_option"],
+                **_single_kwargs
+            }) for _single_kwargs in kwargs]
+        if len(results) == 1:
+            return results[0]
+        return results
+
+    def _log_simulation_process(self, _):
+        """Log the simulation progress"""
+        self._n_sim_counter += 1
+        progress = int(self._n_sim_counter / self._n_sim_total * 100)
+        if progress == self._progress_int + 10:
+            if self.logger.isEnabledFor(level=logging.INFO):
+                self.logger.info(f"Finished {progress} % of all {self._n_sim_total} simulations")
+            self._progress_int = progress
+
+    @abstractmethod
+    def _single_simulation(self, kwargs):
+        """
+        Same arguments and function as simulate().
+        Used to differ between single- and multi-processing simulation"""
+        raise NotImplementedError(f'{self.__class__.__name__}._single_simulation '
+                                  f'function is not defined')
+
+
+class FMU_Continuous(FMU, ContinuousSimulation):
+
+    _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Continuous
+
+    _type_map = {
+        float: np.double,
+        bool: np.bool_,
+        int: np.int_
+    }
+
+    def __init__(self, config, n_cpu, log_fmu: bool = True):  # todo: consider use mp and n_core in config -> requires more specific config classes
+        self.config = self._exp_config_class.parse_obj(config)
+        FMU.__init__(self, log_fmu=log_fmu)
+        ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
+        # Register exit option
+        atexit.register(self.close)
+
+    def simulate(self,
+                 parameters: Union[dict, List[dict]] = None,
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
+
+        Additional kwargs:
+        :keyword str result_file_suffix:
+            Suffix of the result file. Supported options can be extracted
+            from the TimeSeriesData.save() function.
+            Default is 'csv'.
+        """
+        return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
+
+    def _single_simulation(self, kwargs):
+        """
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
+
+        The single argument kwarg is to make this
+        function accessible by multiprocessing pool.map.
+        """
+        # Unpack kwargs:
+        parameters = kwargs.pop("parameters", None)
+        return_option = kwargs.pop("return_option", "time_series")
+        inputs = kwargs.get("inputs", None)
+        fail_on_error = kwargs.get("fail_on_error", True)
+
+        if self.use_mp:
+            idx_worker = self.worker_idx
+            if idx_worker not in self._fmu_instances:
+                self._setup_single_fmu_instance(use_mp=True)
+        else:
+            idx_worker = 0
+
+        fmu_instance = self._fmu_instances[idx_worker]
+        unzip_dir = self._unzip_dirs[idx_worker]
+
+        if inputs is not None:
+            if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
+                raise TypeError("DataFrame or TimeSeriesData object expected for inputs.")
+            inputs = inputs.copy()  # Create save copy
+            if isinstance(inputs, TimeSeriesData):
+                inputs = inputs.to_df(force_single_index=True)
+            if "time" in inputs.columns:
+                raise IndexError(
+                    "Given inputs contain a column named 'time'. "
+                    "The index is assumed to contain the time-information."
+                )
+            # Convert df to structured numpy array for fmpy: simulate_fmu
+            inputs.insert(0, column="time", value=inputs.index)
+            inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
+            # Try to match the type, default is np.double.
+            # 'time' is not in inputs and thus handled separately.
+            dtype = [(inputs.columns[0], np.double)] + \
+                    [(col,
+                      self._type_map.get(self.inputs[col].type, np.double)
+                      ) for col in inputs.columns[1:]]
+            inputs = np.array(inputs_tuple, dtype=dtype)
+        if parameters is None:
+            parameters = {}
+        else:
+            self.check_unsupported_variables(variables=list(parameters.keys()),
+                                             type_of_var="parameters")
+        try:
+            # reset the FMU instance instead of creating a new one
+            fmu_instance.reset()
+            # Simulate
+            res = fmpy.simulate_fmu(
+                filename=unzip_dir,
+                start_time=self.sim_setup.start_time,
+                stop_time=self.sim_setup.stop_time,
+                solver=self.sim_setup.solver,
+                step_size=self.sim_setup.fixedstepsize,
+                relative_tolerance=None,
+                output_interval=self.sim_setup.output_interval,
+                record_events=False,  # Used for an equidistant output
+                start_values=parameters,
+                apply_default_start_values=False,  # As we pass start_values already
+                input=inputs,
+                output=self.result_names,
+                timeout=self.sim_setup.timeout,
+                step_finished=None,
+                model_description=self._model_description,
+                fmu_instance=fmu_instance,
+                fmi_type=self._fmi_type,
+            )
+
+        except Exception as error:
+            self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
+            if fail_on_error:
+                raise error
+            return None
+
+        # Reshape result:
+        df = pd.DataFrame(res).set_index("time")
+        df.index = np.round(df.index.astype("float64"),
+                            str(self.sim_setup.output_interval)[::-1].find('.'))
+
+        if return_option == "savepath":
+            result_file_name = kwargs.get("result_file_name", "resultFile")
+            result_file_suffix = kwargs.get("result_file_suffix", "csv")
+            savepath = kwargs.get("savepath", None)
+
+            if savepath is None:
+                savepath = self.cd
+
+            os.makedirs(savepath, exist_ok=True)
+            filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
+            TimeSeriesData(df).droplevel(1, axis=1).save(
+                filepath=filepath,
+                key="simulation"
+            )
+
+            return filepath
+        if return_option == "last_point":
+            return df.iloc[-1].to_dict()
+        # Else return time series data
+        tsd = TimeSeriesData(df, default_tag="sim")
+        return tsd
+
+    def close(self):
+        """
+        Closes the fmu.
+
+        :return: bool
+            True on success
+        """
+        print('FMU "{}" closed'.format(self._model_description.modelName))  # fixme: adjust for mp
+        # Close MP of super class
+        ContinuousSimulation.close(self)
+        # Close if single process
+        if not self.use_mp:
+            if not self._fmu_instances:
+                return  # Already closed
+            self._single_close(fmu_instance=self._fmu_instances[0],
+                               unzip_dir=self._unzip_dirs[0])
+            self._unzip_dirs = {}
+            self._fmu_instances = {}
+
+    def _close_multiprocessing(self, _):
+        """Small helper function"""
+        idx_worker = self.worker_idx
+        if idx_worker not in self._fmu_instances:
+            return  # Already closed
+        self.logger.error(f"Closing fmu for worker {idx_worker}")
+        self._single_close(fmu_instance=self._fmu_instances[idx_worker],
+                           unzip_dir=self._unzip_dirs[idx_worker])
+        self._unzip_dirs = {}
+        self._fmu_instances = {}
+
+
 if __name__ == '__main__':
-    # ---- Settings ---------
-    output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
-    comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
-    start = 0  # start time
-    stop = 86400 * 3  # stop time
-    t_start = 293.15 - 5
-    t_start_amb = 293.15 - 15
 
-    input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
+    """ FMU discrete """
+    # # ---- Settings ---------
+    # output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
+    # comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
+    # start = 0  # start time
+    # stop = 86400 * 3  # stop time
+    # t_start = 293.15 - 5
+    # t_start_amb = 293.15 - 15
+    #
+    # input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
+    #
+    # # store simulation setup as dict
+    # simulation_setup = {"start_time": start,
+    #                     "stop_time": stop,
+    #                     "output_interval": output_step,
+    #                     "comm_step_size": comm_step
+    #                     }
+    #
+    # config_obj = {
+    #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
+    #               'sim_setup': simulation_setup,
+    #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
+    #               }
+    #
+    # sys = FMU_Discrete(config_obj)
+    # ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
+    #
+    # sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    #
+    # res_step = sys.sim_res.iloc[-1]
+    # while not sys.finished:
+    #     # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
+    #     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
+    #         'bus.setPoint'])
+    #     # Apply control action to system and perform simulation step
+    #     res_step = sys.do_step_wrapper(input_step={
+    #         'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    #
+    # sys.close()
+    #
+    # # ---- Results ---------
+    # # return simulation results as pd data frame
+    # results_study_A = sys.get_results(tsd_format=False)
+    #
+    # # format settings
+    # import matplotlib
+    #
+    # # plot settings
+    # matplotlib.rcParams['mathtext.fontset'] = 'custom'
+    # matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
+    # matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
+    # matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
+    #
+    # matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    # matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    # matplotlib.rcParams['font.size'] = 9
+    # matplotlib.rcParams['lines.linewidth'] = 0.75
+    #
+    # cases = [results_study_A]
+    # time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
+    # fig, axes_mat = plt.subplots(nrows=3, ncols=1)
+    # for i in range(len(cases)):
+    #     axes = axes_mat
+    #     axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
+    #     axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
+    #     axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
+    #     axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
+    #
+    #     # x label
+    #     axes[2].set_xlabel('Time / s')
+    #     # title and y label
+    #     if i == 0:
+    #         axes[0].set_title('System FMU - Python controller')
+    #         axes[0].set_ylabel('Zone temperature / °C')
+    #         axes[1].set_ylabel('Rel. heating power / -')
+    #         axes[2].set_ylabel('Ambient temperature / °C')
+    #     if i == 1:
+    #         axes[0].set_title('System FMU - Controller FMU')
+    #         axes[0].legend(loc='upper right')
+    #     # grid
+    #     for ax in axes:
+    #         ax.grid(True, 'both')
+    #         if i > 0:
+    #             # ignore y labels for all but the first
+    #             ax.set_yticklabels([])
+    #
+    # plt.tight_layout()
+    # plt.show()
 
-    # store simulation setup as dict
-    simulation_setup = {"start_time": start,
-                        "stop_time": stop,
-                        "output_interval": output_step,
-                        "comm_step_size": comm_step
-                        }
-
+    """ FMU continuous """
+    n_sim = 10
+    simulation_setup = {"start_time": 0,
+                        "stop_time": 3600,
+                        "output_interval": 100}
     config_obj = {
-                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
+                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
                   'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
                   'sim_setup': simulation_setup,
                   'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
                   }
 
-    sys = FMU_Discrete(config_obj)
-    ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
+    sys = FMU_Continuous(config_obj, n_cpu=2)
 
-    sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    time_index = np.arange(
+        sys.sim_setup.start_time,
+        sys.sim_setup.stop_time,
+        sys.sim_setup.output_interval
+    )
+    # Apply some sinus function for the outdoor air temperature
+    t_dry_bulb = np.sin(time_index / 3600 * np.pi) * 10 + 263.15
+    df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
 
-    res_step = sys.sim_res.iloc[-1]
-    while not sys.finished:
-        # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-        ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
-            'bus.setPoint'])
-        # Apply control action to system and perform simulation step
-        res_step = sys.do_step_wrapper(input_step={
-            'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    hea_cap_c = sys.parameters['heaCap.C'].value
+    # Let's alter it from 10% to 1000 % in n_sim simulations:
+    sizings = np.linspace(0.1, 10, n_sim)
+    parameters = []
+    for sizing in sizings:
+        parameters.append({"heaCap.C": hea_cap_c * sizing})
 
-    sys.close()
+    sys.result_names = ["heaCap.T", "TDryBul"]
 
-    # ---- Results ---------
-    # return simulation results as pd data frame
-    results_study_A = sys.get_results(tsd_format=False)
+    results = sys.simulate(parameters=parameters,
+                           inputs=df_inputs)
 
-    # format settings
-    import matplotlib
+    # Plot the result
+    fig, ax = plt.subplots(2, sharex=True)
+    ax[0].set_ylabel("TDryBul in K")
+    ax[1].set_ylabel("T_Cap in K")
+    ax[1].set_xlabel("Time in s")
+    ax[0].plot(df_inputs, label="Inputs", linestyle="--")
+    for res, sizing in zip(results, sizings):
+        ax[0].plot(res['TDryBul'])
+        ax[1].plot(res['heaCap.T'], label=sizing)
+    for _ax in ax:
+        _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
 
-    # plot settings
-    matplotlib.rcParams['mathtext.fontset'] = 'custom'
-    matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
-    matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
-    matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
-
-    matplotlib.rcParams['mathtext.fontset'] = 'stix'
-    matplotlib.rcParams['font.family'] = 'STIXGeneral'
-    matplotlib.rcParams['font.size'] = 9
-    matplotlib.rcParams['lines.linewidth'] = 0.75
-
-    cases = [results_study_A]
-    time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
-    fig, axes_mat = plt.subplots(nrows=3, ncols=1)
-    for i in range(len(cases)):
-        axes = axes_mat
-        axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
-        axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
-        axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
-        axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
-
-        # x label
-        axes[2].set_xlabel('Time / s')
-        # title and y label
-        if i == 0:
-            axes[0].set_title('System FMU - Python controller')
-            axes[0].set_ylabel('Zone temperature / °C')
-            axes[1].set_ylabel('Rel. heating power / -')
-            axes[2].set_ylabel('Ambient temperature / °C')
-        if i == 1:
-            axes[0].set_title('System FMU - Controller FMU')
-            axes[0].legend(loc='upper right')
-        # grid
-        for ax in axes:
-            ax.grid(True, 'both')
-            if i > 0:
-                # ignore y labels for all but the first
-                ax.set_yticklabels([])
-
-    plt.tight_layout()
     plt.show()
-

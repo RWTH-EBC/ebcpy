@@ -64,8 +64,8 @@ class FMU_API(simulationapi.SimulationAPI):
     """
     objs = []
     _sim_setup_class: SimulationSetupClass = FMU_Setup
-    # _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation but needed for mp continuous simulation!!!
-    # _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
+    _fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation but needed for mp continuous simulation!!!
+    _unzip_dirs: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation
 
     _type_map = {
         float: np.double,
@@ -87,8 +87,8 @@ class FMU_API(simulationapi.SimulationAPI):
         self.var_refs = None
         self.sim_res = None  # todo: also use for continuous simulation
         self.finished = None
-        self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation. But its mandatory to be class attribute for mp in continuous FMU simulation
-        self._unzip_dirs: dict = {}
+        # self._fmu_instances: dict = {}  # fixme: kbe: as class attribute its not possible to instantiate two fmu's in parralel for co simulation. But its mandatory to be class attribute for mp in continuous FMU simulation
+        # self._unzip_dirs: dict = {}
         # define input data (can be adjusted during simulation using the setter)
         self.input_table = None
         self.interp_input_table = None
@@ -118,7 +118,6 @@ class FMU_API(simulationapi.SimulationAPI):
         if isinstance(input_data, TimeSeriesData):
             input_data = input_table.to_df(force_single_index=True)
         self._input_table = input_data
-
 
     def _update_model(self):
         # Setup the fmu instance

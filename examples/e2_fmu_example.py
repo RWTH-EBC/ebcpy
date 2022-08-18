@@ -149,6 +149,6 @@ if __name__ == '__main__':
     main(
         n_cpu=2,
         log_fmu=False,
-        n_sim=50,
+        n_sim=2,
         output_interval=100
     )
