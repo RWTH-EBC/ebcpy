@@ -603,7 +603,8 @@ class DymolaAPI(SimulationAPI):
                      "gcc": "GCC"}
 
         if "win" not in sys.platform:
-            raise OSError(f"set_compiler function only implemented "
+            raise OSError(
+                f"set_compiler function only implemented "
                           f"for windows systems, you are using {sys.platform}")
         # Manually check correct input as Dymola's error are not a help
         name = name.lower()
