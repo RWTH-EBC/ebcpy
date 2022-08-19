@@ -162,7 +162,6 @@ class SimulationAPI:
         self_dict = self.__dict__.copy()
         for item in self._items_to_drop:
             del self_dict[item]
-        #return deepcopy(self_dict)
         return self_dict
 
     def __setstate__(self, state):
