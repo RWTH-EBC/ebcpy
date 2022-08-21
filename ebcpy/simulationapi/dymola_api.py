@@ -115,15 +115,17 @@ class DymolaAPI(SimulationAPI):
     _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
     dymola = None
     # Default simulation setup
-    _supported_kwargs = ["show_window",
-                         "modify_structural_parameters",
-                         "dymola_path",
-                         "equidistant_output",
-                         "n_restart",
-                         "debug",
-                         "mos_script_pre",
-                         "mos_script_post",
-                         "dymola_version"]
+    _supported_kwargs = [
+        "show_window",
+        "modify_structural_parameters",
+        "dymola_path",
+        "equidistant_output",
+        "n_restart",
+        "debug",
+        "mos_script_pre",
+        "mos_script_post",
+        "dymola_version"
+    ]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
