@@ -149,7 +149,7 @@ def main(
 
 if __name__ == '__main__':
     main(
-        n_cpu=1,
+        n_cpu=5,
         log_fmu=False,
         n_sim=5,
         output_interval=100

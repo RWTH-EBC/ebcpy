@@ -60,10 +60,10 @@ class FMU_API(simulationapi.SimulationAPI):
 
     .. versionadded:: 0.1.7
     """
-
+    _items_to_drop = ["pool", "_fmu_instance", "_unzip_dir"]
+    _fmu_instance = None
+    _unzip_dir: str = None
     _sim_setup_class: SimulationSetupClass = FMU_Setup
-    _fmu_instances: dict = {}
-    _unzip_dirs: dict = {}
     _type_map = {
         float: np.double,
         bool: np.bool_,
@@ -75,6 +75,8 @@ class FMU_API(simulationapi.SimulationAPI):
         # Init instance attributes
         self._model_description = None
         self._fmi_type = None
+        self._unzip_dir = None
+        self._fmu_instance = None
         self.log_fmu = kwargs.get("log_fmu", True)
         self._single_unzip_dir: str = None
 
@@ -103,12 +105,12 @@ class FMU_API(simulationapi.SimulationAPI):
         super().close()
         # Close if single process
         if not self.use_mp:
-            if not self._fmu_instances:
+            if not self._fmu_instance:
                 return  # Already closed
-            self._single_close(fmu_instance=self._fmu_instances[0],
-                               unzip_dir=self._unzip_dirs[0])
-            self._unzip_dirs = {}
-            self._fmu_instances = {}
+            self._single_close(fmu_instance=self._fmu_instance,
+                               unzip_dir=self._unzip_dir)
+            self._unzip_dir = None
+            self._fmu_instance = None
 
     def _single_close(self, **kwargs):
         fmu_instance = kwargs["fmu_instance"]
@@ -134,13 +136,15 @@ class FMU_API(simulationapi.SimulationAPI):
     def _close_multiprocessing(self, _):
         """Small helper function"""
         idx_worker = self.worker_idx
-        if idx_worker not in self._fmu_instances:
+        if self._fmu_instance is None:
             return  # Already closed
         self.logger.error(f"Closing fmu for worker {idx_worker}")
-        self._single_close(fmu_instance=self._fmu_instances[idx_worker],
-                           unzip_dir=self._unzip_dirs[idx_worker])
-        self._unzip_dirs = {}
-        self._fmu_instances = {}
+        self._single_close(fmu_instance=self._fmu_instance,
+                           unzip_dir=self._unzip_dir)
+        self._unzip_dir = None
+        self._fmu_instance = None
+        FMU_API._unzip_dir = None
+        FMU_API._fmu_instance = None
 
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
@@ -175,14 +179,8 @@ class FMU_API(simulationapi.SimulationAPI):
         fail_on_error = kwargs.get("fail_on_error", True)
 
         if self.use_mp:
-            idx_worker = self.worker_idx
-            if idx_worker not in self._fmu_instances:
+            if self._fmu_instance is None:
                 self._setup_single_fmu_instance(use_mp=True)
-        else:
-            idx_worker = 0
-
-        fmu_instance = self._fmu_instances[idx_worker]
-        unzip_dir = self._unzip_dirs[idx_worker]
 
         if inputs is not None:
             if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
@@ -211,8 +209,11 @@ class FMU_API(simulationapi.SimulationAPI):
             self.check_unsupported_variables(variables=list(parameters.keys()),
                                              type_of_var="parameters")
         try:
+            # reset the FMU instance instead of creating a new one
+            self._fmu_instance.reset()
+            # Simulate
             res = fmpy.simulate_fmu(
-                filename=unzip_dir,
+                filename=self._unzip_dir,
                 start_time=self.sim_setup.start_time,
                 stop_time=self.sim_setup.stop_time,
                 solver=self.sim_setup.solver,
@@ -227,10 +228,9 @@ class FMU_API(simulationapi.SimulationAPI):
                 timeout=self.sim_setup.timeout,
                 step_finished=None,
                 model_description=self._model_description,
-                fmu_instance=fmu_instance,
+                fmu_instance=self._fmu_instance,
                 fmi_type=self._fmi_type,
             )
-            fmu_instance.reset()
 
         except Exception as error:
             self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
@@ -276,7 +276,7 @@ class FMU_API(simulationapi.SimulationAPI):
                                               os.path.basename(self.model_name)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
         self._single_unzip_dir = fmpy.extract(self.model_name,
-                                         unzipdir=self._single_unzip_dir)
+                                              unzipdir=self._single_unzip_dir)
         self._model_description = read_model_description(self._single_unzip_dir,
                                                          validate=True)
 
@@ -292,10 +292,13 @@ class FMU_API(simulationapi.SimulationAPI):
             return value
         self.logger.info("Reading model variables")
 
-        _types = {"Enumeration": int,
-                  "Integer": int,
-                  "Real": float,
-                  "Boolean": bool, }
+        _types = {
+            "Enumeration": int,
+            "Integer": int,
+            "Real": float,
+            "Boolean": bool,
+            "String": str
+        }
         # Extract inputs, outputs & tuner (lists from parent classes will be appended)
         for var in self._model_description.modelVariables:
             if var.start is not None:
@@ -332,30 +335,32 @@ class FMU_API(simulationapi.SimulationAPI):
             self._setup_single_fmu_instance(use_mp=False)
 
     def _setup_single_fmu_instance(self, use_mp):
-        if not use_mp:
-            wrk_idx = 0
-        else:
-            wrk_idx = self.worker_idx
-            if wrk_idx in self._fmu_instances:
-                return True
         if use_mp:
+            wrk_idx = self.worker_idx
+            if self._fmu_instance is not None:
+                return True
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
-            unzip_dir = fmpy.extract(self.model_name,
-                                     unzipdir=unzip_dir)
+            fmpy.extract(self.model_name,
+                         unzipdir=unzip_dir)
         else:
+            wrk_idx = 0
             unzip_dir = self._single_unzip_dir
+
         self.logger.info("Instantiating fmu for worker %s", wrk_idx)
-        self._fmu_instances.update({wrk_idx: fmpy.instantiate_fmu(
+        fmu_instance = fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
             model_description=self._model_description,
             fmi_type=self._fmi_type,
             visible=False,
             debug_logging=False,
             logger=self._custom_logger,
-            fmi_call_logger=None)})
-        self._unzip_dirs.update({
-            wrk_idx: unzip_dir
-        })
+            fmi_call_logger=None)
+        if use_mp:
+            FMU_API._fmu_instance = fmu_instance
+            FMU_API._unzip_dir = unzip_dir
+        else:
+            self._fmu_instance = fmu_instance
+            self._unzip_dir = unzip_dir
         return True
 
     def _custom_logger(self, component, instanceName, status, category, message):

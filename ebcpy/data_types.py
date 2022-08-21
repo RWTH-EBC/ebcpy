@@ -25,9 +25,9 @@ __all__ = ['TimeSeries',
            'datetime_indexes']
 
 numeric_indexes = [
-    pd.Float64Index,
+    type(pd.Index([], dtype="float64")),
     pd.RangeIndex,
-    pd.Int64Index
+    type(pd.Index([], dtype="int64"))
 ]
 
 datetime_indexes = [
@@ -564,7 +564,7 @@ def get_keys_of_hdf_file(filepath):
     # pylint: disable=import-outside-toplevel
     try:
         import h5py
-        hdf_file = h5py.File(filepath, 'r')
-        return list(hdf_file.keys())
+        with h5py.File(filepath, 'r') as hdf_file:
+            return list(hdf_file.keys())
     except ImportError:
         return ["ERROR: Could not obtain keys as h5py is not installed"]

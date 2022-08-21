@@ -1,6 +1,6 @@
 ![E.ON EBC RWTH Aachen University](./docs/EBC_Logo.png)
 
-
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.03861/status.svg)](https://doi.org/10.21105/joss.03861)
 [![pylint](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.svg )](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.html)
 [![documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/doc.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html)
 [![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage/badge.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage)
@@ -20,6 +20,8 @@ Key features are:
 * Optimization wrapper
 * Pre-/Postprocessing
 * Modelica utilities
+
+It was developed together with `AixCaliBuHA`, a framework for an automated calibration of dynamic building and HVAC models. During this development, we found several interfaces relevant to further reserach. We thus decoupled these interfaces into `ebcpy` and used the framework, for instance in the design optimization of heat pump systems ([link](https://www.sciencedirect.com/science/article/abs/pii/S0196890421010645?via%3Dihub)).
 
 # Installation
 
@@ -63,6 +65,25 @@ jupyter notebook tutorial\tutorial.ipynb
 
 Or, clone this repo and look at the examples\README.md file.
 Here you will find several examples to execute.
+
+# How to cite ebcpy
+
+Please use the following metadata to cite `ebcpy` in your research:
+
+```
+@article{Wüllhorst2022,
+  doi = {10.21105/joss.03861},
+  url = {https://doi.org/10.21105/joss.03861},
+  year = {2022},
+  publisher = {The Open Journal},
+  volume = {7},
+  number = {72},
+  pages = {3861},
+  author = {Fabian Wüllhorst and Thomas Storek and Philipp Mehrfeld and Dirk Müller},
+  title = {AixCaliBuHA: Automated calibration of building and HVAC systems},
+  journal = {Journal of Open Source Software}
+}
+```
 
 # TimeSeriesData
 Note that we use our own `TimeSeriesData` object which inherits from `pd.DataFrame`. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
