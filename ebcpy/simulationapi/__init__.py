@@ -21,7 +21,7 @@ class Variable(BaseModel):
     simulation variable (input, parameter, output or local/state).
     """
     value: Any = Field(
-        description="Default variable value"
+        description="Default variable value. Only floats and ints are allowed."
     )
     max: Any = Field(
         default=np.inf,
@@ -38,6 +38,16 @@ class Variable(BaseModel):
         title='type',
         description='Type of the variable'
     )
+
+    @validator('value')
+    def check_value(cls, value):
+        """Check if the given value is one of the supported types."""
+        if value is not None:
+            assert isinstance(value, (float, int)), \
+                "Only values of type " \
+                f"({', '.join([_type.__name__ for _type in (float, int)])}) " \
+                f"supported, you gave {type(value).__name__}"
+        return value
 
 
 class SimulationSetup(BaseModel):
