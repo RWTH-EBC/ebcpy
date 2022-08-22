@@ -23,12 +23,12 @@ class Variable(BaseModel):
     value: Any = Field(
         description="Default variable value"
     )
-    max: Union[float, int] = Field(
+    max: Any = Field(
         default=np.inf,
         title='max',
         description='Maximal value (upper bound) of the variables value'
     )
-    min: Union[float, int] = Field(
+    min: Any = Field(
         default=-np.inf,
         title='min',
         description='Minimal value (lower bound) of the variables value'
