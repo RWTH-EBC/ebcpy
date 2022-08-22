@@ -1,0 +1,477 @@
+19.08.2022-17:05:51 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:06:31 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:06:31 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:06:31 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:06:31 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:08:42 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:08:42 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:08:42 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:08:43 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:33:51 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:33:51 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:33:51 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:33:51 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:34:39 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:34:39 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:34:39 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:34:39 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:35:29 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:35:29 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:35:29 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:35:29 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:35:42 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:35:42 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:35:42 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:35:42 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:36:08 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:36:08 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:36:08 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:36:08 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:36:40 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:36:40 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:37:18 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:37:18 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:37:18 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:37:18 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:38:23 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:38:23 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:39:10 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:39:10 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:39:10 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:39:10 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:41:39 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:41:39 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:41:39 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:41:39 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:49:54 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:49:54 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:49:54 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:49:54 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:51:25 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:51:25 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:51:25 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:51:26 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:55:50 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:55:50 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:55:50 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:55:50 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-17:56:55 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-17:56:55 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-17:56:55 INFO FMU_Discrete: Reading model variables
+19.08.2022-17:56:55 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:03:02 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:03:02 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:03:02 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:03:02 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:03:41 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:03:41 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:03:41 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:03:41 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:04:48 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:04:48 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:04:48 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:04:48 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:05:51 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:05:51 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:05:51 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:05:51 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:09:58 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:09:58 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:09:58 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:09:58 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:10:48 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:10:48 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:10:48 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:10:48 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:11:06 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:11:06 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:11:06 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:11:06 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:12:07 ERROR FMU_Discrete: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+19.08.2022-18:12:07 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+19.08.2022-18:29:35 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:29:35 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:29:35 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:29:36 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:29:39 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:29:52 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+19.08.2022-18:30:04 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:30:04 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:30:04 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:30:04 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:30:07 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:30:53 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+19.08.2022-18:31:06 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:31:06 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:31:06 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:31:06 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:31:11 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:31:56 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:31:56 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:31:56 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:31:56 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:32:00 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:32:14 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:32:14 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:32:14 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:32:14 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:32:18 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:32:41 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:32:41 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:32:41 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:32:41 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:32:41 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:32:41 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-18:33:34 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:33:34 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:34:09 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:34:09 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:34:09 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:34:09 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:34:09 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:34:09 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-18:34:40 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:34:40 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:36:18 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:36:18 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:36:18 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:36:18 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:36:18 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:36:18 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-18:36:29 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+19.08.2022-18:36:29 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+19.08.2022-18:56:53 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:56:53 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:56:53 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:56:53 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:56:53 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:56:53 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-18:57:04 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+19.08.2022-18:57:04 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-18:57:04 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:57:04 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-18:57:04 INFO FMU_Discrete: Reading model variables
+19.08.2022-18:57:04 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-18:57:04 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+19.08.2022-18:57:04 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+19.08.2022-18:57:04 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-18:57:23 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+19.08.2022-18:57:23 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+19.08.2022-18:59:47 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-18:59:47 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-19:03:00 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-19:03:00 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-19:03:00 INFO FMU_Discrete: Reading model variables
+19.08.2022-19:03:00 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-19:03:00 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-19:03:00 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-19:03:10 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+19.08.2022-19:03:10 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+19.08.2022-19:03:10 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+19.08.2022-19:03:10 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+19.08.2022-19:03:10 INFO FMU_Discrete: Reading model variables
+19.08.2022-19:03:10 INFO FMU_Discrete: Instantiating fmu for worker 0
+19.08.2022-19:03:10 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+19.08.2022-19:03:10 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+19.08.2022-19:03:10 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+19.08.2022-19:03:29 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+19.08.2022-19:03:29 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+19.08.2022-19:03:29 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+19.08.2022-19:03:29 ERROR FMU_Discrete: Could not terminate fmu instance: exception: access violation writing 0x0000020B98AD7620
+19.08.2022-19:03:29 ERROR FMU_Discrete: Could not free fmu instance: exception: access violation writing 0x0000020B98AD7560
+19.08.2022-19:03:29 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-11:51:45 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-11:51:45 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-11:51:45 INFO FMU_Discrete: Reading model variables
+22.08.2022-11:51:45 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-11:51:49 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-11:51:49 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-11:51:56 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-11:51:56 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-11:51:56 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-11:51:56 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-11:51:56 INFO FMU_Discrete: Reading model variables
+22.08.2022-11:51:56 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-11:51:56 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-11:51:56 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-11:51:56 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-11:52:08 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-11:52:08 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-11:52:08 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-11:52:08 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-11:54:01 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-11:54:01 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-11:54:02 INFO FMU_Discrete: Reading model variables
+22.08.2022-11:54:02 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-12:53:22 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-12:57:00 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-12:57:00 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-12:58:03 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-12:58:42 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:00:49 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:00:49 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:00:49 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:00:49 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:00:49 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:00:49 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:00:56 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:00:56 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:00:56 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:00:56 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:00:56 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:00:56 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:00:56 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:00:56 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:00:56 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:01:08 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:01:08 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:01:08 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:01:08 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:01:29 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:01:29 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:01:30 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:01:30 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:02:31 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:02:38 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:02:38 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:02:42 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:09:37 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:37 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:37 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:37 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:37 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:09:37 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:09:39 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:09:39 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:09:39 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:39 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:39 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:39 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:39 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:09:39 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:09:39 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:09:42 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:09:42 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:09:42 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:09:42 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:09:42 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:42 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:42 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:42 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:42 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:09:42 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:09:43 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:09:43 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:09:52 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:52 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:52 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:52 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:52 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:09:52 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:09:54 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:09:54 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:09:54 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:54 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:54 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:54 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:54 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:09:54 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:09:54 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:09:57 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:09:57 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:09:57 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:09:57 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:09:57 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:09:57 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:09:57 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:09:57 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:09:57 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:09:57 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:09:57 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:09:57 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:16:17 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:16:17 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:16:17 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:16:17 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:16:17 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:16:17 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:16:19 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:16:19 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:16:19 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:16:19 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:16:19 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:16:19 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:16:19 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:16:19 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:16:19 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:16:22 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:16:22 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:16:22 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:16:22 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:16:22 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:16:22 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:16:22 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:16:22 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:16:22 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:16:22 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:16:23 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:16:23 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:20:20 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:20:20 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:20:20 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:20:20 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:20:20 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:20:20 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:20:22 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:20:22 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:20:22 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:20:22 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:20:23 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:20:23 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:20:23 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:20:23 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:20:23 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:20:26 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:20:26 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:20:26 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:20:26 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:20:26 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:20:26 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:20:26 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:20:26 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:20:26 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:20:26 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:20:27 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:20:27 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:26:23 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:26:23 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:26:23 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:26:23 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:26:23 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:26:23 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:26:30 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:26:30 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:26:30 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:26:30 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:26:30 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:26:30 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:26:30 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:26:30 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:26:30 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:26:42 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:26:42 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:26:42 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:26:42 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:26:59 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:26:59 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:27:00 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:27:00 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:30:16 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:30:16 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:30:17 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:30:17 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:35:08 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:35:08 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:35:08 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:35:08 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:35:08 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:35:08 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:35:10 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:35:10 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-13:35:10 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:35:10 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:35:10 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:35:10 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:35:10 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-13:35:10 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-13:35:10 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-13:35:13 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-13:35:13 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-13:35:13 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-13:35:13 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-13:35:13 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:35:13 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:35:13 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:35:13 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:35:13 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:35:13 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:35:14 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:35:14 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:36:26 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:36:26 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:36:26 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:36:26 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:36:26 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:36:26 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:36:29 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:36:29 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:37:28 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:37:28 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:37:28 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:37:28 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:37:28 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:37:28 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:37:29 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:37:29 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:38:03 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:38:03 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:38:03 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:38:03 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:38:03 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:38:03 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:38:04 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:38:04 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-13:38:35 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-13:38:35 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-13:38:36 INFO FMU_Discrete: Reading model variables
+22.08.2022-13:38:36 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-13:38:36 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-13:38:36 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-13:38:37 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-13:38:37 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+22.08.2022-14:06:30 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-14:06:30 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-14:06:30 INFO FMU_Discrete: Reading model variables
+22.08.2022-14:06:30 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-14:06:30 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-14:06:30 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-14:06:31 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-14:06:32 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-14:06:32 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-14:06:32 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-14:06:32 INFO FMU_Discrete: Reading model variables
+22.08.2022-14:06:32 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-14:06:32 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-14:06:32 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-14:06:32 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-14:06:35 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-14:06:35 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-14:06:35 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-14:06:35 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-14:06:46 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-14:06:46 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-14:06:46 INFO FMU_Discrete: Reading model variables
+22.08.2022-14:06:46 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-14:06:46 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-14:06:46 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-14:06:48 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-14:06:48 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+22.08.2022-14:06:48 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-14:06:48 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-14:06:48 INFO FMU_Discrete: Reading model variables
+22.08.2022-14:06:48 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-14:06:48 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+22.08.2022-14:06:48 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+22.08.2022-14:06:48 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+22.08.2022-14:06:51 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+22.08.2022-14:06:51 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+22.08.2022-14:06:51 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+22.08.2022-14:06:51 INFO FMU_Discrete: FMU "PI_1_bus" closed
+22.08.2022-14:06:51 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+22.08.2022-14:06:51 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+22.08.2022-14:06:51 INFO FMU_Discrete: Reading model variables
+22.08.2022-14:06:51 INFO FMU_Discrete: Instantiating fmu for worker 0
+22.08.2022-14:06:51 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+22.08.2022-14:06:51 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+22.08.2022-14:06:53 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+22.08.2022-14:06:53 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed

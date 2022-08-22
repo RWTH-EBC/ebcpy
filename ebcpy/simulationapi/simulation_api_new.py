@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field#, validator
+from pydantic import BaseModel, Field, validator
 from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
 from typing import TypeVar, Dict, Any, List
@@ -137,6 +137,10 @@ def interp_df(t: int, df: pd.DataFrame,
                                               df[column].iloc[idx_l:idx_r + 1])})
     return row
 
+# pd.DataFrame und TimeSeriesData as type to be validated by pydantic
+PandasDataFrame = TypeVar('pandas.core.frame.DataFrame')
+TimeSeriesDataObject = TypeVar('TimeSeriesData')
+
 
 class Variable(BaseModel):
     """
@@ -259,6 +263,7 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
     Add's custom setup parameters for simulating FMUs stepwise
     to the basic `SimulationSetup`
     """
+
     comm_step_size: float = Field(
         title="communication step size",
         default=1,
@@ -267,7 +272,7 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
 
     tolerance: float = Field(
         title="tolerance",
-        default=0.0001,
+        default=None,  # to select fmpy's default
         description="Absolute tolerance of integration"
     )
     _default_solver = "CVode"
@@ -291,7 +296,7 @@ class ExperimentConfigurationFMU(ExperimentConfiguration):
     in case of FMU simulation the fmu file path defines the model
     """
     file_path: Optional[FilePath]
-    input_file: Optional[FilePath]
+    input_data: Optional[Union[FilePath, PandasDataFrame, TimeSeriesDataObject]]  # fixme: not needed in continuous fmu sim
 
 
 class ExperimentConfigurationDymola(ExperimentConfiguration):
@@ -331,7 +336,7 @@ class Model:
         self.outputs: Dict[str, Variable] = {}  # Outputs of model
         self.parameters: Dict[str, Variable] = {}  # Parameter of model
         self.states: Dict[str, Variable] = {}  # States of model
-        # self.worker_idx = False  # todo: evaluate if needed here
+        self.worker_idx = None  # todo: evaluate if needed here
         # results
         self.result_names = []  # initialize list of tracked variables
         self.model_name = model_name  # todo: discuss setting model name triggers further functions
@@ -495,8 +500,8 @@ class Model:
 class FMU:
 
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU
-    _fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
-    _unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
+    # _fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
+    # _unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
 
     def __init__(self, log_fmu: bool = True):
         path = self.config.file_path
@@ -510,8 +515,8 @@ class FMU:
         else:
             self.cd = os.path.dirname(fmu_path)
         self.log_fmu = log_fmu  # todo consider moving to config
-        # self._fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
-        # self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
+        self._fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
+        self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
         self._var_refs: dict = None  # Dict of variables and their references
         self._model_description = None
         self._fmi_type = None
@@ -721,8 +726,10 @@ class FMU:
 class FMU_Discrete(FMU, Model):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Discrete
+    objs = []  # to use the close_all method
 
     def __init__(self, config, log_fmu: bool = True):
+        FMU_Discrete.objs.append(self)
         self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
         # self.worker_idx = None  # todo: evaluate where to place get rid off as this is property
@@ -732,14 +739,17 @@ class FMU_Discrete(FMU, Model):
         self.current_time = None
         self.finished = None
         # define input data (can be adjusted during simulation using the setter)
-        if hasattr(self.config, 'input_file'):
-            self._input_table = pd.read_csv(self.config.input_file, index_col='timestamp')
-        else:
-            print('No long-term input data set. '
-                  'Setter method can still be used to set input data to "input_table" attribute')
-            self.input_table = None
+        self.input_table = self.config.input_data  # calling the setter to distinguish depending on type
         self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
         self.step_count = None  # counting simulation steps
+
+    @classmethod
+    def close_all(cls):
+        """
+        close multiple FMUs at once. Useful for co-simulation
+        """
+        for obj in cls.objs:
+            obj.close()
 
     @property
     def input_table(self):
@@ -749,13 +759,27 @@ class FMU_Discrete(FMU, Model):
         return self._input_table
 
     @input_table.setter
-    def input_table(self, input_data):
+    def input_table(self, inp: Union[FilePath, PandasDataFrame, TimeSeriesDataObject]):
         """
         setter allows the input data to change during discrete simulation
         """
-        if isinstance(input_data, TimeSeriesData):
-            input_data = input_table.to_df(force_single_index=True)
-        self._input_table = input_data
+        if inp is not None:
+            if isinstance(inp, (str, pathlib.Path)):  # fixme: why does pydantcs FilePath does not work jhere
+                if not str(inp).endswith('csv'):
+                    raise TypeError(
+                        'input data {} is not passed as .csv file.'
+                        'Instead of passing a file consider passing a pd.Dataframe or TimeSeriesData object'.format(inp)
+                    )
+                self._input_table = pd.read_csv(inp, index_col='time')
+            else:  # pd frame or tsd object; wrong type already caught by pydantic
+                if isinstance(inp, TimeSeriesData):
+                    self._input_table = inp.to_df(force_single_index=True)
+                elif isinstance(inp, pd.DataFrame):
+                    self._input_table = inp
+        else:
+            print('No long-term input data set!'
+                  'Setter method can still be used to set input data to "input_table" attribute')
+            self._input_table = None
 
     def initialize_discrete_sim(self,
                                 parameters: dict = None,
@@ -849,8 +873,8 @@ class FMU_Discrete(FMU, Model):
             # append
             if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
                 self.sim_res = pd.concat(
-                    [self.sim_res, pd.DataFrame.from_records([res_step],  # because frame.append will be depreciated
-                                                             index=[res_step['SimTime']],
+                    [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
+                                                             index=[res['SimTime']],
                                                              columns=self.sim_res.columns)])
         if ret_res:
             return self.finished, res
@@ -1097,10 +1121,10 @@ class ContinuousSimulation(Model):
                                   f'function is not defined')
 
 
-class FMU_Continuous(FMU, ContinuousSimulation):
+class FMU_API(FMU, ContinuousSimulation):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Continuous
-
+    _items_to_drop = ["pool", "fmu_instance", "unzip_dir"]
     _type_map = {
         float: np.double,
         bool: np.bool_,
@@ -1270,7 +1294,7 @@ class FMU_Continuous(FMU, ContinuousSimulation):
         self._fmu_instances = {}
 
 
-class Dymola(ContinuousSimulation):
+class DymolaAPI(ContinuousSimulation):
     """
     API to a Dymola instance.
 
@@ -2259,204 +2283,204 @@ class Dymola(ContinuousSimulation):
 if __name__ == '__main__':
 
     """ FMU discrete """
-    # # ---- Settings ---------
-    # output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
-    # comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
-    # start = 0  # start time
-    # stop = 86400 * 3  # stop time
-    # t_start = 293.15 - 5
-    # t_start_amb = 293.15 - 15
-    #
-    # input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
-    #
-    # # store simulation setup as dict
-    # simulation_setup = {"start_time": start,
-    #                     "stop_time": stop,
-    #                     "output_interval": output_step,
-    #                     "comm_step_size": comm_step
-    #                     }
-    #
-    # config_obj = {
-    #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
-    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
-    #               'sim_setup': simulation_setup,
-    #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
-    #               }
-    #
-    # sys = FMU_Discrete(config_obj)
-    # ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
-    #
-    # sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
-    #
-    # res_step = sys.sim_res.iloc[-1]
-    # while not sys.finished:
-    #     # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-    #     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
-    #         'bus.setPoint'])
-    #     # Apply control action to system and perform simulation step
-    #     res_step = sys.do_step_wrapper(input_step={
-    #         'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
-    #
-    # sys.close()
-    #
-    # # ---- Results ---------
-    # # return simulation results as pd data frame
-    # results_study_A = sys.get_results(tsd_format=False)
-    #
-    # # format settings
-    # import matplotlib
-    #
-    # # plot settings
-    # matplotlib.rcParams['mathtext.fontset'] = 'custom'
-    # matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
-    # matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
-    # matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
-    #
-    # matplotlib.rcParams['mathtext.fontset'] = 'stix'
-    # matplotlib.rcParams['font.family'] = 'STIXGeneral'
-    # matplotlib.rcParams['font.size'] = 9
-    # matplotlib.rcParams['lines.linewidth'] = 0.75
-    #
-    # cases = [results_study_A]
-    # time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
-    # fig, axes_mat = plt.subplots(nrows=3, ncols=1)
-    # for i in range(len(cases)):
-    #     axes = axes_mat
-    #     axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
-    #     axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
-    #     axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
-    #     axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
-    #
-    #     # x label
-    #     axes[2].set_xlabel('Time / s')
-    #     # title and y label
-    #     if i == 0:
-    #         axes[0].set_title('System FMU - Python controller')
-    #         axes[0].set_ylabel('Zone temperature / °C')
-    #         axes[1].set_ylabel('Rel. heating power / -')
-    #         axes[2].set_ylabel('Ambient temperature / °C')
-    #     if i == 1:
-    #         axes[0].set_title('System FMU - Controller FMU')
-    #         axes[0].legend(loc='upper right')
-    #     # grid
-    #     for ax in axes:
-    #         ax.grid(True, 'both')
-    #         if i > 0:
-    #             # ignore y labels for all but the first
-    #             ax.set_yticklabels([])
-    #
-    # plt.tight_layout()
-    # plt.show()
+    # ---- Settings ---------
+    output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
+    comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
+    start = 0  # start time
+    stop = 86400 * 3  # stop time
+    t_start = 293.15 - 5
+    t_start_amb = 293.15 - 15
+
+    input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
+
+    # store simulation setup as dict
+    simulation_setup = {"start_time": start,
+                        "stop_time": stop,
+                        "output_interval": output_step,
+                        "comm_step_size": comm_step
+                        }
+
+    config_obj = {
+                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
+                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
+                  'sim_setup': simulation_setup,
+                  'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
+                  }
+
+    sys = FMU_Discrete(config_obj)
+    ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
+
+    sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+
+    res_step = sys.sim_res.iloc[-1]
+    while not sys.finished:
+        # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
+        ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
+            'bus.setPoint'])
+        # Apply control action to system and perform simulation step
+        res_step = sys.do_step_wrapper(input_step={
+            'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+
+    sys.close()
+
+    # ---- Results ---------
+    # return simulation results as pd data frame
+    results_study_A = sys.get_results(tsd_format=False)
+
+    # format settings
+    import matplotlib
+
+    # plot settings
+    matplotlib.rcParams['mathtext.fontset'] = 'custom'
+    matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
+    matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
+    matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
+
+    matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    matplotlib.rcParams['font.size'] = 9
+    matplotlib.rcParams['lines.linewidth'] = 0.75
+
+    cases = [results_study_A]
+    time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
+    fig, axes_mat = plt.subplots(nrows=3, ncols=1)
+    for i in range(len(cases)):
+        axes = axes_mat
+        axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
+        axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
+        axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
+        axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
+
+        # x label
+        axes[2].set_xlabel('Time / s')
+        # title and y label
+        if i == 0:
+            axes[0].set_title('System FMU - Python controller')
+            axes[0].set_ylabel('Zone temperature / °C')
+            axes[1].set_ylabel('Rel. heating power / -')
+            axes[2].set_ylabel('Ambient temperature / °C')
+        if i == 1:
+            axes[0].set_title('System FMU - Controller FMU')
+            axes[0].legend(loc='upper right')
+        # grid
+        for ax in axes:
+            ax.grid(True, 'both')
+            if i > 0:
+                # ignore y labels for all but the first
+                ax.set_yticklabels([])
+
+    plt.tight_layout()
+    plt.show()
 
     """ FMU continuous """
-    # n_sim = 2
-    # simulation_setup = {"start_time": 0,
-    #                     "stop_time": 3600,
-    #                     "output_interval": 100}
-    # config_obj = {
-    #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
-    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
-    #               'sim_setup': simulation_setup,
-    #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
-    #               }
-    #
-    # sys = FMU_Continuous(config_obj, n_cpu=2)
-    #
-    # time_index = np.arange(
-    #     sys.sim_setup.start_time,
-    #     sys.sim_setup.stop_time,
-    #     sys.sim_setup.output_interval
-    # )
-    #
-    # # Apply some sinus function for the outdoor air temperature
-    # t_dry_bulb = np.sin(time_index / 3600 * np.pi) * 10 + 263.15
-    # df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
-    #
-    # hea_cap_c = sys.parameters['heaCap.C'].value
-    # # Let's alter it from 10% to 1000 % in n_sim simulations:
-    # sizings = np.linspace(0.1, 10, n_sim)
-    # parameters = []
-    # for sizing in sizings:
-    #     parameters.append({"heaCap.C": hea_cap_c * sizing})
-    #
-    # sys.result_names = ["heaCap.T", "TDryBul"]
-    #
-    # results = sys.simulate(parameters=parameters,
-    #                        inputs=df_inputs)
-    #
-    # # Plot the result
-    # fig, ax = plt.subplots(2, sharex=True)
-    # ax[0].set_ylabel("TDryBul in K")
-    # ax[1].set_ylabel("T_Cap in K")
-    # ax[1].set_xlabel("Time in s")
-    # ax[0].plot(df_inputs, label="Inputs", linestyle="--")
-    # for res, sizing in zip(results, sizings):
-    #     ax[0].plot(res['TDryBul'])
-    #     ax[1].plot(res['heaCap.T'], label=sizing)
-    # for _ax in ax:
-    #     _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
-    #
-    # plt.show()
-
-    """ Dymola """
-    aixlib_mo = 'D:/02_workshop/AixLib/AixLib/package.mo'
+    n_sim = 2
     simulation_setup = {"start_time": 0,
                         "stop_time": 3600,
                         "output_interval": 100}
     config_obj = {
-                  'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
-                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
+                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
+                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
                   'sim_setup': simulation_setup,
-                  'packages': [aixlib_mo]
+                  'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
                   }
 
-    # ######################### Simulation API Instantiation ##########################
-    # %% Setup the Dymola-API:
-    sys = Dymola(
-        config_obj,
-        n_cpu=1,
-        show_window=True,
-        n_restart=-1,
-        equidistant_output=False,
-        get_structural_parameters=True
-        # Only necessary if you need a specific dymola version
-        #dymola_path=None,
-        #dymola_version=None
-    )
+    sys = FMU_API(config_obj, n_cpu=2)
 
-    p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
-    sys.result_names = [p_el_name, 'timTab.y[1]']
-    table_name = "myCustomInput"
-    file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     time_index = np.arange(
         sys.sim_setup.start_time,
         sys.sim_setup.stop_time,
         sys.sim_setup.output_interval
     )
-    # Apply some sinus function for the outdoor air temperature
-    internal_gains = np.sin(time_index/3600*np.pi) * 1000
-    tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
-    # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
-    filepath = convert_tsd_to_modelica_txt(
-        tsd=tsd_input,
-        table_name=table_name,
-        save_path_file=file_name
-    )
 
-    result_time_series = sys.simulate(
-        return_option="time_series",
-        # Info: You would not need these following keyword-arguments,
-        # as we've already created our file above.
-        # However, you can also pass the arguments
-        # from above directly into the function call:
-        inputs=tsd_input,
-        table_name=table_name,
-        file_name=file_name
-    )
-    print(type(result_time_series))
-    print(result_time_series)
-    result_last_point = sys.simulate(
-        return_option="last_point"
-    )
-    print(type(result_last_point))
-    print(result_last_point)
+    # Apply some sinus function for the outdoor air temperature
+    t_dry_bulb = np.sin(time_index / 3600 * np.pi) * 10 + 263.15
+    df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
+
+    hea_cap_c = sys.parameters['heaCap.C'].value
+    # Let's alter it from 10% to 1000 % in n_sim simulations:
+    sizings = np.linspace(0.1, 10, n_sim)
+    parameters = []
+    for sizing in sizings:
+        parameters.append({"heaCap.C": hea_cap_c * sizing})
+
+    sys.result_names = ["heaCap.T", "TDryBul"]
+
+    results = sys.simulate(parameters=parameters,
+                           inputs=df_inputs)
+
+    # Plot the result
+    fig, ax = plt.subplots(2, sharex=True)
+    ax[0].set_ylabel("TDryBul in K")
+    ax[1].set_ylabel("T_Cap in K")
+    ax[1].set_xlabel("Time in s")
+    ax[0].plot(df_inputs, label="Inputs", linestyle="--")
+    for res, sizing in zip(results, sizings):
+        ax[0].plot(res['TDryBul'])
+        ax[1].plot(res['heaCap.T'], label=sizing)
+    for _ax in ax:
+        _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
+
+    plt.show()
+
+    """ Dymola """
+    # aixlib_mo = 'D:/02_workshop/AixLib/AixLib/package.mo'
+    # simulation_setup = {"start_time": 0,
+    #                     "stop_time": 3600,
+    #                     "output_interval": 100}
+    # config_obj = {
+    #               'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
+    #               'sim_setup': simulation_setup,
+    #               'packages': [aixlib_mo]
+    #               }
+    #
+    # # ######################### Simulation API Instantiation ##########################
+    # # %% Setup the Dymola-API:
+    # sys = Dymola(
+    #     config_obj,
+    #     n_cpu=1,
+    #     show_window=True,
+    #     n_restart=-1,
+    #     equidistant_output=False,
+    #     get_structural_parameters=True
+    #     # Only necessary if you need a specific dymola version
+    #     #dymola_path=None,
+    #     #dymola_version=None
+    # )
+    #
+    # p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
+    # sys.result_names = [p_el_name, 'timTab.y[1]']
+    # table_name = "myCustomInput"
+    # file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
+    # time_index = np.arange(
+    #     sys.sim_setup.start_time,
+    #     sys.sim_setup.stop_time,
+    #     sys.sim_setup.output_interval
+    # )
+    # # Apply some sinus function for the outdoor air temperature
+    # internal_gains = np.sin(time_index/3600*np.pi) * 1000
+    # tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
+    # # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
+    # filepath = convert_tsd_to_modelica_txt(
+    #     tsd=tsd_input,
+    #     table_name=table_name,
+    #     save_path_file=file_name
+    # )
+    #
+    # result_time_series = sys.simulate(
+    #     return_option="time_series",
+    #     # Info: You would not need these following keyword-arguments,
+    #     # as we've already created our file above.
+    #     # However, you can also pass the arguments
+    #     # from above directly into the function call:
+    #     inputs=tsd_input,
+    #     table_name=table_name,
+    #     file_name=file_name
+    # )
+    # print(type(result_time_series))
+    # print(result_time_series)
+    # result_last_point = sys.simulate(
+    #     return_option="last_point"
+    # )
+    # print(type(result_last_point))
+    # print(result_last_point)
