@@ -168,6 +168,6 @@ def main(
 if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
-        aixlib_mo=r"D:\02_workshop\AixLib\AixLib\package.mo",
+        aixlib_mo=r"D:\04_git\AixLib\AixLib\package.mo",
         n_cpu=1
     )

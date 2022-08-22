@@ -7,13 +7,17 @@ import pathlib
 import atexit
 import shutil
 from typing import List, Union
+
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import Field
 import pandas as pd
 import numpy as np
+
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
+from ebcpy.utils.reproduction import CopyFile
+
 # pylint: disable=broad-except
 
 
@@ -385,20 +389,11 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         if files is None:
             files = []
-        if save_path is None:
-            save_path = self.cd
-        save_path = pathlib.Path(save_path)
-        # Directly copy and save the FMU in use:
-        fmu_name_save = save_path.joinpath(
-            pathlib.Path(self.model_name).name
-        )
-        if fmu_name_save != self.model_name:
-            shutil.copy(self.model_name, fmu_name_save)
-            files.append({"file": fmu_name_save,
-                          "remove": True})
-        else:
-            files.append({"file": self.model_name,
-                          "remove": False})
+        files.append(CopyFile(
+            filename=pathlib.Path(self.model_name).name,
+            sourcepath=pathlib.Path(self.model_name),
+            remove=False
+        ))
         return super().save_for_reproduction(
             save_path=save_path,
             files=files

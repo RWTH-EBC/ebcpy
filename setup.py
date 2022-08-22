@@ -13,12 +13,12 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo>=0.4.2',
+        'GitPython>=3.1.27'
     ]
 }
 
 INSTALL_REQUIRES = [
     'numpy>=1.19.5',
-    'matplotlib>=3.3.4',
     'scipy>=1.5.4',
     'pandas>=1.1.5',
     'scikit-learn>=0.24.2',

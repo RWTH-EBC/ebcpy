@@ -105,12 +105,55 @@ def save_reproduction(
             elif isinstance(file, CopyFile):
                 zip_file.write(file.sourcepath, file.filename)
                 if file.remove:
-                    os.remove(file)
+                    os.remove(file.sourcepath)
             else:
                 raise TypeError(
                     f"Given file '{file}' has no "
                     f"valid type. Type is '{type(file)}'")
     return zip_file_name
+
+
+def get_git_information(
+        path: pathlib.Path,
+        name: str = None,
+):
+    try:
+        repo = Repo(path)
+    except InvalidGitRepositoryError:
+        return
+    commit = repo.head.commit
+    commit_hex = commit.hexsha
+    diff_last_cmt = repo.git.diff(commit)
+    diff_remote_main = ""
+    remote_main_cmt = ""
+    for ref in repo.references:
+        if isinstance(ref, RemoteReference) and ref.name in ['origin/master', 'origin/main']:
+            diff_remote_main = repo.git.diff(ref.commit)
+            remote_main_cmt = ref.commit.hexsha
+            break
+    data = {
+        "url": next(repo.remotes[0].urls),
+        "commit": commit_hex,
+        "difference_files": []
+    }
+
+    if name is None:
+        # Get last part of url
+        name = data["url"].split("/")[-1].replace(".git", "")
+    # Check new files
+    if diff_last_cmt:
+        data["difference_files"].append(ReproductionFile(
+            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
+            content=diff_last_cmt,
+        ))
+    # Check if pushed to remote
+    if not repo.git.branch("-r", contains=commit_hex):
+        data["difference_files"].append(ReproductionFile(
+            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
+            content=diff_remote_main,
+        ))
+        data["commit"] = remote_main_cmt
+    return data
 
 
 def _get_general_information():
@@ -156,7 +199,7 @@ def _get_python_package_information(search_on_pypi: bool):
     diff_paths = []
     requirement_txt_content = []
     for package in installed_packages:
-        repo_info = _get_git_information(
+        repo_info = get_git_information(
             path=package.location,
             name=package.key
         )
@@ -200,49 +243,6 @@ def _get_python_reproduction(requirements_name: str, title: str):
         f"conda deactivate",
     ]
     return "\n".join(py_reproduce_content)
-
-
-def _get_git_information(
-        path: pathlib.Path,
-        name: str = None,
-):
-    try:
-        repo = Repo(path)
-    except InvalidGitRepositoryError:
-        return
-    commit = repo.head.commit
-    commit_hex = commit.hexsha
-    diff_last_cmt = repo.git.diff(commit)
-    diff_remote_main = ""
-    remote_main_cmt = ""
-    for ref in repo.references:
-        if isinstance(ref, RemoteReference) and ref.name in ['origin/master', 'origin/main']:
-            diff_remote_main = repo.git.diff(ref.commit)
-            remote_main_cmt = ref.commit.hexsha
-            break
-    data = {
-        "url": next(repo.remotes[0].urls),
-        "commit": commit_hex,
-        "difference_files": []
-    }
-
-    if name is None:
-        # Get last part of url
-        name = data["url"].split("/")[-1].replace(".git", "")
-    # Check new files
-    if diff_last_cmt:
-        data["difference_files"].append(ReproductionFile(
-            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
-            content=diff_last_cmt,
-        ))
-    # Check if pushed to remote
-    if not repo.git.branch("-r", contains=commit_hex):
-        data["difference_files"].append(ReproductionFile(
-            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
-            content=diff_remote_main,
-        ))
-        data["commit"] = remote_main_cmt
-    return data
 
 
 if __name__ == '__main__':
