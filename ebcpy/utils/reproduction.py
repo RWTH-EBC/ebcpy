@@ -51,7 +51,7 @@ def save_reproduction(
         files: List[ReproductionFile] = None,
         search_on_pypi: bool = False
 ):
-    _py_requirements_name = "requirements.txt"
+    _py_requirements_name = "02_requirements.txt"
     if save_path is None:
         save_path = os.getcwd()
     if file is None:
@@ -71,7 +71,7 @@ def save_reproduction(
     ))
     # General info
     files.append(ReproductionFile(
-        filename="general_information.txt",
+        filename="01_General_information.txt",
         content=_get_general_information()
     ))
 
@@ -90,7 +90,7 @@ def save_reproduction(
         title=title
     )
     files.append(ReproductionFile(
-        filename="reproduce_python_environment.bat",
+        filename="02_Reproduce_python_environment.bat",
         content=py_repro,
     ))
 
@@ -143,13 +143,13 @@ def get_git_information(
     # Check new files
     if diff_last_cmt:
         data["difference_files"].append(ReproductionFile(
-            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
+            filename=f"99_WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
             content=diff_last_cmt,
         ))
     # Check if pushed to remote
     if not repo.git.branch("-r", contains=commit_hex):
         data["difference_files"].append(ReproductionFile(
-            filename=f"WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
+            filename=f"99_WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
             content=diff_remote_main,
         ))
         data["commit"] = remote_main_cmt

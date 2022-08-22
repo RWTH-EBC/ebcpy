@@ -860,7 +860,7 @@ class DymolaAPI(SimulationAPI):
             files = []
         # DymolaAPI Info:
         files.append(ReproductionFile(
-            filename="DymolaAPI_config.json",
+            filename="03_DymolaAPI_config.json",
             content=json.dumps(self.to_dict(), indent=2)
         ))
         # Dymola info:
@@ -872,7 +872,7 @@ class DymolaAPI(SimulationAPI):
             "\n\n"
         ]
         files.append(ReproductionFile(
-            filename="DymolaInfo.txt",
+            filename="03_DymolaInfo.txt",
             content="\n".join(dymola_info) + _flags
         ))
 
@@ -893,12 +893,12 @@ class DymolaAPI(SimulationAPI):
                 break
             package_infos.append(str(pack_path))
         files.append(ReproductionFile(
-            filename="Modelica_packages.txt",
+            filename="03_Modelica_packages.txt",
             content="\n".join(package_infos)
         ))
         # Total model
         if save_total_model:
-            _total_model_name = f"{self.model_name.replace('.', '_')}_total.mo"
+            _total_model_name = f"03_{self.model_name.replace('.', '_')}_total.mo"
             _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
@@ -919,7 +919,7 @@ class DymolaAPI(SimulationAPI):
             if path is not None:
                 files.append(CopyFile(
                     sourcepath=path,
-                    filename=path.name,
+                    filename="03_" + path.name,
                     remove=True
                 ))
 

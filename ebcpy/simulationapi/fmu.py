@@ -390,7 +390,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if files is None:
             files = []
         files.append(CopyFile(
-            filename=pathlib.Path(self.model_name).name,
+            filename="03_" + pathlib.Path(self.model_name).name,
             sourcepath=pathlib.Path(self.model_name),
             remove=False
         ))
