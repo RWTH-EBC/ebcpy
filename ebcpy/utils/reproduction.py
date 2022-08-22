@@ -21,13 +21,7 @@ from typing import List
 import zipfile
 from datetime import datetime
 from dataclasses import dataclass
-try:
-    from git import Repo, InvalidGitRepositoryError, RemoteReference
-except ImportError as err:
-    raise ImportError(
-        "Could not save data for reproduction as "
-        "optional dependency is not installed: " + str(err)
-    )
+
 logger = logging.getLogger(__name__)
 
 
@@ -117,6 +111,13 @@ def get_git_information(
         path: pathlib.Path,
         name: str = None,
 ):
+    try:
+        from git import Repo, InvalidGitRepositoryError, RemoteReference
+    except ImportError as err:
+        raise ImportError(
+            "Could not save data for reproduction as "
+            "optional dependency is not installed: " + str(err)
+        )
     try:
         repo = Repo(path)
     except InvalidGitRepositoryError:

@@ -16,7 +16,6 @@ from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
-from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
 
 
 class DymolaSimulationSetup(SimulationSetup):
@@ -856,6 +855,9 @@ class DymolaAPI(SimulationAPI):
         - Total model, if save_total_model = True
         - FMU, if save_fmu = True
         """
+        # Local import to require git-package only when called
+        from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
+
         if files is None:
             files = []
         # DymolaAPI Info:
