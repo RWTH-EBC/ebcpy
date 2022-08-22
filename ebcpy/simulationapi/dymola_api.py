@@ -845,6 +845,13 @@ class DymolaAPI(SimulationAPI):
         """
         Additionally to the basic reproduction, add info
         for Dymola packages.
+
+        Content which is saved:
+        - DymolaAPI configuration
+        - Information on Dymola: Version, flags
+        - All loaded packages
+        - Total model
+        - FMU
         """
         from ebcpy.utils.reproduction import ReproductionFile, CopyFile, _get_git_information
         if files is None:
