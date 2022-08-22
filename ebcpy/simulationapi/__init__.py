@@ -21,17 +21,17 @@ class Variable(BaseModel):
     simulation variable (input, parameter, output or local/state).
     """
     value: Any = Field(
-        description="Default variable value. Only floats and ints are allowed."
+        description="Default variable value"
     )
     max: Any = Field(
         default=np.inf,
         title='max',
-        description='Maximal value (upper bound) of the variables value'
+        description='Maximal value (upper bound) of the variables value. Only for ints and floats variables.'
     )
     min: Any = Field(
         default=-np.inf,
         title='min',
-        description='Minimal value (lower bound) of the variables value'
+        description='Minimal value (lower bound) of the variables value. Only for ints and floats variables.'
     )
     type: Any = Field(
         default=None,
@@ -39,11 +39,11 @@ class Variable(BaseModel):
         description='Type of the variable'
     )
 
-    @validator('value')
+    @validator('max', 'min')
     def check_value(cls, value):
         """Check if the given value is one of the supported types."""
         if value is not None:
-            assert isinstance(value, (float, int)), \
+            assert type(value) == int or type(value) == float, \
                 "Only values of type " \
                 f"({', '.join([_type.__name__ for _type in (float, int)])}) " \
                 f"supported, you gave {type(value).__name__}"
