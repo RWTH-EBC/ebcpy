@@ -171,7 +171,8 @@ while not sys.finished:
     # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time]['bus.setPoint'])  # .values[0])  # fixme: only makes sense if
     # Apply control action to system and perform simulation step
-    res_step = sys.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})  # # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    res_step = sys.inp_step_read(input_step={
+        'bus.controlOutput': ctr_action})  # # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
 
 # ---- Results ---------
 # return simulation results as pd data frame
@@ -199,9 +200,9 @@ res_step = sys.sim_res.iloc[-1]
 # ------ Simulation Loop -------
 while not sys.finished:
     # call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-    ctr_action = ctr.do_step_wrapper(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig
+    ctr_action = ctr.inp_step_read(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig
     # write controller output to system FMU as well as pre-known inputs and perform step
-    res_step = sys.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})
+    res_step = sys.inp_step_read(input_step={'bus.controlOutput': ctr_action})
 
 # sys.close()
 # ctr.close()

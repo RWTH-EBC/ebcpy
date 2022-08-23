@@ -48,8 +48,12 @@ def main(
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
-    fmu_api = FMU_API(model_name=model_name,
-                      cd=cd,
+    # Organize settings in configuration dict
+    config_dict = {
+        'file_path': model_name,
+        'cd': cd,
+    }
+    fmu_api = FMU_API(config_dict,
                       n_cpu=n_cpu,
                       log_fmu=log_fmu)
     print("Number of variables:", len(fmu_api.variables))
@@ -149,6 +153,6 @@ if __name__ == '__main__':
     main(
         n_cpu=2,
         log_fmu=False,
-        n_sim=2,
+        n_sim=50,
         output_interval=100
     )

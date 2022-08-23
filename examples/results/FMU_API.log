@@ -1,4 +1,0 @@
-19.08.2022-13:09:58 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
-19.08.2022-13:09:58 INFO FMU_API: Extracting fmu and reading fmu model description
-19.08.2022-13:09:58 INFO FMU_API: Reading model variables
-19.08.2022-13:09:58 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes

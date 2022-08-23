@@ -20,7 +20,11 @@ import atexit
 import sys
 from ebcpy.modelica import manipulate_ds
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
+import time # for timing code only
 
+# TODO:
+# - add function: print supported exp setup options (like sim setup)
+# - add check for variable names whenever var_names are passed (using "check_unsupported_vars")
 # todo:
 # bug: single unzip dir not deleted in continuous simulation
 # - easy: add simple side functions cd setter etc.
@@ -320,11 +324,11 @@ class Model:
         # initialize sim setup with specific class defaults.
         self._sim_setup = self._sim_setup_class()  # todo: why _ notation here?
         # update sim setup with config entries if given
-        if hasattr(self.config, 'sim_setup'):
+        if self.config.sim_setup is not None:
             self.set_sim_setup(self.config.sim_setup)
         # current directory
         if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now  # todo: not nice
-            if hasattr(self.config, 'cd'):
+            if self.config.cd is not None:
                 self.cd = self.config.cd
             else:
                 self.cd = pathlib.Path(__file__).parent.joinpath("results")
@@ -336,7 +340,6 @@ class Model:
         self.outputs: Dict[str, Variable] = {}  # Outputs of model
         self.parameters: Dict[str, Variable] = {}  # Parameter of model
         self.states: Dict[str, Variable] = {}  # States of model
-        self.worker_idx = None  # todo: evaluate if needed here
         # results
         self.result_names = []  # initialize list of tracked variables
         self.model_name = model_name  # todo: discuss setting model name triggers further functions
@@ -405,9 +408,11 @@ class Model:
         """
         self._model_name = model_name
         # Empty all variables again.
-        if self.worker_idx:
-            return
+        if self.use_mp:  # todo: review this condition? It would be better to get rid off worker_idx at level of Model-class
+            if self.worker_idx:  # todo: what is this actually for???
+                return
         self._update_model_variables()
+
 
     def _update_model_variables(self):
         """
@@ -500,23 +505,23 @@ class Model:
 class FMU:
 
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU
-    # _fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
-    # _unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
+    _fmu_instance = None
+    _unzip_dir: str = None
 
     def __init__(self, log_fmu: bool = True):
+        self._unzip_dir = None
+        self._fmu_instance = None
         path = self.config.file_path
         if isinstance(self.config.file_path, pathlib.Path):
             path = str(self.config.file_path)
         if not path.lower().endswith(".fmu"):
             raise ValueError(f"{self.config.file_path} is not a valid fmu file!")
         self.path = path
-        if hasattr(self.config, 'cd'):
+        if hasattr(self.config, 'cd') and self.config.cd is not None:
             self.cd = self.config.cd
         else:
-            self.cd = os.path.dirname(fmu_path)
+            self.cd = os.path.dirname(path)
         self.log_fmu = log_fmu  # todo consider moving to config
-        self._fmu_instances: dict = {}  # Dict of FMU instances  # fixme: mp in continuous requires class attribute..
-        self._unzip_dirs: dict = {}  # Dict of directories for fmu extraction  # fixme: mp in continuous requires class attribute..
         self._var_refs: dict = None  # Dict of variables and their references
         self._model_description = None
         self._fmi_type = None
@@ -548,7 +553,7 @@ class FMU:
                 key_list.append(key[i])
         return key_list
 
-    def _set_variables(self, var_dict: dict, idx_worker: int = 0):  # todo: idx_worker not nice
+    def _set_variables(self, var_dict: dict):
         """
         Sets multiple variables.
         var_dict is a dict with variable names in keys.
@@ -559,15 +564,15 @@ class FMU:
             vr = [var.valueReference]
 
             if var.type == 'Real':
-                self._fmu_instances[idx_worker].setReal(vr, [float(value)])
+                self._fmu_instance.setReal(vr, [float(value)])
             elif var.type in ['Integer', 'Enumeration']:
-                self._fmu_instances[idx_worker].setInteger(vr, [int(value)])
+                self._fmu_instance.setInteger(vr, [int(value)])
             elif var.type == 'Boolean':
-                self._fmu_instances[idx_worker].setBoolean(vr, [value == 1.0 or value or value == "True"])
+                self._fmu_instance.setBoolean(vr, [value == 1.0 or value or value == "True"])
             else:
                 raise Exception("Unsupported type: %s" % var.type)
 
-    def _read_variables(self, vrs_list: list, idx_worker: int = 0):  # todo: idx_worker not nice
+    def _read_variables(self, vrs_list: list):  #
         """
         Reads multiple variable values of FMU.
         vrs_list as list of strings
@@ -582,11 +587,11 @@ class FMU:
             vr = [var.valueReference]
 
             if var.type == 'Real':
-                res[name] = self._fmu_instances[idx_worker].getReal(vr)[0]
+                res[name] = self._fmu_instance.getReal(vr)[0]
             elif var.type in ['Integer', 'Enumeration']:
-                res[name] = self._fmu_instances[idx_worker].getInteger(vr)[0]
+                res[name] = self._fmu_instance.getInteger(vr)[0]
             elif var.type == 'Boolean':
-                value = self._fmu_instances[idx_worker].getBoolean(vr)[0]
+                value = self._fmu_instance.getBoolean(vr)[0]
                 res[name] = value != 0
             else:
                 raise Exception("Unsupported type: %s" % var.type)
@@ -609,7 +614,7 @@ class FMU:
                                               os.path.basename(self.model_name)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
         self._single_unzip_dir = fmpy.extract(self.model_name,
-                                         unzipdir=self._single_unzip_dir)
+                                              unzipdir=self._single_unzip_dir)
         self._model_description = read_model_description(self._single_unzip_dir,
                                                          validate=True)
 
@@ -674,30 +679,33 @@ class FMU:
             self._setup_single_fmu_instance(use_mp=False)
 
     def _setup_single_fmu_instance(self, use_mp):
-        if not use_mp:
-            wrk_idx = 0
-        else:
-            wrk_idx = self.worker_idx
-            if wrk_idx in self._fmu_instances:
-                return True
         if use_mp:
+            wrk_idx = self.worker_idx
+            if self._fmu_instance is not None:
+                return True
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
-            unzip_dir = fmpy.extract(self.model_name,
-                                     unzipdir=unzip_dir)
+            fmpy.extract(self.model_name,
+                         unzipdir=unzip_dir)
         else:
+            wrk_idx = 0
             unzip_dir = self._single_unzip_dir
+
         self.logger.info("Instantiating fmu for worker %s", wrk_idx)
-        self._fmu_instances.update({wrk_idx: fmpy.instantiate_fmu(
+        fmu_instance = fmpy.instantiate_fmu(
             unzipdir=unzip_dir,
             model_description=self._model_description,
             fmi_type=self._fmi_type,
             visible=False,
             debug_logging=False,
             logger=self._custom_logger,
-            fmi_call_logger=None)})
-        self._unzip_dirs.update({
-            wrk_idx: unzip_dir
-        })
+            fmi_call_logger=None)
+        if use_mp:
+            FMU._fmu_instance = fmu_instance
+            FMU._unzip_dir = unzip_dir
+        else:
+            self._fmu_instance = fmu_instance
+            self._unzip_dir = unzip_dir
+
         return True
 
     def _single_close(self, **kwargs):
@@ -732,7 +740,6 @@ class FMU_Discrete(FMU, Model):
         FMU_Discrete.objs.append(self)
         self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
-        # self.worker_idx = None  # todo: evaluate where to place get rid off as this is property
         FMU.__init__(self, log_fmu)
         Model.__init__(self, model_name=self.config.file_path)  # todo: in case of fmu: file path, in case of dym: model_name, find better way to deal with; consider getting rid of model_name. For now it is to make the old methods work
         # used for stepwise simulation
@@ -796,13 +803,11 @@ class FMU_Discrete(FMU, Model):
         # - Create FMU2 Slave
         # - instantiate fmu instance
 
-        idx_worker = 0  # no mp for discrete simulation
-
         # Reset FMU instance
-        self._fmu_instances[idx_worker].reset()
+        self._fmu_instance.reset()
 
         # Set up experiment
-        self._fmu_instances[idx_worker].setupExperiment(startTime=self.sim_setup.start_time,
+        self._fmu_instance.setupExperiment(startTime=self.sim_setup.start_time,
                                                         stopTime=self.sim_setup.stop_time,
                                                         tolerance=self.sim_setup.tolerance)
 
@@ -819,11 +824,11 @@ class FMU_Discrete(FMU, Model):
         start_values.update(parameters)
 
         # write parameters and initial values to FMU
-        self._set_variables(var_dict=start_values, idx_worker=idx_worker)
+        self._set_variables(var_dict=start_values)
 
         # Finalise initialisation
-        self._fmu_instances[idx_worker].enterInitializationMode()
-        self._fmu_instances[idx_worker].exitInitializationMode()
+        self._fmu_instance.enterInitializationMode()
+        self._fmu_instance.exitInitializationMode()
 
         # Initialize dataframe to store results
         # empty
@@ -843,7 +848,7 @@ class FMU_Discrete(FMU, Model):
         # reset step count
         self.step_count = 0
 
-    def _do_step(self, ret_res: bool = False, idx_worker: int = 0):
+    def _do_step(self):
         """
         perform simulation step; return True if stop time reached.
         The results are appended to the sim_res results frame, just after the step -> ground truth
@@ -855,33 +860,21 @@ class FMU_Discrete(FMU, Model):
             if self.step_count == 0:
                 self.logger.info('Starting simulation of FMU "{}"'.format(self._model_description.modelName))
             # do simulation step
-            status = self._fmu_instances[idx_worker].doStep(
+            status = self._fmu_instance.doStep(
                 currentCommunicationPoint=self.current_time,
                 communicationStepSize=self.sim_setup.comm_step_size)
             # step count
-            self.step_count+=1
+            self.step_count += 1
             # update current time and determine status
             self.current_time += self.sim_setup.comm_step_size
             self.finished = False
         else:
             self.finished = True
             self.logger.info('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
-        # read results
-        res = self._read_variables(
-            vrs_list=self.result_names)
-        if not self.finished:
-            # append
-            if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
-                self.sim_res = pd.concat(
-                    [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
-                                                             index=[res['SimTime']],
-                                                             columns=self.sim_res.columns)])
-        if ret_res:
-            return self.finished, res
-        else:
-            return self.finished
 
-    def do_step_wrapper(self, input_step: dict = None):  # todo: consider automatic close in here again. after results are read there is no need for the fmu to stay
+        return self.finished
+
+    def inp_step_read(self, input_step: dict = None):  # todo: consider automatic close in here again. after results are read there is no need for the fmu to stay
         # collect inputs
         # get input from input table (overwrite with specific input for single step)
         single_input = {}
@@ -889,7 +882,7 @@ class FMU_Discrete(FMU, Model):
             # extract value from input time table
             # only consider columns in input table that refer to inputs of the FMU
             input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
-            input_table_filt = self.input_table[input_matches]  # todo: consider moving to setter for efficiency, if so, inputs must be identified before
+            input_table_filt = self.input_table[input_matches]  # todo: consider moving filter to setter for efficiency, if so, inputs must be identified before
             single_input = interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
 
         if input_step is not None:
@@ -901,24 +894,35 @@ class FMU_Discrete(FMU, Model):
             self._set_variables(var_dict=single_input)
 
         # perform simulation step
-        res_step = self._do_step(ret_res=True)[1]
+        self._do_step()
 
-        return res_step
+        # read results
+        res = self._read_variables(
+            vrs_list=self.result_names)
+        if not self.finished:
+            # append
+            if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
+                self.sim_res = pd.concat(
+                    [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
+                                                             index=[res['SimTime']],
+                                                             columns=self.sim_res.columns)])
+        return res
 
     def _set_result_names(self):
         """
-        In discrete simulation the inputs are typically relevant too.
+        Adds input names to list result_names in addition to outputs.
+        In discrete simulation the inputs are typically relevant.
         """
         self.result_names = list(self.outputs.keys()) + list(self.inputs.keys())
 
     def close(self):
         # No MP for discrete simulation
-        if not self._fmu_instances:
+        if not self._fmu_instance:
             return  # Already closed
-        self._single_close(fmu_instance=self._fmu_instances[0],
-                           unzip_dir=self._unzip_dirs[0])
-        self._unzip_dirs = {}
-        self._fmu_instances = {}
+        self._single_close(fmu_instance=self._fmu_instance,
+                           unzip_dir=self._unzip_dir)
+        self._unzip_dir = None
+        self._fmu_instance = None
 
 
 class ContinuousSimulation(Model):
@@ -1124,7 +1128,8 @@ class ContinuousSimulation(Model):
 class FMU_API(FMU, ContinuousSimulation):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Continuous
-    _items_to_drop = ["pool", "fmu_instance", "unzip_dir"]
+    # _items_to_drop = ["pool"]
+    _items_to_drop = ["pool", "_fmu_instance", "_unzip_dir"]
     _type_map = {
         float: np.double,
         bool: np.bool_,
@@ -1171,14 +1176,8 @@ class FMU_API(FMU, ContinuousSimulation):
         fail_on_error = kwargs.get("fail_on_error", True)
 
         if self.use_mp:
-            idx_worker = self.worker_idx
-            if idx_worker not in self._fmu_instances:
+            if self._fmu_instance is None:
                 self._setup_single_fmu_instance(use_mp=True)
-        else:
-            idx_worker = 0
-
-        fmu_instance = self._fmu_instances[idx_worker]
-        unzip_dir = self._unzip_dirs[idx_worker]
 
         if inputs is not None:
             if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
@@ -1208,10 +1207,10 @@ class FMU_API(FMU, ContinuousSimulation):
                                              type_of_var="parameters")
         try:
             # reset the FMU instance instead of creating a new one
-            fmu_instance.reset()
+            self._fmu_instance.reset()
             # Simulate
             res = fmpy.simulate_fmu(
-                filename=unzip_dir,
+                filename=self._unzip_dir,
                 start_time=self.sim_setup.start_time,
                 stop_time=self.sim_setup.stop_time,
                 solver=self.sim_setup.solver,
@@ -1226,7 +1225,7 @@ class FMU_API(FMU, ContinuousSimulation):
                 timeout=self.sim_setup.timeout,
                 step_finished=None,
                 model_description=self._model_description,
-                fmu_instance=fmu_instance,
+                fmu_instance=self._fmu_instance,
                 fmi_type=self._fmi_type,
             )
 
@@ -1275,23 +1274,25 @@ class FMU_API(FMU, ContinuousSimulation):
         ContinuousSimulation.close(self)
         # Close if single process
         if not self.use_mp:
-            if not self._fmu_instances:
+            if not self._fmu_instance:
                 return  # Already closed
-            self._single_close(fmu_instance=self._fmu_instances[0],
-                               unzip_dir=self._unzip_dirs[0])
-            self._unzip_dirs = {}
-            self._fmu_instances = {}
+            self._single_close(fmu_instance=self._fmu_instance,
+                               unzip_dir=self._unzip_dir)
+            self._unzip_dir = None
+            self._fmu_instance = None
 
     def _close_multiprocessing(self, _):
         """Small helper function"""
         idx_worker = self.worker_idx
-        if idx_worker not in self._fmu_instances:
+        if self._fmu_instance is None:
             return  # Already closed
         self.logger.error(f"Closing fmu for worker {idx_worker}")
-        self._single_close(fmu_instance=self._fmu_instances[idx_worker],
-                           unzip_dir=self._unzip_dirs[idx_worker])
-        self._unzip_dirs = {}
-        self._fmu_instances = {}
+        self._single_close(fmu_instance=self._fmu_instance,
+                           unzip_dir=self._unzip_dir)
+        self._unzip_dir = None
+        self._fmu_instance = None
+        FMU_API._unzip_dir = None
+        FMU_API._fmu_instance = None
 
 
 class DymolaAPI(ContinuousSimulation):
@@ -1373,23 +1374,27 @@ class DymolaAPI(ContinuousSimulation):
 
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationDymola
     _sim_setup_class: SimulationSetupClass = SimulationSetupDymola
-    _dymola_instances: dict = {}
     _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
+    dymola = None
     # Default simulation setup
-    _supported_kwargs = ["show_window",
-                         "modify_structural_parameters",
-                         "dymola_path",
-                         "equidistant_output",
-                         "n_restart",
-                         "debug",
-                         "mos_script_pre",
-                         "mos_script_post",
-                         "dymola_version"]
+    _supported_kwargs = [
+        "show_window",
+        "modify_structural_parameters",
+        "dymola_path",
+        "equidistant_output",
+        "n_restart",
+        "debug",
+        "mos_script_pre",
+        "mos_script_post",
+        "dymola_version"
+    ]
 
-    def __init__(self, config, n_cpu, packages=None, **kwargs):
+    def __init__(self, config, n_cpu, **kwargs):
         """Instantiate class objects."""
         self.config = self._exp_config_class.parse_obj(config)
         packages = self.config.packages
+
+        self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
 
         # Update kwargs with regard to what kwargs are supported.
         self.extract_variables = kwargs.pop("extract_variables", True)
@@ -1419,8 +1424,6 @@ class DymolaAPI(ContinuousSimulation):
             self.mos_script_pre = self._make_modelica_normpath(self.mos_script_pre)
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
-        # Set empty dymola attribute
-        self.dymola = None
 
         super().__init__(model_name=self.config.model_name,
                          n_cpu=n_cpu)
@@ -1593,9 +1596,9 @@ class DymolaAPI(ContinuousSimulation):
         # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx
-            if idx_worker not in self._dymola_instances:
+            if self.dymola is None:
                 self._setup_dymola_interface(use_mp=True)
-            self.dymola = self._dymola_instances[idx_worker]
+
 
         # Handle eventlog
         if show_eventlog:
@@ -1937,27 +1940,25 @@ class DymolaAPI(ContinuousSimulation):
         super().close()
         # Always close main instance
         self._single_close(dymola=self.dymola)
-        self.dymola = None
 
     def _close_multiprocessing(self, _):
-        wrk_idx = self.worker_idx
-        if wrk_idx in self._dymola_instances:
-            self._single_close(dymola=self._dymola_instances.pop(wrk_idx))
+        self._single_close()
+        DymolaAPI.dymola = None
 
     def _single_close(self, **kwargs):
         """Closes a single dymola instance"""
-        dymola = kwargs["dymola"]
-        if dymola is None:
+        if self.dymola is None:
             return  # Already closed prior
         # Execute the mos-script if given:
         if self.mos_script_post is not None:
             self.logger.info("Executing given mos_script_post "
                              "prior to closing.")
-            dymola.RunScript(self.mos_script_post)
-            self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
+            self.dymola.RunScript(self.mos_script_post)
+            self.logger.info("Output of mos_script_post: %s", self.dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
-        dymola.close()
+        self.dymola.close()
         self.logger.info('Successfully closed Dymola')
+        self.dymola = None
 
     def _close_dummy(self):
         """
@@ -2036,8 +2037,8 @@ class DymolaAPI(ContinuousSimulation):
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
         if use_mp:
-            self._dymola_instances[self.worker_idx] = dymola
-            return True
+            DymolaAPI.dymola = dymola
+            return None
         return dymola
 
     def _open_dymola_interface(self):
@@ -2273,7 +2274,7 @@ class DymolaAPI(ContinuousSimulation):
             if self.sim_counter == self.n_restart:
                 self.logger.info("Closing and restarting Dymola to free memory")
                 self.close()
-                self.dymola = self._setup_dymola_interface(use_mp=False)
+                self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
                 self.sim_counter = 1
             else:
                 self.sim_counter += 1
@@ -2283,204 +2284,209 @@ class DymolaAPI(ContinuousSimulation):
 if __name__ == '__main__':
 
     """ FMU discrete """
-    # ---- Settings ---------
-    output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
-    comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
-    start = 0  # start time
-    stop = 86400 * 3  # stop time
-    t_start = 293.15 - 5
-    t_start_amb = 293.15 - 15
-
-    input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
-
-    # store simulation setup as dict
-    simulation_setup = {"start_time": start,
-                        "stop_time": stop,
-                        "output_interval": output_step,
-                        "comm_step_size": comm_step
-                        }
-
-    config_obj = {
-                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
-                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
-                  'sim_setup': simulation_setup,
-                  'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
-                  }
-
-    sys = FMU_Discrete(config_obj)
-    ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
-
-    sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
-
-    res_step = sys.sim_res.iloc[-1]
-    while not sys.finished:
-        # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
-        ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
-            'bus.setPoint'])
-        # Apply control action to system and perform simulation step
-        res_step = sys.do_step_wrapper(input_step={
-            'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
-
-    sys.close()
-
-    # ---- Results ---------
-    # return simulation results as pd data frame
-    results_study_A = sys.get_results(tsd_format=False)
-
-    # format settings
-    import matplotlib
-
-    # plot settings
-    matplotlib.rcParams['mathtext.fontset'] = 'custom'
-    matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
-    matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
-    matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
-
-    matplotlib.rcParams['mathtext.fontset'] = 'stix'
-    matplotlib.rcParams['font.family'] = 'STIXGeneral'
-    matplotlib.rcParams['font.size'] = 9
-    matplotlib.rcParams['lines.linewidth'] = 0.75
-
-    cases = [results_study_A]
-    time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
-    fig, axes_mat = plt.subplots(nrows=3, ncols=1)
-    for i in range(len(cases)):
-        axes = axes_mat
-        axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
-        axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
-        axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
-        axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
-
-        # x label
-        axes[2].set_xlabel('Time / s')
-        # title and y label
-        if i == 0:
-            axes[0].set_title('System FMU - Python controller')
-            axes[0].set_ylabel('Zone temperature / °C')
-            axes[1].set_ylabel('Rel. heating power / -')
-            axes[2].set_ylabel('Ambient temperature / °C')
-        if i == 1:
-            axes[0].set_title('System FMU - Controller FMU')
-            axes[0].legend(loc='upper right')
-        # grid
-        for ax in axes:
-            ax.grid(True, 'both')
-            if i > 0:
-                # ignore y labels for all but the first
-                ax.set_yticklabels([])
-
-    plt.tight_layout()
-    plt.show()
+    # # ---- Settings ---------
+    # output_step = 60 * 10  # step size of simulation results in seconds (resolution of results data)
+    # comm_step = 60 / 3  # step size of FMU communication in seconds (in this interval, values are set to or read from the fmu)
+    # start = 0  # start time
+    # stop = 86400 * 3  # stop time
+    # t_start = 293.15 - 5
+    # t_start_amb = 293.15 - 15
+    #
+    # input_data = pd.read_csv('D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv', index_col='timestamp')
+    #
+    # # store simulation setup as dict
+    # simulation_setup = {"start_time": start,
+    #                     "stop_time": stop,
+    #                     "output_interval": output_step,
+    #                     "comm_step_size": comm_step
+    #                     }
+    #
+    # config_obj = {
+    #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
+    #               'sim_setup': simulation_setup,
+    #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
+    #               }
+    #
+    # sys = FMU_Discrete(config_obj)
+    # ctr = PID(Kp=0.01, Ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
+    #
+    # sys.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    #
+    # res_step = sys.sim_res.iloc[-1]
+    # while not sys.finished:
+    #     # Call controller (for advanced control strategies that require previous results, use the attribute sim_res)
+    #     ctr_action = ctr.run(res_step['bus.processVar'], input_data.loc[sys.current_time][
+    #         'bus.setPoint'])
+    #     # Apply control action to system and perform simulation step
+    #     res_step = sys.inp_step_read(input_step={
+    #         'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    #
+    # sys.close()
+    #
+    # # ---- Results ---------
+    # # return simulation results as pd data frame
+    # results_study_A = sys.get_results(tsd_format=False)
+    #
+    # # format settings
+    # import matplotlib
+    #
+    # # plot settings
+    # matplotlib.rcParams['mathtext.fontset'] = 'custom'
+    # matplotlib.rcParams['mathtext.rm'] = 'Bitstream Vera Sans'
+    # matplotlib.rcParams['mathtext.it'] = 'Bitstream Vera Sans:italic'
+    # matplotlib.rcParams['mathtext.bf'] = 'Bitstream Vera Sans:bold'
+    #
+    # matplotlib.rcParams['mathtext.fontset'] = 'stix'
+    # matplotlib.rcParams['font.family'] = 'STIXGeneral'
+    # matplotlib.rcParams['font.size'] = 9
+    # matplotlib.rcParams['lines.linewidth'] = 0.75
+    #
+    # cases = [results_study_A]
+    # time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
+    # fig, axes_mat = plt.subplots(nrows=3, ncols=1)
+    # for i in range(len(cases)):
+    #     axes = axes_mat
+    #     axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
+    #     axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
+    #     axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
+    #     axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
+    #
+    #     # x label
+    #     axes[2].set_xlabel('Time / s')
+    #     # title and y label
+    #     if i == 0:
+    #         axes[0].set_title('System FMU - Python controller')
+    #         axes[0].set_ylabel('Zone temperature / °C')
+    #         axes[1].set_ylabel('Rel. heating power / -')
+    #         axes[2].set_ylabel('Ambient temperature / °C')
+    #     if i == 1:
+    #         axes[0].set_title('System FMU - Controller FMU')
+    #         axes[0].legend(loc='upper right')
+    #     # grid
+    #     for ax in axes:
+    #         ax.grid(True, 'both')
+    #         if i > 0:
+    #             # ignore y labels for all but the first
+    #             ax.set_yticklabels([])
+    #
+    # plt.tight_layout()
+    # plt.show()
 
     """ FMU continuous """
-    n_sim = 2
-    simulation_setup = {"start_time": 0,
-                        "stop_time": 3600,
-                        "output_interval": 100}
-    config_obj = {
-                  'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
-                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
-                  'sim_setup': simulation_setup,
-                  'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
-                  }
-
-    sys = FMU_API(config_obj, n_cpu=2)
-
-    time_index = np.arange(
-        sys.sim_setup.start_time,
-        sys.sim_setup.stop_time,
-        sys.sim_setup.output_interval
-    )
-
-    # Apply some sinus function for the outdoor air temperature
-    t_dry_bulb = np.sin(time_index / 3600 * np.pi) * 10 + 263.15
-    df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
-
-    hea_cap_c = sys.parameters['heaCap.C'].value
-    # Let's alter it from 10% to 1000 % in n_sim simulations:
-    sizings = np.linspace(0.1, 10, n_sim)
-    parameters = []
-    for sizing in sizings:
-        parameters.append({"heaCap.C": hea_cap_c * sizing})
-
-    sys.result_names = ["heaCap.T", "TDryBul"]
-
-    results = sys.simulate(parameters=parameters,
-                           inputs=df_inputs)
-
-    # Plot the result
-    fig, ax = plt.subplots(2, sharex=True)
-    ax[0].set_ylabel("TDryBul in K")
-    ax[1].set_ylabel("T_Cap in K")
-    ax[1].set_xlabel("Time in s")
-    ax[0].plot(df_inputs, label="Inputs", linestyle="--")
-    for res, sizing in zip(results, sizings):
-        ax[0].plot(res['TDryBul'])
-        ax[1].plot(res['heaCap.T'], label=sizing)
-    for _ax in ax:
-        _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
-
-    plt.show()
-
-    """ Dymola """
-    # aixlib_mo = 'D:/02_workshop/AixLib/AixLib/package.mo'
+    # t0 = time.time()
+    # n_sim = 200
     # simulation_setup = {"start_time": 0,
     #                     "stop_time": 3600,
     #                     "output_interval": 100}
     # config_obj = {
-    #               'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
-    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
+    #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
     #               'sim_setup': simulation_setup,
-    #               'packages': [aixlib_mo]
+    #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
     #               }
     #
-    # # ######################### Simulation API Instantiation ##########################
-    # # %% Setup the Dymola-API:
-    # sys = Dymola(
-    #     config_obj,
-    #     n_cpu=1,
-    #     show_window=True,
-    #     n_restart=-1,
-    #     equidistant_output=False,
-    #     get_structural_parameters=True
-    #     # Only necessary if you need a specific dymola version
-    #     #dymola_path=None,
-    #     #dymola_version=None
-    # )
+    # sys = FMU_API(config_obj, n_cpu=4)
     #
-    # p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
-    # sys.result_names = [p_el_name, 'timTab.y[1]']
-    # table_name = "myCustomInput"
-    # file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     # time_index = np.arange(
     #     sys.sim_setup.start_time,
     #     sys.sim_setup.stop_time,
     #     sys.sim_setup.output_interval
     # )
-    # # Apply some sinus function for the outdoor air temperature
-    # internal_gains = np.sin(time_index/3600*np.pi) * 1000
-    # tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
-    # # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
-    # filepath = convert_tsd_to_modelica_txt(
-    #     tsd=tsd_input,
-    #     table_name=table_name,
-    #     save_path_file=file_name
-    # )
     #
-    # result_time_series = sys.simulate(
-    #     return_option="time_series",
-    #     # Info: You would not need these following keyword-arguments,
-    #     # as we've already created our file above.
-    #     # However, you can also pass the arguments
-    #     # from above directly into the function call:
-    #     inputs=tsd_input,
-    #     table_name=table_name,
-    #     file_name=file_name
-    # )
-    # print(type(result_time_series))
-    # print(result_time_series)
-    # result_last_point = sys.simulate(
-    #     return_option="last_point"
-    # )
-    # print(type(result_last_point))
-    # print(result_last_point)
+    # # Apply some sinus function for the outdoor air temperature
+    # t_dry_bulb = np.sin(time_index / 3600 * np.pi) * 10 + 263.15
+    # df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
+    #
+    # hea_cap_c = sys.parameters['heaCap.C'].value
+    # # Let's alter it from 10% to 1000 % in n_sim simulations:
+    # sizings = np.linspace(0.1, 10, n_sim)
+    # parameters = []
+    # for sizing in sizings:
+    #     parameters.append({"heaCap.C": hea_cap_c * sizing})
+    #
+    # sys.result_names = ["heaCap.T", "TDryBul"]
+    #
+    # results = sys.simulate(parameters=parameters,
+    #                        inputs=df_inputs)
+    #
+    # print('time', time.time()-t0)
+    #
+    # # Plot the result
+    # fig, ax = plt.subplots(2, sharex=True)
+    # ax[0].set_ylabel("TDryBul in K")
+    # ax[1].set_ylabel("T_Cap in K")
+    # ax[1].set_xlabel("Time in s")
+    # ax[0].plot(df_inputs, label="Inputs", linestyle="--")
+    # for res, sizing in zip(results, sizings):
+    #     ax[0].plot(res['TDryBul'])
+    #     ax[1].plot(res['heaCap.T'], label=sizing)
+    # for _ax in ax:
+    #     _ax.legend(bbox_to_anchor=(1, 1.05), loc="upper left")
+    #
+    # plt.show()
+
+
+
+    """ Dymola """
+    aixlib_mo = 'D:/02_workshop/AixLib/AixLib/package.mo'
+    simulation_setup = {"start_time": 0,
+                        "stop_time": 3600,
+                        "output_interval": 100}
+    config_obj = {
+                  'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
+                  'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
+                  'sim_setup': simulation_setup,
+                  'packages': [aixlib_mo]
+                  }
+
+    # ######################### Simulation API Instantiation ##########################
+    # %% Setup the Dymola-API:
+    sys = DymolaAPI(
+        config_obj,
+        n_cpu=1,
+        show_window=True,
+        n_restart=-1,
+        equidistant_output=False,
+        get_structural_parameters=True
+        # Only necessary if you need a specific dymola version
+        #dymola_path=None,
+        #dymola_version=None
+    )
+
+    p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
+    sys.result_names = [p_el_name, 'timTab.y[1]']
+    table_name = "myCustomInput"
+    file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
+    time_index = np.arange(
+        sys.sim_setup.start_time,
+        sys.sim_setup.stop_time,
+        sys.sim_setup.output_interval
+    )
+    # Apply some sinus function for the outdoor air temperature
+    internal_gains = np.sin(time_index/3600*np.pi) * 1000
+    tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
+    # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
+    filepath = convert_tsd_to_modelica_txt(
+        tsd=tsd_input,
+        table_name=table_name,
+        save_path_file=file_name
+    )
+
+    result_time_series = sys.simulate(
+        return_option="time_series",
+        # Info: You would not need these following keyword-arguments,
+        # as we've already created our file above.
+        # However, you can also pass the arguments
+        # from above directly into the function call:
+        inputs=tsd_input,
+        table_name=table_name,
+        file_name=file_name
+    )
+    print(type(result_time_series))
+    print(result_time_series)
+    result_last_point = sys.simulate(
+        return_option="last_point"
+    )
+    print(type(result_last_point))
+    print(result_last_point)

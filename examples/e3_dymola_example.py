@@ -40,11 +40,15 @@ def main(
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the Dymola-API:
+    # organize settings in configuration dict
+    config_dict = {
+                  'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
+                  'cd': cd,
+                  'packages': [aixlib_mo]
+                  }
     dym_api = DymolaAPI(
-        model_name="AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem",
-        cd=cd,
+        config_dict,
         n_cpu=n_cpu,
-        packages=[aixlib_mo],
         show_window=True,
         n_restart=-1,
         equidistant_output=False,
@@ -166,5 +170,5 @@ if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
         aixlib_mo=r"D:\02_workshop\AixLib\AixLib\package.mo",
-        n_cpu=1
+        n_cpu=2
     )

@@ -84,6 +84,7 @@ class PID:
         return self.y
 
 
+# plotting format settings
 def plotting_fmt():
     """
     Adjusts the plotting format
@@ -202,10 +203,10 @@ print('Study A: System FMU with Python Controller')
 # The do_step function returns True, when stop time is reached and thus breaks the loop
 while not system.finished:
     # Call controller
-    # (for advanced control strategies that require previous results, use the attribute sim_res)  # todo: find soultion with output_step # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    # (for advanced control strategies that require previous results, use the attribute sim_res and adjust output_interval)
     ctr_action = ctr.run(res_step['bus.processVar'], input_df.loc[system.current_time]['bus.setPoint'])
     # Apply control action to system and perform simulation step
-    res_step = system.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})
+    res_step = system.inp_step_read(input_step={'bus.controlOutput': ctr_action})
 
 # ################# Read Simulation Results ###################################################
 # simulation results stored in the attribute 'sim_res' can be returned calling 'get_results()'
@@ -234,11 +235,10 @@ res_step = system.sim_res.iloc[-1].to_dict()
 print('Study B: System FMU with Controller FMU')
 while not system.finished:
     # Call controller and extract control output
-    # (for advanced control strategies that require previous results, use the attribute sim_res)
-    ctr_action = controller.do_step_wrapper(
-        input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig -> Klassenframe??
+    # (for advanced control strategies that require previous results, use the attribute sim_res and adjust output_interval)
+    ctr_action = controller.inp_step_read(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig -> Klassenframe??
     # write controller output to system FMU as well as pre-known inputs and perform step
-    res_step = system.do_step_wrapper(input_step={'bus.controlOutput': ctr_action})
+    res_step = system.inp_step_read(input_step={'bus.controlOutput': ctr_action})
 
 # read simulation results
 results_B = system.get_results()
@@ -250,7 +250,6 @@ results_B = system.get_results()
 FMU_Discrete.close_all()
 
 # ###################### Plot Results #########################################
-# todo: apply same range on all plots (copy from first) and get rid of x tick labels
 # apply plotting format settings
 plotting_fmt()
 
@@ -260,9 +259,12 @@ fig, axes_mat = plt.subplots(nrows=3, ncols=2)
 for i in range(len(cases)):
     axes = axes_mat[:, i]
     axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
-    axes[0].plot(time_index, setpoint - 273.15, label='set', color='r')  # fixme: setpoint not available in results
+    axes[0].plot(time_index, setpoint - 273.15, label='set', color='r')
+    axes[0].set_ylim(15,22)
     axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
+    axes[1].set_ylim(-0.05, 0.2)
     axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
+    axes[2].set_ylim(0,40)
 
     # x label
     axes[2].set_xlabel('Time / s')
@@ -281,8 +283,8 @@ for i in range(len(cases)):
         if i > 0:
             # ignore y labels for all but the first
             ax.set_yticklabels([])
-for i in range(2):
-    axes[i].set_xticklabels([])
+    for k in range(2):
+        axes[k].set_xticklabels([])
 
 plt.tight_layout()
 plt.show()
@@ -300,6 +302,9 @@ plt.show()
 # #################### Advanced: Basic FMU Handler functionality for Customized Application #################
 # The FMU_Discrete class includes basic FMU handler utilities previously found in aku's fmu handler skript
 # They are demonstrated in the following with a heat pump system fmu
+
+# !!! The _do_step() base function does not append the results to the "sim_res" attribute !!!
+# !!! The _do_step() base function does not consider long-term input data (attribute "input_table") !!!
 
 # Instantiate Simulation API for fmu
 hp_fmu = FMU_Discrete({'cd': cd,
@@ -326,10 +331,10 @@ results_list = []
 # simulation loop
 # the ambient temperature is altered during the simulation
 
-# Note that simulating the fmu with altering inputs that are known in advance
+# Note that for simulating the fmu with altering inputs that are known in advance
 # the simulation api for continuous fmu simulation is a better choice.
 
-while not finished:
+while not hp_fmu.finished:
     # read fmu state
     res = hp_fmu._read_variables(variables)
     res.update({'SimTime': hp_fmu.current_time})
@@ -340,8 +345,7 @@ while not finished:
     else:
         hp_fmu._set_variables({'TDryBul': 5+273.15})
     # perform simulation step
-    # Note that calling the basic do_step() function, no input data (attribute "input_table") would be set
-    finished = hp_fmu._do_step()
+    hp_fmu._do_step()
 
 # close fmu
 hp_fmu.close()
