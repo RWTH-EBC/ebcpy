@@ -287,15 +287,6 @@ class FMU_API(simulationapi.SimulationAPI):
         else:
             self._fmi_type = 'CoSimulation'
 
-        def _to_bound(value, var_type, is_min):
-            if value is None:
-                if is_min:
-                    return -np.inf if var_type != bool else False
-                else:
-                    return np.inf if var_type != bool else True
-            value = var_type(value)
-            return value
-
         self.logger.info("Reading model variables")
 
         _types = {
@@ -311,8 +302,8 @@ class FMU_API(simulationapi.SimulationAPI):
                 var.start = _types[var.type](var.start)
 
             _var_ebcpy = Variable(
-                min=_to_bound(var.min, _types[var.type], True),
-                max=_to_bound(var.max, _types[var.type], False),
+                min=var.min,
+                max=var.max,
                 value=var.start,
                 type=_types[var.type]
             )

@@ -5,6 +5,7 @@ Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.
 """
 import logging
+import warnings
 import os
 import itertools
 from typing import Dict, Union, TypeVar, Any, List
@@ -20,34 +21,59 @@ class Variable(BaseModel):
     Data-Class to store relevant information for a
     simulation variable (input, parameter, output or local/state).
     """
-    value: Any = Field(
-        description="Default variable value"
-    )
-    max: Any = Field(
-        default=np.inf,
-        title='max',
-        description='Maximal value (upper bound) of the variables value. Only for ints and floats variables.'
-    )
-    min: Any = Field(
-        default=-np.inf,
-        title='min',
-        description='Minimal value (lower bound) of the variables value. Only for ints and floats variables.'
-    )
     type: Any = Field(
         default=None,
         title='type',
         description='Type of the variable'
     )
+    value: Any = Field(
+        description="Default variable value"
+    )
+    max: Any = Field(
+        default=None,
+        title='max',
+        description='Maximal value (upper bound) of the variables value. '
+                    'Only for ints and floats variables.'
+    )
+    min: Any = Field(
+        default=None,
+        title='min',
+        description='Minimal value (lower bound) of the variables value. '
+                    'Only for ints and floats variables.'
+    )
 
-    @validator('max', 'min')
-    def check_value(cls, value):
-        """Check if the given value is one of the supported types."""
-        if value is not None:
-            assert type(value) == int or type(value) == float, \
-                "Only values of type " \
-                f"({', '.join([_type.__name__ for _type in (float, int)])}) " \
-                f"supported, you gave {type(value).__name__}"
+    @validator("value")
+    def check_value_type(cls, value, values):
+        """Check if the given value has correct type"""
+        _type = values["type"]
+        if _type is None:
+            return value   # No type -> no conversion
+        if value is None:
+            return value  # Setting None is allowed.
+        if not isinstance(value, _type):
+            return _type(value)
         return value
+
+    @validator('max', 'min', always=True)
+    def check_value(cls, value, values, field):
+        """Check if the given bounds are correct."""
+        # Check if the variable type even allows for min/max bounds
+        _type = values["type"]
+        if _type is None:
+            return value   # No type -> no conversion
+        if _type not in (float, int, bool):
+            if value is not None:
+                warnings.warn(
+                    "Setting a min/max for variables "
+                    f"of type {_type} is not supported."
+                )
+            return None
+        if value is not None:
+            return _type(value)
+        if field.name == "min":
+            return -np.inf if _type != bool else False
+        # else it is max
+        return np.inf if _type != bool else True
 
 
 class SimulationSetup(BaseModel):

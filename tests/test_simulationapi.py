@@ -8,8 +8,47 @@ from pathlib import Path
 import shutil
 import numpy as np
 from pydantic import ValidationError
-from ebcpy.simulationapi import dymola_api, fmu
+from ebcpy.simulationapi import dymola_api, fmu, Variable
 from ebcpy import TimeSeriesData
+
+
+class TestVariable(unittest.TestCase):
+
+    def test_min_max(self):
+        """Test the boundaries for variables"""
+        for _type in [float, int, bool]:
+            for _value in [1, 1.0, "1", True]:
+                _var = Variable(
+                    value=_value,
+                    type=_type
+                )
+                self.assertIsInstance(Variable(
+                    value=_value, type=_type,
+                    min=_var.value - 1
+                ).min, _type)
+                self.assertIsInstance(Variable(
+                    value=_value, type=_type,
+                    max=_var.value
+                ).max, _type)
+        with self.assertRaises(ValidationError):
+            Variable(value=1, max="1c", type=int)
+        with self.assertRaises(ValidationError):
+            Variable(value=1, min="1c", type=int)
+        self.assertIsNone(Variable(value="s", type=str, max=0).max)
+        self.assertIsNone(Variable(value="s", type=str, min=0).min)
+
+    def test_value(self):
+        """Test value conversion"""
+        for _type in [float, int, bool]:
+            for _value in [1, 1.0, "1", True]:
+                print(_type, _value)
+                self.assertIsInstance(
+                    Variable(value=_value, type=_type).value,
+                    _type
+                )
+        with self.assertRaises(ValidationError):
+            Variable(value="10c", type="int")
+        self.assertIsInstance(Variable(value="Some String", type=str).value, str)
 
 
 class PartialTestSimAPI(unittest.TestCase):
