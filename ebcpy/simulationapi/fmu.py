@@ -290,9 +290,9 @@ class FMU_API(simulationapi.SimulationAPI):
         def _to_bound(value, var_type, is_min):
             if value is None:
                 if is_min:
-                    return -np.inf
+                    return -np.inf if var_type != bool else False
                 else:
-                    return np.inf
+                    return np.inf if var_type != bool else True
             value = var_type(value)
             return value
 
