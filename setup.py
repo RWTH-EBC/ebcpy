@@ -12,7 +12,7 @@ EXTRAS_REQUIRE = {
     'full': [
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
-        'pymoo>=0.4.2',
+        'pymoo==0.4.2',
     ]
 }
 
@@ -32,7 +32,7 @@ if sys.version_info.minor < 9 and sys.version_info.major == 3:
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 setuptools.setup(
     name='ebcpy',
