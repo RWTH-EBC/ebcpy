@@ -22,18 +22,12 @@ from ebcpy.modelica import manipulate_ds
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 import time # for timing code only
 
-# TODO:
-# - add function: print supported exp setup options (like sim setup)
-# - add check for variable names whenever var_names are passed (using "check_unsupported_vars")
+
 # todo:
 # bug: single unzip dir not deleted in continuous simulation
-# - easy: add simple side functions cd setter etc.
-# - discuss update_model and model_name triggering other functions
-# - Frage: wie genau funktioniert setter und _ notation
 # - discuss output step, comm step
 # - is log_fmu woirking? or is it only for contoinuous simulation
 # - logger: instance name/index additionally to class name for co simulation? Alternatively FMU name
-# - decompose disctete fmu sim iniialize func to inbtegfrate given mehtods that atre already use for continuous sim
 # fixme:
 # mit python console läuft fmu conti nicht und dymola läuft nicht bis zum ende durch
 class PID:  # todo: used for testing; remove once done and move to example
@@ -365,6 +359,11 @@ class Model:
         """Return all fields in the chosen SimulationSetup class."""
         return list(cls._sim_setup_class.__fields__.keys())
 
+    @classmethod
+    def get_experiment_config_fields(cls):
+        """Return all fields in the chosen SimulationSetup class."""
+        return list(cls._exp_config_class.__fields__.keys())  # todo: implement setter method to adjust config afterwards like sim set up. does this include pylint functionality
+
     def get_results(self, tsd_format: bool = False):
         """
         returns the simulation results either as pd.DataFrame or as TimeSeriesData
@@ -389,7 +388,7 @@ class Model:
 
     def set_sim_setup(self, sim_setup):
         """
-        Updates only those entries that are given as arguments  # todo: consider resetting to default first
+        Updates only those entries that are given as arguments   # todo: Is using parse required for pydantic checks?; Does not overwrite nested sim_setup in config
         """
         new_setup = self._sim_setup.dict()
         new_setup.update(sim_setup)
@@ -473,7 +472,7 @@ class Model:
                                     self.inputs.keys(),
                                     self.states.keys()))
 
-    def check_unsupported_variables(self, variables: List[str], type_of_var: str):  # todo: use this functionality in discrete simulation!!
+    def check_unsupported_variables(self, variables: List[str], type_of_var: str):
         """Log warnings if variables are not supported."""
         if type_of_var == "parameters":
             ref = self.parameters.keys()
@@ -481,17 +480,20 @@ class Model:
             ref = self.outputs.keys()
         elif type_of_var == "inputs":
             ref = self.inputs.keys()
-        elif type_of_var == "inputs":
+        elif type_of_var == "states":
             ref = self.states.keys()
         else:
             ref = self.variables
 
         diff = set(variables).difference(ref)
         if diff:
+            if type_of_var not in ["parameters", "outputs", "inputs", "states"]:
+                type_of_var = "variables"  # to specify warning
             self.logger.warning(
-                "Variables '%s' not found in model '%s'. "
-                "Will most probably trigger an error when simulating.",
-                ', '.join(diff), self.model_name
+                "Variables '%s' are no '%s' in model '%s'. "
+                "Will most probably trigger an error when simulating"
+                "or being ignored.",  # in case of input table
+                ', '.join(diff), type_of_var, self.model_name
             )
             return True
         return False
@@ -783,8 +785,10 @@ class FMU_Discrete(FMU, Model):
                     self._input_table = inp.to_df(force_single_index=True)
                 elif isinstance(inp, pd.DataFrame):
                     self._input_table = inp
+            # check unsupported vars:
+            self.check_unsupported_variables(self._input_table.columns.to_list(), "inputs")
         else:
-            print('No long-term input data set!'
+            print('No long-term input data set! '
                   'Setter method can still be used to set input data to "input_table" attribute')
             self._input_table = None
 
@@ -797,11 +801,18 @@ class FMU_Discrete(FMU, Model):
         Parameters and initial values can be set.
         """
 
-        # THE FOLLOWING STEPS OF INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
+        # THE FOLLOWING STEPS OF FMU INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
         # - Read model description
         # - extract .fmu file
         # - Create FMU2 Slave
         # - instantiate fmu instance
+
+        # check if input valid
+        if parameters is not None:
+            self.check_unsupported_variables(parameters.keys(), "parameters")
+        if init_values is not None:
+            self.check_unsupported_variables(init_values.keys(), "variables")
+
 
         # Reset FMU instance
         self._fmu_instance.reset()
@@ -821,7 +832,7 @@ class FMU_Discrete(FMU, Model):
             parameters = {}
         # merge initial values and parameters in one dict as they are treated similarly
         start_values = init_values.copy()
-        start_values.update(parameters)
+        start_values.update(parameters)  # todo: is it necessary to distuinguis?
 
         # write parameters and initial values to FMU
         self._set_variables(var_dict=start_values)
@@ -875,6 +886,9 @@ class FMU_Discrete(FMU, Model):
         return self.finished
 
     def inp_step_read(self, input_step: dict = None):  # todo: consider automatic close in here again. after results are read there is no need for the fmu to stay
+        # check for unsupported input
+        if input_step is not None:
+            self.check_unsupported_variables(input_step.keys(), 'inputs')
         # collect inputs
         # get input from input table (overwrite with specific input for single step)
         single_input = {}

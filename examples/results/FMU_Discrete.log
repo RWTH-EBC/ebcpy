@@ -1,0 +1,137 @@
+24.08.2022-15:08:54 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-15:08:54 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-15:08:54 INFO FMU_Discrete: Reading model variables
+24.08.2022-15:08:54 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-15:59:36 WARNING FMU_Discrete: Variables 'bla' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-15:59:39 WARNING FMU_Discrete: Variables 'bla' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:12:22 ERROR FMU_Discrete: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+24.08.2022-16:12:22 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+24.08.2022-16:12:48 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:12:48 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:12:48 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:12:48 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:13:24 WARNING FMU_Discrete: Variables 'bus.setPoint' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:13:24 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:13:24 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:13:31 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:13:31 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:13:31 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:13:31 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:13:31 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:13:31 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:14:00 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:14:00 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+24.08.2022-16:14:02 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+24.08.2022-16:14:02 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:14:23 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+24.08.2022-16:14:23 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:14:23 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+24.08.2022-16:14:23 INFO FMU_Discrete: FMU "PI_1_bus" closed
+24.08.2022-16:14:24 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:14:24 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:14:25 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:14:25 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:14:25 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+24.08.2022-16:14:25 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+24.08.2022-16:14:27 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+24.08.2022-16:14:27 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+24.08.2022-16:15:14 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:15:14 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:15:14 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:15:14 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:16:01 WARNING FMU_Discrete: Variables 'bus.setPoint' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:16:02 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:16:02 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:16:09 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:16:09 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:16:09 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:16:09 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:16:09 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:16:09 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:16:15 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:16:15 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+24.08.2022-16:16:15 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+24.08.2022-16:16:15 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:16:27 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+24.08.2022-16:16:27 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:16:27 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+24.08.2022-16:16:27 INFO FMU_Discrete: FMU "PI_1_bus" closed
+24.08.2022-16:16:28 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:16:28 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:16:28 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:16:29 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:16:29 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+24.08.2022-16:16:29 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+24.08.2022-16:16:31 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+24.08.2022-16:16:31 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+24.08.2022-16:18:49 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:18:49 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:18:49 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:18:49 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:18:49 WARNING FMU_Discrete: Variables 'bus.setPoint' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:18:49 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:18:49 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:18:52 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:18:52 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:18:52 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:18:52 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:18:52 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:18:52 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:18:52 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:18:52 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+24.08.2022-16:18:52 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+24.08.2022-16:18:52 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:18:58 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+24.08.2022-16:18:58 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:18:58 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+24.08.2022-16:18:58 INFO FMU_Discrete: FMU "PI_1_bus" closed
+24.08.2022-16:18:58 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:18:58 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:18:59 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:18:59 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:18:59 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+24.08.2022-16:18:59 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+24.08.2022-16:18:59 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+24.08.2022-16:18:59 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+24.08.2022-16:21:24 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:21:24 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:21:25 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:21:25 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:21:25 WARNING FMU_Discrete: Variables 'bus.setPoint' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:21:25 INFO FMU_Discrete: Variables from above Warning are no model inputs in model D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu and thus being ignored
+24.08.2022-16:21:25 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:21:25 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:21:28 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:21:28 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+24.08.2022-16:21:28 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:21:28 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:21:28 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:21:28 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:21:28 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' not found in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating.
+24.08.2022-16:21:28 INFO FMU_Discrete: Variables from above Warning are no model inputs in model D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu and thus being ignored
+24.08.2022-16:21:28 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+24.08.2022-16:21:28 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+24.08.2022-16:21:28 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+24.08.2022-16:21:34 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+24.08.2022-16:21:34 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+24.08.2022-16:21:34 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+24.08.2022-16:21:34 INFO FMU_Discrete: FMU "PI_1_bus" closed
+24.08.2022-16:21:34 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:21:34 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:21:34 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:21:34 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:21:35 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+24.08.2022-16:21:35 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+24.08.2022-16:21:35 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+24.08.2022-16:21:35 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed
+24.08.2022-16:45:29 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-16:45:29 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-16:45:29 INFO FMU_Discrete: Reading model variables
+24.08.2022-16:45:29 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-16:45:29 WARNING FMU_Discrete: Variables 'bus.setPoint' are no 'inputs' in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulatingor being ignored.
+24.08.2022-17:04:16 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+24.08.2022-17:04:16 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+24.08.2022-17:04:16 INFO FMU_Discrete: Reading model variables
+24.08.2022-17:04:16 INFO FMU_Discrete: Instantiating fmu for worker 0
+24.08.2022-17:04:16 WARNING FMU_Discrete: Variables 'bus.setPoint' are no 'inputs' in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulatingor being ignored.
+24.08.2022-17:04:24 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation

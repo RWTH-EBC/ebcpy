@@ -124,7 +124,7 @@ def plotting_fmt():
 # ################# Simulation Setup and Experiment Configuration ###########################
 # store simulation setup as dict
 start: float = 0  # start time in seconds
-stop: float = 86400 * 0.5  # end time in seconds
+stop: float = 86400 * 1  # end time in seconds
 output_step: float = 60 * 10  # resolution of simulation results in seconds
 comm_step: float = 60 / 3  # step size of FMU communication in seconds.
 # In this interval, values are set to or read from the fmu
@@ -150,11 +150,16 @@ config_dict = {
 
 # ################ Instantiate Simulation API for System FMU ##########################
 system = FMU_Discrete(config_dict)
-# The inputs are added to 'resul_names' by default in addition to the outputs in case of discrete FMU simulation
+
+# In the passed configuration dict, the fmu path, the working directory and the simulation setup were set.
+# Calling get_experiment_config_fields() reveals that input data can be set too. Input data is passed afterwards
+print('Supported configuration options: ', system.get_experiment_config_fields())
+
+# The model inputs are added to 'result_names' by default in addition to the outputs in case of discrete FMU simulation
 print("Variables to store when simulating:", system.result_names)
 
 # ################ Create Input Data for the Simulation ###############################
-# Without having passed long-term input data with the configuration a message appears in the console
+# Without having passed long-term input data with the configuration, message appears in the console during instantiation
 # Input data is created in the following and applied using the setter
 
 # The input_table attribute considers input data that holds for a relevant simulation period (here the whole simulation)
@@ -179,6 +184,7 @@ input_df.to_csv('data/ThermalZone_input.csv', index=True, index_label='time')
 
 # Set the input data to the input_table property
 system.input_table = input_df
+# alternatively path .csv file path
 # system.input_table = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_input.csv")
 
 # ####################### Initialize System FMU for Discrete Simulation ##########################
