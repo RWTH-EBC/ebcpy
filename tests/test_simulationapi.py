@@ -41,7 +41,6 @@ class TestVariable(unittest.TestCase):
         """Test value conversion"""
         for _type in [float, int, bool]:
             for _value in [1, 1.0, "1", True]:
-                print(_type, _value)
                 self.assertIsInstance(
                     Variable(value=_value, type=_type).value,
                     _type
@@ -291,7 +290,7 @@ class TestFMUAPI(PartialTestSimAPI):
         """Test close functionality of fmu api"""
         # pylint: disable=protected-access
         self.sim_api.close()
-        self.assertEqual(self.sim_api._unzip_dirs, {})
+        self.assertIsNone(self.sim_api._unzip_dir)
 
 
 class TestFMUAPISingleCore(TestFMUAPI):
