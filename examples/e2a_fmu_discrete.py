@@ -177,7 +177,7 @@ for idx in range(len(time_index)):
     if sec_of_day > 3600 * 8 and sec_of_day < 3600 * 17:
         setpoint[idx] = 293.15
 # Store input data as pandas DataFrame
-input_df = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)  # todo: print warning that only the variables that match with fmu vars are set
+input_df = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)
 # create csv file to access input data later on
 # for re-import column naming 'time' is crucial
 input_df.to_csv('data/ThermalZone_input.csv', index=True, index_label='time')
@@ -242,7 +242,7 @@ print('Study B: System FMU with Controller FMU')
 while not system.finished:
     # Call controller and extract control output
     # (for advanced control strategies that require previous results, use the attribute sim_res and adjust output_interval)
-    ctr_action = controller.inp_step_read(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']  # fixme: controller schreibt auch results dataframe -> eigentlich unnötig -> Klassenframe??
+    ctr_action = controller.inp_step_read(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
     # write controller output to system FMU as well as pre-known inputs and perform step
     res_step = system.inp_step_read(input_step={'bus.controlOutput': ctr_action})
 

@@ -24,13 +24,19 @@ import time # for timing code only
 
 
 # todo:
-# bug: single unzip dir not deleted in continuous simulation
-# - discuss output step, comm step
+# - TSD index sometimes "Time" sometimes not -> see tsd example -> ask fabian -> adjust in get_results
+# - add exp config setter and adjust sim setup setter to set those values afterwards and make sure pydandic checks are runningg; sim_set_up setter does not adjust sim_setup in config!!!
+# - check initial passing of settings, kwargs etc
+# - bug: single unzip dir not deleted in continuous simulation/check if extract dirs are deleted properly
+# - discuss output step, comm step/ think about returning n last values /shadow sim_res attribute; #output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
+# - organize classes in different scripts (init, fmu_cont, fmu_dis, fmu, dymola)
+# - document classes and methods
 # - is log_fmu woirking? or is it only for contoinuous simulation
 # - logger: instance name/index additionally to class name for co simulation? Alternatively FMU name
 # fixme:
 # mit python console läuft fmu conti nicht und dymola läuft nicht bis zum ende durch
-class PID:  # todo: used for testing; remove once done and move to example
+
+class PID:  # todo: used for testing; remove once done
     '''
     PID implementation from aku and pst, simplified for the needs in this example by kbe
     '''
@@ -134,6 +140,7 @@ def interp_df(t: int, df: pd.DataFrame,
                 row.update({column: np.interp(t, [df.index[idx_l], df.index[idx_r]],
                                               df[column].iloc[idx_l:idx_r + 1])})
     return row
+
 
 # pd.DataFrame und TimeSeriesData as type to be validated by pydantic
 PandasDataFrame = TypeVar('pandas.core.frame.DataFrame')
@@ -294,7 +301,14 @@ class ExperimentConfigurationFMU(ExperimentConfiguration):
     in case of FMU simulation the fmu file path defines the model
     """
     file_path: Optional[FilePath]
-    input_data: Optional[Union[FilePath, PandasDataFrame, TimeSeriesDataObject]]  # fixme: not needed in continuous fmu sim
+
+
+class ExperimentConfigurationFMU_Discrete(ExperimentConfigurationFMU):
+    """
+    in case of discrete FMU simulation long-term input data can be passed
+    """
+    input_data: Optional[
+        Union[FilePath, PandasDataFrame, TimeSeriesDataObject]]
 
 
 class ExperimentConfigurationDymola(ExperimentConfiguration):
@@ -316,12 +330,12 @@ class Model:
 
     def __init__(self, model_name):
         # initialize sim setup with specific class defaults.
-        self._sim_setup = self._sim_setup_class()  # todo: why _ notation here?
+        self._sim_setup = self._sim_setup_class()
         # update sim setup with config entries if given
         if self.config.sim_setup is not None:
             self.set_sim_setup(self.config.sim_setup)
         # current directory
-        if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now  # todo: not nice
+        if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now
             if self.config.cd is not None:
                 self.cd = self.config.cd
             else:
@@ -336,8 +350,7 @@ class Model:
         self.states: Dict[str, Variable] = {}  # States of model
         # results
         self.result_names = []  # initialize list of tracked variables
-        self.model_name = model_name  # todo: discuss setting model name triggers further functions
-        self.sim_res = None  # todo: implement functionality for dym and fmu continuous
+        self.model_name = model_name
 
     def set_cd(self, cd):
         """Base function for changing the current working directory."""
@@ -362,19 +375,7 @@ class Model:
     @classmethod
     def get_experiment_config_fields(cls):
         """Return all fields in the chosen SimulationSetup class."""
-        return list(cls._exp_config_class.__fields__.keys())  # todo: implement setter method to adjust config afterwards like sim set up. does this include pylint functionality
-
-    def get_results(self, tsd_format: bool = False):
-        """
-        returns the simulation results either as pd.DataFrame or as TimeSeriesData
-        """
-        if not tsd_format:
-            results = self.sim_res
-        else:
-            results = TimeSeriesData(self.sim_res, default_tag="sim")
-            results.rename_axis(['Variables', 'Tags'], axis='columns')
-            results.index.names = ['Time']  # todo: in ebcpy tsd example only sometimes
-        return results
+        return list(cls._exp_config_class.__fields__.keys())
 
     @property
     def sim_setup(self) -> SimulationSetupClass:
@@ -388,7 +389,7 @@ class Model:
 
     def set_sim_setup(self, sim_setup):
         """
-        Updates only those entries that are given as arguments   # todo: Is using parse required for pydantic checks?; Does not overwrite nested sim_setup in config
+        Updates only those entries that are given as arguments
         """
         new_setup = self._sim_setup.dict()
         new_setup.update(sim_setup)
@@ -523,7 +524,7 @@ class FMU:
             self.cd = self.config.cd
         else:
             self.cd = os.path.dirname(path)
-        self.log_fmu = log_fmu  # todo consider moving to config
+        self.log_fmu = log_fmu
         self._var_refs: dict = None  # Dict of variables and their references
         self._model_description = None
         self._fmi_type = None
@@ -736,6 +737,7 @@ class FMU:
 class FMU_Discrete(FMU, Model):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Discrete
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU_Discrete
     objs = []  # to use the close_all method
 
     def __init__(self, config, log_fmu: bool = True):
@@ -743,7 +745,7 @@ class FMU_Discrete(FMU, Model):
         self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, log_fmu)
-        Model.__init__(self, model_name=self.config.file_path)  # todo: in case of fmu: file path, in case of dym: model_name, find better way to deal with; consider getting rid of model_name. For now it is to make the old methods work
+        Model.__init__(self, model_name=self.config.file_path)  # in case of fmu: file path, in case of dym: model_name
         # used for stepwise simulation
         self.current_time = None
         self.finished = None
@@ -751,6 +753,19 @@ class FMU_Discrete(FMU, Model):
         self.input_table = self.config.input_data  # calling the setter to distinguish depending on type
         self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
         self.step_count = None  # counting simulation steps
+        self.sim_res = None  # attribute that stores simulation result
+
+    def get_results(self, tsd_format: bool = False):
+        """
+        returns the simulation results either as pd.DataFrame or as TimeSeriesData
+        """
+        if not tsd_format:
+            results = self.sim_res
+        else:
+            results = TimeSeriesData(self.sim_res, default_tag="sim")
+            results.rename_axis(['Variables', 'Tags'], axis='columns')
+            results.index.names = ['Time']
+        return results
 
     @classmethod
     def close_all(cls):
@@ -794,10 +809,10 @@ class FMU_Discrete(FMU, Model):
 
     def initialize_discrete_sim(self,
                                 parameters: dict = None,
-                                init_values: dict = None  # todo: consider as attributes
+                                init_values: dict = None
                                 ):
         """
-        Initialisation of FMU. To be called before using stepwise simulation  # todo: consider calling automaically after fmu setup or before first step
+        Initialisation of FMU. To be called before using stepwise simulation
         Parameters and initial values can be set.
         """
 
@@ -885,7 +900,7 @@ class FMU_Discrete(FMU, Model):
 
         return self.finished
 
-    def inp_step_read(self, input_step: dict = None):  # todo: consider automatic close in here again. after results are read there is no need for the fmu to stay
+    def inp_step_read(self, input_step: dict = None, close_when_finished: bool = False):
         # check for unsupported input
         if input_step is not None:
             self.check_unsupported_variables(input_step.keys(), 'inputs')
@@ -896,7 +911,7 @@ class FMU_Discrete(FMU, Model):
             # extract value from input time table
             # only consider columns in input table that refer to inputs of the FMU
             input_matches = list(set(self.inputs.keys()).intersection(set(self.input_table.columns)))
-            input_table_filt = self.input_table[input_matches]  # todo: consider moving filter to setter for efficiency, if so, inputs must be identified before
+            input_table_filt = self.input_table[input_matches]  # todo: consider moving this filter to setter for efficiency, if so, inputs must be identified before
             single_input = interp_df(t=self.current_time, df=input_table_filt, interpolate=self.interp_input_table)
 
         if input_step is not None:
@@ -915,11 +930,14 @@ class FMU_Discrete(FMU, Model):
             vrs_list=self.result_names)
         if not self.finished:
             # append
-            if self.current_time % self.sim_setup.output_interval == 0:  # todo: output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
+            if self.current_time % self.sim_setup.output_interval == 0:
                 self.sim_res = pd.concat(
                     [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
                                                              index=[res['SimTime']],
                                                              columns=self.sim_res.columns)])
+        else:
+            if close_when_finished:
+                self.close()
         return res
 
     def _set_result_names(self):
@@ -988,7 +1006,7 @@ class ContinuousSimulation(Model):
         """Overwrite magic method to allow pickling the api object"""
         self.__dict__.update(state)
 
-    def close(self):  # todo: check if this is overwritten anyway?? Counts only for MP?? whats happending at else??
+    def close(self):
         """Base function for closing the simulation-program."""
         if self.use_mp:
             try:
@@ -1150,7 +1168,7 @@ class FMU_API(FMU, ContinuousSimulation):
         int: np.int_
     }
 
-    def __init__(self, config, n_cpu, log_fmu: bool = True):  # todo: consider use mp and n_core in config -> requires more specific config classes
+    def __init__(self, config, n_cpu, log_fmu: bool = True):  # todo: consider n_core and log_fmu in config -> requires more specific config classes
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, log_fmu=log_fmu)
         ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
@@ -2317,7 +2335,7 @@ if __name__ == '__main__':
     #
     # config_obj = {
     #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_bus.fmu',
-    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
     #               'sim_setup': simulation_setup,
     #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
     #               }
@@ -2334,7 +2352,7 @@ if __name__ == '__main__':
     #         'bus.setPoint'])
     #     # Apply control action to system and perform simulation step
     #     res_step = sys.inp_step_read(input_step={
-    #         'bus.controlOutput': ctr_action})  # fixme consider returning the last n values for mpc if n==1 return dict, otherwise list of dicts
+    #         'bus.controlOutput': ctr_action})
     #
     # sys.close()
     #
@@ -2362,7 +2380,7 @@ if __name__ == '__main__':
     # for i in range(len(cases)):
     #     axes = axes_mat
     #     axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
-    #     axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')  # fixme: setpoint not available in results
+    #     axes[0].plot(input_data.index, input_data['bus.setPoint'] - 273.15, label='set', color='r')
     #     axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
     #     axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
     #
@@ -2395,7 +2413,7 @@ if __name__ == '__main__':
     #                     "output_interval": 100}
     # config_obj = {
     #               'file_path': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/HeatPumpSystemWithInput.fmu',
-    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',  # fixme: if not exists -> pydantic returns error instead of creating it
+    #               'cd': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/results',
     #               'sim_setup': simulation_setup,
     #               'input_file': 'D:/pst-kbe/tasks/08_ebcpy_restructure/ebcpy/examples/data/ThermalZone_input.csv'
     #               }
