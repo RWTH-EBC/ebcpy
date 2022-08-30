@@ -326,7 +326,6 @@ hp_fmu = FMU_Discrete({'cd': cd,
 variables = hp_fmu.find_vars('heatPumpSystem.hPSystemController.sigBusHP')
 variables.extend(['TDryBul', 'vol.T', 'senT_a1.T'])
 
-
 # initialize fmu and set parameter
 hp_fmu.initialize_discrete_sim(parameters={'heaCap.C': 100000}, init_values={'TDryBul': 0+273.15})
 

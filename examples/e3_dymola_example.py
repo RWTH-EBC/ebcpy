@@ -51,8 +51,7 @@ def main(
         n_cpu=n_cpu,
         show_window=True,
         n_restart=-1,
-        equidistant_output=False,
-        get_structural_parameters=True
+        equidistant_output=False
         # Only necessary if you need a specific dymola version
         #dymola_path=None,
         #dymola_version=None

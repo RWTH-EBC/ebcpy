@@ -48,6 +48,7 @@ def main(
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
+
     # Organize settings in configuration dict
     config_dict = {
         'file_path': model_name,
