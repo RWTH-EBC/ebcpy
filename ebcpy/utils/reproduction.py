@@ -41,19 +41,19 @@ class CopyFile:
 def save_reproduction(
         file: pathlib.Path = None,
         title: str = None,
-        save_path: pathlib.Path = None,
+        path: pathlib.Path = None,
         files: List[ReproductionFile] = None,
         search_on_pypi: bool = False
 ):
     _py_requirements_name = "02_requirements.txt"
-    if save_path is None:
-        save_path = os.getcwd()
+    if path is None:
+        path = os.getcwd()
     if file is None:
         file = pathlib.Path(sys.modules['__main__'].__file__).absolute()
     if title is None:
         title = file.name.replace(".py", "")
-    save_path = pathlib.Path(save_path)
-    os.makedirs(save_path, exist_ok=True)
+    path = pathlib.Path(path)
+    os.makedirs(path, exist_ok=True)
     if files is None:
         files = []
 
@@ -88,7 +88,7 @@ def save_reproduction(
         content=py_repro,
     ))
 
-    zip_file_name = save_path.joinpath(
+    zip_file_name = path.joinpath(
         f"{title}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
     )
     with zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED) as zip_file:
@@ -116,7 +116,7 @@ def get_git_information(
     except ImportError as err:
         raise ImportError(
             "Could not save data for reproduction as "
-            "optional dependency is not installed: " + str(err)
+            "optional dependency GitPython is not installed: " + str(err)
         )
     try:
         repo = Repo(path)
@@ -249,5 +249,5 @@ def _get_python_reproduction(requirements_name: str, title: str):
 if __name__ == '__main__':
     save_reproduction(
         title="my_study",
-        save_path=r"D:\00_temp\reproduction",
+        path=r"D:\00_temp\reproduction",
     )

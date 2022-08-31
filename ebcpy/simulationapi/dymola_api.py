@@ -839,7 +839,7 @@ class DymolaAPI(SimulationAPI):
 
     def save_for_reproduction(
             self,
-            save_path: str = None,
+            path: str = None,
             files: list = None,
             save_total_model: bool = True,
             save_fmu: bool = True
@@ -926,7 +926,7 @@ class DymolaAPI(SimulationAPI):
                 ))
 
         return super().save_for_reproduction(
-            save_path=save_path,
+            path=path,
             files=files
         )
 
