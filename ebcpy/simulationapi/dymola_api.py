@@ -806,12 +806,8 @@ class DymolaAPI(SimulationAPI):
                   "type": "DymolaAPI",
                   }
         # Update kwargs
-        for kwarg in self._supported_kwargs:
-            # Convert Path to str to enable json-dumping
-            val = self.__dict__.get(kwarg, None)
-            if isinstance(val, pathlib.Path):
-                val = str(val)
-            config[kwarg] = val
+        config.update({kwarg: self.__dict__.get(kwarg, None)
+                       for kwarg in self._supported_kwargs})
 
         return config
 
@@ -836,10 +832,10 @@ class DymolaAPI(SimulationAPI):
 
     def save_for_reproduction(
             self,
-            path: str = None,
+            path: pathlib.Path = None,
             files: list = None,
             save_total_model: bool = True,
-            save_fmu: bool = True
+            export_fmu: bool = True
     ):
         """
         Additionally to the basic reproduction, add info
@@ -850,7 +846,7 @@ class DymolaAPI(SimulationAPI):
         - Information on Dymola: Version, flags
         - All loaded packages
         - Total model, if save_total_model = True
-        - FMU, if save_fmu = True
+        - FMU, if export_fmu = True
         """
         # Local import to require git-package only when called
         from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
@@ -859,7 +855,7 @@ class DymolaAPI(SimulationAPI):
             files = []
         # DymolaAPI Info:
         files.append(ReproductionFile(
-            filename="03_DymolaAPI_config.json",
+            filename="Dymola/DymolaAPI_config.json",
             content=json.dumps(self.to_dict(), indent=2)
         ))
         # Dymola info:
@@ -871,7 +867,7 @@ class DymolaAPI(SimulationAPI):
             "\n\n"
         ]
         files.append(ReproductionFile(
-            filename="03_DymolaInfo.txt",
+            filename="Dymola/DymolaInfo.txt",
             content="\n".join(dymola_info) + _flags
         ))
 
@@ -892,12 +888,12 @@ class DymolaAPI(SimulationAPI):
                 break
             package_infos.append(str(pack_path))
         files.append(ReproductionFile(
-            filename="03_Modelica_packages.txt",
+            filename="Dymola/Modelica_packages.txt",
             content="\n".join(package_infos)
         ))
         # Total model
         if save_total_model:
-            _total_model_name = f"03_{self.model_name.replace('.', '_')}_total.mo"
+            _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
             _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
@@ -913,12 +909,12 @@ class DymolaAPI(SimulationAPI):
                 self.logger.error("Could not save total model: %s",
                                   self.dymola.getLastErrorLog())
         # FMU
-        if save_fmu:
+        if export_fmu:
             path = self._save_to_fmu(fail_on_error=False)
             if path is not None:
                 files.append(CopyFile(
                     sourcepath=path,
-                    filename="03_" + path.name,
+                    filename="Dymola/" + path.name,
                     remove=True
                 ))
 
@@ -933,7 +929,7 @@ class DymolaAPI(SimulationAPI):
             modelToOpen=self.model_name,
             storeResult=False,
             modelName='',
-            fmiVersion='1',
+            fmiVersion='2',
             fmiType='all',
             includeSource=False,
             includeImage=0

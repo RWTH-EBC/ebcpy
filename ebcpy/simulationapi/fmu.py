@@ -376,7 +376,7 @@ class FMU_API(simulationapi.SimulationAPI):
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
 
     def save_for_reproduction(self,
-                              path: str = None,
+                              path: pathlib.Path = None,
                               files: list = None):
         """
         Additionally to the basic reproduction, add info
@@ -385,7 +385,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if files is None:
             files = []
         files.append(CopyFile(
-            filename="03_" + pathlib.Path(self.model_name).name,
+            filename="FMU/" + pathlib.Path(self.model_name).name,
             sourcepath=pathlib.Path(self.model_name),
             remove=False
         ))

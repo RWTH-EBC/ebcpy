@@ -45,7 +45,7 @@ def save_reproduction(
         files: List[ReproductionFile] = None,
         search_on_pypi: bool = False
 ):
-    _py_requirements_name = "02_requirements.txt"
+    _py_requirements_name = "python/requirements.txt"
     if path is None:
         path = os.getcwd()
     if file is None:
@@ -65,7 +65,7 @@ def save_reproduction(
     ))
     # General info
     files.append(ReproductionFile(
-        filename="01_General_information.txt",
+        filename="General_information.txt",
         content=_get_general_information()
     ))
 
@@ -84,12 +84,12 @@ def save_reproduction(
         title=title
     )
     files.append(ReproductionFile(
-        filename="02_Reproduce_python_environment.bat",
+        filename="python/Reproduce_python_environment.txt",
         content=py_repro,
     ))
 
     zip_file_name = path.joinpath(
-        f"{title}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.zip"
+        f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{title}.zip"
     )
     with zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED) as zip_file:
         # Save all result files:
@@ -115,8 +115,8 @@ def get_git_information(
         from git import Repo, InvalidGitRepositoryError, RemoteReference
     except ImportError as err:
         raise ImportError(
-            "Could not save data for reproduction as "
-            "optional dependency GitPython is not installed: " + str(err)
+            "Could not save data for reproduction, install GitPython using "
+            "`pip install GitPython`: " + str(err)
         )
     try:
         repo = Repo(path)
@@ -174,6 +174,7 @@ For future use, be sure to commit and push your changes before running any resea
 """
     _data = {
         "Time": datetime.now(),
+        "Author": os.getlogin(),
         "Machine": platform.machine(),
         "Version": platform.version(),
         "Platform": platform.platform(),
@@ -235,13 +236,12 @@ def _get_python_reproduction(requirements_name: str, title: str):
     """
     _v = sys.version_info
     py_version = ".".join([str(_v.major), str(_v.minor), str(_v.micro)])
-    env_name = f"py_reproduce_{title}"
+    env_name = f"py_{title}"
     py_reproduce_content = [
         f"conda create -n {env_name} python={py_version} -y",
         f"conda activate {env_name}",
         f"pip install --upgrade pip",
         f"pip install -r {requirements_name}",
-        f"conda deactivate",
     ]
     return "\n".join(py_reproduce_content)
 
