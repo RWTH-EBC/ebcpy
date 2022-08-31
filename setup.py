@@ -19,6 +19,7 @@ EXTRAS_REQUIRE = {
 
 INSTALL_REQUIRES = [
     'numpy>=1.19.5',
+    'matplotlib>=3.3.4',
     'scipy>=1.5.4',
     'pandas>=1.1.5',
     'scikit-learn>=0.24.2',
