@@ -2,14 +2,6 @@
 This module contains scripts to extract information
 out of simulation / programming based research and
 enable a reproduction of the results at a later stage.
-
-Features:
-- Reproduce python environment
-- Reproduce git-repos
-- Simulation with Dymola
-    - SaveTotalModel
-    - Save FMU
-    - Git Logger
 """
 
 import pathlib
@@ -38,7 +30,7 @@ class CopyFile:
     remove: bool
 
 
-def save_reproduction(
+def save_reproduction_archive(
         file: pathlib.Path = None,
         title: str = None,
         path: pathlib.Path = None,
@@ -241,13 +233,13 @@ def _get_python_reproduction(requirements_name: str, title: str):
         f"conda create -n {env_name} python={py_version} -y",
         f"conda activate {env_name}",
         f"pip install --upgrade pip",
-        f"pip install -r {requirements_name}",
+        f"pip install -r requirements.txt",
     ]
     return "\n".join(py_reproduce_content)
 
 
 if __name__ == '__main__':
-    save_reproduction(
+    save_reproduction_archive(
         title="my_study",
         path=r"D:\00_temp\reproduction",
     )

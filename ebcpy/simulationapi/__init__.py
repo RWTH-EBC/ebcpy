@@ -14,7 +14,7 @@ import multiprocessing as mp
 from pydantic import BaseModel, Field, validator
 import numpy as np
 from ebcpy.utils import setup_logger
-from ebcpy.utils.reproduction import save_reproduction
+from ebcpy.utils.reproduction import save_reproduction_archive
 
 
 class Variable(BaseModel):
@@ -495,7 +495,7 @@ class SimulationAPI:
         Should be extended by child-classes to allow custom
         saving.
         """
-        return save_reproduction(
+        return save_reproduction_archive(
             path=path,
             files=files
         )
