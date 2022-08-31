@@ -113,22 +113,24 @@ class DymolaAPI(SimulationAPI):
 
     """
     _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
-    _dymola_instances: dict = {}
     _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
+    dymola = None
     # Default simulation setup
-    _supported_kwargs = ["show_window",
-                         "modify_structural_parameters",
-                         "dymola_path",
-                         "equidistant_output",
-                         "n_restart",
-                         "debug",
-                         "mos_script_pre",
-                         "mos_script_post",
-                         "dymola_version"]
+    _supported_kwargs = [
+        "show_window",
+        "modify_structural_parameters",
+        "dymola_path",
+        "equidistant_output",
+        "n_restart",
+        "debug",
+        "mos_script_pre",
+        "mos_script_post",
+        "dymola_version"
+    ]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
-
+        self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
         # Update kwargs with regard to what kwargs are supported.
         self.extract_variables = kwargs.pop("extract_variables", True)
         self.fully_initialized = False
@@ -157,8 +159,6 @@ class DymolaAPI(SimulationAPI):
             self.mos_script_pre = self._make_modelica_normpath(self.mos_script_pre)
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
-        # Set empty dymola attribute
-        self.dymola = None
 
         super().__init__(cd=cd,
                          model_name=model_name,
@@ -332,9 +332,8 @@ class DymolaAPI(SimulationAPI):
         # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx
-            if idx_worker not in self._dymola_instances:
+            if self.dymola is None:
                 self._setup_dymola_interface(use_mp=True)
-            self.dymola = self._dymola_instances[idx_worker]
 
         # Handle eventlog
         if show_eventlog:
@@ -676,27 +675,25 @@ class DymolaAPI(SimulationAPI):
         super().close()
         # Always close main instance
         self._single_close(dymola=self.dymola)
-        self.dymola = None
 
     def _close_multiprocessing(self, _):
-        wrk_idx = self.worker_idx
-        if wrk_idx in self._dymola_instances:
-            self._single_close(dymola=self._dymola_instances.pop(wrk_idx))
+        self._single_close()
+        DymolaAPI.dymola = None
 
     def _single_close(self, **kwargs):
         """Closes a single dymola instance"""
-        dymola = kwargs["dymola"]
-        if dymola is None:
+        if self.dymola is None:
             return  # Already closed prior
         # Execute the mos-script if given:
         if self.mos_script_post is not None:
             self.logger.info("Executing given mos_script_post "
                              "prior to closing.")
-            dymola.RunScript(self.mos_script_post)
-            self.logger.info("Output of mos_script_post: %s", dymola.getLastErrorLog())
+            self.dymola.RunScript(self.mos_script_post)
+            self.logger.info("Output of mos_script_post: %s", self.dymola.getLastErrorLog())
         self.logger.info('Closing Dymola')
-        dymola.close()
+        self.dymola.close()
         self.logger.info('Successfully closed Dymola')
+        self.dymola = None
 
     def _close_dummy(self):
         """
@@ -775,8 +772,8 @@ class DymolaAPI(SimulationAPI):
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
         if use_mp:
-            self._dymola_instances[self.worker_idx] = dymola
-            return True
+            DymolaAPI.dymola = dymola
+            return None
         return dymola
 
     def _open_dymola_interface(self):
@@ -1149,7 +1146,7 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self.dymola = self._setup_dymola_interface(use_mp=False)
+            self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
             self.sim_counter = 1
         else:
             self.sim_counter += 1

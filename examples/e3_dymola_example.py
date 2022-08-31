@@ -48,7 +48,6 @@ def main(
         show_window=True,
         n_restart=-1,
         equidistant_output=False,
-        get_structural_parameters=True
         # Only necessary if you need a specific dymola version
         #dymola_path=None,
         #dymola_version=None
@@ -169,5 +168,5 @@ if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
         aixlib_mo=r"D:\04_git\AixLib\AixLib\package.mo",
-        n_cpu=1
+        n_cpu=5
     )
