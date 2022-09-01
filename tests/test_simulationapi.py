@@ -257,7 +257,7 @@ class TestFMUAPI(PartialTestSimAPI):
         """Test close functionality of fmu api"""
         # pylint: disable=protected-access
         self.sim_api.close()
-        self.assertEqual(self.sim_api._unzip_dirs, {})
+        self.assertTrue(self.sim_api._unzip_dir is None)
 
 
 class TestFMUAPISingleCore(TestFMUAPI):

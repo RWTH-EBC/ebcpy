@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
 from typing import TypeVar, List
@@ -46,6 +46,23 @@ class SimulationSetup(BaseModel):
     _default_solver: str = None
     _allowed_solvers: list = []
 
+    @validator("solver", always=True, allow_reuse=True)
+    def check_valid_solver(cls, solver):
+        """
+        Check if the solver is in the list of valid solvers
+        """
+        if not solver:
+            return cls.__private_attributes__['_default_solver'].default
+        allowed_solvers = cls.__private_attributes__['_allowed_solvers'].default
+        if solver not in allowed_solvers:
+            raise ValueError(f"Given solver '{solver}' is not supported! "
+                             f"Supported are '{allowed_solvers}'")
+        return solver
+
+    class Config:
+        """Overwrite default pydantic Config"""
+        extra = 'forbid'
+        underscore_attrs_are_private = True
 
 class SimulationSetupDymola(SimulationSetup):
     """
@@ -130,6 +147,11 @@ class ExperimentConfiguration(BaseModel):
     """
     cd: Optional[DirectoryPath]
     sim_setup: Optional[SimulationSetup]
+
+    class Config:  # todo: same code twice for sim setup and exp config
+        """Overwrite default pydantic Config"""
+        extra = 'forbid'
+        underscore_attrs_are_private = True
 
 
 class ExperimentConfigurationFMU(ExperimentConfiguration):
