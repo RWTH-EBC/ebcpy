@@ -21,7 +21,7 @@ class FMU_API(FMU, ContinuousSimulation):
         int: np.int_
     }
 
-    def __init__(self, config, n_cpu, log_fmu: bool = True):  # todo: consider n_core and log_fmu in config -> requires more specific config classes
+    def __init__(self, config, n_cpu: int = 1, log_fmu: bool = True):  # todo: consider n_core and log_fmu in config -> requires more specific config classes
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, log_fmu=log_fmu)
         ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)

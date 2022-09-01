@@ -1,0 +1,117 @@
+01.09.2022-14:33:08 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:08 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:09 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:09 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:09 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:09 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:09 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:09 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:09 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:09 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:09 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:09 INFO FMU_API: Reading model variables
+01.09.2022-14:33:09 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:09 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:09 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:09 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:09 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:10 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:10 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:10 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:10 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:10 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:10 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:10 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:10 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: The following error was detected at time: 0
+01.09.2022-14:33:10 ERROR FMU_API: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+01.09.2022-14:33:10 ERROR FMU_API: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+01.09.2022-14:33:10 ERROR FMU_API: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed
+01.09.2022-14:33:10 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-14:33:10 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-14:33:10 INFO FMU_API: Reading model variables
+01.09.2022-14:33:10 INFO FMU_API: Instantiating fmu for worker 0
+01.09.2022-14:33:10 WARNING FMU_API: fmi2Terminate: already terminated, ignoring call
+01.09.2022-14:33:10 INFO FMU_API: FMU "PumpAndValve_windows" closed

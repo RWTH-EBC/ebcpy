@@ -109,7 +109,7 @@ class DymolaAPI(ContinuousSimulation):
         "dymola_version"
     ]
 
-    def __init__(self, config, n_cpu, **kwargs):
+    def __init__(self, config, n_cpu: int = 1, **kwargs):
         """Instantiate class objects."""
         self.config = self._exp_config_class.parse_obj(config)
         packages = self.config.packages

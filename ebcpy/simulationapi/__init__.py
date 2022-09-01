@@ -16,7 +16,7 @@ from ebcpy.simulationapi.config import *
 # - extend use of class Variable???
 # - TSD index sometimes "Time" sometimes not -> see tsd example -> ask fabian -> adjust in get_results
 # - !!!add exp config setter and adjust sim setup setter to set those values afterwards and make sure pydandic checks are runningg; sim_set_up setter does not adjust sim_setup in config!!!
-# - !!!check initial passing of settings, kwargs etc call of the inits...
+# - !!!check initial passing of settings, kwargs etc call of the inits...; consiger kwargs again -> this way with inheritance, default must not be specifiesd twice
 # - bug: single unzip dir not deleted in continuous simulation/check if extract dirs are deleted properly
 # - discuss output step, comm step/ think about returning n last values /shadow sim_res attribute; #output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
 # - document classes and methods
