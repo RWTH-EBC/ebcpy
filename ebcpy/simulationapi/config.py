@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 
 # pd.DataFrame und TimeSeriesData as type to be validated by pydantic
-PandasDataFrameType = TypeVar('pd.DataFrame')
+PandasDataFrameType = TypeVar('pd.DataFrame')  # todo: does this make sense? does it need boudn? does it need typeVar at all?
 TimeSeriesDataObjectType = TypeVar('TimeSeriesData')
 
 """ Simulation Setup """
@@ -129,14 +129,13 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
         description="step size in which the do_step() function is called"
     )
 
-    tolerance: float = Field(
+    tolerance: Union[float, None] = Field(
         title="tolerance",
         default=None,  # to select fmpy's default
         description="Absolute tolerance of integration"
     )
     _default_solver = "CVode"
     _allowed_solvers = ["CVode", "Euler"]
-
 
 """" Configuration """
 # Base - Dymola/FMU
@@ -149,10 +148,10 @@ class ExperimentConfiguration(BaseModel):
     cd: Optional[DirectoryPath]
     sim_setup: Optional[SimulationSetup]
 
-    class Config:  # todo: same code twice for sim setup and exp config
+    class Config:
         """Overwrite default pydantic Config"""
         extra = 'forbid'
-        underscore_attrs_are_private = True
+
 
 
 class ExperimentConfigurationFMU(ExperimentConfiguration):

@@ -33,3 +33,20 @@
 01.09.2022-15:35:57 INFO FMU_API: Finished 80 % of all 50 simulations
 01.09.2022-15:35:57 INFO FMU_API: Finished 90 % of all 50 simulations
 01.09.2022-15:35:57 INFO FMU_API: Finished 100 % of all 50 simulations
+01.09.2022-16:40:50 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+01.09.2022-16:40:50 INFO FMU_API: Extracting fmu and reading fmu model description
+01.09.2022-16:40:51 INFO FMU_API: Reading model variables
+01.09.2022-16:40:51 INFO FMU_API: Extracting fmu 2 times for multiprocessing on 2 processes
+01.09.2022-16:40:53 INFO FMU_API: Instantiated fmu's on all processes.
+01.09.2022-16:40:53 WARNING FMU_API: Variables 'heatCap.T' are no 'variables' in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating or being ignored.
+01.09.2022-16:40:53 INFO FMU_API: Starting 50 simulations on 2 cores
+01.09.2022-16:40:54 INFO FMU_API: Finished 10 % of all 50 simulations
+01.09.2022-16:40:54 INFO FMU_API: Finished 20 % of all 50 simulations
+01.09.2022-16:40:54 INFO FMU_API: Finished 30 % of all 50 simulations
+01.09.2022-16:40:55 INFO FMU_API: Finished 40 % of all 50 simulations
+01.09.2022-16:40:55 INFO FMU_API: Finished 50 % of all 50 simulations
+01.09.2022-16:40:56 INFO FMU_API: Finished 60 % of all 50 simulations
+01.09.2022-16:40:56 INFO FMU_API: Finished 70 % of all 50 simulations
+01.09.2022-16:40:56 INFO FMU_API: Finished 80 % of all 50 simulations
+01.09.2022-16:40:57 INFO FMU_API: Finished 90 % of all 50 simulations
+01.09.2022-16:40:57 INFO FMU_API: Finished 100 % of all 50 simulations
