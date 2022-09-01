@@ -848,6 +848,11 @@ class DymolaAPI(SimulationAPI):
         - All loaded packages
         - Total model, if save_total_model = True
         - FMU, if export_fmu = True
+
+        :param bool save_total_model:
+            True to save the total model
+        :param bool export_fmu:
+            True to export the FMU of the current model.
         """
         # Local import to require git-package only when called
         from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
@@ -897,6 +902,7 @@ class DymolaAPI(SimulationAPI):
         if save_total_model:
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
             _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
+            os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
                 modelName=self.model_name
@@ -912,11 +918,11 @@ class DymolaAPI(SimulationAPI):
                                   self.dymola.getLastErrorLog())
         # FMU
         if export_fmu:
-            path = self._save_to_fmu(fail_on_error=False)
-            if path is not None:
+            _fmu_path = self._save_to_fmu(fail_on_error=False)
+            if _fmu_path is not None:
                 files.append(CopyFile(
-                    sourcepath=path,
-                    filename="Dymola/" + path.name,
+                    sourcepath=_fmu_path,
+                    filename="Dymola/" + _fmu_path.name,
                     remove=True
                 ))
 

@@ -378,7 +378,8 @@ class FMU_API(simulationapi.SimulationAPI):
     def save_for_reproduction(self,
                               title: str,
                               path: pathlib.Path = None,
-                              files: list = None):
+                              files: list = None,
+                              **kwargs):
         """
         Additionally to the basic reproduction, add info
         for FMU files.

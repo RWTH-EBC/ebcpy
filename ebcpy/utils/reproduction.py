@@ -66,7 +66,7 @@ def save_reproduction_archive(
     :param str title:
         Title of the study
     :param pathlib.Path path:
-        Where to store the .zip file
+        Where to store the .zip file. If not given, os.getcwd() is used.
     :param str log_message:
          Specific message for this run of the study.
     :param list files:
@@ -160,9 +160,10 @@ def save_reproduction_archive(
             if isinstance(file, str):
                 if os.path.exists(file):
                     zip_file.write(file, f"Results/{pathlib.Path(file).name}")
-                logger.error("Given file '%s' is a string but "
-                             "not an existing file. Skipping...", file)
-            if isinstance(file, ReproductionFile):
+                else:
+                    logger.error("Given file '%s' is a string but "
+                                 "not an existing file. Skipping...", file)
+            elif isinstance(file, ReproductionFile):
                 zip_file.writestr(file.filename, file.content)
             elif isinstance(file, CopyFile):
                 zip_file.write(file.sourcepath, file.filename)
