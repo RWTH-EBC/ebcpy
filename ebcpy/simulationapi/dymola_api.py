@@ -878,7 +878,8 @@ class DymolaAPI(SimulationAPI):
 
             for pack_dir_parent in [pack_path] + list(pack_path.parents):
                 repo_info = get_git_information(
-                    path=pack_dir_parent
+                    path=pack_dir_parent,
+                    software_type="Dymola"
                 )
                 if not repo_info:
                     continue

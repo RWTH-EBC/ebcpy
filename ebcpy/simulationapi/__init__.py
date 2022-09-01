@@ -5,6 +5,7 @@ Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.
 """
 import logging
+import pathlib
 import warnings
 import os
 import itertools

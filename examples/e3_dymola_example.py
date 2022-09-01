@@ -160,7 +160,9 @@ def main(
     if with_plot:
         plt.show()
     # Save the data for later reproduction
-    file = dym_api.save_for_reproduction()
+    file = dym_api.save_for_reproduction(
+        files=[result_sp, result_sp_2]
+    )
     print("ZIP-File to reproduce all this:", file)
 
 

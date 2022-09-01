@@ -3,13 +3,13 @@ This module contains scripts to extract information
 out of simulation / programming based research and
 enable a reproduction of the results at a later stage.
 """
-
+import json
 import pathlib
 import sys
 import platform
 import os
 import logging
-from typing import List
+from typing import List, Union
 import zipfile
 from datetime import datetime
 from dataclasses import dataclass
@@ -19,24 +19,54 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ReproductionFile:
+    """
+    Data-class for a text-file which will be written to te zip.
+
+    Arguments:
+        filename: str
+            Name of the file in the zip. Can be a relative path.
+        content: str
+            Content of the text file
+    """
     filename: str
     content: str
 
 
 @dataclass
 class CopyFile:
+    """
+    Data-class for information on a file
+    which will be copied to the zip
+
+    :param str filename:
+        Name of the file in the zip. Can be a relative path.
+    :param pathlib.Path sourcepath:
+        Path on the current machine where the file to copy
+        is located
+    :param bool remove:
+        If True, the file will be moved instead of just copied.
+    """
     filename: str
     sourcepath: pathlib.Path
     remove: bool
 
 
 def save_reproduction_archive(
-        file: pathlib.Path = None,
-        title: str = None,
+        title: str,
         path: pathlib.Path = None,
-        files: List[ReproductionFile] = None,
+        log_message: str = None,
+        files: List[Union[ReproductionFile, CopyFile]] = None,
+        file: pathlib.Path = None,
         search_on_pypi: bool = False
 ):
+    """
+    Function to save a reproduction archive which contains
+    files to reproduce any simulation/software based study.
+
+    :param str title:
+
+
+    """
     _py_requirements_name = "python/requirements.txt"
     if path is None:
         path = os.getcwd()
@@ -48,6 +78,7 @@ def save_reproduction_archive(
     os.makedirs(path, exist_ok=True)
     if files is None:
         files = []
+    current_time = datetime.now().strftime('%Y%m%d_%H%M%S')
 
     # Start with the file currently running:
     file_running = pathlib.Path(file).absolute()
@@ -55,10 +86,36 @@ def save_reproduction_archive(
         filename=file_running.name,
         content=file_running.read_text()
     ))
+    # Check if it's a git-repo:
+    for _dir_path in [file_running] + list(file_running.parents):
+        repo_info = get_git_information(
+            path=_dir_path,
+            software_type="study_repository"
+        )
+        if repo_info is not None:  # That means it's a repo
+            files.extend(repo_info.pop("difference_files", []))
+            files.append(ReproductionFile(
+                filename="study_repository/repo_info.txt",
+                content=json.dumps(repo_info, indent=2)
+            ))
+            break
+    # Get log
+    if log_message is None:
+        log_message = input("Please enter the specifications / log for this study: ")
+        if not log_message:
+            log_message = "The user was to lazy to pass any useful information on " \
+                  "what made this research study different to others."
+    with open(path.joinpath(f"Study_Log_{title}.txt"), "a+") as f:
+        f.write(f"{current_time}: {log_message}\n")
+
     # General info
     files.append(ReproductionFile(
-        filename="General_information.txt",
-        content=_get_general_information()
+        filename="Information_to_reproduce.txt",
+        content=_get_general_information(
+            title=title,
+            log_message=log_message,
+            current_time=current_time
+        )
     ))
 
     # Python-Reproduction:
@@ -72,7 +129,6 @@ def save_reproduction_archive(
     files.extend(diff_files)
 
     py_repro = _get_python_reproduction(
-        requirements_name=_py_requirements_name,
         title=title
     )
     files.append(ReproductionFile(
@@ -81,11 +137,16 @@ def save_reproduction_archive(
     ))
 
     zip_file_name = path.joinpath(
-        f"{datetime.now().strftime('%Y%m%d_%H%M%S')}_{title}.zip"
+        f"{current_time}_{title}.zip"
     )
     with zipfile.ZipFile(zip_file_name, "w", zipfile.ZIP_DEFLATED) as zip_file:
         # Save all result files:
         for file in files:
+            if isinstance(file, str):
+                if os.path.exists(file):
+                    zip_file.write(file, f"Results/{pathlib.Path(file).name}")
+                logger.error("Given file '%s' is a string but "
+                             "not an existing file. Skipping...", file)
             if isinstance(file, ReproductionFile):
                 zip_file.writestr(file.filename, file.content)
             elif isinstance(file, CopyFile):
@@ -101,7 +162,8 @@ def save_reproduction_archive(
 
 def get_git_information(
         path: pathlib.Path,
-        name: str = None,
+        software_type: str,
+        name: str = None
 ):
     try:
         from git import Repo, InvalidGitRepositoryError, RemoteReference
@@ -136,36 +198,42 @@ def get_git_information(
     # Check new files
     if diff_last_cmt:
         data["difference_files"].append(ReproductionFile(
-            filename=f"99_WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
+            filename=f"{software_type}/WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
             content=diff_last_cmt,
         ))
     # Check if pushed to remote
     if not repo.git.branch("-r", contains=commit_hex):
         data["difference_files"].append(ReproductionFile(
-            filename=f"99_WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
+            filename=f"{software_type}/WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
             content=diff_remote_main,
         ))
         data["commit"] = remote_main_cmt
     return data
 
 
-def _get_general_information():
+def _get_general_information(title: str, log_message: str, current_time:str):
     """
     Function to save the general information of the study.
     Time, machine information, and an intro on how to reproduce
     the study is given.
     """
-    info_header = """This folder contains information necessary to reproduce a python based research study.
+
+    info_header = f"""This folder contains information necessary to reproduce the python based research study named '{title}'.
+Reason the user performed this study:
+"%s"
+
 To reproduce, make sure you have installed the following programs:
 - Anaconda
-Execute the file 'reproduce_python.bat' in a shell with the PATH variable pointing to anaconda (or in Anaconda Prompt).
+- Dymola (If a folder named Dymola exists in this zip)
+
+Run the lines in the file 'python/reproduce_python_environment.txt' in a shell with the PATH variable pointing to anaconda (or in Anaconda Prompt).
 After execution, make sure to check for any differences in git-based python code.
 These files are included in this folder and are named e.g. "WARNING_GIT_DIFFERENCE_some_package".
 If this happens, make sure to change the files in the git-based python packages after installation.
 For future use, be sure to commit and push your changes before running any research study.
-"""
+""" % log_message
     _data = {
-        "Time": datetime.now(),
+        "Time": current_time,
         "Author": os.getlogin(),
         "Machine": platform.machine(),
         "Version": platform.version(),
@@ -195,7 +263,8 @@ def _get_python_package_information(search_on_pypi: bool):
     for package in installed_packages:
         repo_info = get_git_information(
             path=package.location,
-            name=package.key
+            name=package.key,
+            software_type="python"
         )
         if repo_info is None:
             # Check if in python path:
@@ -221,7 +290,7 @@ def _get_python_package_information(search_on_pypi: bool):
     return "\n".join(requirement_txt_content), diff_paths
 
 
-def _get_python_reproduction(requirements_name: str, title: str):
+def _get_python_reproduction(title: str):
     """
     Get the content of a script to reproduce the python
     environment used for the study.
