@@ -13,6 +13,7 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo==0.4.2',
+        'GitPython>=3.1.27'
     ]
 }
 

@@ -86,6 +86,11 @@ def main(
     # 3. Set tableName = "myCustomInput" (or any other nice string)
     table_name = "myCustomInput"
     # 4. Enter the fileName where you want to store your input. This can be any filepath.
+    # 5. Last, add a parameter in the model to ensure the simulation works without tuning any parameter.
+    # Sadly, this is a requirement. Models with parameters do not require this feature. As this model has
+    # no parameters, it's required. Go into the text-section and add:
+    # 'parameter Real n=1;'.
+
     # For this tutorial to work, set
     # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
     file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
@@ -159,6 +164,12 @@ def main(
     plt.title("Input of CombiTimeTable 'timTab'")
     if with_plot:
         plt.show()
+    # Save the data for later reproduction
+    file = dym_api.save_for_reproduction(
+        title="MyDymolaStudy",
+        files=[result_sp, result_sp_2]
+    )
+    print("ZIP-File to reproduce all this:", file)
 
 
 if __name__ == '__main__':

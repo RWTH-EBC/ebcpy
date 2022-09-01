@@ -7,13 +7,17 @@ import pathlib
 import atexit
 import shutil
 from typing import List, Union
+
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import Field
 import pandas as pd
 import numpy as np
+
 from ebcpy import simulationapi, TimeSeriesData
 from ebcpy.simulationapi import SimulationSetup, SimulationSetupClass, Variable
+from ebcpy.utils.reproduction import CopyFile
+
 # pylint: disable=broad-except
 
 
@@ -370,3 +374,25 @@ class FMU_API(simulationapi.SimulationAPI):
                       'PENDING': logging.FATAL}
         if self.log_fmu:
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
+
+    def save_for_reproduction(self,
+                              title: str,
+                              path: pathlib.Path = None,
+                              files: list = None,
+                              **kwargs):
+        """
+        Additionally to the basic reproduction, add info
+        for FMU files.
+        """
+        if files is None:
+            files = []
+        files.append(CopyFile(
+            filename="FMU/" + pathlib.Path(self.model_name).name,
+            sourcepath=pathlib.Path(self.model_name),
+            remove=False
+        ))
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files
+        )
