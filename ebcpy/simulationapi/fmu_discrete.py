@@ -124,7 +124,7 @@ class FMU_Discrete(FMU, Model):
         start_values.update(parameters)  # todo: is it necessary to distuinguis?
 
         # write parameters and initial values to FMU
-        self._set_variables(var_dict=start_values)
+        self.set_variables(var_dict=start_values)
 
         # Finalise initialisation
         self._fmu_instance.enterInitializationMode()
@@ -134,7 +134,7 @@ class FMU_Discrete(FMU, Model):
         # empty
         # self.sim_res = pd.DataFrame(columns=self.result_names)
         # initialized
-        res = self._read_variables(vrs_list=self.result_names)
+        res = self.read_variables(vrs_list=self.result_names)
         self.sim_res = pd.DataFrame(res,
                                     index=[res['SimTime']],
                                     columns=self.result_names
@@ -148,7 +148,7 @@ class FMU_Discrete(FMU, Model):
         # reset step count
         self.step_count = 0
 
-    def _do_step(self):
+    def step_only(self):
         """
         perform simulation step; return True if stop time reached.
         The results are appended to the sim_res results frame, just after the step -> ground truth
@@ -174,7 +174,7 @@ class FMU_Discrete(FMU, Model):
 
         return self.finished
 
-    def inp_step_read(self, input_step: dict = None, close_when_finished: bool = False):
+    def do_step(self, input_step: dict = None, close_when_finished: bool = False):
         # check for unsupported input
         if input_step is not None:
             self.check_unsupported_variables(input_step.keys(), 'inputs')
@@ -194,14 +194,13 @@ class FMU_Discrete(FMU, Model):
 
         # write inputs to fmu
         if single_input:
-            self._set_variables(var_dict=single_input)
+            self.set_variables(var_dict=single_input)
 
         # perform simulation step
-        self._do_step()
+        self.step_only()
 
         # read results
-        res = self._read_variables(
-            vrs_list=self.result_names)
+        res = self.read_variables(vrs_list=self.result_names)
         if not self.finished:
             # append
             if self.current_time % self.sim_setup.output_interval == 0:

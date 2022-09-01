@@ -59,7 +59,7 @@ class FMU:
                 key_list.append(key[i])
         return key_list
 
-    def _set_variables(self, var_dict: dict):
+    def set_variables(self, var_dict: dict):
         """
         Sets multiple variables.
         var_dict is a dict with variable names in keys.
@@ -78,7 +78,7 @@ class FMU:
             else:
                 raise Exception("Unsupported type: %s" % var.type)
 
-    def _read_variables(self, vrs_list: list):  #
+    def read_variables(self, vrs_list: list):  #
         """
         Reads multiple variable values of FMU.
         vrs_list as list of strings

@@ -12,6 +12,8 @@ def interp_df(t: int, df: pd.DataFrame,
     #  (or is given at a higher but aligned frequency).
     #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
 
+    # todo: should be easy, just compare index and grid (comm_step start/Stop)
+
     # initialize dict that represents row in dataframe with interpolated or hold values
     row = {}
 

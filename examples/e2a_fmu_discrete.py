@@ -1,4 +1,5 @@
-"""
+# todo: restructure example: start with basic fmu handler functionality then introduce use case + examples with convinient funcs; Always use TZ FMU"
+""""
 Goals of this part of the examples:
 
 1. Learn how to perform discrete (stepwise) FMU simulation (class FMU_Discrete)
@@ -212,7 +213,7 @@ while not system.finished:
     # (for advanced control strategies that require previous results, use the attribute sim_res and adjust output_interval)
     ctr_action = ctr.run(res_step['bus.processVar'], input_df.loc[system.current_time]['bus.setPoint'])
     # Apply control action to system and perform simulation step
-    res_step = system.inp_step_read(input_step={'bus.controlOutput': ctr_action})
+    res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})
 
 # ################# Read Simulation Results ###################################################
 # simulation results stored in the attribute 'sim_res' can be returned calling 'get_results()'
@@ -242,9 +243,9 @@ print('Study B: System FMU with Controller FMU')
 while not system.finished:
     # Call controller and extract control output
     # (for advanced control strategies that require previous results, use the attribute sim_res and adjust output_interval)
-    ctr_action = controller.inp_step_read(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
+    ctr_action = controller.do_step(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
     # write controller output to system FMU as well as pre-known inputs and perform step
-    res_step = system.inp_step_read(input_step={'bus.controlOutput': ctr_action})
+    res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})
 
 # read simulation results
 results_B = system.get_results()
@@ -341,16 +342,16 @@ results_list = []
 
 while not hp_fmu.finished:
     # read fmu state
-    res = hp_fmu._read_variables(variables)
+    res = hp_fmu.read_variables(variables)
     res.update({'SimTime': hp_fmu.current_time})
     results_list.append(res)
     # set ambient temperature depending on time
     if hp_fmu.current_time <= 3*3600:
-        hp_fmu._set_variables({'TDryBul': 0+273.15})
+        hp_fmu.set_variables({'TDryBul': 0 + 273.15})
     else:
-        hp_fmu._set_variables({'TDryBul': 5+273.15})
+        hp_fmu.set_variables({'TDryBul': 5 + 273.15})
     # perform simulation step
-    hp_fmu._do_step()
+    hp_fmu.step_only()
 
 # close fmu
 hp_fmu.close()

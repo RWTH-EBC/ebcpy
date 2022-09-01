@@ -998,11 +998,3 @@ class DymolaAPI(ContinuousSimulation):
                 self.sim_counter = 1
             else:
                 self.sim_counter += 1
-
-
-class ExperimentConfigurationDymola(ExperimentConfiguration):
-    """
-    in case of a Dymola simulation the package and model name define the model
-    """
-    packages: Optional[List[FilePath]]
-    model_name: Optional[str]

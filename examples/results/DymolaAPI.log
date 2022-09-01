@@ -1,0 +1,9 @@
+01.09.2022-13:58:40 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-13:58:40 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-13:58:40 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-13:58:40 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-13:58:51 INFO DymolaAPI: Loading Model AixLib
+01.09.2022-13:58:52 INFO DymolaAPI: Loaded modules
+01.09.2022-13:58:52 INFO DymolaAPI: Translating model 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem' to extract model variables 
+01.09.2022-13:59:03 INFO DymolaAPI: Closing Dymola
+01.09.2022-13:59:04 INFO DymolaAPI: Successfully closed Dymola

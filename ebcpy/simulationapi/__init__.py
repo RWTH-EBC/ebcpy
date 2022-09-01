@@ -12,6 +12,7 @@ from ebcpy.simulationapi.config import *
 
 
 # todo:
+# - consider discrete class with abstract methods -> suggestion fse
 # - extend use of class Variable???
 # - TSD index sometimes "Time" sometimes not -> see tsd example -> ask fabian -> adjust in get_results
 # - !!!add exp config setter and adjust sim setup setter to set those values afterwards and make sure pydandic checks are runningg; sim_set_up setter does not adjust sim_setup in config!!!
