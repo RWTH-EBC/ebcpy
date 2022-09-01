@@ -1,0 +1,266 @@
+01.09.2022-14:18:10 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:10 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:10 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:10 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:17 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:17 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:17 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:17 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:17 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:17 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:17 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:17 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:17 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:17 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:17 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:22 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:22 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:22 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:22 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:22 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:22 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:22 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:22 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:22 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:22 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:22 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:28 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:28 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:28 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:28 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:28 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:28 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:28 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:28 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:28 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:28 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:28 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:35 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:35 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:35 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:35 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:35 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:35 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:35 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:35 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:35 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:35 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:35 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:41 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:41 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:41 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:41 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:41 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:41 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:41 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:41 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:41 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:41 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:41 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:47 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:47 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:47 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:47 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:47 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:47 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:47 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:47 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:47 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:47 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:47 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:54 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:54 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:54 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:54 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:54 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:54 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:54 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:54 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:54 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:54 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:54 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:56 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:56 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:56 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:56 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:56 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:56 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:56 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:56 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:56 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:56 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:56 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:18:58 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:18:58 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:18:58 INFO DymolaAPI: Loaded modules
+01.09.2022-14:18:58 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:18:58 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:18:58 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:18:58 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:18:58 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:18:58 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:18:58 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:18:58 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:19:00 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:19:00 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:19:00 INFO DymolaAPI: Loaded modules
+01.09.2022-14:19:00 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:19:00 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:19:00 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:19:00 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:19:00 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:19:00 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:19:00 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:19:00 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:19:02 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:19:02 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:19:02 INFO DymolaAPI: Loaded modules
+01.09.2022-14:19:02 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:19:02 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:19:02 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:19:02 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:19:02 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:19:02 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:19:02 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:19:02 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:19:04 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:19:04 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:19:04 INFO DymolaAPI: Loaded modules
+01.09.2022-14:19:04 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:19:04 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:19:04 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:19:04 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:19:04 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:19:04 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:19:04 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:19:04 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:19:06 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:19:06 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:19:06 INFO DymolaAPI: Loaded modules
+01.09.2022-14:19:06 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:19:06 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:19:06 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:19:06 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:19:06 INFO DymolaAPI: -------------------------Initializing class DymolaAPI-------------------------
+01.09.2022-14:19:06 INFO DymolaAPI: Using dymola installation at C:\Program Files\Dymola 2022
+01.09.2022-14:19:06 INFO DymolaAPI: Using dymola.exe: C:\Program Files\Dymola 2022\bin64\Dymola.exe
+01.09.2022-14:19:06 INFO DymolaAPI: Using dymola interface: C:\Program Files\Dymola 2022\Modelica\Library\python_interface\dymola.egg
+01.09.2022-14:19:08 INFO DymolaAPI: Executing given mos_script_pre prior to loading packages.
+01.09.2022-14:19:08 INFO DymolaAPI: Output of mos_script_pre: Declaring variable: Integer test ;
+
+01.09.2022-14:19:08 INFO DymolaAPI: Loaded modules
+01.09.2022-14:19:08 INFO DymolaAPI: Translating model 'TestModelVariables' to extract model variables 
+01.09.2022-14:19:08 ERROR DymolaAPI: Translation failed!
+01.09.2022-14:19:08 ERROR DymolaAPI: The last error log from Dymola:
+01.09.2022-14:19:08 ERROR DymolaAPI: Translation of <a href="Modelica://TestModelVariables">TestModelVariables</a>:
+Did not find model TestModelVariables
+Error: ERRORS have been issued.
+
+01.09.2022-14:19:08 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:08 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:08 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:09 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:09 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:09 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:09 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:09 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:09 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:09 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:09 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:09 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:10 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:10 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:10 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:10 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:10 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:10 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:10 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:10 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:10 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:11 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:11 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:11 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:11 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:12 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:12 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:12 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:12 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:13 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:13 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:13 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:14 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:15 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:15 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:15 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:15 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:16 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:16 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:16 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:16 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:17 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:17 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:17 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:18 INFO DymolaAPI: Successfully closed Dymola
+01.09.2022-14:19:19 INFO DymolaAPI: Executing given mos_script_post prior to closing.
+01.09.2022-14:19:19 INFO DymolaAPI: Output of mos_script_post: 
+01.09.2022-14:19:19 INFO DymolaAPI: Closing Dymola
+01.09.2022-14:19:19 INFO DymolaAPI: Successfully closed Dymola

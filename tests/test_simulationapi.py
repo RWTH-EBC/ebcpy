@@ -149,9 +149,12 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         else:
             dymola_path = None
         try:
-            self.sim_api = dymola_api.DymolaAPI(
-                cd=self.example_sim_dir,
-                model_name=model_name,
+            config = {
+                'model_name': model_name,
+                'cd': self.example_sim_dir
+            }
+            self.sim_api = dymola_continuous.DymolaAPI(
+                config=config,
                 packages=packages,
                 dymola_path=dymola_path,
                 n_cpu=self.n_cpu,
@@ -244,9 +247,11 @@ class TestFMUAPI(PartialTestSimAPI):
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
         else:
             model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
-
-        self.sim_api = fmu.FMU_API(cd=self.example_sim_dir,
-                                   model_name=model_name)
+        config = {
+                    'file_path': model_name,
+                    'cd': self.example_sim_dir
+            }
+        self.sim_api = fmu_continuous.FMU_API(config)
 
     def test_close(self):
         """Test close functionality of fmu api"""
