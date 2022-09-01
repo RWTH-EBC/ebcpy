@@ -487,6 +487,7 @@ class SimulationAPI:
         return list(cls._sim_setup_class.__fields__.keys())
 
     def save_for_reproduction(self,
+                              title: str,
                               path: pathlib.Path = None,
                               files: list = None):
         """
@@ -497,6 +498,7 @@ class SimulationAPI:
         saving.
         """
         return save_reproduction_archive(
+            title=title,
             path=path,
             files=files
         )

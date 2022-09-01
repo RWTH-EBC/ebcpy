@@ -53,10 +53,10 @@ class CopyFile:
 
 def save_reproduction_archive(
         title: str,
-        path: pathlib.Path = None,
+        path: Union[pathlib.Path, str] = None,
         log_message: str = None,
         files: List[Union[ReproductionFile, CopyFile]] = None,
-        file: pathlib.Path = None,
+        file: Union[pathlib.Path, str] = None,
         search_on_pypi: bool = False
 ):
     """
@@ -64,8 +64,22 @@ def save_reproduction_archive(
     files to reproduce any simulation/software based study.
 
     :param str title:
-
-
+        Title of the study
+    :param pathlib.Path path:
+        Where to store the .zip file
+    :param str log_message:
+         Specific message for this run of the study.
+    :param list files:
+        List of files to save along the standard ones.
+        Examples would be plots, tables etc.
+    :param pathlib.Path file:
+        The file which is used to run.
+        Default is __file__ of __main__ module
+    :param bool search_on_pypi:
+        If True, all python packages which are
+        not a git-repo are checked for availability on pypi
+        Default is False. Does not work if no internet connection
+        is available.
     """
     _py_requirements_name = "python/requirements.txt"
     if path is None:
@@ -90,7 +104,7 @@ def save_reproduction_archive(
     for _dir_path in [file_running] + list(file_running.parents):
         repo_info = get_git_information(
             path=_dir_path,
-            software_type="study_repository"
+            zip_folder_path="study_repository"
         )
         if repo_info is not None:  # That means it's a repo
             files.extend(repo_info.pop("difference_files", []))
@@ -105,6 +119,7 @@ def save_reproduction_archive(
         if not log_message:
             log_message = "The user was to lazy to pass any useful information on " \
                   "what made this research study different to others."
+
     with open(path.joinpath(f"Study_Log_{title}.txt"), "a+") as f:
         f.write(f"{current_time}: {log_message}\n")
 
@@ -162,9 +177,25 @@ def save_reproduction_archive(
 
 def get_git_information(
         path: pathlib.Path,
-        software_type: str,
-        name: str = None
+        name: str = None,
+        zip_folder_path: str = None
 ):
+    """
+    Function to get the git information for a given path.
+
+    :param pathlib.Path path:
+        Path to possible git repo
+    :param str name:
+        Name of the repo.
+        If not given, the name in the URL will be used.
+    :param str zip_folder_path:
+        If given, the PATH of the difference_files for the .zip
+        will be "zip_folder_path/WARNING_GIT_DIFFERENCE_..."
+
+    Returns:
+        If the path is not a git repository, this function returns None.
+        Else, a dictionary with the keys 'url', 'commit' and 'difference_files'.
+    """
     try:
         from git import Repo, InvalidGitRepositoryError, RemoteReference
     except ImportError as err:
@@ -195,16 +226,20 @@ def get_git_information(
     if name is None:
         # Get last part of url
         name = data["url"].split("/")[-1].replace(".git", "")
+    if zip_folder_path is None:
+        zip_folder_path = ""
+    else:
+        zip_folder_path += "/"
     # Check new files
     if diff_last_cmt:
         data["difference_files"].append(ReproductionFile(
-            filename=f"{software_type}/WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
+            filename=f"{zip_folder_path}WARNING_GIT_DIFFERENCE_{name}_to_local_head.txt",
             content=diff_last_cmt,
         ))
     # Check if pushed to remote
     if not repo.git.branch("-r", contains=commit_hex):
         data["difference_files"].append(ReproductionFile(
-            filename=f"{software_type}/WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
+            filename=f"{zip_folder_path}WARNING_GIT_DIFFERENCE_{name}_to_remote_main.txt",
             content=diff_remote_main,
         ))
         data["commit"] = remote_main_cmt
@@ -264,7 +299,7 @@ def _get_python_package_information(search_on_pypi: bool):
         repo_info = get_git_information(
             path=package.location,
             name=package.key,
-            software_type="python"
+            zip_folder_path="python"
         )
         if repo_info is None:
             # Check if in python path:

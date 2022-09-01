@@ -75,6 +75,6 @@ def main(with_plot=True):
 
 
 if __name__ == '__main__':
-    main()
     from ebcpy.utils import reproduction
+    main()
     reproduction.save_reproduction_archive(title="log-testing")

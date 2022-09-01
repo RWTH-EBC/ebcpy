@@ -832,6 +832,7 @@ class DymolaAPI(SimulationAPI):
 
     def save_for_reproduction(
             self,
+            title: str,
             path: pathlib.Path = None,
             files: list = None,
             save_total_model: bool = True,
@@ -879,7 +880,7 @@ class DymolaAPI(SimulationAPI):
             for pack_dir_parent in [pack_path] + list(pack_path.parents):
                 repo_info = get_git_information(
                     path=pack_dir_parent,
-                    software_type="Dymola"
+                    zip_folder_path="Dymola"
                 )
                 if not repo_info:
                     continue
@@ -920,6 +921,7 @@ class DymolaAPI(SimulationAPI):
                 ))
 
         return super().save_for_reproduction(
+            title=title,
             path=path,
             files=files
         )

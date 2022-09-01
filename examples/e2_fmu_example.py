@@ -144,8 +144,9 @@ def main(
     if with_plot:
         plt.show()
     # Save the data for later reproduction
-    file = fmu_api.save_for_reproduction()
+    file = fmu_api.save_for_reproduction(title="FMUTest")
     print("ZIP-File to reproduce all this:", file)
+
 
 if __name__ == '__main__':
     main(

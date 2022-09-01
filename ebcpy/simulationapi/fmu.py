@@ -376,6 +376,7 @@ class FMU_API(simulationapi.SimulationAPI):
             self.logger.log(level=_level_map[label], msg=message.decode("utf-8"))
 
     def save_for_reproduction(self,
+                              title: str,
                               path: pathlib.Path = None,
                               files: list = None):
         """
@@ -390,6 +391,7 @@ class FMU_API(simulationapi.SimulationAPI):
             remove=False
         ))
         return super().save_for_reproduction(
+            title=title,
             path=path,
             files=files
         )
