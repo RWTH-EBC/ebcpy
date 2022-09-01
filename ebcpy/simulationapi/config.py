@@ -3,9 +3,10 @@ from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
 from typing import TypeVar, List
 import numpy as np
+import pandas as pd
 
 # pd.DataFrame und TimeSeriesData as type to be validated by pydantic
-PandasDataFrameType = TypeVar('pandas.core.frame.DataFrame')
+PandasDataFrameType = TypeVar('pd.DataFrame')
 TimeSeriesDataObjectType = TypeVar('TimeSeriesData')
 
 """ Simulation Setup """
