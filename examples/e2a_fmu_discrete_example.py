@@ -133,6 +133,12 @@ def main(
     comm_step: float = 60 / 3  # step size of FMU communication in seconds.
     # In this interval, values are set to or read from the fmu
 
+    # find out supported experiment configuration options
+    print('Supported experiment configuration: {}'.format(FMU_Discrete.get_experiment_config_fields()))
+    # find out supported simulation setup options
+    print('Supported simulation setup: {}'.format(FMU_Discrete.get_simulation_setup_fields()))
+
+    # collect simulation setup
     setup_dict = {
         "start_time": start,
         "stop_time": stop,
@@ -143,7 +149,7 @@ def main(
     # define working directory (for log file and temporary fmu file extraction)
     cd = pathlib.Path(__file__).parent.joinpath("results")
 
-    # create experiment setup for system FMU as dict
+    # create experiment configuration for system FMU as dict
     config_dict = {
         'file_path': pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_bus.fmu"),
         'cd': cd,

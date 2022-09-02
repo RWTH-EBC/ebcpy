@@ -13,6 +13,7 @@ from ebcpy.simulationapi.config import *
 class FMU_API(FMU, ContinuousSimulation):
 
     _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Continuous
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU_Continuous
     # _items_to_drop = ["pool"]
     _items_to_drop = ["pool", "_fmu_instance", "_unzip_dir"]
     _type_map = {

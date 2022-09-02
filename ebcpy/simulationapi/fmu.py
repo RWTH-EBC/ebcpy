@@ -11,7 +11,6 @@ from ebcpy.simulationapi.config import *
 
 class FMU:
 
-    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationFMU
     _fmu_instance = None
     _unzip_dir: str = None
 
@@ -24,7 +23,7 @@ class FMU:
         if not path.lower().endswith(".fmu"):
             raise ValueError(f"{self.config.file_path} is not a valid fmu file!")
         self.path = path
-        if hasattr(self.config, 'cd') and self.config.cd is not None:
+        if self.config.cd is not None:
             self.cd = self.config.cd
         else:
             self.cd = os.path.dirname(path)

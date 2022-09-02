@@ -4,10 +4,8 @@ from typing import Union, Optional
 from typing import TypeVar, List
 import numpy as np
 import pandas as pd
+from ebcpy import TimeSeriesData
 
-# pd.DataFrame und TimeSeriesData as type to be validated by pydantic
-PandasDataFrameType = TypeVar('pd.DataFrame')  # todo: does this make sense? does it need boudn? does it need typeVar at all?
-TimeSeriesDataObjectType = TypeVar('TimeSeriesData')
 
 """ Simulation Setup """
 # Base - Dymola/FMU_continuous/FMU_discrete
@@ -34,11 +32,6 @@ class SimulationSetup(BaseModel):
                     "thus also output interval of results.",
         title="output_interval"
     )
-    comm_step_size: float = Field(
-        title="communication step size",
-        default=1,
-        description="step size in which the do_step() function is called"
-    )
     solver: str = Field(
         title="solver",
         default="",  # Is added in the validator
@@ -64,6 +57,7 @@ class SimulationSetup(BaseModel):
         """Overwrite default pydantic Config"""
         extra = 'forbid'
         underscore_attrs_are_private = True
+
 
 class SimulationSetupDymola(SimulationSetup):
     """
@@ -129,7 +123,7 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
         description="step size in which the do_step() function is called"
     )
 
-    tolerance: Union[float, None] = Field(
+    tolerance: float = Field(
         title="tolerance",
         default=None,  # to select fmpy's default
         description="Absolute tolerance of integration"
@@ -141,32 +135,35 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
 # Base - Dymola/FMU
 
 
+# todo: check which attributes have to be set or which are set automatically if not manually
 class ExperimentConfiguration(BaseModel):
     """
     pydantic BaseModel child to define a full simulation configuration
     """
     cd: Optional[DirectoryPath]
-    sim_setup: Optional[SimulationSetup]
 
     class Config:
         """Overwrite default pydantic Config"""
         extra = 'forbid'
+        arbitrary_types_allowed = True  # to validate pandas dataframe and tsd
 
 
-
-class ExperimentConfigurationFMU(ExperimentConfiguration):
+class ExperimentConfigurationFMU_Continuous(ExperimentConfiguration):
     """
     in case of FMU simulation the fmu file path defines the model
     """
-    file_path: Optional[FilePath]
+    sim_setup: Optional[SimulationSetupFMU_Continuous]
+    file_path: FilePath
 
 
-class ExperimentConfigurationFMU_Discrete(ExperimentConfigurationFMU):
+class ExperimentConfigurationFMU_Discrete(ExperimentConfiguration):
     """
     in case of discrete FMU simulation long-term input data can be passed
     """
+    file_path: FilePath
+    sim_setup: Optional[SimulationSetupFMU_Discrete]
     input_data: Optional[
-        Union[FilePath, PandasDataFrameType, TimeSeriesDataObjectType]]
+        Union[FilePath, pd.DataFrame, TimeSeriesData]]
 
 
 class ExperimentConfigurationDymola(ExperimentConfiguration):
@@ -175,6 +172,7 @@ class ExperimentConfigurationDymola(ExperimentConfiguration):
     """
     packages: Optional[List[FilePath]]
     model_name: Optional[str]
+    sim_setup: Optional[SimulationSetupDymola]
 
 
 SimulationSetupClass = TypeVar("SimulationSetupClass", bound=SimulationSetup)

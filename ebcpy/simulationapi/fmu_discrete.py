@@ -57,15 +57,17 @@ class FMU_Discrete(FMU, Model):
         return self._input_table
 
     @input_table.setter
-    def input_table(self, inp: Union[FilePath, PandasDataFrameType, TimeSeriesDataObjectType]):
+    def input_table(self, inp: Union[FilePath, pd.DataFrame, TimeSeriesData]):
         """
         setter allows the input data to change during discrete simulation
         """
+        # update config to trigger pydantic checks
+        self._update_config({'input_data': inp})
         if inp is not None:
             if isinstance(inp, (str, pathlib.Path)):  # fixme: why does pydantcs FilePath does not work jhere
                 if not str(inp).endswith('csv'):
                     raise TypeError(
-                        'input data {} is not passed as .csv file.'
+                        'input data {} is not a .csv file. '
                         'Instead of passing a file consider passing a pd.Dataframe or TimeSeriesData object'.format(inp)
                     )
                 self._input_table = pd.read_csv(inp, index_col='time')
@@ -81,12 +83,14 @@ class FMU_Discrete(FMU, Model):
                   'Setter method can still be used to set input data to "input_table" attribute')
             self._input_table = None
 
+
+
     def initialize_discrete_sim(self,
                                 parameters: dict = None,
                                 init_values: dict = None
                                 ):
         """
-        Initialisation of FMU. To be called before using stepwise simulation
+        Initialisation of FMU. To be called before using stepwise simulation.
         Parameters and initial values can be set.
         """
 

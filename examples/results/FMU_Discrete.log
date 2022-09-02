@@ -1,0 +1,45 @@
+02.09.2022-14:47:12 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+02.09.2022-14:47:12 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+02.09.2022-14:47:12 INFO FMU_Discrete: Reading model variables
+02.09.2022-14:47:12 INFO FMU_Discrete: Instantiating fmu for worker 0
+02.09.2022-14:47:12 WARNING FMU_Discrete: Variables 'bus.setPoint' are no 'inputs' in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating or being ignored.
+02.09.2022-14:47:12 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+02.09.2022-14:47:12 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+02.09.2022-14:47:20 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+02.09.2022-14:47:20 INFO FMU_Discrete: FMU "ThermalZone_bus" initialized for discrete simulation
+02.09.2022-14:48:05 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+02.09.2022-14:48:05 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+02.09.2022-14:48:05 INFO FMU_Discrete: Reading model variables
+02.09.2022-14:48:05 INFO FMU_Discrete: Instantiating fmu for worker 0
+02.09.2022-14:48:05 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' are no 'inputs' in model 'D:\pst-kbe\tasks\08_ebcpy_restructure\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating or being ignored.
+02.09.2022-14:48:05 INFO FMU_Discrete: FMU "PI_1_bus" initialized for discrete simulation
+02.09.2022-14:48:05 INFO FMU_Discrete: Starting simulation of FMU "PI_1_bus"
+02.09.2022-14:48:05 INFO FMU_Discrete: Starting simulation of FMU "ThermalZone_bus"
+02.09.2022-14:48:18 INFO FMU_Discrete: Simulation of FMU "PI_1_bus" finished
+02.09.2022-14:48:18 INFO FMU_Discrete: Simulation of FMU "ThermalZone_bus" finished
+02.09.2022-14:48:18 INFO FMU_Discrete: FMU "ThermalZone_bus" closed
+02.09.2022-14:48:18 INFO FMU_Discrete: FMU "PI_1_bus" closed
+02.09.2022-14:48:25 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+02.09.2022-14:48:25 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+02.09.2022-14:48:26 INFO FMU_Discrete: Reading model variables
+02.09.2022-14:48:26 INFO FMU_Discrete: Instantiating fmu for worker 0
+02.09.2022-14:48:26 WARNING FMU_Discrete: Warning: The following was detected at time: 0
+02.09.2022-14:48:26 WARNING FMU_Discrete:   In HeatPumpSystemForTMO.heatPumpSystem.heatPump.con: The constant homotopyInitialization has been modified from its default value. This constant will be removed in future releases.
+  Failed condition: false
+
+02.09.2022-14:48:26 WARNING FMU_Discrete: Warning: The following was detected at time: 0
+02.09.2022-14:48:26 WARNING FMU_Discrete:   In HeatPumpSystemForTMO.heatPumpSystem.heatPump.eva: The constant homotopyInitialization has been modified from its default value. This constant will be removed in future releases.
+  Failed condition: false
+
+02.09.2022-14:48:26 WARNING FMU_Discrete: Warning: The following was detected at time: 0
+02.09.2022-14:48:26 WARNING FMU_Discrete:   In HeatPumpSystemForTMO.heatPumpSystem.heatPump.con.preDro: The constant homotopyInitialization has been modified from its default value. This constant will be removed in future releases.
+  Failed condition: false
+
+02.09.2022-14:48:26 WARNING FMU_Discrete: Warning: The following was detected at time: 0
+02.09.2022-14:48:26 WARNING FMU_Discrete:   In HeatPumpSystemForTMO.heatPumpSystem.heatPump.eva.preDro: The constant homotopyInitialization has been modified from its default value. This constant will be removed in future releases.
+  Failed condition: false
+
+02.09.2022-14:48:26 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" initialized for discrete simulation
+02.09.2022-14:48:26 INFO FMU_Discrete: Starting simulation of FMU "HeatPumpSystemForTMO2"
+02.09.2022-14:48:26 INFO FMU_Discrete: Simulation of FMU "HeatPumpSystemForTMO2" finished
+02.09.2022-14:48:26 INFO FMU_Discrete: FMU "HeatPumpSystemForTMO2" closed

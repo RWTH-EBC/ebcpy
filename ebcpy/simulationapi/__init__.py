@@ -11,23 +11,6 @@ from ebcpy.utils import setup_logger
 from ebcpy.simulationapi.config import *
 
 
-# todo:
-# - consider discrete class with abstract methods -> suggestion fse
-# - extend use of class Variable???
-# - TSD index sometimes "Time" sometimes not -> see tsd example -> ask fabian -> adjust in get_results
-# - !!!add exp config setter and adjust sim setup setter to set those values afterwards and make sure pydandic checks are runningg; sim_set_up setter does not adjust sim_setup in config!!!
-# - !!!check initial passing of settings, kwargs etc call of the inits...; consiger kwargs again -> this way with inheritance, default must not be specifiesd twice
-# - bug: single unzip dir not deleted in continuous simulation/check if extract dirs are deleted properly
-# - discuss output step, comm step/ think about returning n last values /shadow sim_res attribute; #output_step > comm_step -> the last n results of results attribute can no be used for mpc!!! consider downsampling in get_results or second results attribute that keeps the last n values? On the other hand, if user needs mpc with css step, he can set output_step =css
-# - document classes and methods
-# - logger: instance name/index additionally to class name for co simulation? Alternatively FMU name#
-# - closing fmu (maybe before simulating) not always possible
-# - FMU continuous runs close() twice with cpu=1.. Dont know who's' calling it the second time
-# - dymola_api does not delete files afterwards
-# fixme:
-# mit python console läuft fmu conti nicht und dymola läuft nicht bis zum ende durch
-
-
 class Variable(BaseModel):
     """
     Data-Class to store relevant information for a
@@ -59,11 +42,14 @@ class Model:
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfiguration
 
     def __init__(self, model_name):
-        # initialize sim setup with specific class defaults.
+        # initialize sim setup with class default
         self._sim_setup = self._sim_setup_class()
-        # update sim setup with config entries if given
-        if self.config.sim_setup is not None:
+        # update sim setup if given in config; if not update config
+        if self.config.sim_setup is not None:  # todo: is it possiblke to define self.config in Model class instead of sub class
             self.set_sim_setup(self.config.sim_setup)
+        else:
+            self._update_config({'sim_setup': self._sim_setup})
+
         # current directory
         if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now
             if self.config.cd is not None:
@@ -82,6 +68,17 @@ class Model:
         self.result_names = []  # initialize list of tracked variables
         self.model_name = model_name
 
+    def _update_config(self, config_update: dict):
+        """
+        Updates config attribute.
+        To be called in methods that modify an element within the config.
+        This assures that config is up-to-date and triggers pydantic check.
+        Not to be called by user as updating the config after initialization is not intended (updates are not forwarded)
+        """
+        new_config = self.config.dict()
+        new_config.update(config_update)
+        self.config = self._exp_config_class(**new_config)  # todo: does this trigger pydantiv check or is pares needed?
+
     def set_cd(self, cd):
         """Base function for changing the current working directory."""
         self.cd = cd
@@ -94,6 +91,9 @@ class Model:
     @cd.setter
     def cd(self, cd: str):
         """Set the current working directory"""
+        # update config and thus trigger pydantic validator
+        self._update_config({'cd': cd})
+        # create dir and set attribute
         os.makedirs(cd, exist_ok=True)
         self._cd = cd
 
@@ -124,6 +124,11 @@ class Model:
         new_setup = self._sim_setup.dict()
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
+
+        # update config (redundant in case the sim_setup dict comes from config, but relevant if set afterwards)
+        self._update_config({'sim_setup': new_setup})
+
+
 
     @property
     def model_name(self) -> str:
