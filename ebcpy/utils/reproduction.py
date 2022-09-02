@@ -68,7 +68,9 @@ def save_reproduction_archive(
     :param pathlib.Path path:
         Where to store the .zip file. If not given, os.getcwd() is used.
     :param str log_message:
-         Specific message for this run of the study.
+         Specific message for this run of the study. If given,
+         you are not asked at the end of your script to give the
+         log_message.
     :param list files:
         List of files to save along the standard ones.
         Examples would be plots, tables etc.
