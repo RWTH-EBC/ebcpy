@@ -1,3 +1,7 @@
+"""Module for classes using a fmu to
+simulate models. It contains FMU base functionalities,
+and an api for continuous and for discrete fmu simulation."""
+
 import os
 import logging
 import pathlib
@@ -5,11 +9,25 @@ import shutil
 import fmpy
 from fmpy.model_description import read_model_description
 import numpy as np
+import pandas as pd
+import atexit
+from typing import List, Union
+from ebcpy import TimeSeriesData
+from ebcpy.simulationapi import Model, ContinuousSimulation
 from ebcpy.simulationapi import Variable
 from ebcpy.simulationapi.config import *
+from ebcpy.utils.interpolation import interp_df
 
 
 class FMU:
+    """
+    Base class for simulation using the fmpy library and
+    a functional mockup interface as a model input.
+    This class has to be inherited besides the Model base class.
+
+    :param log_fmu:
+         Whether to print fmu messages or not.
+    """
 
     _fmu_instance = None
     _unzip_dir: str = None
@@ -49,9 +67,14 @@ class FMU:
     def find_vars(self, start_str: str):
         """
         Returns all variables starting with start_str
+        .
+        :param str start_str:
+            All variables starting with start_str are considered
+        :return:
+            List: List of variables that fulfill the search criteria
         """
 
-        key = list(self.var_refs.keys())
+        key = list(self._var_refs.keys())
         key_list = []
         for i in range(len(key)):
             if key[i].startswith(start_str):
@@ -61,11 +84,12 @@ class FMU:
     def set_variables(self, var_dict: dict):
         """
         Sets multiple variables.
-        var_dict is a dict with variable names in keys.
+        :param dict var_dict:
+            Dictionary with variable name in key and variable value in value
         """
 
         for key, value in var_dict.items():
-            var = self.var_refs[key]
+            var = self._var_refs[key]
             vr = [var.valueReference]
 
             if var.type == 'Real':
@@ -77,18 +101,20 @@ class FMU:
             else:
                 raise Exception("Unsupported type: %s" % var.type)
 
-    def read_variables(self, vrs_list: list):  #
+    def read_variables(self, vrs_list: list):
         """
-        Reads multiple variable values of FMU.
-        vrs_list as list of strings
-        Method returns a dict with FMU variable names as key
+        Reads multiple variable values
+        :param list vrs_list:
+            List of variables to be read from FMU
+        :return:
+            Dict: Dictionary with requested variables and their values
         """
 
         # initialize dict for results of simulation step
         res = {}
 
         for name in vrs_list:
-            var = self.var_refs[name]
+            var = self._var_refs[name]
             vr = [var.valueReference]
 
             if var.type == 'Real':
@@ -129,9 +155,9 @@ class FMU:
             self._fmi_type = 'CoSimulation'
 
         # Create dict of variable names with variable references from model description
-        self.var_refs = {}
+        self._var_refs = {}
         for variable in self._model_description.modelVariables:
-            self.var_refs[variable.name] = variable
+            self._var_refs[variable.name] = variable
 
         def _to_bound(value):
             if value is None or \
@@ -225,7 +251,6 @@ class FMU:
         except OSError as error:
             self.logger.error(f"Could not free fmu instance: {error}")
         # Remove the extracted files
-        self.logger.info('FMU "{}" closed'.format(self._model_description.modelName))
         if unzip_dir is not None:
             try:
                 shutil.rmtree(unzip_dir)
@@ -234,3 +259,481 @@ class FMU:
             except PermissionError:
                 self.logger.error("Could not delete unzipped fmu "
                                   "in location %s. Delete it yourself.", unzip_dir)
+
+
+class FMU_API(FMU, ContinuousSimulation):
+    """
+    Class for continuous simulation using the fmpy library and
+    a functional mockup interface as a model input.
+
+    :param dict config:
+         Dictionary with experiment configuration
+    :param int n_cpu:
+        Number of cores to be used by simulation.
+        If None is given, single core will be used.
+        Maximum number equals the cpu count of the device.
+    :param bool log_fmu:
+        Whether to print fmu messages or not.
+
+    Example:
+    >>> import matplotlib.pyplot as plt
+    >>> from ebcpy import FMU_API
+    >>> # Select any valid fmu. Replace the line below if
+    >>> # you don't have this file on your device.
+    >>> path = "Path to your fmu"
+    >>> fmu_api = FMU_API({'file_path': path})
+    >>> fmu_api.set_sim_setup({"stop_time": 3600})
+    >>> result_df = fmu_api.simulate()
+    >>> fmu_api.close()
+    >>> # Select an exemplary column
+    >>> col = result_df.columns[0]
+    >>> plt.plot(result_df[col], label=col)
+    >>> _ = plt.legend()
+    >>> _ = plt.show()
+    """
+
+    _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Continuous
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigFMU_Continuous
+    _items_to_drop = ["pool", "_fmu_instance", "_unzip_dir"]
+    _type_map = {
+        float: np.double,
+        bool: np.bool_,
+        int: np.int_
+    }
+
+    # TODO: Review: n_cpu and log_fmu in config?
+    def __init__(self, config, n_cpu: int = 1, log_fmu: bool = True):
+        self.config = self._exp_config_class.parse_obj(config)
+        FMU.__init__(self, log_fmu=log_fmu)
+        ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
+        # Register exit option
+        atexit.register(self.close)
+
+    def simulate(self,
+                 parameters: Union[dict, List[dict]] = None,
+                 return_option: str = "time_series",
+                 **kwargs):
+        """
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
+
+        Additional kwargs:
+        :keyword str result_file_suffix:
+            Suffix of the result file. Supported options can be extracted
+            from the TimeSeriesData.save() function.
+            Default is 'csv'.
+        """
+        return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
+
+    def _single_simulation(self, kwargs):
+        """
+        Perform the single simulation for the given
+        unzip directory and fmu_instance.
+        See the docstring of simulate() for information on kwargs.
+
+        The single argument kwarg is to make this
+        function accessible by multiprocessing pool.map.
+        """
+        # Unpack kwargs:
+        parameters = kwargs.pop("parameters", None)
+        return_option = kwargs.pop("return_option", "time_series")
+        inputs = kwargs.get("inputs", None)
+        fail_on_error = kwargs.get("fail_on_error", True)
+
+        if self.use_mp:
+            if self._fmu_instance is None:
+                self._setup_single_fmu_instance(use_mp=True)
+
+        if inputs is not None:
+            if not isinstance(inputs, (TimeSeriesData, pd.DataFrame)):
+                raise TypeError("DataFrame or TimeSeriesData object expected for inputs.")
+            inputs = inputs.copy()  # Create save copy
+            if isinstance(inputs, TimeSeriesData):
+                inputs = inputs.to_df(force_single_index=True)
+            if "time" in inputs.columns:
+                raise IndexError(
+                    "Given inputs contain a column named 'time'. "
+                    "The index is assumed to contain the time-information."
+                )
+            # Convert df to structured numpy array for fmpy: simulate_fmu
+            inputs.insert(0, column="time", value=inputs.index)
+            inputs_tuple = [tuple(columns) for columns in inputs.to_numpy()]
+            # Try to match the type, default is np.double.
+            # 'time' is not in inputs and thus handled separately.
+            dtype = [(inputs.columns[0], np.double)] + \
+                    [(col,
+                      self._type_map.get(self.inputs[col].type, np.double)
+                      ) for col in inputs.columns[1:]]
+            inputs = np.array(inputs_tuple, dtype=dtype)
+        if parameters is None:
+            parameters = {}
+        else:
+            self.check_unsupported_variables(variables=list(parameters.keys()),
+                                             type_of_var="parameters")
+        try:
+            # reset the FMU instance instead of creating a new one
+            self._fmu_instance.reset()
+            # Simulate
+            res = fmpy.simulate_fmu(
+                filename=self._unzip_dir,
+                start_time=self.sim_setup.start_time,
+                stop_time=self.sim_setup.stop_time,
+                solver=self.sim_setup.solver,
+                step_size=self.sim_setup.fixedstepsize,
+                relative_tolerance=None,
+                output_interval=self.sim_setup.output_interval,
+                record_events=False,  # Used for an equidistant output
+                start_values=parameters,
+                apply_default_start_values=False,  # As we pass start_values already
+                input=inputs,
+                output=self.result_names,
+                timeout=self.sim_setup.timeout,
+                step_finished=None,
+                model_description=self._model_description,
+                fmu_instance=self._fmu_instance,
+                fmi_type=self._fmi_type,
+            )
+
+        except Exception as error:
+            self.logger.error(f"[SIMULATION ERROR] Error occurred while running FMU: \n {error}")
+            if fail_on_error:
+                raise error
+            return None
+
+        # Reshape result:
+        df = pd.DataFrame(res).set_index("time")
+        df.index = np.round(df.index.astype("float64"),
+                            str(self.sim_setup.output_interval)[::-1].find('.'))
+
+        if return_option == "savepath":
+            result_file_name = kwargs.get("result_file_name", "resultFile")
+            result_file_suffix = kwargs.get("result_file_suffix", "csv")
+            savepath = kwargs.get("savepath", None)
+
+            if savepath is None:
+                savepath = self.cd
+
+            os.makedirs(savepath, exist_ok=True)
+            filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
+            TimeSeriesData(df).droplevel(1, axis=1).save(
+                filepath=filepath,
+                key="simulation"
+            )
+
+            return filepath
+        if return_option == "last_point":
+            return df.iloc[-1].to_dict()
+        # Else return time series data
+        tsd = TimeSeriesData(df, default_tag="sim")
+        return tsd
+
+    def close(self):
+        """
+        Closes the fmu.
+
+        :return: bool
+            True on success
+        """
+        # Close MP of super class
+        ContinuousSimulation.close(self)
+        # Close if single process
+        if not self.use_mp:
+            self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
+            if not self._fmu_instance:
+                return  # Already closed
+            self._single_close(fmu_instance=self._fmu_instance,
+                               unzip_dir=self._unzip_dir)
+            self._unzip_dir = None
+            self._fmu_instance = None
+
+    def _close_multiprocessing(self, _):
+        """Small helper function"""
+        idx_worker = self.worker_idx
+        if self._fmu_instance is None:
+            return  # Already closed
+        self.logger.info('Closing fmu {} for worker {}'.format(self._model_description.modelName, idx_worker))
+        self._single_close(fmu_instance=self._fmu_instance,
+                           unzip_dir=self._unzip_dir)
+        self._unzip_dir = None
+        self._fmu_instance = None
+        FMU_API._unzip_dir = None
+        FMU_API._fmu_instance = None
+
+
+class FMU_Discrete(FMU, Model):
+    """
+    Class for discrete/stepwise simulation using the fmpy library and
+    a functional mockup interface as a model input.
+
+    :param dict config:
+       Dictionary with experiment configuration
+    :param bool log_fmu:
+      Whether to print fmu messages or not.
+
+    Example:
+
+    >>> import matplotlib.pyplot as plt
+    >>> from ebcpy import FMU_Discrete
+    >>> # Select any valid fmu. Replace the line below if
+    >>> # you don't have this file on your device.
+    >>> path = "Path to your fmu"
+    >>> fmu_api = FMU_Discrete({'file_path': path})
+    >>> fmu_api.set_sim_setup({"stop_time": 3600})
+    >>> # initialize FMU for discrete simulation
+    >>> fmu_api.initialize_discrete_sim()
+    >>> # simulation loop (typically there is interaction to other FMUs or python code)
+    >>> # for straight simulation use api for continuous fmu simulation
+    >>> while not fmu_api.finished:
+    >>>     fmu_api.do_step()
+    >>> result_df = fmu_api.get_results()
+    >>> fmu_api.close()
+    >>> # Select an exemplary column
+    >>> col = result_df.columns[0]
+    >>> plt.plot(result_df[col], label=col)
+    >>> _ = plt.legend()
+    >>> _ = plt.show()
+"""
+
+    _sim_setup_class: SimulationSetupClass = SimulationSetupFMU_Discrete
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigFMU_Discrete
+    objs = []  # to use the close_all method
+
+    def __init__(self, config, log_fmu: bool = True):
+        FMU_Discrete.objs.append(self)
+        self.use_mp = False  # no mp for stepwise FMU simulation
+        self.config = self._exp_config_class.parse_obj(config)
+        FMU.__init__(self, log_fmu)
+        Model.__init__(self, model_name=self.config.file_path)  # in case of fmu: file path, in case of dym: model_name
+        # used for stepwise simulation
+        self.current_time = None
+        self.finished = None
+        # define input data (can be adjusted during simulation using the setter)
+        self.input_table = self.config.input_data  # calling the setter to distinguish depending on type and filtering
+        self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
+        self.step_count = None  # counting simulation steps
+        self.sim_res = None  # attribute that stores simulation result
+
+    def get_results(self, tsd_format: bool = False):
+        """
+            returns the simulation results either as pd.DataFrame or as TimeSeriesData
+        :param bool tsd_format:
+            Whether to return as TimeSeriesData or pd.Dataframe
+        :return:
+            Results as TimeSeriesData or pd.Dataframe
+        """
+
+        if not tsd_format:
+            results = self.sim_res
+        else:
+            results = TimeSeriesData(self.sim_res, default_tag="sim")
+            results.rename_axis(['Variables', 'Tags'], axis='columns')
+            results.index.names = ['Time']
+        return results
+
+    @classmethod
+    def close_all(cls):
+        """close multiple FMUs at once. Useful for co-simulation."""
+        for obj in cls.objs:
+            obj.close()
+
+    @property
+    def input_table(self):
+        """input data that holds for longer parts of the simulation"""
+        return self._input_table
+
+    @input_table.setter
+    def input_table(self, inp: Union[FilePath, pd.DataFrame, TimeSeriesData]):
+        """setter allows the input data to change during discrete simulation"""
+        # update config to trigger pydantic checks
+        self._update_config({'input_data': inp})
+        if inp is not None:
+            if isinstance(inp, (str, pathlib.Path)):
+                if not str(inp).endswith('csv'):
+                    raise TypeError(
+                        'input data {} is not a .csv file. '
+                        'Instead of passing a file consider passing a pd.Dataframe or TimeSeriesData object'.format(inp)
+                    )
+                input_table_raw = pd.read_csv(inp, index_col='time')
+            else:  # pd frame or tsd object; wrong type already caught by pydantic
+                if isinstance(inp, TimeSeriesData):
+                    input_table_raw = inp.to_df(force_single_index=True)
+                elif isinstance(inp, pd.DataFrame):
+                    input_table_raw = inp
+
+            # check unsupported vars:
+            self.check_unsupported_variables(input_table_raw.columns.to_list(), "inputs")
+            # only consider columns in input table that refer to inputs of the FMU
+            input_matches = list(set(self.inputs.keys()).intersection(set(input_table_raw.columns)))
+            self._input_table = input_table_raw[input_matches]
+        else:
+            print('No long-term input data set! '
+                  'Setter method can still be used to set input data to "input_table" attribute')
+            self._input_table = None
+
+    # TODO: Review: Does it make sense to distinguish between parameter and init value?
+    def initialize_discrete_sim(self,
+                                parameters: dict = None,
+                                init_values: dict = None
+                                ):
+        """
+        Initialisation of FMU. To be called before stepwise simulation.
+        Parameters and initial values can be set.
+
+        :param dict parameters:
+            Name (key) and value (value) of parameter to be set
+        :param init_values:
+            Name (key) and value (value) of initial value to be set
+
+        """
+
+        # THE FOLLOWING STEPS OF FMU INITIALISATION ALREADY COVERED BY INSTANTIATING FMU API:
+        # - Read model description
+        # - extract .fmu file
+        # - Create FMU2 Slave
+        # - instantiate fmu
+
+        # check if input valid
+        if parameters is not None:
+            self.check_unsupported_variables(parameters.keys(), "parameters")
+        if init_values is not None:
+            self.check_unsupported_variables(init_values.keys(), "variables")
+
+        # Reset FMU instance
+        self._fmu_instance.reset()
+
+        # Set up experiment
+        self._fmu_instance.setupExperiment(startTime=self.sim_setup.start_time,
+                                           stopTime=self.sim_setup.stop_time,
+                                           tolerance=self.sim_setup.tolerance)
+
+        # initialize current time and communication step size for stepwise FMU simulation
+        self.current_time = self.sim_setup.start_time
+
+        # Set parameters and initial values
+        if init_values is None:
+            init_values = {}
+        if parameters is None:
+            parameters = {}
+        # merge initial values and parameters in one dict as they are treated similarly
+        start_values = init_values.copy()
+        start_values.update(parameters)
+
+        # write parameters and initial values to FMU
+        self.set_variables(var_dict=start_values)
+
+        # Finalise initialisation
+        self._fmu_instance.enterInitializationMode()
+        self._fmu_instance.exitInitializationMode()
+
+        # Initialize dataframe to store results
+        res = self.read_variables(vrs_list=self.result_names)
+        self.sim_res = pd.DataFrame(res,
+                                    index=[res['SimTime']],
+                                    columns=self.result_names
+                                    )
+
+        self.logger.info('FMU "{}" initialized for discrete simulation'.format(self._model_description.modelName))
+
+        # initialize status indicator
+        self.finished = False
+
+        # reset step count
+        self.step_count = 0
+
+    def step_only(self):
+        """
+        Perform simulation step, return True if stop time reached.
+        """
+        # check if stop time is reached
+        if self.current_time < self.sim_setup.stop_time:
+            if self.step_count == 0:
+                self.logger.info('Starting simulation of FMU "{}"'.format(self._model_description.modelName))
+            # do simulation step
+            status = self._fmu_instance.doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.sim_setup.comm_step_size)
+            # step count
+            self.step_count += 1
+            # update current time and determine status
+            self.current_time += self.sim_setup.comm_step_size
+            self.finished = False
+        else:
+            self.finished = True
+            self.logger.info('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
+
+        return self.finished
+
+    def do_step(self, input_step: dict = None, close_when_finished: bool = False):
+        """
+        Wrapper function for step_only.
+        Write values from input_step and attribute input_table to fmu,
+        performs simulation step,
+        read from fmu right after simulation step (variables in result_names attribute considered).
+
+        :param dict input_step:
+            Input variable name (key) and value (value) to be set to fmu before step
+        :param bool close_when_finished:
+            Whether to close fmu when stop time is reached
+        :return:
+            Dict: Results after the simulation step
+        """
+        # check for unsupported input
+        if input_step is not None:
+            self.check_unsupported_variables(input_step.keys(), 'inputs')
+        # collect inputs
+        # get input from input table (overwrite with specific input for single step)
+        single_input = {}
+        if self.input_table is not None:
+            # extract value from input time table
+            # TODO: Review: not efficient to evaluate every time
+            sim_setup_idx = np.arange(system.sim_setup.start_time,
+                                      system.sim_setup.stop_time + system.sim_setup.comm_step_size,
+                                      system.sim_setup.comm_step_size).tolist()
+            single_input = interp_df(t=self.current_time,
+                                     df=self.input_table,
+                                     interpolate=self.interp_input_table,
+                                     req_grid=sim_setup_idx)
+
+        if input_step is not None:
+            # overwrite with input for step
+            single_input.update(input_step)
+
+        # write inputs to fmu
+        if single_input:
+            self.set_variables(var_dict=single_input)
+
+        # perform simulation step
+        self.step_only()
+
+        # read results
+        res = self.read_variables(vrs_list=self.result_names)
+        if not self.finished:
+            # append
+            if self.current_time % self.sim_setup.output_interval == 0:
+                self.sim_res = pd.concat(
+                    [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
+                                                             index=[res['SimTime']],
+                                                             columns=self.sim_res.columns)])
+        else:
+            if close_when_finished:
+                self.close()
+        return res
+
+    def _set_result_names(self):
+        """
+        Adds input names to list result_names in addition to outputs.
+        In discrete simulation the inputs are typically relevant.
+        """
+        self.result_names = list(self.outputs.keys()) + list(self.inputs.keys())
+
+    def close(self):
+        """ Closes the fmu."""
+        # No MP for discrete simulation
+        if not self._fmu_instance:
+            return  # Already closed
+        self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
+        self._single_close(fmu_instance=self._fmu_instance,
+                           unzip_dir=self._unzip_dir)
+        self._unzip_dir = None
+        self._fmu_instance = None

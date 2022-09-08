@@ -1,21 +1,34 @@
 import pandas as pd
 
-def interp_df(t: int, df: pd.DataFrame,
-              interpolate: bool = False):
+
+def interp_df(t: int, df: pd.DataFrame, interpolate: bool = False, req_grid: list = None):
     """
     The function returns the values of the dataframe (row) at a given index.
     If the index is not present in the dataframe, either the next lower index
     is chosen or values are interpolated. If the last or first index value is exceeded the
     value is hold. In both cases a warning is printed.
-    """
-    # todo: consider check if step of input time step matches communication step size
-    #  (or is given at a higher but aligned frequency).
-    #  This might be the case very often and potentially inefficient df interpolation can be omitted in these cases.
 
-    # todo: should be easy, just compare index and grid (comm_step start/Stop)
+    :param int t:
+        Time index of interest
+    :param pd.dataFrame df:
+        "Table" (pd.Dataframe) in which to lookup
+    :param bool interpolate:
+        Whether to interpolate (True) or chose the last available index (False)
+    :param list req_grid;
+        Grid of required values
+    :return:
+        Dict: Dictionary of column name (key) and value (value) at the selected index
+    """
 
     # initialize dict that represents row in dataframe with interpolated or hold values
     row = {}
+
+    # In the case that all indices within the required grid (req_grid) are present
+    # values can be directly accessed. There is no need to find the last available index or interpolation
+    if req_grid is not None:
+        if set(req_grid).issubset(set(df.index.tolist())):
+            row = df.loc[t].to_dict()
+            return row
 
     # catch values that are out of bound
     if t < df.index[0]:
@@ -28,7 +41,8 @@ def interp_df(t: int, df: pd.DataFrame,
         # a time mathing the last index value causes problems with interpolation but should not raise a warning
         if t > df.index[-1]:
             warnings.warn(
-                'Time {} s is above the last entry of the dataframe {} s, which is hold. Please check input data!'.format(
+                'Time {} s is above the last entry of the dataframe {} s, '
+                'which is hold. Please check input data!'.format(
                     t, df.index[-1]))
     # either hold value of last index or interpolate
     else:

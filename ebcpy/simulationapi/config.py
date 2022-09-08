@@ -1,3 +1,8 @@
+"""
+Module contains pydantic-based models to define experiment configuration and simulation setup
+in both dymola and fmu api.
+"""
+
 from pydantic import BaseModel, Field, validator
 from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
@@ -7,10 +12,7 @@ import pandas as pd
 from ebcpy import TimeSeriesData
 
 
-""" Simulation Setup """
-# Base - Dymola/FMU_continuous/FMU_discrete
-
-
+# ############## Simulation Setup ###########################
 class SimulationSetup(BaseModel):
     """
     pydantic BaseModel child to define relevant
@@ -76,7 +78,6 @@ class SimulationSetupDymola(SimulationSetup):
         description="Fixed step size for Euler"
     )
 
-
     _default_solver = "Dassl"
     _allowed_solvers = ["Dassl", "Euler", "Cerk23", "Cerk34", "Cerk45",
                         "Esdirk23a", "Esdirk34a", "Esdirk45a", "Cvode",
@@ -86,7 +87,7 @@ class SimulationSetupDymola(SimulationSetup):
 
 class SimulationSetupFMU_Continuous(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMU's continuously
+    Add's custom setup parameters for continuous FMU simulation
     to the basic `SimulationSetup`
     """
     tolerance: float = Field(
@@ -113,7 +114,7 @@ class SimulationSetupFMU_Continuous(SimulationSetup):
 
 class SimulationSetupFMU_Discrete(SimulationSetup):
     """
-    Add's custom setup parameters for simulating FMUs stepwise
+    Add's custom setup parameters for stepwise/discrete FMU simulation
     to the basic `SimulationSetup`
     """
 
@@ -131,11 +132,8 @@ class SimulationSetupFMU_Discrete(SimulationSetup):
     _default_solver = "CVode"
     _allowed_solvers = ["CVode", "Euler"]
 
-"""" Configuration """
-# Base - Dymola/FMU
 
-
-# todo: check which attributes have to be set or which are set automatically if not manually
+# ############## Experiment Configuration ###########################
 class ExperimentConfiguration(BaseModel):
     """
     pydantic BaseModel child to define a full simulation configuration
@@ -148,17 +146,19 @@ class ExperimentConfiguration(BaseModel):
         arbitrary_types_allowed = True  # to validate pandas dataframe and tsd
 
 
-class ExperimentConfigurationFMU_Continuous(ExperimentConfiguration):
+class ExperimentConfigFMU_Continuous(ExperimentConfiguration):
     """
-    in case of FMU simulation the fmu file path defines the model
+    Add's custom parameters for continuous FMU simulation
+    to the basic `ExperimentConfiguration`
     """
     sim_setup: Optional[SimulationSetupFMU_Continuous]
     file_path: FilePath
 
 
-class ExperimentConfigurationFMU_Discrete(ExperimentConfiguration):
+class ExperimentConfigFMU_Discrete(ExperimentConfiguration):
     """
-    in case of discrete FMU simulation long-term input data can be passed
+    Add's custom parameters for discrete FMU simulation
+    to the basic `ExperimentConfiguration`
     """
     file_path: FilePath
     sim_setup: Optional[SimulationSetupFMU_Discrete]
@@ -166,9 +166,10 @@ class ExperimentConfigurationFMU_Discrete(ExperimentConfiguration):
         Union[FilePath, pd.DataFrame, TimeSeriesData]]
 
 
-class ExperimentConfigurationDymola(ExperimentConfiguration):
+class ExperimentConfigDymola(ExperimentConfiguration):
     """
-    in case of a Dymola simulation the package and model name define the model
+    Add's custom parameters for simulating Dymola models
+    to the basic `ExperimentConfiguration`
     """
     packages: Optional[List[FilePath]]
     model_name: Optional[str]

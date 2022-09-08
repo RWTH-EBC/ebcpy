@@ -1,3 +1,6 @@
+"""Module containing the DymolaAPI used for simulation
+of Modelica-Models."""
+
 import sys
 import os
 import pathlib
@@ -81,18 +84,18 @@ class DymolaAPI(ContinuousSimulation):
     >>> from ebcpy import DymolaAPI
     >>> # Specify the model name
     >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
-    >>> dym_api = DymolaAPI(cd=os.getcwd(),
-    >>>                     model_name=model_name,
+    >>> dym_api = DymolaAPI(config={'cd': os.getcwd(),
+    >>>                     'model_name': model_name},
     >>>                     packages=[],
     >>>                     show_window=True)
-    >>> dym_api.sim_setup = {"start_time": 100,
-    >>>                      "stop_time": 200}
+    >>> dym_api.set_sim_setup({"start_time": 100,
+    >>>                      "stop_time": 200})
     >>> dym_api.simulate()
     >>> dym_api.close()
 
     """
 
-    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigurationDymola
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigDymola
     _sim_setup_class: SimulationSetupClass = SimulationSetupDymola
     _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
     dymola = None
@@ -319,7 +322,6 @@ class DymolaAPI(ContinuousSimulation):
             if self.dymola is None:
                 self._setup_dymola_interface(use_mp=True)
 
-
         # Handle eventlog
         if show_eventlog:
             self.dymola.experimentSetupOutput(events=True)
@@ -460,8 +462,8 @@ class DymolaAPI(ContinuousSimulation):
 
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
-            number_of_intervals = (self.sim_setup.stop_time - self.sim_setup.start_time) / \
-                                  self.sim_setup.output_interval
+            number_of_intervals = \
+                (self.sim_setup.stop_time - self.sim_setup.start_time) / self.sim_setup.output_interval
             if int(number_of_intervals) != number_of_intervals:
                 raise ValueError(
                     "Given output_interval and time interval did not yield "
@@ -632,6 +634,9 @@ class DymolaAPI(ContinuousSimulation):
     @Model.cd.setter
     def cd(self, cd):
         """Set the working directory to the given path"""
+        # update config and thereby trigger pydantic validator
+        self._update_config({'cd': cd})
+        # set attribute
         self._cd = cd
         if self.dymola is None:  # Not yet started
             return
@@ -961,7 +966,7 @@ class DymolaAPI(ContinuousSimulation):
     def _alter_model_name(parameters, model_name, structural_params):
         """
         Creates a modifier for all structural parameters,
-        based on the modelname and the initalNames and values.
+        based on the modelname and the initialNames and values.
 
         :param dict parameters:
             Parameters of the simulation
@@ -989,12 +994,11 @@ class DymolaAPI(ContinuousSimulation):
         return altered_model_name, new_parameters
 
     def _check_restart(self):
-            """Restart Dymola every n_restart iterations in order to free memory"""
-
-            if self.sim_counter == self.n_restart:
-                self.logger.info("Closing and restarting Dymola to free memory")
-                self.close()
-                self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
-                self.sim_counter = 1
-            else:
-                self.sim_counter += 1
+        """Restart Dymola every n_restart iterations in order to free memory"""
+        if self.sim_counter == self.n_restart:
+            self.logger.info("Closing and restarting Dymola to free memory")
+            self.close()
+            self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
+            self.sim_counter = 1
+        else:
+            self.sim_counter += 1

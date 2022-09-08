@@ -1,4 +1,4 @@
-""""
+"""
 Goals of this part of the examples:
 
 1. Access basic FMU handler utilities
@@ -26,8 +26,7 @@ import time
 # python PID controller
 class PID:
     """
-        PID controller
-
+        PID controlleR
         :param kp:
             Gain
         :param ti:
@@ -66,7 +65,6 @@ class PID:
     def run(self, x_act, x_set):
         """
         Control method, returns control action based on actual value and set point
-
         :param x_act:
             Measurement
         :param x_set:

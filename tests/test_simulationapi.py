@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import numpy as np
 from pydantic import ValidationError
-from ebcpy.simulationapi import dymola_continuous, fmu_continuous
+from ebcpy.simulationapi import dymola, fmu_continuous
 from ebcpy import TimeSeriesData
 
 

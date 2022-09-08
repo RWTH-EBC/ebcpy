@@ -1,3 +1,10 @@
+"""
+Simulation APIs help you to perform automated
+simulations for energy and building climate related models.
+Parameters can easily be updated, and the initialization-process is
+much more user-friendly than the provided APIs by Dymola or fmpy.
+"""
+
 import logging
 import os
 import itertools
@@ -37,6 +44,13 @@ class Variable(BaseModel):
 
 
 class Model:
+    """
+    Base-class for simulation apis. Every simulation-api class
+    must inherit from this class. It defines the basic model structure.
+
+    :param model_name:
+        Name of the model being simulated.
+    """
 
     _sim_setup_class: SimulationSetupClass = SimulationSetup
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfiguration
@@ -45,11 +59,10 @@ class Model:
         # initialize sim setup with class default
         self._sim_setup = self._sim_setup_class()
         # update sim setup if given in config; if not update config
-        if self.config.sim_setup is not None:  # todo: is it possiblke to define self.config in Model class instead of sub class
+        if self.config.sim_setup is not None:
             self.set_sim_setup(self.config.sim_setup)
         else:
             self._update_config({'sim_setup': self._sim_setup})
-
         # current directory
         if not hasattr(self, 'cd'):  # in case of FMU, cd is set already by now
             if self.config.cd is not None:
@@ -74,13 +87,16 @@ class Model:
         To be called in methods that modify an element within the config.
         This assures that config is up-to-date and triggers pydantic check.
         Not to be called by user as updating the config after initialization is not intended (updates are not forwarded)
+
+        :param config_update:
+            Dictionary containing updates to the experiment configuration
         """
         new_config = self.config.dict()
         new_config.update(config_update)
-        self.config = self._exp_config_class(**new_config)  # todo: does this trigger pydantiv check or is pares needed?
+        self.config = self._exp_config_class(**new_config)
 
     def set_cd(self, cd):
-        """Base function for changing the current working directory."""
+        """Base function for changing the current working directory"""
         self.cd = cd
 
     @property
@@ -90,8 +106,8 @@ class Model:
 
     @cd.setter
     def cd(self, cd: str):
-        """Set the current working directory"""
-        # update config and thus trigger pydantic validator
+        """Set the current working directory and update the configuration accordingly"""
+        # update config and thereby trigger pydantic validator
         self._update_config({'cd': cd})
         # create dir and set attribute
         os.makedirs(cd, exist_ok=True)
@@ -104,7 +120,7 @@ class Model:
 
     @classmethod
     def get_experiment_config_fields(cls):
-        """Return all fields in the chosen SimulationSetup class."""
+        """Return all fields in the chosen ExperimentConfig class."""
         return list(cls._exp_config_class.__fields__.keys())
 
     @property
@@ -128,8 +144,6 @@ class Model:
         # update config (redundant in case the sim_setup dict comes from config, but relevant if set afterwards)
         self._update_config({'sim_setup': new_setup})
 
-
-
     @property
     def model_name(self) -> str:
         """Name of the model being simulated"""
@@ -137,21 +151,17 @@ class Model:
 
     @model_name.setter
     def model_name(self, model_name):
-        """
-        Set new model_name and trigger further functions
-        to load parameters etc.
-        """
+        """Set new model_name and trigger further functions to load parameters etc."""
         self._model_name = model_name
         # Empty all variables again.
-        if self.use_mp:  # todo: review this condition? It would be better to get rid off worker_idx at level of Model-class
-            if self.worker_idx:  # todo: what is this actually for???
+        # TODO: Review: review this condition! It would be better to get rid off worker_idx at level of Model-class
+        if self.use_mp:
+            if self.worker_idx:
                 return
         self._update_model_variables()
 
     def _update_model_variables(self):
-        """
-        Function to empty all variables and update them again
-        """
+        """ Function to empty all variables and update them again"""
         self.outputs = {}
         self.parameters = {}
         self.states = {}
@@ -162,24 +172,21 @@ class Model:
 
     def _set_result_names(self):
         """
-        by default, keys of the output variables are passed to result_names list.
+        By default, keys of the output variables are passed to result_names list.
         Method may be overwritten by child.
         """
         self.result_names = list(self.outputs.keys())
 
     @abstractmethod
     def _update_model(self):
-        """
-        Reimplement this to change variables etc.
-        based on the new model.
-        """
+        """ Reimplement this to change variables etc. based on the new model. """
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
     @property
     def result_names(self) -> List[str]:
         """
-        The variables names which to store in results.
+        The variable names which to store in results.
 
         Returns:
             list: List of string where the string is the
@@ -199,15 +206,23 @@ class Model:
 
     @property
     def variables(self):
-        """
-        All variables of the simulation model
-        """
+        """All variables of the simulation model"""
         return list(itertools.chain(self.parameters.keys(),
                                     self.outputs.keys(),
                                     self.inputs.keys(),
                                     self.states.keys()))
 
     def check_unsupported_variables(self, variables: List[str], type_of_var: str):
+        """
+        Checks if variables are in the model as a specified type.
+
+        :param list variables:
+            List of variables to check
+        :param str type_of_var:
+            Variable type to search for
+        :return:
+            bool: Returns True if unsupported variables occur
+        """
         """Log warnings if variables are not supported."""
         if type_of_var == "parameters":
             ref = self.parameters.keys()
@@ -240,13 +255,25 @@ class Model:
 
 
 class ContinuousSimulation(Model):
+    """
+    Simulation apis for continuous simulations must inherit from ContinuousSimulation class.
+    It includes methods for multi-processing
+
+    :param str model_name:
+        Name of the model being simulated
+    :param int n_cpu:
+        Number of cores to be used by simulation.
+        If None is given, single core will be used.
+        Maximum number equals the cpu count of the device.
+        **Warning**: Logging is not yet fully working on multiple processes.
+        Output will be written to the stream handler, but not to the created .log files.
+    """
 
     _items_to_drop = [
         'pool',
     ]
 
     def __init__(self, model_name, n_cpu: int = 1):
-
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
@@ -310,7 +337,7 @@ class ContinuousSimulation(Model):
         raise NotImplementedError(f'{self.__class__.__name__}._single_close '
                                   f'function is not defined')
 
-    @abstractmethod  # todo: why abstract method?
+    @abstractmethod
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
                  return_option: str = "time_series",
@@ -434,6 +461,13 @@ class ContinuousSimulation(Model):
     def _single_simulation(self, kwargs):
         """
         Same arguments and function as simulate().
-        Used to differ between single- and multi-processing simulation"""
+        Used to differ between single- and multi-processing simulation
+        """
         raise NotImplementedError(f'{self.__class__.__name__}._single_simulation '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def _update_model(self):
+        """ Reimplement this to change variables etc. based on the new model. """
+        raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
