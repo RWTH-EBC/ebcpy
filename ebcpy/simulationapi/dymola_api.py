@@ -836,7 +836,8 @@ class DymolaAPI(SimulationAPI):
             path: pathlib.Path = None,
             files: list = None,
             save_total_model: bool = True,
-            export_fmu: bool = True
+            export_fmu: bool = True,
+            **kwargs
     ):
         """
         Additionally to the basic reproduction, add info
@@ -929,7 +930,8 @@ class DymolaAPI(SimulationAPI):
         return super().save_for_reproduction(
             title=title,
             path=path,
-            files=files
+            files=files,
+            **kwargs
         )
 
     def _save_to_fmu(self, fail_on_error):

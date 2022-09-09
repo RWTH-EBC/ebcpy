@@ -514,5 +514,6 @@ class SimulationAPI:
         return save_reproduction_archive(
             title=title,
             path=path,
-            files=files
+            files=files,
+            **kwargs
         )
