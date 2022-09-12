@@ -10,6 +10,7 @@ import atexit
 from typing import List, Union
 import fmpy
 from fmpy.model_description import read_model_description
+from pydantic import FilePath
 import numpy as np
 import pandas as pd
 from ebcpy import TimeSeriesData
