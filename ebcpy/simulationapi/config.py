@@ -3,10 +3,10 @@ Module contains pydantic-based models to define experiment configuration and sim
 in both dymola and fmu api.
 """
 
-from pydantic import BaseModel, Field, validator
-from pydantic import FilePath, DirectoryPath
 from typing import Union, Optional
 from typing import TypeVar, List
+from pydantic import BaseModel, Field, validator
+from pydantic import FilePath, DirectoryPath
 import numpy as np
 import pandas as pd
 from ebcpy import TimeSeriesData
@@ -176,5 +176,7 @@ class ExperimentConfigDymola(ExperimentConfiguration):
     sim_setup: Optional[SimulationSetupDymola]
 
 
-SimulationSetupClass = TypeVar("SimulationSetupClass", bound=SimulationSetup)
-ExperimentConfigurationClass = TypeVar("ExperimentConfigurationClass", bound=ExperimentConfiguration)
+SimulationSetupClass = TypeVar("SimulationSetupClass",
+                               bound=SimulationSetup)
+ExperimentConfigurationClass = TypeVar("ExperimentConfigurationClass",
+                                       bound=ExperimentConfiguration)

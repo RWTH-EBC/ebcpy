@@ -171,7 +171,8 @@ def main(
     print('Inputs: ', tz_fmu.inputs)
     print('Outputs: ', tz_fmu.outputs)
 
-    # The investigated thermal zone model uses the signal bus as control interface. It contains the in- and outputs.
+    # The investigated thermal zone model uses the signal bus as control interface.
+    # It contains the in- and outputs.
     # bus.processVar:         zone temperature measurement
     # bus.controlOutput:      relative heating power
     # bus.disturbance[1]:     ambient air temperature
@@ -183,16 +184,19 @@ def main(
     setup_dict = {
             "start_time": 0,
             "stop_time": 86400,  # 1 day
-            "comm_step_size": step_size  # Simulation steps of 10 min after which variables can be read or set
+            # Simulation steps of 10 min after which variables can be read or set
+            "comm_step_size": step_size
     }
     tz_fmu.set_sim_setup(setup_dict)
 
     # Initialize fmu and set parameters and initial values
     t_start = 20+273.15  # parameter
     t_start_amb = -6+273.15  # initial value
-    tz_fmu.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    tz_fmu.initialize_discrete_sim(parameters={'T_start': t_start},
+                                   init_values={'bus.disturbance[1]': t_start_amb})
 
-    # Initialize list for results by reading the values of the relevant vars_of_interest from the fmu
+    # Initialize list for results
+    # by reading the values of the relevant vars_of_interest from the fmu
     result_list = [tz_fmu.read_variables(vars_of_interest)]
 
     # simulation loop: Simulation the fmu stepwise for 12 hours and read results every step
@@ -204,7 +208,8 @@ def main(
         result_list.append(res)
         print('Temperature: {}°C'.format(round(res['bus.processVar']-273.15)))
 
-    # After 12 hours, the temperature reaches 18°C. To turn on the heating the according variable is set
+    # After 12 hours, the temperature reaches 18°C.
+    # To turn on the heating the according variable is set
     tz_fmu.set_variables({'bus.controlOutput': 0.1})
 
     # The simulation is continued until the stop time is reached
@@ -221,7 +226,8 @@ def main(
 
     # ########### Plotting ##########################################
 
-    # Plotting the room temperature reveals that turning on the heating could increase the temperature again
+    # Plotting the room temperature reveals
+    # that turning on the heating could increase the temperature again
     plotting_fmt()  # apply plotting format settings
     x_values = sim_res_frame['SimTime']
     fig, axes = plt.subplots(nrows=3, ncols=1)
@@ -252,7 +258,8 @@ def main(
 
     # !!! For co-simulation with more than 2 FMUs consider using AgentLib (E.ON ERC EBC intern) !!!
 
-    # In the following, a control task with a PI heating controller is demonstrated in two scenarios:
+    # In the following, a control task with a PI heating controller
+    # is demonstrated in two scenarios:
     # A: System FMU and Python controller
     # B: System FMU and controller FMU
 
@@ -264,9 +271,9 @@ def main(
     # In this interval, values are set to or read from the fmu
 
     # find out supported experiment configuration options
-    print('Supported experiment configuration: {}'.format(FMU_Discrete.get_experiment_config_fields()))
+    print(f"Supported experiment configuration: {FMU_Discrete.get_experiment_config_fields()}")
     # find out supported simulation setup options
-    print('Supported simulation setup: {}'.format(FMU_Discrete.get_simulation_setup_fields()))
+    print(f"Supported simulation setup: {FMU_Discrete.get_simulation_setup_fields()}")
 
     # collect simulation setup
     setup_dict = {
@@ -312,7 +319,8 @@ def main(
         if 3600 * 8 < sec_of_day < 3600 * 17:
             setpoint[idx] = 293.15
     # Store input data as pandas DataFrame
-    input_df = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint}, index=time_index)
+    input_df = pd.DataFrame({'bus.disturbance[1]': dist, 'bus.setPoint': setpoint},
+                            index=time_index)
     # create csv file to access input data later on
     # for re-import column naming 'time' is crucial
     input_df.to_csv('data/ThermalZone_input.csv', index=True, index_label='time')
@@ -322,47 +330,53 @@ def main(
     # alternatively pass .csv file path
     # system.input_table = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_input.csv")
 
-    # ####################### Initialize System FMU for Discrete Simulation ##########################
+    # ############# Initialize System FMU for Discrete Simulation #######################
     # define initial values and parameters
     t_start = 15 + 273.15  # parameter
     t_start_amb = 5 + 273.15  # initial value
 
     # initialize system FMU
-    system.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    system.initialize_discrete_sim(parameters={'T_start': t_start},
+                                   init_values={'bus.disturbance[1]': t_start_amb})
     print('Initial results data frame "sim_res_df": ')
-    print(system.sim_res)
+    print(system.sim_res_df)
 
-    # ################ A: Simulate System FMU Interacting with python controller ##########################
+    # ############## A: Simulate System FMU Interacting with python controller #################
     # Instantiate python PID controller
     # Note that the controllers sampling time matches the FMUs communication step size
     ctr = PID(kp=0.01, ti=300, lim_high=1, reverse_act=False, fixed_dt=comm_step)
 
     # Initialize a running variable for the results of each simulation step
-    res_step = system.sim_res.iloc[-1].to_dict()
+    res_step = system.sim_res_df.iloc[-1].to_dict()
 
     print('Study A: System FMU with Python Controller')
 
     # ############ Do Step Function with Extended Functionality ###########################
     # In discrete simulation a simulation step typically goes hand in hand wih
     # setting values to the fmu and reading from the fmu.
-    # This is all covered by the do_step() function. It also considers inputs from the input_table attribute.
-    # The results are stored in the sim_res_df attribute and cover the variables within the result_names attribute
+    # This is all covered by the do_step() function.
+    # It also considers inputs from the input_table attribute.
+    # The results are stored in the sim_res_df attribute
+    # and cover the variables within the result_names attribute
 
     while not system.finished:
         # Call controller
         # (for advanced control strategies that require previous results,
         # use the attribute sim_res_df and adjust output_interval)
-        ctr_action = ctr.run(res_step['bus.processVar'], input_df.loc[system.current_time]['bus.setPoint'])
+        ctr_action = ctr.run(
+            res_step['bus.processVar'], input_df.loc[system.current_time]['bus.setPoint'])
         # Apply control action to system and perform simulation step
         res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})
 
     # ################# Read Simulation Results ###################################################
-    # simulation results stored in the attribute 'sim_res_df' can be returned calling 'get_results()'
+    # simulation results stored in the attribute 'sim_res_df'
+    # can be returned calling 'get_results()'
     results_a = system.get_results()
 
-    # ####################### Instantiate and Initialize system and controller FMU #################
+    # ####################### Instantiate and Initialize system and controller FMU ################
     # re-initializing the system fmu resets the results (the same instance as before is used)
-    system.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
+    system.initialize_discrete_sim(parameters={'T_start': t_start},
+                                   init_values={'bus.disturbance[1]': t_start_amb})
 
     # A controller FMU is used alternatively to the python controller
     # This time the input data is set in the configuration using the generated .csv-file
@@ -379,15 +393,16 @@ def main(
     controller = FMU_Discrete(config_ctr_dict, log_fmu=log_fmu)
     controller.initialize_discrete_sim()
 
-    # ################ B: Simulate System FMU Interacting with a Controller FMU ##########################
+    # ############# B: Simulate System FMU Interacting with a Controller FMU ##################
 
-    res_step = system.sim_res.iloc[-1].to_dict()
+    res_step = system.sim_res_df.iloc[-1].to_dict()
     print('Study B: System FMU with Controller FMU')
     while not system.finished:
         # Call controller and extract control output
         # (for advanced control strategies that require previous results,
         # use the attribute sim_res_df and adjust output_interval)
-        ctr_action = controller.do_step(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
+        ctr_action = controller.do_step(
+            input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
         # write controller output to system FMU as well as pre-known inputs and perform step
         res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})
 
@@ -402,16 +417,19 @@ def main(
 
     # ###################### Plot Results #########################################
     cases = [results_a, results_b]
-    time_index_out = np.arange(0, stop + comm_step, output_step)  # time index with output interval step
+    # time index with output interval step
+    time_index_out = np.arange(0, stop + comm_step, output_step)
     fig, axes_mat = plt.subplots(nrows=3, ncols=2)
     for i in range(len(cases)):
         axes = axes_mat[:, i]
         axes[0].plot(time_index_out, cases[i]['bus.processVar'] - 273.15, label='mea', color='b')
         axes[0].plot(time_index, setpoint - 273.15, label='set', color='r')
         axes[0].set_ylim(15, 22)
-        axes[1].plot(time_index_out, cases[i]['bus.controlOutput'], label='control output', color='b')
+        axes[1].plot(time_index_out, cases[i]['bus.controlOutput'],
+                     label='control output', color='b')
         axes[1].set_ylim(-0.05, 0.2)
-        axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15, label='dist', color='b')
+        axes[2].plot(time_index_out, cases[i]['bus.disturbance[1]'] - 273.15,
+                     label='dist', color='b')
         axes[2].set_ylim(0, 40)
 
         # x label
@@ -445,8 +463,8 @@ def main(
     # Consequently, the controller is unable to cool down the thermal zone.
     # This explains most of the control deviation.
 
-    # In case you experience oscillating signals, check if the sampling time (communication step size)
-    # is appropriate for the controller settings
+    # In case you experience oscillating signals, check if the sampling time
+    # (communication step size) is appropriate for the controller settings
 
 
 if __name__ == '__main__':

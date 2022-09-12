@@ -93,7 +93,8 @@ def main(
     print("Inputs names are:", fmu_api.inputs)
     # We only have TDryBul (outdoor air temperature) as an input.
     # Start with the setup of a time-index that matches our simulation setup
-    # Feel free to play around with the settings to see what happens if your time_index is malformed.
+    # Feel free to play around with the settings
+    # to see what happens if your time_index is malformed.
     time_index = np.arange(
         fmu_api.sim_setup.start_time,
         fmu_api.sim_setup.stop_time,

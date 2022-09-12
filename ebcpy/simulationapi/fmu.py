@@ -6,16 +6,18 @@ import os
 import logging
 import pathlib
 import shutil
+import atexit
+from typing import List, Union
 import fmpy
 from fmpy.model_description import read_model_description
 import numpy as np
 import pandas as pd
-import atexit
-from typing import List, Union
 from ebcpy import TimeSeriesData
-from ebcpy.simulationapi import Model, ContinuousSimulation, DiscreteSimulation
+from ebcpy.simulationapi import ContinuousSimulation, DiscreteSimulation
 from ebcpy.simulationapi import Variable
-from ebcpy.simulationapi.config import *
+from ebcpy.simulationapi.config import ExperimentConfigFMU_Continuous, SimulationSetupFMU_Continuous
+from ebcpy.simulationapi.config import ExperimentConfigFMU_Discrete, SimulationSetupFMU_Discrete
+from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationSetupClass
 from ebcpy.utils.interpolation import interp_df
 
 
@@ -90,16 +92,16 @@ class FMU:
 
         for key, value in var_dict.items():
             var = self._var_refs[key]
-            vr = [var.valueReference]
+            var_ref = [var.valueReference]
 
             if var.type == 'Real':
-                self._fmu_instance.setReal(vr, [float(value)])
+                self._fmu_instance.setReal(var_ref, [float(value)])
             elif var.type in ['Integer', 'Enumeration']:
-                self._fmu_instance.setInteger(vr, [int(value)])
+                self._fmu_instance.setInteger(var_ref, [int(value)])
             elif var.type == 'Boolean':
-                self._fmu_instance.setBoolean(vr, [value == 1.0 or value or value == "True"])
+                self._fmu_instance.setBoolean(var_ref, [value == 1.0 or value or value == "True"])
             else:
-                raise Exception("Unsupported type: %s" % var.type)
+                raise Exception(f"Unsupported type: {var.type}")
 
     def read_variables(self, vrs_list: list):
         """
@@ -115,17 +117,17 @@ class FMU:
 
         for name in vrs_list:
             var = self._var_refs[name]
-            vr = [var.valueReference]
+            var_ref = [var.valueReference]
 
             if var.type == 'Real':
-                res[name] = self._fmu_instance.getReal(vr)[0]
+                res[name] = self._fmu_instance.getReal(var_ref)[0]
             elif var.type in ['Integer', 'Enumeration']:
-                res[name] = self._fmu_instance.getInteger(vr)[0]
+                res[name] = self._fmu_instance.getInteger(var_ref)[0]
             elif var.type == 'Boolean':
-                value = self._fmu_instance.getBoolean(vr)[0]
+                value = self._fmu_instance.getBoolean(var_ref)[0]
                 res[name] = value != 0
             else:
-                raise Exception("Unsupported type: %s" % var.type)
+                raise Exception(f"Unsupported type: {var.type}")
 
         res['SimTime'] = self.current_time
 
@@ -198,9 +200,8 @@ class FMU:
                 print()
 
         if self.use_mp:
-            self.logger.info("Extracting fmu %s times for "
-                             "multiprocessing on %s processes",
-                             self.n_cpu, self.n_cpu)
+            self.logger.info(f"Extracting fmu {self.n_cpu} times for "
+                             f"multiprocessing on {self.n_cpu} processes")
             self.pool.map(
                 self._setup_single_fmu_instance,
                 [True for _ in range(self.n_cpu)]
@@ -441,7 +442,7 @@ class FMU_API(FMU, ContinuousSimulation):
         if not self.use_mp:
             if not self._fmu_instance:
                 return  # Already closed
-            self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
+            self.logger.info(f"Closing fmu {self._model_description.modelName} ")
             self._single_close(fmu_instance=self._fmu_instance,
                                unzip_dir=self._unzip_dir)
             self._unzip_dir = None
@@ -452,7 +453,7 @@ class FMU_API(FMU, ContinuousSimulation):
         idx_worker = self.worker_idx
         if self._fmu_instance is None:
             return  # Already closed
-        self.logger.info('Closing fmu {} for worker {}'.format(self._model_description.modelName, idx_worker))
+        self.logger.info(f"Closing fmu {self._model_description.modelName} for worker {idx_worker}")
         self._single_close(fmu_instance=self._fmu_instance,
                            unzip_dir=self._unzip_dir)
         self._unzip_dir = None
@@ -504,10 +505,13 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, log_fmu)
-        DiscreteSimulation.__init__(self, model_name=self.config.file_path)  # in case of fmu: file path, in case of dym: model_name
+        # in case of fmu: file path, in case of dym: model_name are passed
+        DiscreteSimulation.__init__(self, model_name=self.config.file_path)
         # define input data (can be adjusted during simulation using the setter)
-        self.input_table = self.config.input_data  # calling the setter to distinguish depending on type and filtering
-        self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
+        # calling the setter to distinguish depending on type and filtering
+        self.input_table = self.config.input_data
+        # if false, last value of input table is hold, otherwise interpolated
+        self.interp_input_table = False
 
     def get_results(self, tsd_format: bool = False):
         """
@@ -519,9 +523,9 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         """
 
         if not tsd_format:
-            results = self.sim_res
+            results = self.sim_res_df
         else:
-            results = TimeSeriesData(self.sim_res, default_tag="sim")
+            results = TimeSeriesData(self.sim_res_df, default_tag="sim")
             results.rename_axis(['Variables', 'Tags'], axis='columns')
             results.index.names = ['Time']
         return results
@@ -543,12 +547,13 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         # update config to trigger pydantic checks
         self._update_config({'input_data': inp})
         if inp is not None:
+            input_table_raw = None
             if isinstance(inp, (str, pathlib.Path)):
                 if not str(inp).endswith('csv'):
                     raise TypeError(
-                        'input data {} is not a .csv file. '
-                        'Instead of passing a file consider passing a pd.Dataframe or TimeSeriesData object'.format(inp)
-                    )
+                        f"input data {inp} is not a .csv file. "
+                        f"Instead of passing a file "
+                        f"consider passing a pd.Dataframe or TimeSeriesData object")
                 input_table_raw = pd.read_csv(inp, index_col='time')
             else:  # pd frame or tsd object; wrong type already caught by pydantic
                 if isinstance(inp, TimeSeriesData):
@@ -623,12 +628,13 @@ class FMU_Discrete(FMU, DiscreteSimulation):
 
         # Initialize dataframe to store results
         res = self.read_variables(vrs_list=self.result_names)
-        self.sim_res = pd.DataFrame(res,
-                                    index=[res['SimTime']],
-                                    columns=self.result_names
-                                    )
+        self.sim_res_df = pd.DataFrame(res,
+                                       index=[res['SimTime']],
+                                       columns=self.result_names
+                                       )
 
-        self.logger.info('FMU "{}" initialized for discrete simulation'.format(self._model_description.modelName))
+        self.logger.info(f"FMU '{self._model_description.modelName}' "
+                         f"initialized for discrete simulation")
 
         # initialize status indicator
         self.finished = False
@@ -643,9 +649,10 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         # check if stop time is reached
         if self.current_time < self.sim_setup.stop_time:
             if self.step_count == 0:
-                self.logger.info('Starting simulation of FMU "{}"'.format(self._model_description.modelName))
+                self.logger.info(f"Starting simulation of FMU "
+                                 f"'{self._model_description.modelName}'")
             # do simulation step
-            status = self._fmu_instance.doStep(
+            self._fmu_instance.doStep(
                 currentCommunicationPoint=self.current_time,
                 communicationStepSize=self.sim_setup.comm_step_size)
             # step count
@@ -655,8 +662,7 @@ class FMU_Discrete(FMU, DiscreteSimulation):
             self.finished = False
         else:
             self.finished = True
-            self.logger.info('Simulation of FMU "{}" finished'.format(self._model_description.modelName))
-
+            self.logger.info(f"Simulation of FMU '{self._model_description.modelName}' finished")
         return self.finished
 
     def do_step(self, input_step: dict = None, close_when_finished: bool = False):
@@ -681,11 +687,11 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         single_input = {}
         if self.input_table is not None:
             # extract value from input time table
-            # TODO: Review: not efficient to evaluate every time
+            # TODO: Review: not efficient to evaluate every step
             sim_setup_idx = np.arange(self.sim_setup.start_time,
                                       self.sim_setup.stop_time + self.sim_setup.comm_step_size,
                                       self.sim_setup.comm_step_size).tolist()
-            single_input = interp_df(t=self.current_time,
+            single_input = interp_df(t_act=self.current_time,
                                      df=self.input_table,
                                      interpolate=self.interp_input_table,
                                      req_grid=sim_setup_idx)
@@ -706,10 +712,12 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         if not self.finished:
             # append
             if self.current_time % self.sim_setup.output_interval == 0:
-                self.sim_res = pd.concat(
-                    [self.sim_res, pd.DataFrame.from_records([res],  # because frame.append will be depreciated
-                                                             index=[res['SimTime']],
-                                                             columns=self.sim_res.columns)])
+                self.sim_res_df = pd.concat(   # because frame.append will be depreciated
+                    [self.sim_res_df,
+                     pd.DataFrame.from_records([res],
+                                               index=[res['SimTime']],
+                                               columns=self.sim_res_df.columns)])
+
         else:
             if close_when_finished:
                 self.close()
@@ -727,7 +735,7 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         # No MP for discrete simulation
         if not self._fmu_instance:
             return  # Already closed
-        self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
+        self.logger.info(f"Closing fmu {self._model_description.modelName} ")
         self._single_close(fmu_instance=self._fmu_instance,
                            unzip_dir=self._unzip_dir)
         self._unzip_dir = None

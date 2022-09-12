@@ -8,11 +8,11 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 import logging
 import os
 import itertools
-from pydantic import BaseModel, Field
 from typing import Union
 from typing import Dict, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
+from pydantic import BaseModel, Field
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.simulationapi.config import *
@@ -86,7 +86,8 @@ class Model:
         Updates config attribute.
         To be called in methods that modify an element within the config.
         This assures that config is up-to-date and triggers pydantic check.
-        Not to be called by user as updating the config after initialization is not intended (updates are not forwarded)
+        Not to be called by user as updating the config after initialization is not intended
+        (because updates are not forwarded)
 
         :param config_update:
             Dictionary containing updates to the experiment configuration
@@ -141,7 +142,8 @@ class Model:
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
 
-        # update config (redundant in case the sim_setup dict comes from config, but relevant if set afterwards)
+        # update config (redundant in case the sim_setup dict comes from config,
+        # but relevant if set afterwards)
         self._update_config({'sim_setup': new_setup})
 
     @property
@@ -154,7 +156,8 @@ class Model:
         """Set new model_name and trigger further functions to load parameters etc."""
         self._model_name = model_name
         # Empty all variables again.
-        # TODO: Review: review this condition! It would be better to get rid off worker_idx at level of Model-class
+        # TODO: Review: review this condition!
+        #  It would be better to get rid off worker_idx at level of Model-class
         if self.use_mp:
             if self.worker_idx:
                 return
@@ -223,7 +226,7 @@ class Model:
         :return:
             bool: Returns True if unsupported variables occur
         """
-        """Log warnings if variables are not supported."""
+        # Log warnings if variables are not supported
         if type_of_var == "parameters":
             ref = self.parameters.keys()
         elif type_of_var == "outputs":
@@ -250,6 +253,7 @@ class Model:
 
     @ abstractmethod
     def close(self):
+        """ close model carrier (i.e. fmu, dymola) """
         raise NotImplementedError(f'{self.__class__.__name__}.close '
                                   f'function is not defined')
 
@@ -513,7 +517,8 @@ class DiscreteSimulation(Model):
     def do_step(self):
         """
         Reimplement this, as a wrapper for step only.
-        It extends the step functionality by considering inputs and writing the results to the sim_res_df attribute.
+        It extends the step functionality by considering inputs
+        and writing the results to the sim_res_df attribute.
         """
         raise NotImplementedError(f'{self.__class__.__name__}.do_step '
                                   f'function is not defined')

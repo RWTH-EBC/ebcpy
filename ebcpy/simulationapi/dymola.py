@@ -13,7 +13,8 @@ from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import Variable
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
-from ebcpy.simulationapi.config import *
+from ebcpy.simulationapi.config import ExperimentConfigDymola, SimulationSetupDymola
+from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationSetupClass
 from ebcpy.simulationapi import ContinuousSimulation
 from ebcpy.simulationapi import Model
 
@@ -281,7 +282,8 @@ class DymolaAPI(ContinuousSimulation):
             Changing a record in a model:
 
             >>> sim_api.simulate(
-            >>>     parameters={"parameterPipe": "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
+            >>>     parameters={"parameterPipe":
+            >>>                 "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
             >>>     structural_parameters=["parameterPipe"])
 
         """
@@ -463,7 +465,8 @@ class DymolaAPI(ContinuousSimulation):
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
             number_of_intervals = \
-                (self.sim_setup.stop_time - self.sim_setup.start_time) / self.sim_setup.output_interval
+                (self.sim_setup.stop_time - self.sim_setup.start_time) / \
+                self.sim_setup.output_interval
             if int(number_of_intervals) != number_of_intervals:
                 raise ValueError(
                     "Given output_interval and time interval did not yield "
@@ -776,8 +779,8 @@ class DymolaAPI(ContinuousSimulation):
             return DymolaInterface(showwindow=self.show_window,
                                    dymolapath=self.dymola_exe_path)
         except ImportError as error:
-            raise ImportError("Given dymola-interface could not be "
-                              "loaded:\n %s" % self.dymola_interface_path) from error
+            raise ImportError(f"Given dymola-interface could not be "
+                              f"loaded:\n {self.dymola_interface_path}") from error
         except DymolaConnectionException as error:
             raise ConnectionError(error) from error
 
@@ -959,8 +962,8 @@ class DymolaAPI(ContinuousSimulation):
             except psutil.AccessDenied:
                 continue
         if counter >= self._critical_number_instances:
-            warnings.warn("There are currently %s Dymola-Instances "
-                          "running on your machine!" % counter)
+            warnings.warn("There are currently {counter} Dymola-Instances "
+                          "running on your machine!")
 
     @staticmethod
     def _alter_model_name(parameters, model_name, structural_params):

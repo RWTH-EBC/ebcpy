@@ -5,7 +5,6 @@ certain format into other formats.
 import pathlib
 import scipy.io as spio
 import numpy as np
-import pandas as pd
 
 from ebcpy.data_types import numeric_indexes, datetime_indexes
 

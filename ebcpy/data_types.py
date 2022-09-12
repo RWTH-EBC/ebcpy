@@ -322,7 +322,6 @@ class TimeSeriesData(pd.DataFrame):
                 ) from err
         return df
 
-
     def get_variable_names(self) -> List[str]:
         """
         Return an alphabetically sorted list of all variables
@@ -357,8 +356,8 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_columns_by_tag(self,
                            tag: str,
-                           variables: list =None,
-                           return_type: str='pandas',
+                           variables: list = None,
+                           return_type: str = 'pandas',
                            drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
