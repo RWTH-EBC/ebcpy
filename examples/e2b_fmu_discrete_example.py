@@ -245,7 +245,7 @@ def main(
     # ######### Use Case of Discrete FMU Simulation ####################
 
     # The previous investigation is a very simple control task:
-    # Because the room temperature gets too low, the heating is activated
+    # Because the room temperature gets too low, the heating is activated manually
 
     # Discrete (stepwise) FMU simulation is common for control tasks or co-simulation
     # (a simulated model requires feedback as input based on its own output).
@@ -329,7 +329,7 @@ def main(
 
     # initialize system FMU
     system.initialize_discrete_sim(parameters={'T_start': t_start}, init_values={'bus.disturbance[1]': t_start_amb})
-    print('Initial results data frame "sim_res": ')
+    print('Initial results data frame "sim_res_df": ')
     print(system.sim_res)
 
     # ################ A: Simulate System FMU Interacting with python controller ##########################
@@ -346,18 +346,18 @@ def main(
     # In discrete simulation a simulation step typically goes hand in hand wih
     # setting values to the fmu and reading from the fmu.
     # This is all covered by the do_step() function. It also considers inputs from the input_table attribute.
-    # The results are stored in the sim_res attribute and cover the variables within the result_names attribute
+    # The results are stored in the sim_res_df attribute and cover the variables within the result_names attribute
 
     while not system.finished:
         # Call controller
         # (for advanced control strategies that require previous results,
-        # use the attribute sim_res and adjust output_interval)
+        # use the attribute sim_res_df and adjust output_interval)
         ctr_action = ctr.run(res_step['bus.processVar'], input_df.loc[system.current_time]['bus.setPoint'])
         # Apply control action to system and perform simulation step
         res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})
 
     # ################# Read Simulation Results ###################################################
-    # simulation results stored in the attribute 'sim_res' can be returned calling 'get_results()'
+    # simulation results stored in the attribute 'sim_res_df' can be returned calling 'get_results()'
     results_a = system.get_results()
 
     # ####################### Instantiate and Initialize system and controller FMU #################
@@ -386,7 +386,7 @@ def main(
     while not system.finished:
         # Call controller and extract control output
         # (for advanced control strategies that require previous results,
-        # use the attribute sim_res and adjust output_interval)
+        # use the attribute sim_res_df and adjust output_interval)
         ctr_action = controller.do_step(input_step={'bus.processVar': res_step['bus.processVar']})['bus.controlOutput']
         # write controller output to system FMU as well as pre-known inputs and perform step
         res_step = system.do_step(input_step={'bus.controlOutput': ctr_action})

@@ -1,6 +1,0 @@
-Log-file of program .\dymosim.exe
-(generated: Thu Sep  1 13:59:02 2022)
-
-dymosim.exe started
-... "AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem"
-... "dsin.txt" creating (dymosim input file).

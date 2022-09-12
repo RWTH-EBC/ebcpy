@@ -471,3 +471,57 @@ class ContinuousSimulation(Model):
         """ Reimplement this to change variables etc. based on the new model. """
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
+
+
+class DiscreteSimulation(Model):
+    """
+    Simulation apis for discrete simulations must inherit from DiscreteSimulation class.
+    Defines abstract methods that must be implemented in sub-classes
+
+    :param model_name:
+    """
+    def __init__(self, model_name):
+        # attributes for discrete simulation
+        self.current_time = None
+        self.finished = None
+        self.step_count = None  # counting simulation steps
+        self.sim_res_df = None  # attribute that stores simulation result
+        # pass model name to super class
+        super().__init__(model_name=model_name)
+
+    @abstractmethod
+    def _update_model(self):
+        """ Reimplement this to change variables etc. based on the new model. """
+        raise NotImplementedError(f'{self.__class__.__name__}._update_model '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def close(self):
+        raise NotImplementedError(f'{self.__class__.__name__}.close '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def step_only(self):
+        """
+        Reimplement this, to perform a single simulation step.
+        In the method call the attributes step_count, current_time, and finished should be updated.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}.step_only '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def do_step(self):
+        """
+        Reimplement this, as a wrapper for step only.
+        It extends the step functionality by considering inputs and writing the results to the sim_res_df attribute.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}.do_step '
+                                  f'function is not defined')
+
+    @abstractmethod
+    def get_results(self):
+        """
+        Reimplement this, to return the sim_res_df attribute.
+        """
+        raise NotImplementedError(f'{self.__class__.__name__}.get_results '
+                                  f'function is not defined')

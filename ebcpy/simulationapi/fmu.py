@@ -13,7 +13,7 @@ import pandas as pd
 import atexit
 from typing import List, Union
 from ebcpy import TimeSeriesData
-from ebcpy.simulationapi import Model, ContinuousSimulation
+from ebcpy.simulationapi import Model, ContinuousSimulation, DiscreteSimulation
 from ebcpy.simulationapi import Variable
 from ebcpy.simulationapi.config import *
 from ebcpy.utils.interpolation import interp_df
@@ -439,9 +439,9 @@ class FMU_API(FMU, ContinuousSimulation):
         ContinuousSimulation.close(self)
         # Close if single process
         if not self.use_mp:
-            self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
             if not self._fmu_instance:
                 return  # Already closed
+            self.logger.info('Closing fmu {} '.format(self._model_description.modelName))
             self._single_close(fmu_instance=self._fmu_instance,
                                unzip_dir=self._unzip_dir)
             self._unzip_dir = None
@@ -461,7 +461,7 @@ class FMU_API(FMU, ContinuousSimulation):
         FMU_API._fmu_instance = None
 
 
-class FMU_Discrete(FMU, Model):
+class FMU_Discrete(FMU, DiscreteSimulation):
     """
     Class for discrete/stepwise simulation using the fmpy library and
     a functional mockup interface as a model input.
@@ -504,15 +504,10 @@ class FMU_Discrete(FMU, Model):
         self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, log_fmu)
-        Model.__init__(self, model_name=self.config.file_path)  # in case of fmu: file path, in case of dym: model_name
-        # used for stepwise simulation
-        self.current_time = None
-        self.finished = None
+        DiscreteSimulation.__init__(self, model_name=self.config.file_path)  # in case of fmu: file path, in case of dym: model_name
         # define input data (can be adjusted during simulation using the setter)
         self.input_table = self.config.input_data  # calling the setter to distinguish depending on type and filtering
         self.interp_input_table = False  # if false, last value of input table is hold, otherwise interpolated
-        self.step_count = None  # counting simulation steps
-        self.sim_res = None  # attribute that stores simulation result
 
     def get_results(self, tsd_format: bool = False):
         """
@@ -687,9 +682,9 @@ class FMU_Discrete(FMU, Model):
         if self.input_table is not None:
             # extract value from input time table
             # TODO: Review: not efficient to evaluate every time
-            sim_setup_idx = np.arange(system.sim_setup.start_time,
-                                      system.sim_setup.stop_time + system.sim_setup.comm_step_size,
-                                      system.sim_setup.comm_step_size).tolist()
+            sim_setup_idx = np.arange(self.sim_setup.start_time,
+                                      self.sim_setup.stop_time + self.sim_setup.comm_step_size,
+                                      self.sim_setup.comm_step_size).tolist()
             single_input = interp_df(t=self.current_time,
                                      df=self.input_table,
                                      interpolate=self.interp_input_table,

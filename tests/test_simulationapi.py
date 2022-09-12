@@ -8,7 +8,7 @@ from pathlib import Path
 import shutil
 import numpy as np
 from pydantic import ValidationError
-from ebcpy.simulationapi import dymola, fmu_continuous
+from ebcpy.simulationapi import dymola, fmu
 from ebcpy import TimeSeriesData
 
 
@@ -151,11 +151,11 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         try:
             config = {
                 'model_name': model_name,
-                'cd': self.example_sim_dir
+                'cd': self.example_sim_dir,
+                'packages': packages
             }
-            self.sim_api = dymola_continuous.DymolaAPI(
+            self.sim_api = dymola.DymolaAPI(
                 config=config,
-                packages=packages,
                 dymola_path=dymola_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
@@ -251,7 +251,7 @@ class TestFMUAPI(PartialTestSimAPI):
                     'file_path': model_name,
                     'cd': self.example_sim_dir
             }
-        self.sim_api = fmu_continuous.FMU_API(config)
+        self.sim_api = fmu.FMU_API(config)
 
     def test_close(self):
         """Test close functionality of fmu api"""
