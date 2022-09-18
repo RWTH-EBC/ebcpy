@@ -35,17 +35,17 @@ class FMU:
     _fmu_instance = None
     _unzip_dir: str = None
 
-    def __init__(self, log_fmu: bool = True):
+    def __init__(self, file_path: str, cd: str, log_fmu: bool = True):
         self._unzip_dir = None
         self._fmu_instance = None
-        path = self.config.file_path
-        if isinstance(self.config.file_path, pathlib.Path):
-            path = str(self.config.file_path)
+        path = file_path
+        if isinstance(file_path, pathlib.Path):
+            path = str(file_path)
         if not path.lower().endswith(".fmu"):
-            raise ValueError(f"{self.config.file_path} is not a valid fmu file!")
+            raise ValueError(f"{file_path} is not a valid fmu file!")
         self.path = path
-        if self.config.cd is not None:
-            self.cd = self.config.cd
+        if cd is not None:
+            self.cd = cd
         else:
             self.cd = os.path.dirname(path)
         self.log_fmu = log_fmu
@@ -53,6 +53,18 @@ class FMU:
         self._model_description = None
         self._fmi_type = None
         self._single_unzip_dir: str = None
+        # Placeholders for variables that are required by subclass
+        # TODO: Review: Discuss how to deal best with usage of variables in FMU class that are defined in sub-class
+        self.logger = None
+        self.inputs = None
+        self.parameters = None
+        self.outputs = None
+        self.states = None
+        self.n_cpu = None
+        self.use_mp = None
+        self.pool = None
+        self.worker_idx = None
+
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
@@ -130,7 +142,7 @@ class FMU:
             else:
                 raise Exception(f"Unsupported type: {var.type}")
 
-        res['SimTime'] = self.current_time
+        res['SimTime'] = self.current_time  # add current time
 
         return res
 
@@ -145,9 +157,9 @@ class FMU:
         """
         self.logger.info("Extracting fmu and reading fmu model description")
         self._single_unzip_dir = os.path.join(self.cd,
-                                              os.path.basename(self.model_name)[:-4] + "_extracted")
+                                              os.path.basename(self.path)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
-        self._single_unzip_dir = fmpy.extract(self.model_name,
+        self._single_unzip_dir = fmpy.extract(self.path,
                                               unzipdir=self._single_unzip_dir)
         self._model_description = read_model_description(self._single_unzip_dir,
                                                          validate=True)
@@ -217,7 +229,7 @@ class FMU:
             if self._fmu_instance is not None:
                 return True
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
-            fmpy.extract(self.model_name,
+            fmpy.extract(self.path,
                          unzipdir=unzip_dir)
         else:
             wrk_idx = 0
@@ -306,7 +318,7 @@ class FMU_API(FMU, ContinuousSimulation):
     # TODO: Review: n_cpu and log_fmu in config?
     def __init__(self, config, n_cpu: int = 1, log_fmu: bool = True):
         self.config = self._exp_config_class.parse_obj(config)
-        FMU.__init__(self, log_fmu=log_fmu)
+        FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
         ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
         # Register exit option
         atexit.register(self.close)
@@ -503,9 +515,9 @@ class FMU_Discrete(FMU, DiscreteSimulation):
 
     def __init__(self, config, log_fmu: bool = True):
         FMU_Discrete.objs.append(self)
-        self.use_mp = False  # no mp for stepwise FMU simulation
         self.config = self._exp_config_class.parse_obj(config)
-        FMU.__init__(self, log_fmu)
+        FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
+        self.use_mp = False  # no mp for stepwise FMU simulation
         # in case of fmu: file path, in case of dym: model_name are passed
         DiscreteSimulation.__init__(self, model_name=self.config.file_path)
         # define input data (can be adjusted during simulation using the setter)
@@ -629,6 +641,7 @@ class FMU_Discrete(FMU, DiscreteSimulation):
 
         # Initialize dataframe to store results
         res = self.read_variables(vrs_list=self.result_names)
+
         self.sim_res_df = pd.DataFrame(res,
                                        index=[res['SimTime']],
                                        columns=self.result_names

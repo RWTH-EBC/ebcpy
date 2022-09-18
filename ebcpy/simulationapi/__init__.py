@@ -8,6 +8,7 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 import logging
 import os
 import itertools
+import pathlib
 from typing import Union
 from typing import Dict, Any, List
 from abc import abstractmethod
@@ -15,7 +16,8 @@ import multiprocessing as mp
 from pydantic import BaseModel, Field
 import numpy as np
 from ebcpy.utils import setup_logger
-from ebcpy.simulationapi.config import *
+from ebcpy.simulationapi.config import SimulationSetupClass, ExperimentConfigurationClass
+from ebcpy.simulationapi.config import SimulationSetup, ExperimentConfiguration
 
 
 class Variable(BaseModel):
@@ -156,8 +158,8 @@ class Model:
         """Set new model_name and trigger further functions to load parameters etc."""
         self._model_name = model_name
         # Empty all variables again.
-        # TODO: Review: review this condition!
-        #  It would be better to get rid off worker_idx at level of Model-class
+        # TODO: Review: review this condition, what is it for?
+        #  It would be better to get rid off worker_idx and use_mp at level of Model-class
         if self.use_mp:
             if self.worker_idx:
                 return

@@ -470,6 +470,6 @@ def main(
 if __name__ == '__main__':
     main(
         log_fmu=True,
-        with_plot=True,
+        with_plot=False,
         n_days=1
     )
