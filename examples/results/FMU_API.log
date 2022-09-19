@@ -87,3 +87,9 @@
 18.09.2022-15:10:29 INFO FMU_API: Instantiating fmu for worker 0
 18.09.2022-15:11:19 WARNING FMU_API: Variables 'heatCap.T' are no 'variables' in model 'C:\Users\kbees\Desktop\ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating or being ignored.
 18.09.2022-15:11:27 INFO FMU_API: Closing fmu HeatPumpSystemForTMO2 
+19.09.2022-12:54:53 INFO FMU_API: -------------------------Initializing class FMU_API-------------------------
+19.09.2022-12:54:53 INFO FMU_API: Extracting fmu and reading fmu model description
+19.09.2022-12:54:53 INFO FMU_API: Reading model variables
+19.09.2022-12:54:53 INFO FMU_API: Instantiating fmu for worker 0
+19.09.2022-12:55:04 WARNING FMU_API: Variables 'heatCap.T' are no 'variables' in model 'C:\Users\kbees\Desktop\ebcpy\ebcpy\examples\data\HeatPumpSystemWithInput.fmu'. Will most probably trigger an error when simulating or being ignored.
+19.09.2022-12:55:12 INFO FMU_API: Closing fmu HeatPumpSystemForTMO2 

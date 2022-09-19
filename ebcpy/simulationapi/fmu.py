@@ -63,9 +63,7 @@ class FMU:
         self.n_cpu = None
         self.use_mp = None
         self.pool = None
-        self.worker_idx = None
-
-
+    
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
         # pylint: disable=unused-argument, invalid-name
