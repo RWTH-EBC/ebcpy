@@ -20,6 +20,7 @@ from ebcpy.simulationapi.config import ExperimentConfigFMU_Continuous, Simulatio
 from ebcpy.simulationapi.config import ExperimentConfigFMU_Discrete, SimulationSetupFMU_Discrete
 from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationSetupClass
 from ebcpy.utils.interpolation import interp_df
+# from ebcpy.utils.reproduction import CopyFile  # todo: activate once merged
 
 
 class FMU:
@@ -63,7 +64,6 @@ class FMU:
         self.n_cpu = None
         self.use_mp = None
         self.pool = None
-
 
     def _custom_logger(self, component, instanceName, status, category, message):
         """ Print the FMU's log messages to the command line (works for both FMI 1.0 and 2.0) """
@@ -173,13 +173,6 @@ class FMU:
         for variable in self._model_description.modelVariables:
             self._var_refs[variable.name] = variable
 
-        def _to_bound(value):
-            if value is None or \
-                    not isinstance(value, (float, int, bool)):
-                return np.inf
-            return value
-        self.logger.info("Reading model variables")
-
         _types = {
             "Enumeration": int,
             "Integer": int,
@@ -193,8 +186,8 @@ class FMU:
                 var.start = _types[var.type](var.start)
 
             _var_ebcpy = Variable(
-                min=-_to_bound(var.min),
-                max=_to_bound(var.max),
+                min=var.min,
+                max=var.max,
                 value=var.start,
                 type=_types[var.type]
             )
@@ -249,7 +242,6 @@ class FMU:
         else:
             self._fmu_instance = fmu_instance
             self._unzip_dir = unzip_dir
-
         return True
 
     def _single_close(self, **kwargs):
@@ -472,6 +464,28 @@ class FMU_API(FMU, ContinuousSimulation):
         self._fmu_instance = None
         FMU_API._unzip_dir = None
         FMU_API._fmu_instance = None
+
+    # def save_for_reproduction(self,  # todo: activate and locate once merged
+    #                           title: str,
+    #                           path: pathlib.Path = None,
+    #                           files: list = None,
+    #                           **kwargs):
+    #     """
+    #     Additionally to the basic reproduction, add info
+    #     for FMU files.
+    #     """
+    #     if files is None:
+    #         files = []
+    #     files.append(CopyFile(
+    #         filename="FMU/" + pathlib.Path(self.model_name).name,
+    #         sourcepath=pathlib.Path(self.model_name),
+    #         remove=False
+    #     ))
+    #     return super().save_for_reproduction(
+    #         title=title,
+    #         path=path,
+    #         files=files
+    #     )
 
 
 class FMU_Discrete(FMU, DiscreteSimulation):

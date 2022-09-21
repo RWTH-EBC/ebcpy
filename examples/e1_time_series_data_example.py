@@ -75,4 +75,8 @@ def main(with_plot=True):
 
 
 if __name__ == '__main__':
+    # from ebcpy.utils import reproduction  # todo: activate once merged
     main()
+    # reproduction.save_reproduction_archive(title="log-testing") # todo: activate once merged
+
+

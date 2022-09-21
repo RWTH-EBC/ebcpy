@@ -9,40 +9,75 @@ import logging
 import os
 import itertools
 import pathlib
+import warnings
 from typing import Union
 from typing import Dict, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.simulationapi.config import SimulationSetupClass, ExperimentConfigurationClass
 from ebcpy.simulationapi.config import SimulationSetup, ExperimentConfiguration
-
+# from ebcpy.utils.reproduction import save_reproduction_archive  # TODO: Activate once merged
 
 class Variable(BaseModel):
     """
     Data-Class to store relevant information for a
     simulation variable (input, parameter, output or local/state).
     """
-    value: Any = Field(
-        description="Default variable value"
-    )
-    max: Union[float, int] = Field(
-        default=np.inf,
-        title='max',
-        description='Maximal value (upper bound) of the variables value'
-    )
-    min: Union[float, int] = Field(
-        default=-np.inf,
-        title='min',
-        description='Minimal value (lower bound) of the variables value'
-    )
     type: Any = Field(
         default=None,
         title='type',
         description='Type of the variable'
     )
+    value: Any = Field(
+        description="Default variable value"
+    )
+    max: Any = Field(
+        default=None,
+        title='min',
+        description='Maximal value (upper bound) of the variables value. '
+                    'Only for ints and floats variables.'
+    )
+    min: Any = Field(
+        default=None,
+        title='min',
+        description='Minimal value (lower bound) of the variables value'
+    )
+
+    @validator("value")
+    def check_value_type(cls, value, values):
+        """Check if the given value has correct type"""
+        _type = values["type"]
+        if _type is None:
+            return value   # No type -> no conversion
+        if value is None:
+            return value  # Setting None is allowed.
+        if not isinstance(value, _type):
+            return _type(value)
+        return value
+
+    @validator('max', 'min', always=True)
+    def check_value(cls, value, values, field):
+        """Check if the given bounds are correct."""
+        # Check if the variable type even allows for min/max bounds
+        _type = values["type"]
+        if _type is None:
+            return value   # No type -> no conversion
+        if _type not in (float, int, bool):
+            if value is not None:
+                warnings.warn(
+                    "Setting a min/max for variables "
+                    f"of type {_type} is not supported."
+                )
+            return None
+        if value is not None:
+            return _type(value)
+        if field.name == "min":
+            return -np.inf if _type != bool else False
+        # else it is max
+        return np.inf if _type != bool else True
 
 
 class Model:
@@ -259,6 +294,35 @@ class Model:
         raise NotImplementedError(f'{self.__class__.__name__}.close '
                                   f'function is not defined')
 
+    # def save_for_reproduction(self,  # TODO: Activate and locate once merged
+    #                           title: str,
+    #                           path: pathlib.Path = None,
+    #                           files: list = None,
+    #                           **kwargs):
+    #     """
+    #     Save the settings of the SimulationAPI in order to
+    #     reproduce the settings of the used simulation.
+    #     Should be extended by child-classes to allow custom
+    #     saving.
+    #     :param str title:
+    #         Title of the study
+    #     :param pathlib.Path path:
+    #         Where to store the .zip file. If not given, self.cd is used.
+    #     :param list files:
+    #         List of files to save along the standard ones.
+    #         Examples would be plots, tables etc.
+    #     :param dict kwargs:
+    #         All keyword arguments except files and path of the function
+    #         save_reproduction_archive
+    #     """
+    #     if path is None:
+    #         path = self.cd
+    #     return save_reproduction_archive(
+    #         title=title,
+    #         path=path,
+    #         files=files
+    #     )
+
 
 class ContinuousSimulation(Model):
     """
@@ -314,7 +378,6 @@ class ContinuousSimulation(Model):
         self_dict = self.__dict__.copy()
         for item in self._items_to_drop:
             del self_dict[item]
-        # return deepcopy(self_dict)
         return self_dict
 
     def __setstate__(self, state):

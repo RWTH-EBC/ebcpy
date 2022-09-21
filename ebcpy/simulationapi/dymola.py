@@ -5,6 +5,7 @@ import sys
 import os
 import pathlib
 import atexit
+import json
 import shutil
 import warnings
 from typing import Union, List
@@ -792,7 +793,7 @@ class DymolaAPI(ContinuousSimulation):
         :return: dict config:
             Dictionary with keys to re-init this class.
         """
-        config = {"cd": self.cd,
+        config = {"cd": self.cd,  # todo: review: similar name and function to new introduced experiment config
                   "packages": self.packages,
                   "model_name": self.model_name,
                   "type": "DymolaAPI",
@@ -802,6 +803,145 @@ class DymolaAPI(ContinuousSimulation):
                        for kwarg in self._supported_kwargs})
 
         return config
+
+    def get_packages(self):
+        """
+        Get the currently loaded packages of Dymola
+        """
+        packages = self.dymola.ExecuteCommand(
+            'ModelManagement.Structure.AST.Misc.ClassesInPackage("")'
+        )
+        valid_packages = []
+        for pack in packages:
+            current_package = f"modelica://{pack}/package.order"
+            pack_path = self.dymola.ExecuteCommand(
+                f'Modelica.Utilities.Files.loadResource("{current_package}")'
+            )
+            if not isinstance(pack_path, str):
+                self.logger.error("Could not load model resource for package %s", pack)
+            if os.path.isfile(pack_path):
+                valid_packages.append(pathlib.Path(pack_path).parent)
+        return valid_packages
+
+    # def save_for_reproduction(  # todo: activate once merged
+    #         self,
+    #         title: str,
+    #         path: pathlib.Path = None,
+    #         files: list = None,
+    #         save_total_model: bool = True,
+    #         export_fmu: bool = True
+    # ):
+    #     """
+    #     Additionally to the basic reproduction, add info
+    #     for Dymola packages.
+    #     Content which is saved:
+    #     - DymolaAPI configuration
+    #     - Information on Dymola: Version, flags
+    #     - All loaded packages
+    #     - Total model, if save_total_model = True
+    #     - FMU, if export_fmu = True
+    #     :param bool save_total_model:
+    #         True to save the total model
+    #     :param bool export_fmu:
+    #         True to export the FMU of the current model.
+    #     """
+    #     # Local import to require git-package only when called
+    #     from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
+    #
+    #     if files is None:
+    #         files = []
+    #     # DymolaAPI Info:
+    #     files.append(ReproductionFile(
+    #         filename="Dymola/DymolaAPI_config.json",
+    #         content=json.dumps(self.to_dict(), indent=2)
+    #     ))
+    #     # Dymola info:
+    #     self.dymola.ExecuteCommand("list();")
+    #     _flags = self.dymola.getLastErrorLog()
+    #     dymola_info = [
+    #         self.dymola.ExecuteCommand("DymolaVersion()"),
+    #         str(self.dymola.ExecuteCommand("DymolaVersionNumber()")),
+    #         "\n\n"
+    #     ]
+    #     files.append(ReproductionFile(
+    #         filename="Dymola/DymolaInfo.txt",
+    #         content="\n".join(dymola_info) + _flags
+    #     ))
+    #
+    #     # Packages
+    #     packages = self.get_packages()
+    #     package_infos = []
+    #     for pack_path in packages:
+    #
+    #         for pack_dir_parent in [pack_path] + list(pack_path.parents):
+    #             repo_info = get_git_information(
+    #                 path=pack_dir_parent,
+    #                 zip_folder_path="Dymola"
+    #             )
+    #             if not repo_info:
+    #                 continue
+    #
+    #             files.extend(repo_info.pop("difference_files"))
+    #             pack_path = str(pack_path) + "; " + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
+    #             break
+    #         package_infos.append(str(pack_path))
+    #     files.append(ReproductionFile(
+    #         filename="Dymola/Modelica_packages.txt",
+    #         content="\n".join(package_infos)
+    #     ))
+    #     # Total model
+    #     if save_total_model:
+    #         _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
+    #         _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
+    #         os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
+    #         res = self.dymola.saveTotalModel(
+    #             fileName=str(_total_model),
+    #             modelName=self.model_name
+    #         )
+    #         if res:
+    #             files.append(ReproductionFile(
+    #                 filename=_total_model_name,
+    #                 content=_total_model.read_text()
+    #             ))
+    #             os.remove(_total_model)
+    #         else:
+    #             self.logger.error("Could not save total model: %s",
+    #                               self.dymola.getLastErrorLog())
+    #     # FMU
+    #     if export_fmu:
+    #         _fmu_path = self._save_to_fmu(fail_on_error=False)
+    #         if _fmu_path is not None:
+    #             files.append(CopyFile(
+    #                 sourcepath=_fmu_path,
+    #                 filename="Dymola/" + _fmu_path.name,
+    #                 remove=True
+    #             ))
+    #
+    #     return super().save_for_reproduction(
+    #         title=title,
+    #         path=path,
+    #         files=files
+    #     )
+
+    def _save_to_fmu(self, fail_on_error):
+        """Save model as an FMU"""
+        res = self.dymola.translateModelFMU(
+            modelToOpen=self.model_name,
+            storeResult=False,
+            modelName='',
+            fmiVersion='2',
+            fmiType='all',
+            includeSource=False,
+            includeImage=0
+        )
+        if not res:
+            msg = "Could not export fmu: %s" % self.dymola.getLastErrorLog()
+            self.logger.error(msg)
+            if fail_on_error:
+                raise Exception(msg)
+        else:
+            path = pathlib.Path(self.cd).joinpath(res + ".fmu")
+            return path
 
     @staticmethod
     def _make_modelica_normpath(path):

@@ -91,6 +91,11 @@ def main(
     table_name = "myCustomInput"
     # 4. Enter the fileName where you want to store your input. This can be any filepath.
     # For this tutorial to work, set
+    # 5. Last, add a parameter in the model to ensure the simulation works without tuning any parameter.
+    # Sadly, this is a requirement. Models with parameters do not require this feature. As this model has
+    # no parameters, it's required. Go into the text-section and add:
+    # 'parameter Real n=1;'.
+
     # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
     file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     # This input generate is re-used from the fmu_example.py file.
@@ -164,10 +169,17 @@ def main(
     if with_plot:
         plt.show()
 
+    # Save the data for later reproduction  # todo: activate once merged
+    file = dym_api.save_for_reproduction(
+        title="MyDymolaStudy",
+        files=[result_sp, result_sp_2]
+    )
+    print("ZIP-File to reproduce all this:", file)
+
 
 if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
         aixlib_mo=r"D:\02_workshop\AixLib\AixLib\package.mo",
-        n_cpu=2
+        n_cpu=5
     )
