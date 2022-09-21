@@ -241,7 +241,7 @@ class TestFMUAPI(PartialTestSimAPI):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         super().setUp()
-        if self.__class__ == PartialTestDymolaAPI:
+        if self.__class__ == PartialTestDymolaAPI:  # TODO: Review: self.__class__ == TestFMUAPI ???
             self.skipTest("Just a partial class")
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
@@ -270,6 +270,30 @@ class TestFMUAPIMultiCore(TestFMUAPI):
     """Test-Class for the FMU_API class on multi core"""
 
     n_cpu = 2
+
+
+class TestFMUAPI_Discrete(PartialTestSimAPI):
+    """Test-Class for the FMUAPI class."""
+
+    def setUp(self):
+        """Called before every test.
+        Used to setup relevant paths and APIs etc."""
+        super().setUp()
+        if "win" in sys.platform:
+            model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
+        else:
+            model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
+        config = {
+                    'file_path': model_name,
+                    'cd': self.example_sim_dir
+            }
+        self.sim_api = fmu.FMU_Discrete(config)
+
+    def test_close(self):
+        """Test close functionality of fmu api"""
+        # pylint: disable=protected-access
+        self.sim_api.close()
+        self.assertTrue(self.sim_api._unzip_dir is None)
 
 
 if __name__ == "__main__":

@@ -249,3 +249,32 @@
 19.09.2022-12:54:07 INFO FMU_Discrete: Simulation of FMU 'ThermalZone_bus' finished
 19.09.2022-12:54:07 INFO FMU_Discrete: Closing fmu ThermalZone_bus 
 19.09.2022-12:54:07 INFO FMU_Discrete: Closing fmu PI_1_bus 
+21.09.2022-11:21:53 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+21.09.2022-11:21:53 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+21.09.2022-11:21:54 INFO FMU_Discrete: Reading model variables
+21.09.2022-11:21:54 INFO FMU_Discrete: Instantiating fmu for worker 0
+21.09.2022-11:21:54 INFO FMU_Discrete: FMU 'ThermalZone_bus' initialized for discrete simulation
+21.09.2022-11:21:54 INFO FMU_Discrete: Starting simulation of FMU 'ThermalZone_bus'
+21.09.2022-11:21:54 INFO FMU_Discrete: Simulation of FMU 'ThermalZone_bus' finished
+21.09.2022-11:21:54 INFO FMU_Discrete: Closing fmu ThermalZone_bus 
+21.09.2022-11:21:54 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+21.09.2022-11:21:54 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+21.09.2022-11:21:55 INFO FMU_Discrete: Reading model variables
+21.09.2022-11:21:55 INFO FMU_Discrete: Instantiating fmu for worker 0
+21.09.2022-11:21:55 WARNING FMU_Discrete: Variables 'bus.setPoint' are no 'inputs' in model 'C:\Users\kbees\Desktop\ebcpy\ebcpy\examples\data\ThermalZone_bus.fmu'. Will most probably trigger an error when simulating or being ignored.
+21.09.2022-11:21:55 INFO FMU_Discrete: FMU 'ThermalZone_bus' initialized for discrete simulation
+21.09.2022-11:21:55 INFO FMU_Discrete: Starting simulation of FMU 'ThermalZone_bus'
+21.09.2022-11:22:01 INFO FMU_Discrete: Simulation of FMU 'ThermalZone_bus' finished
+21.09.2022-11:22:01 INFO FMU_Discrete: FMU 'ThermalZone_bus' initialized for discrete simulation
+21.09.2022-11:22:01 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+21.09.2022-11:22:01 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+21.09.2022-11:22:01 INFO FMU_Discrete: Reading model variables
+21.09.2022-11:22:01 INFO FMU_Discrete: Instantiating fmu for worker 0
+21.09.2022-11:22:01 WARNING FMU_Discrete: Variables 'bus.disturbance[1]' are no 'inputs' in model 'C:\Users\kbees\Desktop\ebcpy\ebcpy\examples\data\PI_1_bus.fmu'. Will most probably trigger an error when simulating or being ignored.
+21.09.2022-11:22:01 INFO FMU_Discrete: FMU 'PI_1_bus' initialized for discrete simulation
+21.09.2022-11:22:01 INFO FMU_Discrete: Starting simulation of FMU 'PI_1_bus'
+21.09.2022-11:22:01 INFO FMU_Discrete: Starting simulation of FMU 'ThermalZone_bus'
+21.09.2022-11:22:10 INFO FMU_Discrete: Simulation of FMU 'PI_1_bus' finished
+21.09.2022-11:22:10 INFO FMU_Discrete: Simulation of FMU 'ThermalZone_bus' finished
+21.09.2022-11:22:10 INFO FMU_Discrete: Closing fmu ThermalZone_bus 
+21.09.2022-11:22:11 INFO FMU_Discrete: Closing fmu PI_1_bus 
