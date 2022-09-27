@@ -64,6 +64,44 @@ class PartialTestSimAPI(unittest.TestCase):
         if self.__class__ == PartialTestSimAPI:
             self.skipTest("Just a partial class")
 
+    def test_set_cd(self):
+        """Test set_cd functionality of dymola api"""
+        # Test the setting of the function
+        self.sim_api.set_cd(self.data_dir)
+        self.assertEqual(self.data_dir, self.sim_api.cd)
+
+    def test_set_sim_setup(self):
+        """Test set_sim_setup functionality of fmu api"""
+        self.sim_api.set_sim_setup(sim_setup=self.new_sim_setup)
+        for key, value in self.new_sim_setup.items():
+            self.assertEqual(self.sim_api.sim_setup.dict()[key],
+                             value)
+        with self.assertRaises(ValidationError):
+            self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
+        with self.assertRaises(ValidationError):
+            self.sim_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
+
+    def tearDown(self):
+        """Delete all files created while testing"""
+
+        try:
+            self.sim_api.close()
+        except AttributeError:
+            pass
+        try:
+            shutil.rmtree(self.example_sim_dir)
+        except (FileNotFoundError, PermissionError):
+            pass
+
+
+class PartialTestSimAPI_Continuous(PartialTestSimAPI):
+    """Extends the partial base class for simulation apis to specify for continuous simulation"""
+
+    def setUp(self) -> None:
+        super().setUp()
+        if self.__class__ == PartialTestSimAPI_Continuous:
+            self.skipTest("Just a partial class")
+
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
         self.sim_api.set_sim_setup({"start_time": 0.0,
@@ -128,37 +166,8 @@ class PartialTestSimAPI(unittest.TestCase):
                 self.assertTrue(os.path.isfile(r))
                 self.assertIsInstance(r, str)
 
-    def test_set_cd(self):
-        """Test set_cd functionality of dymola api"""
-        # Test the setting of the function
-        self.sim_api.set_cd(self.data_dir)
-        self.assertEqual(self.data_dir, self.sim_api.cd)
 
-    def test_set_sim_setup(self):
-        """Test set_sim_setup functionality of fmu api"""
-        self.sim_api.set_sim_setup(sim_setup=self.new_sim_setup)
-        for key, value in self.new_sim_setup.items():
-            self.assertEqual(self.sim_api.sim_setup.dict()[key],
-                             value)
-        with self.assertRaises(ValidationError):
-            self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
-        with self.assertRaises(ValidationError):
-            self.sim_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
-
-    def tearDown(self):
-        """Delete all files created while testing"""
-
-        try:
-            self.sim_api.close()
-        except AttributeError:
-            pass
-        try:
-            shutil.rmtree(self.example_sim_dir)
-        except (FileNotFoundError, PermissionError):
-            pass
-
-
-class PartialTestDymolaAPI(PartialTestSimAPI):
+class PartialTestDymolaAPI(PartialTestSimAPI_Continuous):
 
     n_cpu = None
 
@@ -270,7 +279,7 @@ class TestDymolaAPISingleCore(PartialTestDymolaAPI):
     n_cpu = 1
 
 
-class TestFMUAPI(PartialTestSimAPI):
+class TestFMUAPI(PartialTestSimAPI_Continuous):
     """Test-Class for the FMUAPI class."""
 
     n_cpu = None
@@ -311,7 +320,7 @@ class TestFMUAPIMultiCore(TestFMUAPI):
 
 
 class TestFMUAPI_Discrete(PartialTestSimAPI):
-    """Test-Class for the FMUAPI class."""
+    """Test-Class for the discrete fmu simulation api class."""
 
     def setUp(self):
         """Called before every test.

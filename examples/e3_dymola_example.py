@@ -170,11 +170,11 @@ def main(
         plt.show()
 
     # Save the data for later reproduction  # todo: activate once merged
-    file = dym_api.save_for_reproduction(
-        title="MyDymolaStudy",
-        files=[result_sp, result_sp_2]
-    )
-    print("ZIP-File to reproduce all this:", file)
+    # file = dym_api.save_for_reproduction(
+    #     title="MyDymolaStudy",
+    #     files=[result_sp, result_sp_2]
+    # )
+    # print("ZIP-File to reproduce all this:", file)
 
 
 if __name__ == '__main__':

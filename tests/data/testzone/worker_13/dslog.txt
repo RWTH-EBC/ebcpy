@@ -1,5 +1,5 @@
 Log-file of program ./dymosim
-(generated: Tue Sep 27 11:12:44 2022)
+(generated: Tue Sep 27 11:14:04 2022)
 
 dymosim started
 ... "TestModelVariables" simulating

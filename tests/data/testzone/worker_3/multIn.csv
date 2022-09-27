@@ -1,2 +1,2 @@
-test_real;test_int;test_bool;test_enum
-10;5;0;2
+test_bool
+1

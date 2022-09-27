@@ -1,3 +1,3 @@
 test_out;test_real;test_int;test_bool;test_enum;test_out;test_local;Time
-5;10;5;0;2;5;0;0
-5;10;5;0;2;5;0;1
+-50;50;1;1;3;-50;100;0
+-50;50;1;1;3;-50;100;1

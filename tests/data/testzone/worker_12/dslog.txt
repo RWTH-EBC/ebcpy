@@ -1,0 +1,39 @@
+Log-file of program ./dymosim
+(generated: Tue Sep 27 11:13:43 2022)
+
+dymosim started
+... "TestModelVariables" simulating
+... "dsin.txt" loading (dymosim input file)
+... "dsu.txt" loading (input signals u)
+
+... Warning message from dymosim
+The following model input signals are assumed to be at their start-value during
+simulation, since file "dsu.txt" could not be opened
+(No such file or directory):
+   test_inp
+
+... "resultFile.mat" creating (simulation result file)
+
+Integration started at T = 0 using integration method DASSL
+(DAE multi-step solver (dassl/dasslrt of Petzold modified by Dassault Systemes))
+
+Integration terminated successfully at T = 10
+   CPU-time for integration                : 0.001 seconds
+   CPU-time for one grid interval          : 0.1 milliseconds
+   CPU-time for initialization             : 0 seconds
+   Number of result points                 : 11
+   Number of grid points                   : 11
+   Number of accepted steps                : 14
+   Number of f-evaluations (dynamics)      : 14
+   Number of Jacobian-evaluations          : 13
+   Number of model time events             : 0
+   Number of input time events             : 0
+   Number of state events                  : 0
+   Number of step events                   : 0
+   Minimum integration stepsize            : 0.001
+   Maximum integration stepsize            : 4.1
+   Maximum integration order               : 1
+Calling terminal section
+... "dsfinal.txt" creating (final states)
+
+SUCCESSFUL simulation of TestModelVariables

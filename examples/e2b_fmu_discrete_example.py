@@ -471,5 +471,5 @@ if __name__ == '__main__':
     main(
         log_fmu=True,
         with_plot=True,
-        n_days=2
+        n_days=1
     )

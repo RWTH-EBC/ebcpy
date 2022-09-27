@@ -1,0 +1,24 @@
+27.09.2022-11:15:03 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+27.09.2022-11:15:03 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+27.09.2022-11:15:03 INFO FMU_Discrete: Instantiating fmu for worker 0
+27.09.2022-11:15:03 INFO FMU_Discrete: Closing fmu PumpAndValve_windows 
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: The following error was detected at time: 0
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+27.09.2022-11:15:03 ERROR FMU_Discrete: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+27.09.2022-11:15:03 ERROR FMU_Discrete: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+27.09.2022-11:15:03 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+27.09.2022-11:15:03 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+27.09.2022-11:15:03 INFO FMU_Discrete: Instantiating fmu for worker 0
+27.09.2022-11:15:03 INFO FMU_Discrete: Closing fmu PumpAndValve_windows 
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: The following error was detected at time: 0
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+27.09.2022-11:15:03 ERROR FMU_Discrete: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+27.09.2022-11:15:03 ERROR FMU_Discrete: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).
+27.09.2022-11:15:03 INFO FMU_Discrete: -------------------------Initializing class FMU_Discrete-------------------------
+27.09.2022-11:15:03 INFO FMU_Discrete: Extracting fmu and reading fmu model description
+27.09.2022-11:15:03 INFO FMU_Discrete: Instantiating fmu for worker 0
+27.09.2022-11:15:03 INFO FMU_Discrete: Closing fmu PumpAndValve_windows 
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: The following error was detected at time: 0
+27.09.2022-11:15:03 ERROR FMU_Discrete: Error: Scalar system is always singular, it may be possible to evaluate parameters to avoid this, for valve.Kv = ((if valve.LinearCharacteristic then valve.kv0+(1-valve.kv0)*valve.yLim/valve.y1 else valve.kv0*exp(log(1/valve.kv0)*valve.yLim/valve.y1)))/(1.0/valve.Kv1) = 0.1/0
+27.09.2022-11:15:03 ERROR FMU_Discrete: fmi2Terminate: calling terminal section of dsblock_ failed, QiErr = 1
+27.09.2022-11:15:03 ERROR FMU_Discrete: Could not terminate fmu instance: fmi2Terminate failed with status 3 (error).

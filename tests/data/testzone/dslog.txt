@@ -1,7 +1,0 @@
-Log-file of program .\dymosim.exe
-(generated: Mon Sep 12 10:02:28 2022)
-
-dymosim.exe started
-... "TestModelVariables"
-... "dsu.txt" loading (input signals u)
-... "dsin.txt" creating (dymosim input file).
