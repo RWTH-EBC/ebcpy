@@ -474,7 +474,7 @@ class TimeSeriesData(pd.DataFrame):
         self.loc[:, (variable, new_tag)] = result
 
     def moving_average(self, window, variable,
-                       tag=None, new_tag="low_pass_filter"):
+                       tag=None, new_tag="moving_average"):
         """
         Call to the preprocessing function
         ebcpy.preprocessing.moving_average()

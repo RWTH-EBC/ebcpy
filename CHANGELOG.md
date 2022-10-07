@@ -59,3 +59,6 @@
    - Add parallelization option for optimization backends
 - v0.3.1:
   - Avoid DType Warning #53
+- v0.3.2:
+  - Correct bounds for simulation Variables #56
+  - Add script to reproduce simulation studies and store info in an archive #27

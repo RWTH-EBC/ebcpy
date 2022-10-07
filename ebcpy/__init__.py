@@ -6,4 +6,4 @@ from .data_types import TimeSeriesData, TimeSeries
 from .simulationapi.fmu import FMU_API, FMU_Discrete
 from .simulationapi.dymola import DymolaAPI
 
-__version__ = '0.3.1'
+__version__ = '0.3.2'

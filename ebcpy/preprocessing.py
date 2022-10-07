@@ -134,7 +134,7 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     # Convert strings to numeric values.
     old_index = pd.to_numeric(old_index)
     # Convert to seconds.
-    old_index *= _unit_factor_to_seconds
+    old_index /= _unit_factor_to_seconds
     # Alter the index
     df.index = pd.to_datetime(old_index, unit="s", origin=origin)
 
