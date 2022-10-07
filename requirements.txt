@@ -7,6 +7,6 @@ scikit-learn>=0.24.2
 fmpy>=0.2.27
 openpyxl>=3.0.5
 xlrd>=2.0.1
-pymoo==0.4.2
+pymoo==0.5.0
 pydantic>=1.8.2
 h5py>=3.1.0
