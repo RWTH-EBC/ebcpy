@@ -20,8 +20,7 @@ from ebcpy.simulationapi.config import ExperimentConfigFMU_Continuous, Simulatio
 from ebcpy.simulationapi.config import ExperimentConfigFMU_Discrete, SimulationSetupFMU_Discrete
 from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationSetupClass
 from ebcpy.utils.interpolation import interp_df
-# from ebcpy.utils.reproduction import CopyFile  # todo: activate once merged
-
+from ebcpy.utils.reproduction import CopyFile
 
 class FMU:
     """
@@ -465,27 +464,28 @@ class FMU_API(FMU, ContinuousSimulation):
         FMU_API._unzip_dir = None
         FMU_API._fmu_instance = None
 
-    # def save_for_reproduction(self,  # todo: activate and locate once merged
-    #                           title: str,
-    #                           path: pathlib.Path = None,
-    #                           files: list = None,
-    #                           **kwargs):
-    #     """
-    #     Additionally to the basic reproduction, add info
-    #     for FMU files.
-    #     """
-    #     if files is None:
-    #         files = []
-    #     files.append(CopyFile(
-    #         filename="FMU/" + pathlib.Path(self.model_name).name,
-    #         sourcepath=pathlib.Path(self.model_name),
-    #         remove=False
-    #     ))
-    #     return super().save_for_reproduction(
-    #         title=title,
-    #         path=path,
-    #         files=files
-    #     )
+    def save_for_reproduction(self,
+                              title: str,
+                              path: pathlib.Path = None,
+                              files: list = None,
+                              **kwargs):
+        """
+        Additionally to the basic reproduction, add info
+        for FMU files.
+        """
+        if files is None:
+            files = []
+        files.append(CopyFile(
+            filename="FMU/" + pathlib.Path(self.model_name).name,
+            sourcepath=pathlib.Path(self.model_name),
+            remove=False
+        ))
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )
 
 
 class FMU_Discrete(FMU, DiscreteSimulation):
@@ -767,3 +767,26 @@ class FMU_Discrete(FMU, DiscreteSimulation):
                            unzip_dir=self._unzip_dir)
         self._unzip_dir = None
         self._fmu_instance = None
+
+    def save_for_reproduction(self,  # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study
+                              title: str,
+                              path: pathlib.Path = None,
+                              files: list = None,
+                              **kwargs):
+        """
+        Additionally to the basic reproduction, add info
+        for FMU files.
+        """
+        if files is None:
+            files = []
+        files.append(CopyFile(
+            filename="FMU/" + pathlib.Path(self.model_name).name,
+            sourcepath=pathlib.Path(self.model_name),
+            remove=False
+        ))
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )

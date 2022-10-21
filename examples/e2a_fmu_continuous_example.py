@@ -150,13 +150,8 @@ def main(
     if with_plot:
         plt.show()
     # Save the data for later reproduction
-    file = fmu_api.save_for_reproduction(title="FMUTest")
+    file = fmu_api.save_for_reproduction(title="FMUTest", log_message="example log message")
     print("ZIP-File to reproduce all this:", file)
-
-    # # Save the data for later reproduction  # todo: activate once merged
-    # file = fmu_api.save_for_reproduction(title="FMUTest")
-    # print("ZIP-File to reproduce all this:", file)
-
 
 if __name__ == '__main__':
     main(

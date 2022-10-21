@@ -466,7 +466,6 @@ def main(
     # In case you experience oscillating signals, check if the sampling time
     # (communication step size) is appropriate for the controller settings (also within the controller fmu).
 
-
 if __name__ == '__main__':
     main(
         log_fmu=True,

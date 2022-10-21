@@ -75,8 +75,8 @@ def main(with_plot=True):
 
 
 if __name__ == '__main__':
-    # from ebcpy.utils import reproduction  # todo: activate once merged
+    from ebcpy.utils import reproduction
     main()
-    # reproduction.save_reproduction_archive(title="log-testing") # todo: activate once merged
+    reproduction.save_reproduction_archive(title="log-testing", log_message='insert custom message here')
 
 

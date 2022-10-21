@@ -19,7 +19,7 @@ import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.simulationapi.config import SimulationSetupClass, ExperimentConfigurationClass
 from ebcpy.simulationapi.config import SimulationSetup, ExperimentConfiguration
-# from ebcpy.utils.reproduction import save_reproduction_archive  # TODO: Activate once merged
+from ebcpy.utils.reproduction import save_reproduction_archive
 
 class Variable(BaseModel):
     """
@@ -294,34 +294,35 @@ class Model:
         raise NotImplementedError(f'{self.__class__.__name__}.close '
                                   f'function is not defined')
 
-    # def save_for_reproduction(self,  # TODO: Activate and locate once merged
-    #                           title: str,
-    #                           path: pathlib.Path = None,
-    #                           files: list = None,
-    #                           **kwargs):
-    #     """
-    #     Save the settings of the SimulationAPI in order to
-    #     reproduce the settings of the used simulation.
-    #     Should be extended by child-classes to allow custom
-    #     saving.
-    #     :param str title:
-    #         Title of the study
-    #     :param pathlib.Path path:
-    #         Where to store the .zip file. If not given, self.cd is used.
-    #     :param list files:
-    #         List of files to save along the standard ones.
-    #         Examples would be plots, tables etc.
-    #     :param dict kwargs:
-    #         All keyword arguments except files and path of the function
-    #         save_reproduction_archive
-    #     """
-    #     if path is None:
-    #         path = self.cd
-    #     return save_reproduction_archive(
-    #         title=title,
-    #         path=path,
-    #         files=files
-    #     )
+    def save_for_reproduction(self,
+                              title: str,
+                              path: pathlib.Path = None,
+                              files: list = None,
+                              **kwargs):
+        """
+        Save the settings of the SimulationAPI in order to
+        reproduce the settings of the used simulation.
+        Should be extended by child-classes to allow custom
+        saving.
+        :param str title:
+            Title of the study
+        :param pathlib.Path path:
+            Where to store the .zip file. If not given, self.cd is used.
+        :param list files:
+            List of files to save along the standard ones.
+            Examples would be plots, tables etc.
+        :param dict kwargs:
+            All keyword arguments except files and path of the function
+            save_reproduction_archive
+        """
+        if path is None:
+            path = self.cd
+        return save_reproduction_archive(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )
 
 
 class ContinuousSimulation(Model):
