@@ -602,6 +602,25 @@ class FMU_Discrete(FMU, DiscreteSimulation):
                   'Setter method can still be used to set input data to "input_table" attribute')
             self._input_table = None
 
+    def read_variables(self, vrs_list: list):
+        """
+        Extends the read_variables() function of the FMU class by
+        adding the current time to the results read from the fmu.
+
+        Reads multiple variable values
+        :param list vrs_list:
+            List of variables to be read from FMU
+        :return:
+            Dict: Dictionary with requested variables and their values + the current time
+        """
+
+        res = super().read_variables(vrs_list)
+
+        # add current time
+        res['SimTime'] = self.current_time
+
+        return res
+
     # TODO: Review: Does it make sense to distinguish between parameter and init value?
     def initialize_discrete_sim(self,
                                 parameters: dict = None,
