@@ -138,7 +138,8 @@ class ExperimentConfiguration(BaseModel):
     """
     pydantic BaseModel child to define a full simulation configuration
     """
-    cd: Optional[DirectoryPath]
+    cd: Optional[DirectoryPath]  # Dirpath of the fmu or the current working directory of dymola
+    sim_setup: Optional[SimulationSetup]
 
     class Config:
         """Overwrite default pydantic Config"""
@@ -171,8 +172,8 @@ class ExperimentConfigDymola(ExperimentConfiguration):
     Add's custom parameters for simulating Dymola models
     to the basic `ExperimentConfiguration`
     """
-    packages: Optional[List[FilePath]]
-    model_name: Optional[str]
+    packages: Optional[List[FilePath]]  # List with path's to the packages needed to simulate the mode
+    model_name: Optional[str]  # Name of the model to be simulated
     sim_setup: Optional[SimulationSetupDymola]
 
 

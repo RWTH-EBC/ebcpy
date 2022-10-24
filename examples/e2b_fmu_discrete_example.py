@@ -19,14 +19,12 @@ import matplotlib.pyplot as plt
 import math
 # Imports from ebcpy
 from ebcpy import FMU_Discrete
-# import for python controller
-import time
 
 
 # python PID controller
 class PID:
     """
-        PID controlleR
+        PID controller
         :param kp:
             Gain
         :param ti:
@@ -375,8 +373,8 @@ def main(
 
     # ####################### Instantiate and Initialize system and controller FMU ################
     # re-initializing the system fmu resets the results (the same instance as before is used)
-    system.initialize_discrete_sim(parameters={'T_start': t_start},
-                                   init_values={'bus.disturbance[1]': t_start_amb})
+    system.initialize_discrete_sim(parameters={'T_start': t_start})#,
+                                   #init_values={'bus.disturbance[1]': t_start_amb})
 
     # A controller FMU is used alternatively to the python controller
     # This time the input data is set in the configuration using the generated .csv-file

@@ -7,7 +7,7 @@ import logging
 import pathlib
 import shutil
 import atexit
-from typing import List, Union
+from typing import List, Union, Optional
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import FilePath
@@ -22,18 +22,23 @@ from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationS
 from ebcpy.utils.interpolation import interp_df
 from ebcpy.utils.reproduction import CopyFile
 
+
 class FMU:
     """
     Base class for simulation using the fmpy library and
     a functional mockup interface as a model input.
     This class has to be inherited besides the Model base class.
 
+    :param str file_path:
+        File path to the fmu file.
+    :param str cd:
+        Working directory in which the fmu files are extracted.
     :param log_fmu:
          Whether to print fmu messages or not.
     """
 
     _fmu_instance = None
-    _unzip_dir: str = None
+    _unzip_dir: Optional[str] = None
 
     def __init__(self, file_path: str, cd: str, log_fmu: bool = True):
         self._unzip_dir = None
@@ -49,10 +54,10 @@ class FMU:
         else:
             self.cd = os.path.dirname(path)
         self.log_fmu = log_fmu
-        self._var_refs: dict = None  # Dict of variables and their references
+        self._var_refs: Optional[dict] = None  # Dict of variables and their references
         self._model_description = None
         self._fmi_type = None
-        self._single_unzip_dir: str = None
+        self._single_unzip_dir: Optional[str] = None
         # Placeholders for variables that are required by subclass
         # TODO: Review: Discuss how to deal best with usage of variables in FMU class that are defined in sub-class
         self.logger = None
@@ -216,7 +221,7 @@ class FMU:
 
     def _setup_single_fmu_instance(self, use_mp):
         if use_mp:
-            wrk_idx = self.worker_idx
+            wrk_idx = self.worker_idx  # todo
             if self._fmu_instance is not None:
                 return True
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
@@ -306,7 +311,7 @@ class FMU_API(FMU, ContinuousSimulation):
     }
 
     # TODO: Review: n_cpu and log_fmu in config?
-    def __init__(self, config, n_cpu: int = 1, log_fmu: bool = True):
+    def __init__(self, config: dict, n_cpu: int = 1, log_fmu: bool = True):
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
         ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
@@ -621,9 +626,9 @@ class FMU_Discrete(FMU, DiscreteSimulation):
 
         # check if input valid
         if parameters is not None:
-            self.check_unsupported_variables(parameters.keys(), "parameters")
+            self.check_unsupported_variables(list(parameters.keys()), "parameters")
         if init_values is not None:
-            self.check_unsupported_variables(init_values.keys(), "variables")
+            self.check_unsupported_variables(list(init_values.keys()), "variables")
 
         # Reset FMU instance
         self._fmu_instance.reset()
@@ -708,7 +713,7 @@ class FMU_Discrete(FMU, DiscreteSimulation):
         """
         # check for unsupported input
         if input_step is not None:
-            self.check_unsupported_variables(input_step.keys(), 'inputs')
+            self.check_unsupported_variables(list(input_step.keys()), 'inputs')
         # collect inputs
         # get input from input table (overwrite with specific input for single step)
         single_input = {}

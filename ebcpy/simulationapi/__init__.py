@@ -10,9 +10,8 @@ import os
 import itertools
 import pathlib
 import warnings
-from typing import Union
-from typing import Dict, Any, List
-from abc import abstractmethod
+from typing import Union, Dict, Any, List
+from abc import ABC, abstractmethod
 import multiprocessing as mp
 from pydantic import BaseModel, Field, validator
 import numpy as np
@@ -20,6 +19,7 @@ from ebcpy.utils import setup_logger
 from ebcpy.simulationapi.config import SimulationSetupClass, ExperimentConfigurationClass
 from ebcpy.simulationapi.config import SimulationSetup, ExperimentConfiguration
 from ebcpy.utils.reproduction import save_reproduction_archive
+
 
 class Variable(BaseModel):
     """
@@ -36,7 +36,7 @@ class Variable(BaseModel):
     )
     max: Any = Field(
         default=None,
-        title='min',
+        title='max',
         description='Maximal value (upper bound) of the variables value. '
                     'Only for ints and floats variables.'
     )
@@ -44,6 +44,7 @@ class Variable(BaseModel):
         default=None,
         title='min',
         description='Minimal value (lower bound) of the variables value'
+                    'Only for ints and floats variables.'
     )
 
     @validator("value")
@@ -80,19 +81,19 @@ class Variable(BaseModel):
         return np.inf if _type != bool else True
 
 
-class Model:
+class Model(ABC):
     """
     Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the basic model structure.
 
-    :param model_name:
+    :param str model_name:
         Name of the model being simulated.
     """
 
     _sim_setup_class: SimulationSetupClass = SimulationSetup
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfiguration
 
-    def __init__(self, model_name):
+    def __init__(self, model_name: str):
         # initialize sim setup with class default
         self._sim_setup = self._sim_setup_class()
         # update sim setup if given in config; if not update config
@@ -327,8 +328,8 @@ class Model:
 
 class ContinuousSimulation(Model):
     """
-    Simulation apis for continuous simulations must inherit from ContinuousSimulation class.
-    It includes methods for multi-processing
+    Base class for continuous simulation. .
+    It includes methods for multi-processing.
 
     :param str model_name:
         Name of the model being simulated
@@ -344,7 +345,7 @@ class ContinuousSimulation(Model):
         'pool',
     ]
 
-    def __init__(self, model_name, n_cpu: int = 1):
+    def __init__(self, model_name: str, n_cpu: int = 1):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
@@ -545,7 +546,7 @@ class ContinuousSimulation(Model):
 
 class DiscreteSimulation(Model):
     """
-    Simulation apis for discrete simulations must inherit from DiscreteSimulation class.
+    Base class for discrete simulations.
     Defines abstract methods that must be implemented in sub-classes
 
     :param model_name:
@@ -553,10 +554,9 @@ class DiscreteSimulation(Model):
     def __init__(self, model_name):
         # attributes for discrete simulation
         self.current_time = None
-        self.finished = None
+        self.finished = None  # attribute indicates that stop time is reached
         self.step_count = None  # counting simulation steps
         self.sim_res_df = None  # attribute that stores simulation result
-        # pass model name to super class
         super().__init__(model_name=model_name)
 
     @abstractmethod

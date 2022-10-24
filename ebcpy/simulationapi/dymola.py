@@ -5,9 +5,9 @@ import sys
 import os
 import pathlib
 import atexit
-import json
 import shutil
 import warnings
+import json
 from typing import Union, List
 import pandas as pd
 from ebcpy import TimeSeriesData
@@ -24,12 +24,8 @@ class DymolaAPI(ContinuousSimulation):
     """
     API to a Dymola instance.
 
-    :param str,os.path.normpath cd:
-        Dirpath for the current working directory of dymola
-    :param str model_name:
-        Name of the model to be simulated
-    :param list packages:
-        List with path's to the packages needed to simulate the model
+    :param dict config:
+        Dict with configuration
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
     :keyword Boolean modify_structural_parameters:
@@ -114,7 +110,7 @@ class DymolaAPI(ContinuousSimulation):
         "dymola_version"
     ]
 
-    def __init__(self, config, n_cpu: int = 1, **kwargs):
+    def __init__(self, config: dict, n_cpu: int = 1, **kwargs):
         """Instantiate class objects."""
         self.config = self._exp_config_class.parse_obj(config)
         packages = self.config.packages
@@ -282,7 +278,7 @@ class DymolaAPI(ContinuousSimulation):
             Example:
             Changing a record in a model:
 
-            >>> sim_api.simulate(
+            >>> dym_api.simulate(
             >>>     parameters={"parameterPipe":
             >>>                 "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
             >>>     structural_parameters=["parameterPipe"])
@@ -823,108 +819,108 @@ class DymolaAPI(ContinuousSimulation):
                 valid_packages.append(pathlib.Path(pack_path).parent)
         return valid_packages
 
-    # def save_for_reproduction(  # todo: activate once merged
-    #         self,
-    #         title: str,
-    #         path: pathlib.Path = None,
-    #         files: list = None,
-    #         save_total_model: bool = True,
-    #         export_fmu: bool = True,
-    #         **kwargs
+    def save_for_reproduction(
+            self,
+            title: str,
+            path: pathlib.Path = None,
+            files: list = None,
+            save_total_model: bool = True,
+            export_fmu: bool = True,
+            **kwargs
 
-    # ):
-    #     """
-    #     Additionally to the basic reproduction, add info
-    #     for Dymola packages.
-    #     Content which is saved:
-    #     - DymolaAPI configuration
-    #     - Information on Dymola: Version, flags
-    #     - All loaded packages
-    #     - Total model, if save_total_model = True
-    #     - FMU, if export_fmu = True
-    #     :param bool save_total_model:
-    #         True to save the total model
-    #     :param bool export_fmu:
-    #         True to export the FMU of the current model.
-    #     """
-    #     # Local import to require git-package only when called
-    #     from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
-    #
-    #     if files is None:
-    #         files = []
-    #     # DymolaAPI Info:
-    #     files.append(ReproductionFile(
-    #         filename="Dymola/DymolaAPI_config.json",
-    #         content=json.dumps(self.to_dict(), indent=2)
-    #     ))
-    #     # Dymola info:
-    #     self.dymola.ExecuteCommand("list();")
-    #     _flags = self.dymola.getLastErrorLog()
-    #     dymola_info = [
-    #         self.dymola.ExecuteCommand("DymolaVersion()"),
-    #         str(self.dymola.ExecuteCommand("DymolaVersionNumber()")),
-    #         "\n\n"
-    #     ]
-    #     files.append(ReproductionFile(
-    #         filename="Dymola/DymolaInfo.txt",
-    #         content="\n".join(dymola_info) + _flags
-    #     ))
-    #
-    #     # Packages
-    #     packages = self.get_packages()
-    #     package_infos = []
-    #     for pack_path in packages:
-    #
-    #         for pack_dir_parent in [pack_path] + list(pack_path.parents):
-    #             repo_info = get_git_information(
-    #                 path=pack_dir_parent,
-    #                 zip_folder_path="Dymola"
-    #             )
-    #             if not repo_info:
-    #                 continue
-    #
-    #             files.extend(repo_info.pop("difference_files"))
-    #             pack_path = str(pack_path) + "; " + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
-    #             break
-    #         package_infos.append(str(pack_path))
-    #     files.append(ReproductionFile(
-    #         filename="Dymola/Modelica_packages.txt",
-    #         content="\n".join(package_infos)
-    #     ))
-    #     # Total model
-    #     if save_total_model:
-    #         _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
-    #         _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
-    #         os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
-    #         res = self.dymola.saveTotalModel(
-    #             fileName=str(_total_model),
-    #             modelName=self.model_name
-    #         )
-    #         if res:
-    #             files.append(ReproductionFile(
-    #                 filename=_total_model_name,
-    #                 content=_total_model.read_text()
-    #             ))
-    #             os.remove(_total_model)
-    #         else:
-    #             self.logger.error("Could not save total model: %s",
-    #                               self.dymola.getLastErrorLog())
-    #     # FMU
-    #     if export_fmu:
-    #         _fmu_path = self._save_to_fmu(fail_on_error=False)
-    #         if _fmu_path is not None:
-    #             files.append(CopyFile(
-    #                 sourcepath=_fmu_path,
-    #                 filename="Dymola/" + _fmu_path.name,
-    #                 remove=True
-    #             ))
-    #
-    #     return super().save_for_reproduction(
-    #         title=title,
-    #         path=path,
-    #         files=files,
-    #         **kwargs
-    #     )
+    ):
+        """
+        Additionally to the basic reproduction, add info
+        for Dymola packages.
+        Content which is saved:
+        - DymolaAPI configuration
+        - Information on Dymola: Version, flags
+        - All loaded packages
+        - Total model, if save_total_model = True
+        - FMU, if export_fmu = True
+        :param bool save_total_model:
+            True to save the total model
+        :param bool export_fmu:
+            True to export the FMU of the current model.
+        """
+        # Local import to require git-package only when called
+        from ebcpy.utils.reproduction import ReproductionFile, CopyFile, get_git_information
+
+        if files is None:
+            files = []
+        # DymolaAPI Info:
+        files.append(ReproductionFile(
+            filename="Dymola/DymolaAPI_config.json",
+            content=json.dumps(self.to_dict(), indent=2)
+        ))
+        # Dymola info:
+        self.dymola.ExecuteCommand("list();")
+        _flags = self.dymola.getLastErrorLog()
+        dymola_info = [
+            self.dymola.ExecuteCommand("DymolaVersion()"),
+            str(self.dymola.ExecuteCommand("DymolaVersionNumber()")),
+            "\n\n"
+        ]
+        files.append(ReproductionFile(
+            filename="Dymola/DymolaInfo.txt",
+            content="\n".join(dymola_info) + _flags
+        ))
+
+        # Packages
+        packages = self.get_packages()
+        package_infos = []
+        for pack_path in packages:
+
+            for pack_dir_parent in [pack_path] + list(pack_path.parents):
+                repo_info = get_git_information(
+                    path=pack_dir_parent,
+                    zip_folder_path="Dymola"
+                )
+                if not repo_info:
+                    continue
+
+                files.extend(repo_info.pop("difference_files"))
+                pack_path = str(pack_path) + "; " + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
+                break
+            package_infos.append(str(pack_path))
+        files.append(ReproductionFile(
+            filename="Dymola/Modelica_packages.txt",
+            content="\n".join(package_infos)
+        ))
+        # Total model
+        if save_total_model:
+            _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
+            _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
+            os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
+            res = self.dymola.saveTotalModel(
+                fileName=str(_total_model),
+                modelName=self.model_name
+            )
+            if res:
+                files.append(ReproductionFile(
+                    filename=_total_model_name,
+                    content=_total_model.read_text()
+                ))
+                os.remove(_total_model)
+            else:
+                self.logger.error("Could not save total model: %s",
+                                  self.dymola.getLastErrorLog())
+        # FMU
+        if export_fmu:
+            _fmu_path = self._save_to_fmu(fail_on_error=False)
+            if _fmu_path is not None:
+                files.append(CopyFile(
+                    sourcepath=_fmu_path,
+                    filename="Dymola/" + _fmu_path.name,
+                    remove=True
+                ))
+
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )
 
     def _save_to_fmu(self, fail_on_error):
         """Save model as an FMU"""

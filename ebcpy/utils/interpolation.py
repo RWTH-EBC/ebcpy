@@ -4,14 +4,14 @@ import pandas as pd
 import numpy as np
 
 
-def interp_df(t_act: int, df: pd.DataFrame, interpolate: bool = False, req_grid: list = None):
+def interp_df(t_act: float, df: pd.DataFrame, interpolate: bool = False, req_grid: list = None) -> dict:
     """
-    The function returns the values of the dataframe (row) at a given index.
+    Returns the values of the dataframe (row) at a given index.
     If the index is not present in the dataframe, either the next lower index
-    is chosen or values are interpolated. If the last or first index value is exceeded the
+    is chosen or values are interpolated linearly. If the last or first index value is exceeded the
     value is hold. In both cases a warning is printed.
 
-    :param int t_act:
+    :param float t_act:
         Time index of interest
     :param pd.dataFrame df:
         "Table" (pd.Dataframe) in which to lookup
