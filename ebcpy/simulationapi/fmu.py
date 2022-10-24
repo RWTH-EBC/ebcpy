@@ -60,6 +60,7 @@ class FMU:
         self._single_unzip_dir: Optional[str] = None
         # Placeholders for variables that are required by subclass
         # TODO: Review: Discuss how to deal best with usage of variables in FMU class that are defined in sub-class
+        # todo: typing, vor die
         self.logger = None
         self.inputs = None
         self.parameters = None
@@ -310,7 +311,6 @@ class FMU_API(FMU, ContinuousSimulation):
         int: np.int_
     }
 
-    # TODO: Review: n_cpu and log_fmu in config?
     def __init__(self, config: dict, n_cpu: int = 1, log_fmu: bool = True):
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
@@ -493,7 +493,7 @@ class FMU_API(FMU, ContinuousSimulation):
         )
 
 
-class FMU_Discrete(FMU, DiscreteSimulation):
+class FMUDiscrete(FMU, DiscreteSimulation):
     """
     Class for discrete/stepwise simulation using the fmpy library and
     a functional mockup interface as a model input.
@@ -506,11 +506,11 @@ class FMU_Discrete(FMU, DiscreteSimulation):
     Example:
 
     >>> import matplotlib.pyplot as plt
-    >>> from ebcpy import FMU_Discrete
+    >>> from ebcpy import FMUDiscrete
     >>> # Select any valid fmu. Replace the line below if
     >>> # you don't have this file on your device.
     >>> path = "Path to your fmu"
-    >>> fmu_api = FMU_Discrete({'file_path': path})
+    >>> fmu_api = FMUDiscrete({'file_path': path})
     >>> fmu_api.set_sim_setup({"stop_time": 3600})
     >>> # initialize FMU for discrete simulation
     >>> fmu_api.initialize_discrete_sim()
@@ -531,8 +531,8 @@ class FMU_Discrete(FMU, DiscreteSimulation):
     _exp_config_class: ExperimentConfigurationClass = ExperimentConfigFMU_Discrete
     objs = []  # to use the close_all method
 
-    def __init__(self, config, log_fmu: bool = True):
-        FMU_Discrete.objs.append(self)
+    def __init__(self, config: dict, log_fmu: bool = True):
+        FMUDiscrete.objs.append(self)
         self.config = self._exp_config_class.parse_obj(config)
         FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
         self.use_mp = False  # no mp for stepwise FMU simulation
@@ -621,7 +621,6 @@ class FMU_Discrete(FMU, DiscreteSimulation):
 
         return res
 
-    # TODO: Review: Does it make sense to distinguish between parameter and init value?
     def initialize_discrete_sim(self,
                                 parameters: dict = None,
                                 init_values: dict = None

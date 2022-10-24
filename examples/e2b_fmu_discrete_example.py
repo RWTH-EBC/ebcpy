@@ -18,7 +18,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import math
 # Imports from ebcpy
-from ebcpy import FMU_Discrete
+from ebcpy import FMUDiscrete
 
 
 # python PID controller
@@ -151,14 +151,14 @@ def main(
     file_path = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_bus.fmu")
 
     # ######### Basic FMU Handler Utilities ###########################
-    # The FMU_Discrete class includes basic FMU handler utilities
+    # The FMUDiscrete class includes basic FMU handler utilities
     # previously found in aku's fmu handler skript (E.ON ERC EBC intern)
 
     # Instantiate simulation api with config; fmu file path and working directory are compulsory
     config_dict = {'cd': cd,
                    'file_path': file_path}
 
-    tz_fmu = FMU_Discrete(config_dict)
+    tz_fmu = FMUDiscrete(config_dict)
 
     # define relevant vars_of_interest
     # often relevant quantities can be found in a signal bus in the dymola model
@@ -269,9 +269,9 @@ def main(
     # In this interval, values are set to or read from the fmu
 
     # find out supported experiment configuration options
-    print(f"Supported experiment configuration: {FMU_Discrete.get_experiment_config_fields()}")
+    print(f"Supported experiment configuration: {FMUDiscrete.get_experiment_config_fields()}")
     # find out supported simulation setup options
-    print(f"Supported simulation setup: {FMU_Discrete.get_simulation_setup_fields()}")
+    print(f"Supported simulation setup: {FMUDiscrete.get_simulation_setup_fields()}")
 
     # collect simulation setup
     setup_dict = {
@@ -289,7 +289,7 @@ def main(
     }
 
     # ################ Instantiate Simulation API for System FMU ##########################
-    system = FMU_Discrete(config_dict, log_fmu=log_fmu)
+    system = FMUDiscrete(config_dict, log_fmu=log_fmu)
     # A warning shows that no long-term input data has been set yet. It will be set later.
 
     # The model inputs are added to 'result_names' by default in addition to the outputs
@@ -388,7 +388,7 @@ def main(
 
     }
 
-    controller = FMU_Discrete(config_ctr_dict, log_fmu=log_fmu)
+    controller = FMUDiscrete(config_ctr_dict, log_fmu=log_fmu)
     controller.initialize_discrete_sim()
 
     # ############# B: Simulate System FMU Interacting with a Controller FMU ##################
@@ -411,7 +411,7 @@ def main(
     # instead of closing each FMU, all FMUs can be closed at once
     # # system.close()
     # # controller.close()
-    FMU_Discrete.close_all()
+    FMUDiscrete.close_all()
 
     # ###################### Plot Results #########################################
     cases = [results_a, results_b]

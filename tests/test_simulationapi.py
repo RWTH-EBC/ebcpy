@@ -333,7 +333,7 @@ class TestFMUAPI_Discrete(PartialTestSimAPI):
                     'file_path': model_name,
                     'cd': self.example_sim_dir
             }
-        self.sim_api = fmu.FMU_Discrete(config)
+        self.sim_api = fmu.FMUDiscrete(config)
 
     def test_close(self):
         """Test close functionality of fmu api"""

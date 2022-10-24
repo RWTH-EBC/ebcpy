@@ -786,19 +786,19 @@ class DymolaAPI(ContinuousSimulation):
         Store the most relevant information of this class
         into a dictionary. This may be used for future configuration.
 
-        :return: dict config:
+        :return: dict dym_config:
             Dictionary with keys to re-init this class.
         """
-        config = {"cd": self.cd,  # todo: review: similar name and function to new introduced experiment config
-                  "packages": self.packages,
-                  "model_name": self.model_name,
-                  "type": "DymolaAPI",
-                  }
+        dym_config = {"cd": self.cd,
+                      "packages": self.packages,
+                      "model_name": self.model_name,
+                      "type": "DymolaAPI",
+                      }
         # Update kwargs
-        config.update({kwarg: self.__dict__.get(kwarg, None)
+        dym_config.update({kwarg: self.__dict__.get(kwarg, None)
                        for kwarg in self._supported_kwargs})
 
-        return config
+        return dym_config
 
     def get_packages(self):
         """
