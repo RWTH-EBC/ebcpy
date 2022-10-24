@@ -7,6 +7,7 @@ import logging
 import pathlib
 import shutil
 import atexit
+import warnings
 from typing import List, Union, Optional
 import fmpy
 from fmpy.model_description import read_model_description
@@ -534,12 +535,15 @@ class FMUDiscrete(FMU, DiscreteSimulation):
     def __init__(self, config: dict, log_fmu: bool = True):
         FMUDiscrete.objs.append(self)
         self.config = self._exp_config_class.parse_obj(config)
+
         FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
         self.use_mp = False  # no mp for stepwise FMU simulation
         # in case of fmu: file path, in case of dym: model_name are passed
         DiscreteSimulation.__init__(self, model_name=self.config.file_path)
+
         # define input data (can be adjusted during simulation using the setter)
         # calling the setter to distinguish depending on type and filtering
+        self._input_data_on_grid = False  # if false, the input data does not cover the required grid. Need to hold or interpolate
         self.input_table = self.config.input_data
         # if false, last value of input table is hold, otherwise interpolated
         self.interp_input_table = False
@@ -597,6 +601,9 @@ class FMUDiscrete(FMU, DiscreteSimulation):
             # only consider columns in input table that refer to inputs of the FMU
             input_matches = list(set(self.inputs.keys()).intersection(set(input_table_raw.columns)))
             self._input_table = input_table_raw[input_matches]
+
+            # check if the input data satisfies the whole time grid.
+            self._check_input_data_grid()
         else:
             print('No long-term input data set! '
                   'Setter method can still be used to set input data to "input_table" attribute')
@@ -608,6 +615,7 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         adding the current time to the results read from the fmu.
 
         Reads multiple variable values
+
         :param list vrs_list:
             List of variables to be read from FMU
         :return:
@@ -737,14 +745,15 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         single_input = {}
         if self.input_table is not None:
             # extract value from input time table
-            # TODO: Review: not efficient to evaluate every step
-            sim_setup_idx = np.arange(self.sim_setup.start_time,
-                                      self.sim_setup.stop_time + self.sim_setup.comm_step_size,
-                                      self.sim_setup.comm_step_size).tolist()
-            single_input = interp_df(t_act=self.current_time,
-                                     df=self.input_table,
-                                     interpolate=self.interp_input_table,
-                                     req_grid=sim_setup_idx)
+            if self._input_data_on_grid:
+                # In the case that all indices within the required grid (req_grid) are present
+                # values can be directly accessed.
+                # There is no need to find the last available index or interpolation.
+                single_input = self.input_table.loc[self.current_time].to_dict()
+            else:
+                single_input = interp_df(t_act=self.current_time,
+                                         df=self.input_table,
+                                         interpolate=self.interp_input_table)
 
         if input_step is not None:
             # overwrite with input for step
@@ -791,7 +800,35 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         self._unzip_dir = None
         self._fmu_instance = None
 
-    def save_for_reproduction(self,  # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study
+    def _check_input_data_grid(self):
+        """
+        Checks whether the input data in the input_table attribute
+        covers the time grid specified by the sim_setup attribute.
+        """
+        if hasattr(self, "_input_table") :
+            if self.input_table is not None:
+                # time grid defined by sim_setup
+                sim_setup_idx = np.arange(self.sim_setup.start_time,
+                                          self.sim_setup.stop_time + self.sim_setup.comm_step_size,
+                                          self.sim_setup.comm_step_size).tolist()
+                if set(sim_setup_idx).issubset(set(self.input_table.index.tolist())):
+                    self._input_data_on_grid = True
+                else:
+                    self._input_data_on_grid = False
+
+    def set_sim_setup(self, sim_setup):
+        """
+        Extends the set_sim_setup method of the Model class by triggering the check,
+        whether the input data satisfies the time grid.
+
+        Updates only those entries that are given as arguments.
+        """
+
+        super().set_sim_setup(sim_setup)
+        self._check_input_data_grid()
+
+
+    def save_for_reproduction(self,  # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study; consider attribute interp_input data and input_data_on_grid
                               title: str,
                               path: pathlib.Path = None,
                               files: list = None,

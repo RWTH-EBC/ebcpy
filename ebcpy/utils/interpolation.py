@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 
-def interp_df(t_act: float, df: pd.DataFrame, interpolate: bool = False, req_grid: list = None) -> dict:
+def interp_df(t_act: float, df: pd.DataFrame, interpolate: bool = False) -> dict:
     """
     Returns the values of the dataframe (row) at a given index.
     If the index is not present in the dataframe, either the next lower index
@@ -17,22 +17,12 @@ def interp_df(t_act: float, df: pd.DataFrame, interpolate: bool = False, req_gri
         "Table" (pd.Dataframe) in which to lookup
     :param bool interpolate:
         Whether to interpolate (True) or chose the last available index (False)
-    :param list req_grid:
-        Grid of required values
     :return:
         Dict: Dictionary of column name (key) and value (value) at the selected index
     """
 
     # initialize dict that represents row in dataframe with interpolated or hold values
     row = {}
-
-    # In the case that all indices within the required grid (req_grid) are present
-    # values can be directly accessed.
-    # There is no need to find the last available index or interpolation.
-    if req_grid is not None:
-        if set(req_grid).issubset(set(df.index.tolist())):
-            row = df.loc[t_act].to_dict()
-            return row
 
     # catch values that are out of bound
     if t_act < df.index[0]:

@@ -325,8 +325,6 @@ def main(
 
     # Set the input data to the input_table property
     system.input_table = input_df
-    # alternatively pass .csv file path
-    # system.input_table = pathlib.Path(__file__).parent.joinpath("data", "ThermalZone_input.csv")
 
     # ############# Initialize System FMU for Discrete Simulation #######################
     # define initial values and parameters
