@@ -312,8 +312,10 @@ class FMU_API(FMU, ContinuousSimulation):
         int: np.int_
     }
 
-    def __init__(self, config: dict, n_cpu: int = 1, log_fmu: bool = True):
+    def __init__(self, config: Optional[dict] = None, n_cpu: int = 1, log_fmu: bool = True, **kwargs):
+        config = self._check_config(config, **kwargs)  # generate config out of outdated arguments
         self.config = self._exp_config_class.parse_obj(config)
+
         FMU.__init__(self, file_path=self.config.file_path, cd=self.config.cd, log_fmu=log_fmu)
         ContinuousSimulation.__init__(self, model_name=self.config.file_path, n_cpu=n_cpu)
         # Register exit option
@@ -492,6 +494,34 @@ class FMU_API(FMU, ContinuousSimulation):
             files=files,
             **kwargs
         )
+
+    def _check_config(self, cfg, **kwargs):
+        """
+        Checks if instead of a config dict, the user is using the outdated arguments 'cd' and 'model_name'
+        for initialization of the fmu api.
+        To provide backwards-compatibility the required config is constructed out of these arguments
+        (at least if arguments are provided with key).
+        """
+        if not cfg:
+            cd_depr = kwargs.pop('cd', None)
+            model_name_depr = kwargs.pop('model_name', None)
+            if model_name_depr is not None:
+                warnings.warn(f"Arguments 'model_name' and 'cd' will be depreciated in future versions. "
+                              f"Please use a configuration instead and consider the available fields: "
+                              f"{self.get_experiment_config_fields()}", FutureWarning)
+                if cd_depr is not None:
+                    return {'file_path': model_name_depr,
+                            'cd': cd_depr
+                            }
+                else:
+                    return {'file_path': model_name_depr
+                            }
+            else:
+                raise TypeError(f"No configuration given for instantiation. "
+                                f"Please use the 'config' argument and consider the available fields: "
+                                f"{self.get_experiment_config_fields()}")
+        else:
+            return cfg
 
 
 class FMUDiscrete(FMU, DiscreteSimulation):
@@ -808,9 +838,9 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         if hasattr(self, "_input_table") :
             if self.input_table is not None:
                 # time grid defined by sim_setup
-                sim_setup_idx = np.arange(self.sim_setup.start_time,
+                sim_setup_idx = list(np.arange(self.sim_setup.start_time,
                                           self.sim_setup.stop_time + self.sim_setup.comm_step_size,
-                                          self.sim_setup.comm_step_size).tolist()
+                                          self.sim_setup.comm_step_size))
                 if set(sim_setup_idx).issubset(set(self.input_table.index.tolist())):
                     self._input_data_on_grid = True
                 else:

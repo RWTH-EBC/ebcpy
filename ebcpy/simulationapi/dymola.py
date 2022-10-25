@@ -8,7 +8,7 @@ import atexit
 import shutil
 import warnings
 import json
-from typing import Union, List
+from typing import Union, List, Optional
 import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
@@ -84,7 +84,6 @@ class DymolaAPI(ContinuousSimulation):
     >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
     >>> dym_api = DymolaAPI(config={'cd': os.getcwd(),
     >>>                     'model_name': model_name},
-    >>>                     packages=[],
     >>>                     show_window=True)
     >>> dym_api.set_sim_setup({"start_time": 100,
     >>>                      "stop_time": 200})
@@ -110,8 +109,9 @@ class DymolaAPI(ContinuousSimulation):
         "dymola_version"
     ]
 
-    def __init__(self, config: dict, n_cpu: int = 1, **kwargs):
+    def __init__(self, config: Optional[dict] = None, n_cpu: int = 1, **kwargs):
         """Instantiate class objects."""
+        config = self._check_config(config, **kwargs)  # generate config out of outdated arguments
         self.config = self._exp_config_class.parse_obj(config)
         packages = self.config.packages
 
@@ -1144,3 +1144,34 @@ class DymolaAPI(ContinuousSimulation):
             self.sim_counter = 1
         else:
             self.sim_counter += 1
+
+    def _check_config(self, cfg, **kwargs):
+        """
+        Checks if instead of a config dict, the user is using the outdated arguments 'model_name' and 'cd' or 'packages'
+        for initialization of the dymola api.
+        To provide backwards-compatibility the required config is constructed out of these arguments
+        (at least if arguments are provided with key).
+        """
+        if not cfg:
+            cd_depr = kwargs.pop('cd', None)
+            model_name_depr = kwargs.pop('model_name', None)
+            packages_depr = kwargs.pop('packages', None)
+            if model_name_depr is not None and cd_depr is not None:
+                warnings.warn(f"Arguments 'model_name', 'cd' and 'packages' will be depreciated in future versions. "
+                              f"Please use a configuration instead and consider the available fields: "
+                              f"{self.get_experiment_config_fields()}", FutureWarning)
+                if packages_depr is not None:
+                    return {'model_name': model_name_depr,
+                            'cd': cd_depr,
+                            'packages': packages_depr
+                            }
+                else:
+                    return {'model_name': model_name_depr,
+                            'cd': cd_depr
+                            }
+            else:
+                raise TypeError(f"No configuration given for instantiation. "
+                                f"Please use the 'config' argument and consider the available fields: "
+                                f"{self.get_experiment_config_fields()}")
+        else:
+            return cfg

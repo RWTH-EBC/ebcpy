@@ -173,7 +173,7 @@ class ExperimentConfigDymola(ExperimentConfiguration):
     to the basic `ExperimentConfiguration`
     """
     packages: Optional[List[FilePath]]  # List with path's to the packages needed to simulate the mode
-    model_name: Optional[str]  # Name of the model to be simulated
+    model_name: str  # Name of the model to be simulated
     sim_setup: Optional[SimulationSetupDymola]
 
 
