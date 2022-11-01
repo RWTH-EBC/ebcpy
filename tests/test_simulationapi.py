@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import numpy as np
+import pandas as pd
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola, fmu, Variable
 from ebcpy import TimeSeriesData
@@ -102,7 +103,7 @@ class PartialTestSimAPI_Continuous(PartialTestSimAPI):
             self.skipTest("Just a partial class")
 
     def test_simulate(self):
-        """Test simulate functionality of dymola api"""
+        """Test simulate functionality of continuous simulation api"""
         self.sim_api.set_sim_setup({"start_time": 0.0,
                                     "stop_time": 10.0})
         result_names = list(self.sim_api.states.keys())[:5]
@@ -278,7 +279,7 @@ class TestDymolaAPISingleCore(PartialTestDymolaAPI):
     n_cpu = 1
 
 
-class TestFMUAPI(PartialTestSimAPI_Continuous):
+class PartialTestFMUAPI(PartialTestSimAPI_Continuous):
     """Test-Class for the FMUAPI class."""
 
     n_cpu = None
@@ -287,7 +288,7 @@ class TestFMUAPI(PartialTestSimAPI_Continuous):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         super().setUp()
-        if self.__class__ == PartialTestDymolaAPI:  # TODO: Review: self.__class__ == TestFMUAPI ???
+        if self.__class__ == PartialTestFMUAPI:
             self.skipTest("Just a partial class")
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
@@ -306,13 +307,13 @@ class TestFMUAPI(PartialTestSimAPI_Continuous):
         self.assertIsNone(self.sim_api._unzip_dir)
 
 
-class TestFMUAPISingleCore(TestFMUAPI):
+class TestFMUAPISingleCore(PartialTestFMUAPI):
     """Test-Class for the FMU_API class on single core"""
 
     n_cpu = 1
 
 
-class TestFMUAPIMultiCore(TestFMUAPI):
+class TestFMUAPIMultiCore(PartialTestFMUAPI):
     """Test-Class for the FMU_API class on multi core"""
 
     n_cpu = 2
@@ -340,6 +341,20 @@ class TestFMUAPI_Discrete(PartialTestSimAPI):
         # pylint: disable=protected-access
         self.sim_api.close()
         self.assertTrue(self.sim_api._unzip_dir is None)
+
+    def test_step(self):
+        """Test do step functionality of discrete fmu simulation api"""
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        result_names = list(self.sim_api.states.keys())[:5]
+        self.sim_api.result_names = result_names
+        self.sim_api.initialize_discrete_sim()
+        while not self.sim_api.finished:
+            self.sim_api.do_step(close_when_finished=True)
+        res = self.sim_api.sim_res_df
+        self.assertIsInstance(res, pd.DataFrame)
+        self.assertIsInstance(self.sim_api.get_results(tsd_format=True), TimeSeriesData)
+        self.assertEqual(len(res.columns), len(result_names))
 
 
 if __name__ == "__main__":
