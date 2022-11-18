@@ -73,8 +73,8 @@ def main(statistical_measure="MAE", with_plot=True):
 
     framework_methods = {
         "scipy_differential_evolution": ("best1bin", {}),
-        "scipy_minimize": ("L-BFGS-B", {"x0": [0, 0, 0]}),
-        "dlib_minimize": (None, {"num_function_calls": 1000}),
+        #"scipy_minimize": ("L-BFGS-B", {"x0": [0, 0, 0]}),
+        #"dlib_minimize": (None, {"num_function_calls": 1000}),
         "pymoo": ("NSGA2", {})
     }
 

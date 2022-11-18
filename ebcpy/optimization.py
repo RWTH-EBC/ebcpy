@@ -332,7 +332,7 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
-
+        default_kwargs.update(kwargs)
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
@@ -393,7 +393,6 @@ class Optimizer:
                                n_offsprings=n_offsprings
                                )
             else:
-                default_kwargs.update(kwargs)
                 algorithm = get_algorithm(name=method.lower(),
                                           **default_kwargs)
 
