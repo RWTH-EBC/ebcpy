@@ -8,7 +8,7 @@ import pathlib
 import shutil
 import atexit
 import warnings
-from typing import List, Union, Optional
+from typing import Dict, List, Union, Optional
 import fmpy
 from fmpy.model_description import read_model_description
 from pydantic import FilePath
@@ -59,14 +59,15 @@ class FMU:
         self._model_description = None
         self._fmi_type = None
         self._single_unzip_dir: Optional[str] = None
-        # Placeholders for variables that are required by subclass
-        # TODO: Review: Discuss how to deal best with usage of variables in FMU class that are defined in sub-class
-        # todo: typing, vor die
+        # initialize logger
         self.logger = None
-        self.inputs = None
-        self.parameters = None
-        self.outputs = None
-        self.states = None
+        # initialize model variables
+        self.inputs: Dict[str, Variable] = {}  # Inputs of model
+        self.outputs: Dict[str, Variable] = {}  # Outputs of model
+        self.parameters: Dict[str, Variable] = {}  # Parameter of model
+        self.states: Dict[str, Variable] = {}  # States of model
+        # Placeholders for variables that are required by subclass
+        # todo: self.n_cpu, self.use_mp and self.pool are not connected with FMU class
         self.n_cpu = None
         self.use_mp = None
         self.pool = None
@@ -96,9 +97,9 @@ class FMU:
 
         key = list(self._var_refs.keys())
         key_list = []
-        for i in range(len(key)):
-            if key[i].startswith(start_str):
-                key_list.append(key[i])
+        for i, k in enumerate(key):
+            if k.startswith(start_str):
+                key_list.append(k)
         return key_list
 
     def set_variables(self, var_dict: dict):
@@ -146,8 +147,6 @@ class FMU:
                 res[name] = value != 0
             else:
                 raise Exception(f"Unsupported type: {var.type}")
-
-        res['SimTime'] = self.current_time  # add current time
 
         return res
 
@@ -201,7 +200,7 @@ class FMU:
                 self.inputs[var.name] = _var_ebcpy
             elif var.causality == 'output':
                 self.outputs[var.name] = _var_ebcpy
-            elif var.causality == 'parameter' or var.causality == 'calculatedParameter':
+            elif var.causality in ('parameter', 'calculatedParameter'):
                 self.parameters[var.name] = _var_ebcpy
             elif var.causality == 'local':
                 self.states[var.name] = _var_ebcpy
@@ -223,7 +222,7 @@ class FMU:
 
     def _setup_single_fmu_instance(self, use_mp):
         if use_mp:
-            wrk_idx = self.worker_idx  # todo
+            wrk_idx = self.worker_idx
             if self._fmu_instance is not None:
                 return True
             unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
@@ -312,7 +311,11 @@ class FMU_API(FMU, ContinuousSimulation):
         int: np.int_
     }
 
-    def __init__(self, config: Optional[dict] = None, n_cpu: int = 1, log_fmu: bool = True, **kwargs):
+    def __init__(self,
+                 config: Optional[dict] = None,
+                 n_cpu: int = 1,
+                 log_fmu: bool = True,
+                 **kwargs):
         config = self._check_config(config, **kwargs)  # generate config out of outdated arguments
         self.config = self._exp_config_class.parse_obj(config)
 
@@ -513,15 +516,12 @@ class FMU_API(FMU, ContinuousSimulation):
                     return {'file_path': model_name_depr,
                             'cd': cd_depr
                             }
-                else:
-                    return {'file_path': model_name_depr
+                return {'file_path': model_name_depr
                             }
-            else:
-                raise TypeError(f"No configuration given for instantiation. "
+            raise TypeError(f"No configuration given for instantiation. "
                                 f"Please use the 'config' argument and consider the available fields: "
                                 f"{self.get_experiment_config_fields()}")
-        else:
-            return cfg
+        return cfg
 
 
 class FMUDiscrete(FMU, DiscreteSimulation):
@@ -857,8 +857,9 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         super().set_sim_setup(sim_setup)
         self._check_input_data_grid()
 
-
-    def save_for_reproduction(self,  # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study; consider attribute interp_input data and input_data_on_grid
+    # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study;
+    # todo: consider attribute interp_input data and input_data_on_grid
+    def save_for_reproduction(self,
                               title: str,
                               path: pathlib.Path = None,
                               files: list = None,

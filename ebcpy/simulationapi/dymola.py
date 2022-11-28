@@ -1165,13 +1165,10 @@ class DymolaAPI(ContinuousSimulation):
                             'cd': cd_depr,
                             'packages': packages_depr
                             }
-                else:
-                    return {'model_name': model_name_depr,
-                            'cd': cd_depr
-                            }
-            else:
-                raise TypeError(f"No configuration given for instantiation. "
+                return {'model_name': model_name_depr,
+                        'cd': cd_depr
+                        }
+            raise TypeError(f"No configuration given for instantiation. "
                                 f"Please use the 'config' argument and consider the available fields: "
                                 f"{self.get_experiment_config_fields()}")
-        else:
-            return cfg
+        return cfg

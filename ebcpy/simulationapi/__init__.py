@@ -194,8 +194,7 @@ class Model(ABC):
         """Set new model_name and trigger further functions to load parameters etc."""
         self._model_name = model_name
         # Empty all variables again.
-        # TODO: Review: review this condition, what is it for?
-        #  It would be better to get rid off worker_idx and use_mp at level of Model-class
+        # # todo: self.worker_idx and self.use_mp are not connected with Model class
         if self.use_mp:
             if self.worker_idx:
                 return
