@@ -147,6 +147,11 @@ def main(
     )
     print(result_sp_2)
 
+    # ######################### Closing ##########################
+    # Close Dymola. If you forget to do so,
+    # we call this function at the exit of your script.
+    dym_api.close()
+
     # ######################### Simulation analysis ##########################
     # Now let's load the TimeSeriesData
     tsd_1 = TimeSeriesData(result_sp)
