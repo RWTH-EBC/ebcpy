@@ -77,4 +77,6 @@ def main(with_plot=True):
 if __name__ == '__main__':
     from ebcpy.utils import reproduction
     main()
-    reproduction.save_reproduction_archive(title="log-testing")
+    reproduction.save_reproduction_archive(title="log-testing", log_message='insert custom message here')
+
+

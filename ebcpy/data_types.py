@@ -317,11 +317,10 @@ class TimeSeriesData(pd.DataFrame):
                     f"Currently only "
                     f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
                     f"are supported."
-                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"Automatic conversion to pd.DateTimeIndex failed"
                     f"see error above."
                 ) from err
         return df
-
 
     def get_variable_names(self) -> List[str]:
         """
@@ -357,8 +356,8 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_columns_by_tag(self,
                            tag: str,
-                           variables: list =None,
-                           return_type: str='pandas',
+                           variables: list = None,
+                           return_type: str = 'pandas',
                            drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.

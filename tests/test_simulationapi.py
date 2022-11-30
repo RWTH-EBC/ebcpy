@@ -7,8 +7,9 @@ import os
 from pathlib import Path
 import shutil
 import numpy as np
+import pandas as pd
 from pydantic import ValidationError
-from ebcpy.simulationapi import dymola_api, fmu, Variable
+from ebcpy.simulationapi import dymola, fmu, Variable
 from ebcpy import TimeSeriesData
 
 
@@ -63,8 +64,46 @@ class PartialTestSimAPI(unittest.TestCase):
         if self.__class__ == PartialTestSimAPI:
             self.skipTest("Just a partial class")
 
+    def test_set_cd(self):
+        """Test set_cd functionality of dymola api"""
+        # Test the setting of the function
+        self.sim_api.set_cd(self.data_dir)
+        self.assertEqual(self.data_dir, self.sim_api.cd)
+
+    def test_set_sim_setup(self):
+        """Test set_sim_setup functionality of fmu api"""
+        self.sim_api.set_sim_setup(sim_setup=self.new_sim_setup)
+        for key, value in self.new_sim_setup.items():
+            self.assertEqual(self.sim_api.sim_setup.dict()[key],
+                             value)
+        with self.assertRaises(ValidationError):
+            self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
+        with self.assertRaises(ValidationError):
+            self.sim_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
+
+    def tearDown(self):
+        """Delete all files created while testing"""
+
+        try:
+            self.sim_api.close()
+        except AttributeError:
+            pass
+        try:
+            shutil.rmtree(self.example_sim_dir)
+        except (FileNotFoundError, PermissionError):
+            pass
+
+
+class PartialTestSimAPI_Continuous(PartialTestSimAPI):
+    """Extends the partial base class for simulation apis to specify for continuous simulation"""
+
+    def setUp(self) -> None:
+        super().setUp()
+        if self.__class__ == PartialTestSimAPI_Continuous:
+            self.skipTest("Just a partial class")
+
     def test_simulate(self):
-        """Test simulate functionality of dymola api"""
+        """Test simulate functionality of continuous simulation api"""
         self.sim_api.set_sim_setup({"start_time": 0.0,
                                     "stop_time": 10.0})
         result_names = list(self.sim_api.states.keys())[:5]
@@ -128,37 +167,7 @@ class PartialTestSimAPI(unittest.TestCase):
                 self.assertIsInstance(r, str)
 
 
-    def test_set_cd(self):
-        """Test set_cd functionality of dymola api"""
-        # Test the setting of the function
-        self.sim_api.set_cd(self.data_dir)
-        self.assertEqual(self.data_dir, self.sim_api.cd)
-
-    def test_set_sim_setup(self):
-        """Test set_sim_setup functionality of fmu api"""
-        self.sim_api.set_sim_setup(sim_setup=self.new_sim_setup)
-        for key, value in self.new_sim_setup.items():
-            self.assertEqual(self.sim_api.sim_setup.dict()[key],
-                             value)
-        with self.assertRaises(ValidationError):
-            self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
-        with self.assertRaises(ValidationError):
-            self.sim_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
-
-    def tearDown(self):
-        """Delete all files created while testing"""
-
-        try:
-            self.sim_api.close()
-        except AttributeError:
-            pass
-        try:
-            shutil.rmtree(self.example_sim_dir)
-        except (FileNotFoundError, PermissionError):
-            pass
-
-
-class PartialTestDymolaAPI(PartialTestSimAPI):
+class PartialTestDymolaAPI(PartialTestSimAPI_Continuous):
 
     n_cpu = None
 
@@ -187,10 +196,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         else:
             dymola_path = None
         try:
-            self.sim_api = dymola_api.DymolaAPI(
-                cd=self.example_sim_dir,
-                model_name=model_name,
-                packages=packages,
+            config = {
+                'model_name': model_name,
+                'cd': self.example_sim_dir,
+                'packages': packages
+            }
+            self.sim_api = dymola.DymolaAPI(
+                config=config,
                 dymola_path=dymola_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
@@ -267,7 +279,7 @@ class TestDymolaAPISingleCore(PartialTestDymolaAPI):
     n_cpu = 1
 
 
-class TestFMUAPI(PartialTestSimAPI):
+class PartialTestFMUAPI(PartialTestSimAPI_Continuous):
     """Test-Class for the FMUAPI class."""
 
     n_cpu = None
@@ -276,15 +288,17 @@ class TestFMUAPI(PartialTestSimAPI):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         super().setUp()
-        if self.__class__ == PartialTestDymolaAPI:
+        if self.__class__ == PartialTestFMUAPI:
             self.skipTest("Just a partial class")
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
         else:
             model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
-
-        self.sim_api = fmu.FMU_API(cd=self.example_sim_dir,
-                                   model_name=model_name)
+        config = {
+                    'file_path': model_name,
+                    'cd': self.example_sim_dir
+            }
+        self.sim_api = fmu.FMU_API(config)
 
     def test_close(self):
         """Test close functionality of fmu api"""
@@ -293,16 +307,54 @@ class TestFMUAPI(PartialTestSimAPI):
         self.assertIsNone(self.sim_api._unzip_dir)
 
 
-class TestFMUAPISingleCore(TestFMUAPI):
+class TestFMUAPISingleCore(PartialTestFMUAPI):
     """Test-Class for the FMU_API class on single core"""
 
     n_cpu = 1
 
 
-class TestFMUAPIMultiCore(TestFMUAPI):
+class TestFMUAPIMultiCore(PartialTestFMUAPI):
     """Test-Class for the FMU_API class on multi core"""
 
     n_cpu = 2
+
+
+class TestFMUAPI_Discrete(PartialTestSimAPI):
+    """Test-Class for the discrete fmu simulation api class."""
+
+    def setUp(self):
+        """Called before every test.
+        Used to setup relevant paths and APIs etc."""
+        super().setUp()
+        if "win" in sys.platform:
+            model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
+        else:
+            model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
+        config = {
+                    'file_path': model_name,
+                    'cd': self.example_sim_dir
+            }
+        self.sim_api = fmu.FMUDiscrete(config)
+
+    def test_close(self):
+        """Test close functionality of fmu api"""
+        # pylint: disable=protected-access
+        self.sim_api.close()
+        self.assertTrue(self.sim_api._unzip_dir is None)
+
+    def test_step(self):
+        """Test do step functionality of discrete fmu simulation api"""
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        result_names = list(self.sim_api.states.keys())[:5]
+        self.sim_api.result_names = result_names
+        self.sim_api.initialize_discrete_sim()
+        while not self.sim_api.finished:
+            self.sim_api.do_step(close_when_finished=True)
+        res = self.sim_api.sim_res_df
+        self.assertIsInstance(res, pd.DataFrame)
+        self.assertIsInstance(self.sim_api.get_results(tsd_format=True), TimeSeriesData)
+        self.assertEqual(len(res.columns), len(result_names))
 
 
 if __name__ == "__main__":

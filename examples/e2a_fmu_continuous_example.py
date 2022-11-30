@@ -48,8 +48,13 @@ def main(
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
-    fmu_api = FMU_API(model_name=model_name,
-                      cd=cd,
+
+    # Organize settings in configuration dict
+    config_dict = {
+        'file_path': model_name,
+        'cd': cd,
+    }
+    fmu_api = FMU_API(config_dict,
                       n_cpu=n_cpu,
                       log_fmu=log_fmu)
     print("Number of variables:", len(fmu_api.variables))
@@ -88,7 +93,8 @@ def main(
     print("Inputs names are:", fmu_api.inputs)
     # We only have TDryBul (outdoor air temperature) as an input.
     # Start with the setup of a time-index that matches our simulation setup
-    # Feel free to play around with the settings to see what happens if your time_index is malformed.
+    # Feel free to play around with the settings
+    # to see what happens if your time_index is malformed.
     time_index = np.arange(
         fmu_api.sim_setup.start_time,
         fmu_api.sim_setup.stop_time,
@@ -144,9 +150,8 @@ def main(
     if with_plot:
         plt.show()
     # Save the data for later reproduction
-    file = fmu_api.save_for_reproduction(title="FMUTest")
+    file = fmu_api.save_for_reproduction(title="FMUTest", log_message="example log message")
     print("ZIP-File to reproduce all this:", file)
-
 
 if __name__ == '__main__':
     main(

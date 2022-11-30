@@ -32,10 +32,10 @@ class TestExample(unittest.TestCase):
                           with_plot=False)
 
     def test_fmu_example(self):
-        """Execute e2_fmu_example.py"""
+        """Execute e2a_fmu_continuous_example.py"""
         if "linux" in sys.platform:
             self.skipTest("Not supported in CI")
-        self._run_example(file="e2_fmu_example.py",
+        self._run_example(file="e2a_fmu_continuous_example.py",
                           func_name='main',
                           with_plot=False,
                           log_fmu=False,
@@ -46,3 +46,12 @@ class TestExample(unittest.TestCase):
         self._run_example(file="e4_optimization_example.py",
                           func_name='main',
                           with_plot=False)
+
+    def test_fmu_discrete_example(self):
+        """Execute e2b_fmu_discrete_example.py"""
+        if "linux" in sys.platform:
+            self.skipTest("Not supported in CI")
+        self._run_example(file="e2b_fmu_discrete_example.py",
+                          func_name='main',
+                          with_plot=False,
+                          log_fmu=False)

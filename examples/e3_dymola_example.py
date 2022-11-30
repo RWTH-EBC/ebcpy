@@ -40,14 +40,18 @@ def main(
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the Dymola-API:
+    # organize settings in configuration dict
+    config_dict = {
+                  'model_name': 'AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem',
+                  'cd': cd,
+                  'packages': [aixlib_mo]
+                  }
     dym_api = DymolaAPI(
-        model_name="AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem",
-        cd=cd,
+        config_dict,
         n_cpu=n_cpu,
-        packages=[aixlib_mo],
         show_window=True,
         n_restart=-1,
-        equidistant_output=False,
+        equidistant_output=False
         # Only necessary if you need a specific dymola version
         #dymola_path=None,
         #dymola_version=None
@@ -86,12 +90,12 @@ def main(
     # 3. Set tableName = "myCustomInput" (or any other nice string)
     table_name = "myCustomInput"
     # 4. Enter the fileName where you want to store your input. This can be any filepath.
+    # For this tutorial to work, set
     # 5. Last, add a parameter in the model to ensure the simulation works without tuning any parameter.
     # Sadly, this is a requirement. Models with parameters do not require this feature. As this model has
     # no parameters, it's required. Go into the text-section and add:
     # 'parameter Real n=1;'.
 
-    # For this tutorial to work, set
     # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
     file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     # This input generate is re-used from the fmu_example.py file.
@@ -143,6 +147,11 @@ def main(
     )
     print(result_sp_2)
 
+    # ######################### Closing ##########################
+    # Close Dymola. If you forget to do so,
+    # we call this function at the exit of your script.
+    dym_api.close()
+
     # ######################### Simulation analysis ##########################
     # Now let's load the TimeSeriesData
     tsd_1 = TimeSeriesData(result_sp)
@@ -164,10 +173,12 @@ def main(
     plt.title("Input of CombiTimeTable 'timTab'")
     if with_plot:
         plt.show()
+
     # Save the data for later reproduction
     file = dym_api.save_for_reproduction(
         title="MyDymolaStudy",
-        files=[result_sp, result_sp_2]
+        files=[result_sp, result_sp_2],
+        log_message="example log message"
     )
     print("ZIP-File to reproduce all this:", file)
 
@@ -175,6 +186,6 @@ def main(
 if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
-        aixlib_mo=r"D:\04_git\AixLib\AixLib\package.mo",
+        aixlib_mo=r"D:\02_workshop\AixLib\AixLib\package.mo",
         n_cpu=5
     )

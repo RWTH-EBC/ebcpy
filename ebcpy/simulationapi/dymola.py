@@ -3,49 +3,29 @@ of Modelica-Models."""
 
 import sys
 import os
-import shutil
 import pathlib
-import warnings
 import atexit
+import shutil
+import warnings
 import json
-from typing import Union, List
-from pydantic import Field
+from typing import Union, List, Optional
 import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
-from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
-    SimulationSetupClass, Variable
+from ebcpy.simulationapi import Variable
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
+from ebcpy.simulationapi.config import ExperimentConfigDymola, SimulationSetupDymola
+from ebcpy.simulationapi.config import ExperimentConfigurationClass, SimulationSetupClass
+from ebcpy.simulationapi import ContinuousSimulation
+from ebcpy.simulationapi import Model
 
 
-class DymolaSimulationSetup(SimulationSetup):
-    """
-    Adds ``tolerance`` to the list of possible
-    setup fields.
-    """
-    tolerance: float = Field(
-        title="tolerance",
-        default=0.0001,
-        description="Tolerance of integration"
-    )
-
-    _default_solver = "Dassl"
-    _allowed_solvers = ["Dassl", "Euler", "Cerk23", "Cerk34", "Cerk45",
-                        "Esdirk23a", "Esdirk34a", "Esdirk45a", "Cvode",
-                        "Rkfix2", "Rkfix3", "Rkfix4", "Lsodar",
-                        "Radau", "Dopri45", "Dopri853", "Sdirk34hw"]
-
-
-class DymolaAPI(SimulationAPI):
+class DymolaAPI(ContinuousSimulation):
     """
     API to a Dymola instance.
 
-    :param str,os.path.normpath cd:
-        Dirpath for the current working directory of dymola
-    :param str model_name:
-        Name of the model to be simulated
-    :param list packages:
-        List with path's to the packages needed to simulate the model
+    :param dict config:
+        Dict with configuration
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
     :keyword Boolean modify_structural_parameters:
@@ -102,17 +82,18 @@ class DymolaAPI(SimulationAPI):
     >>> from ebcpy import DymolaAPI
     >>> # Specify the model name
     >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
-    >>> dym_api = DymolaAPI(cd=os.getcwd(),
-    >>>                     model_name=model_name,
-    >>>                     packages=[],
+    >>> dym_api = DymolaAPI(config={'cd': os.getcwd(),
+    >>>                     'model_name': model_name},
     >>>                     show_window=True)
-    >>> dym_api.sim_setup = {"start_time": 100,
-    >>>                      "stop_time": 200}
+    >>> dym_api.set_sim_setup({"start_time": 100,
+    >>>                      "stop_time": 200})
     >>> dym_api.simulate()
     >>> dym_api.close()
 
     """
-    _sim_setup_class: SimulationSetupClass = DymolaSimulationSetup
+
+    _exp_config_class: ExperimentConfigurationClass = ExperimentConfigDymola
+    _sim_setup_class: SimulationSetupClass = SimulationSetupDymola
     _items_to_drop = ["pool", "dymola", "_dummy_dymola_instance"]
     dymola = None
     # Default simulation setup
@@ -128,9 +109,14 @@ class DymolaAPI(SimulationAPI):
         "dymola_version"
     ]
 
-    def __init__(self, cd, model_name, packages=None, **kwargs):
+    def __init__(self, config: Optional[dict] = None, n_cpu: int = 1, **kwargs):
         """Instantiate class objects."""
+        config = self._check_config(config, **kwargs)  # generate config out of outdated arguments
+        self.config = self._exp_config_class.parse_obj(config)
+        packages = self.config.packages
+
         self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
+
         # Update kwargs with regard to what kwargs are supported.
         self.extract_variables = kwargs.pop("extract_variables", True)
         self.fully_initialized = False
@@ -160,9 +146,8 @@ class DymolaAPI(SimulationAPI):
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
 
-        super().__init__(cd=cd,
-                         model_name=model_name,
-                         n_cpu=kwargs.pop("n_cpu", 1))
+        super().__init__(model_name=self.config.model_name,
+                         n_cpu=n_cpu)
 
         # First import the dymola-interface
         dymola_path = kwargs.pop("dymola_path", None)
@@ -293,8 +278,9 @@ class DymolaAPI(SimulationAPI):
             Example:
             Changing a record in a model:
 
-            >>> sim_api.simulate(
-            >>>     parameters={"parameterPipe": "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
+            >>> dym_api.simulate(
+            >>>     parameters={"parameterPipe":
+            >>>                 "AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()"},
             >>>     structural_parameters=["parameterPipe"])
 
         """
@@ -475,8 +461,9 @@ class DymolaAPI(SimulationAPI):
 
             # Internally convert output Interval to number of intervals
             # (Required by function simulateMultiResultsModel
-            number_of_intervals = (self.sim_setup.stop_time - self.sim_setup.start_time) / \
-                                  self.sim_setup.output_interval
+            number_of_intervals = \
+                (self.sim_setup.stop_time - self.sim_setup.start_time) / \
+                self.sim_setup.output_interval
             if int(number_of_intervals) != number_of_intervals:
                 raise ValueError(
                     "Given output_interval and time interval did not yield "
@@ -644,9 +631,12 @@ class DymolaAPI(SimulationAPI):
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
-    @SimulationAPI.cd.setter
+    @Model.cd.setter
     def cd(self, cd):
         """Set the working directory to the given path"""
+        # update config and thereby trigger pydantic validator
+        self._update_config({'cd': cd})
+        # set attribute
         self._cd = cd
         if self.dymola is None:  # Not yet started
             return
@@ -786,8 +776,8 @@ class DymolaAPI(SimulationAPI):
             return DymolaInterface(showwindow=self.show_window,
                                    dymolapath=self.dymola_exe_path)
         except ImportError as error:
-            raise ImportError("Given dymola-interface could not be "
-                              "loaded:\n %s" % self.dymola_interface_path) from error
+            raise ImportError(f"Given dymola-interface could not be "
+                              f"loaded:\n {self.dymola_interface_path}") from error
         except DymolaConnectionException as error:
             raise ConnectionError(error) from error
 
@@ -796,20 +786,19 @@ class DymolaAPI(SimulationAPI):
         Store the most relevant information of this class
         into a dictionary. This may be used for future configuration.
 
-        :return: dict config:
+        :return: dict dym_config:
             Dictionary with keys to re-init this class.
         """
-        # Convert Path to str to enable json-dumping
-        config = {"cd": str(self.cd),
-                  "packages": [str(pack) for pack in self.packages],
-                  "model_name": self.model_name,
-                  "type": "DymolaAPI",
-                  }
+        dym_config = {"cd": self.cd,
+                      "packages": self.packages,
+                      "model_name": self.model_name,
+                      "type": "DymolaAPI",
+                      }
         # Update kwargs
-        config.update({kwarg: self.__dict__.get(kwarg, None)
+        dym_config.update({kwarg: self.__dict__.get(kwarg, None)
                        for kwarg in self._supported_kwargs})
 
-        return config
+        return dym_config
 
     def get_packages(self):
         """
@@ -836,19 +825,19 @@ class DymolaAPI(SimulationAPI):
             path: pathlib.Path = None,
             files: list = None,
             save_total_model: bool = True,
-            export_fmu: bool = True
+            export_fmu: bool = True,
+            **kwargs
+
     ):
         """
         Additionally to the basic reproduction, add info
         for Dymola packages.
-
         Content which is saved:
         - DymolaAPI configuration
         - Information on Dymola: Version, flags
         - All loaded packages
         - Total model, if save_total_model = True
         - FMU, if export_fmu = True
-
         :param bool save_total_model:
             True to save the total model
         :param bool export_fmu:
@@ -891,7 +880,8 @@ class DymolaAPI(SimulationAPI):
                     continue
 
                 files.extend(repo_info.pop("difference_files"))
-                pack_path = str(pack_path) + "; " + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
+                pack_path = str(pack_path) + "; " \
+                    + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
                 break
             package_infos.append(str(pack_path))
         files.append(ReproductionFile(
@@ -929,7 +919,8 @@ class DymolaAPI(SimulationAPI):
         return super().save_for_reproduction(
             title=title,
             path=path,
-            files=files
+            files=files,
+            **kwargs
         )
 
     def _save_to_fmu(self, fail_on_error):
@@ -1111,14 +1102,14 @@ class DymolaAPI(SimulationAPI):
             except psutil.AccessDenied:
                 continue
         if counter >= self._critical_number_instances:
-            warnings.warn("There are currently %s Dymola-Instances "
-                          "running on your machine!" % counter)
+            warnings.warn("There are currently {counter} Dymola-Instances "
+                          "running on your machine!")
 
     @staticmethod
     def _alter_model_name(parameters, model_name, structural_params):
         """
         Creates a modifier for all structural parameters,
-        based on the modelname and the initalNames and values.
+        based on the modelname and the initialNames and values.
 
         :param dict parameters:
             Parameters of the simulation
@@ -1147,7 +1138,6 @@ class DymolaAPI(SimulationAPI):
 
     def _check_restart(self):
         """Restart Dymola every n_restart iterations in order to free memory"""
-
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
@@ -1155,3 +1145,34 @@ class DymolaAPI(SimulationAPI):
             self.sim_counter = 1
         else:
             self.sim_counter += 1
+
+    def _check_config(self, cfg, **kwargs):
+        """
+        Checks if instead of a config dict, the user is using the outdated arguments
+        'model_name' and 'cd' or 'packages' for initialization of the dymola api.
+        To provide backwards-compatibility the required config is constructed
+        out of these arguments (at least if arguments are provided with key).
+        """
+        if not cfg:
+            cd_depr = kwargs.pop('cd', None)
+            model_name_depr = kwargs.pop('model_name', None)
+            packages_depr = kwargs.pop('packages', None)
+            if model_name_depr is not None and cd_depr is not None:
+                warnings.warn(f"Arguments 'model_name', 'cd' and 'packages' will be depreciated "
+                              f"in future versions. "
+                              f"Please use a configuration instead and consider "
+                              f"the available fields: "
+                              f"{self.get_experiment_config_fields()}", FutureWarning)
+                if packages_depr is not None:
+                    return {'model_name': model_name_depr,
+                            'cd': cd_depr,
+                            'packages': packages_depr
+                            }
+                return {'model_name': model_name_depr,
+                        'cd': cd_depr
+                        }
+            raise TypeError(f"No configuration given for instantiation. "
+                                f"Please use the 'config' argument and "
+                                f"consider the available fields: "
+                                f"{self.get_experiment_config_fields()}")
+        return cfg
