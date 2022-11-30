@@ -172,7 +172,7 @@ class ExperimentConfigDymola(ExperimentConfiguration):
     Add's custom parameters for simulating Dymola models
     to the basic `ExperimentConfiguration`
     """
-    packages: Optional[List[FilePath]]  # List with path's to the packages needed to simulate the mode
+    packages: Optional[List[FilePath]]  # List with path's to the packages needed to simulate model
     model_name: str  # Name of the model to be simulated
     sim_setup: Optional[SimulationSetupDymola]
 

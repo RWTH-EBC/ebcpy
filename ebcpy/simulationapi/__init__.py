@@ -595,4 +595,3 @@ class DiscreteSimulation(Model):
         """
         raise NotImplementedError(f'{self.__class__.__name__}.get_results '
                                   f'function is not defined')
-

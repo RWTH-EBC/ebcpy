@@ -880,7 +880,8 @@ class DymolaAPI(ContinuousSimulation):
                     continue
 
                 files.extend(repo_info.pop("difference_files"))
-                pack_path = str(pack_path) + "; " + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
+                pack_path = str(pack_path) + "; " \
+                    + "; ".join([f"{key}: {value}" for key, value in repo_info.items()])
                 break
             package_infos.append(str(pack_path))
         files.append(ReproductionFile(
@@ -1147,18 +1148,20 @@ class DymolaAPI(ContinuousSimulation):
 
     def _check_config(self, cfg, **kwargs):
         """
-        Checks if instead of a config dict, the user is using the outdated arguments 'model_name' and 'cd' or 'packages'
-        for initialization of the dymola api.
-        To provide backwards-compatibility the required config is constructed out of these arguments
-        (at least if arguments are provided with key).
+        Checks if instead of a config dict, the user is using the outdated arguments
+        'model_name' and 'cd' or 'packages' for initialization of the dymola api.
+        To provide backwards-compatibility the required config is constructed
+        out of these arguments (at least if arguments are provided with key).
         """
         if not cfg:
             cd_depr = kwargs.pop('cd', None)
             model_name_depr = kwargs.pop('model_name', None)
             packages_depr = kwargs.pop('packages', None)
             if model_name_depr is not None and cd_depr is not None:
-                warnings.warn(f"Arguments 'model_name', 'cd' and 'packages' will be depreciated in future versions. "
-                              f"Please use a configuration instead and consider the available fields: "
+                warnings.warn(f"Arguments 'model_name', 'cd' and 'packages' will be depreciated "
+                              f"in future versions. "
+                              f"Please use a configuration instead and consider "
+                              f"the available fields: "
                               f"{self.get_experiment_config_fields()}", FutureWarning)
                 if packages_depr is not None:
                     return {'model_name': model_name_depr,
@@ -1169,6 +1172,7 @@ class DymolaAPI(ContinuousSimulation):
                         'cd': cd_depr
                         }
             raise TypeError(f"No configuration given for instantiation. "
-                                f"Please use the 'config' argument and consider the available fields: "
+                                f"Please use the 'config' argument and "
+                                f"consider the available fields: "
                                 f"{self.get_experiment_config_fields()}")
         return cfg

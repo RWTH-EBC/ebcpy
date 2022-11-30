@@ -97,7 +97,7 @@ class FMU:
 
         key = list(self._var_refs.keys())
         key_list = []
-        for i, k in enumerate(key):
+        for _, k in enumerate(key):
             if k.startswith(start_str):
                 key_list.append(k)
         return key_list
@@ -500,17 +500,19 @@ class FMU_API(FMU, ContinuousSimulation):
 
     def _check_config(self, cfg, **kwargs):
         """
-        Checks if instead of a config dict, the user is using the outdated arguments 'cd' and 'model_name'
-        for initialization of the fmu api.
-        To provide backwards-compatibility the required config is constructed out of these arguments
-        (at least if arguments are provided with key).
+        Checks if instead of a config dict, the user is using the
+        outdated arguments 'cd' and 'model_name' for initialization of the fmu api.
+        To provide backwards-compatibility the required config
+        is constructed out of these arguments (at least if arguments are provided with key).
         """
         if not cfg:
             cd_depr = kwargs.pop('cd', None)
             model_name_depr = kwargs.pop('model_name', None)
             if model_name_depr is not None:
-                warnings.warn(f"Arguments 'model_name' and 'cd' will be depreciated in future versions. "
-                              f"Please use a configuration instead and consider the available fields: "
+                warnings.warn(f"Arguments 'model_name' and 'cd' will be depreciated "
+                              f"in future versions. "
+                              f"Please use a configuration instead "
+                              f"and consider the available fields: "
                               f"{self.get_experiment_config_fields()}", FutureWarning)
                 if cd_depr is not None:
                     return {'file_path': model_name_depr,
@@ -519,8 +521,9 @@ class FMU_API(FMU, ContinuousSimulation):
                 return {'file_path': model_name_depr
                             }
             raise TypeError(f"No configuration given for instantiation. "
-                                f"Please use the 'config' argument and consider the available fields: "
-                                f"{self.get_experiment_config_fields()}")
+                            f"Please use the 'config' argument and "
+                            f"consider the available fields: "
+                            f"{self.get_experiment_config_fields()}")
         return cfg
 
 
@@ -573,7 +576,8 @@ class FMUDiscrete(FMU, DiscreteSimulation):
 
         # define input data (can be adjusted during simulation using the setter)
         # calling the setter to distinguish depending on type and filtering
-        self._input_data_on_grid = False  # if false, the input data does not cover the required grid. Need to hold or interpolate
+        self._input_data_on_grid = False  # if false the input data does not
+        # cover the required grid. Need to hold last value or interpolate
         self.input_table = self.config.input_data
         # if false, last value of input table is hold, otherwise interpolated
         self.interp_input_table = False
@@ -857,7 +861,7 @@ class FMUDiscrete(FMU, DiscreteSimulation):
         super().set_sim_setup(sim_setup)
         self._check_input_data_grid()
 
-    # todo: make class method out of it to consider the frequent case of multiple discrete fmu apis in the same study;
+    # todo: make class method out of it to consider multiple discrete fmu apis;
     # todo: consider attribute interp_input data and input_data_on_grid
     def save_for_reproduction(self,
                               title: str,

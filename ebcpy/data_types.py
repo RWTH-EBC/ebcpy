@@ -317,7 +317,7 @@ class TimeSeriesData(pd.DataFrame):
                     f"Currently only "
                     f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
                     f"are supported."
-                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"Automatic conversion to pd.DateTimeIndex failed"
                     f"see error above."
                 ) from err
         return df
