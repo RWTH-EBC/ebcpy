@@ -506,13 +506,15 @@ class SimulationAPI:
             List of files to save along the standard ones.
             Examples would be plots, tables etc.
         :param dict kwargs:
-            All keyword arguments except files and path of the function
-            save_reproduction_archive
+            All keyword arguments except title, files, and path of the function
+            `save_reproduction_archive`. Most importantly, `log_message` may be
+            specified to avoid input during execution.
         """
         if path is None:
             path = self.cd
         return save_reproduction_archive(
             title=title,
             path=path,
-            files=files
+            files=files,
+            **kwargs
         )

@@ -172,7 +172,8 @@ def main(
     # Save the data for later reproduction
     file = dym_api.save_for_reproduction(
         title="MyDymolaStudy",
-        files=[result_sp, result_sp_2]
+        files=[result_sp, result_sp_2],
+        log_message="This is just an example."
     )
     print("ZIP-File to reproduce all this:", file)
 

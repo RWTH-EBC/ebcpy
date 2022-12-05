@@ -394,5 +394,6 @@ class FMU_API(simulationapi.SimulationAPI):
         return super().save_for_reproduction(
             title=title,
             path=path,
-            files=files
+            files=files,
+            **kwargs
         )
