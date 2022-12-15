@@ -282,6 +282,10 @@ class DymolaAPI(SimulationAPI):
             If inputs are given, you have to specify the file_name of the table
             in the instance of CombiTimeTable. In order for the inputs to
             work the value should be equal to the value of 'fileName' in Modelica.
+        :keyword Boolean remove_results:
+            Default is True. If True, results are removed from Dymola after
+            simulation. This frees up RAM. Could be disabled to allow for
+            analysis of results in window.
         :keyword List[str] structural_parameters:
             A list containing all parameter names which are structural in Modelica.
             This means a modifier has to be created in order to change
@@ -328,6 +332,7 @@ class DymolaAPI(SimulationAPI):
         inputs = kwargs.get("inputs", None)
         fail_on_error = kwargs.get("fail_on_error", True)
         structural_parameters = kwargs.get("structural_parameters", [])
+        remove_results = kwargs.get("remove_results", True)
 
         # Handle multiprocessing
         if self.use_mp:
@@ -497,6 +502,9 @@ class DymolaAPI(SimulationAPI):
                 initialNames=initial_names,
                 initialValues=initial_values,
                 resultNames=res_names)
+
+        if remove_results:
+            self.dymola.removeResults()
 
         if not res[0]:
             self.logger.error("Simulation failed!")
