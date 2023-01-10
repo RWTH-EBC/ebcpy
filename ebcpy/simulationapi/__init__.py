@@ -283,13 +283,15 @@ class SimulationAPI:
         kwargs["return_option"] = return_option  # Update with arg
         # Handle special case for saving files:
         if return_option == "savepath" and len(parameters) > 1:
+            savepath = kwargs.get("savepath", [])
             result_file_name = kwargs.get("result_file_name", [])
-            if len(set(result_file_name)) != len(parameters):
+            if (len(set(savepath)) != len(parameters) and
+                    len(set(result_file_name)) != len(parameters)):
                 raise TypeError(
                     "Simulating multiple parameter set's on "
-                    "the same savepath with the same result_file_name "
-                    "will overwrite old results or even cause errors. "
-                    "Specify a result_file_name for each "
+                    "the same savepath will overwrite old "
+                    "results or even cause errors. "
+                    "Specify a result_file_name or savepath for each "
                     "parameter combination"
                 )
         for key, value in kwargs.items():
