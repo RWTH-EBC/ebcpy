@@ -284,6 +284,8 @@ class SimulationAPI:
         # Handle special case for saving files:
         if return_option == "savepath" and len(parameters) > 1:
             savepath = kwargs.get("savepath", [])
+            if isinstance(savepath, (str, os.PathLike)):
+                savepath = [savepath] * len(parameters)
             result_file_name = kwargs.get("result_file_name", [])
             if (len(set(savepath)) != len(parameters) and
                     len(set(result_file_name)) != len(parameters)):
