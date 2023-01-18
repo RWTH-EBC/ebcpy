@@ -317,18 +317,10 @@ class SimulationAPI:
             self._progress_int = 0
             self.logger.info("Starting %s simulations on %s cores",
                              self._n_sim_total, self.n_cpu)
-            _async_jobs = []
-            for _kwarg in kwargs:
-                _async_jobs.append(
-                    self.pool.apply_async(
-                        func=self._single_simulation,
-                        args=(_kwarg,),
-                        callback=self._log_simulation_process)
-                )
             results = []
-            for _async_job in _async_jobs:
-                _async_job.wait()
-                results.append(_async_job.get())
+            for result in self.pool.imap(self._single_simulation, kwargs):
+                results.append(result)
+                self._log_simulation_process()
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
@@ -339,7 +331,7 @@ class SimulationAPI:
             return results[0]
         return results
 
-    def _log_simulation_process(self, _):
+    def _log_simulation_process(self):
         """Log the simulation progress"""
         self._n_sim_counter += 1
         progress = int(self._n_sim_counter / self._n_sim_total * 100)
