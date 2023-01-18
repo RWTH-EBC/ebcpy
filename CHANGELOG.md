@@ -62,3 +62,6 @@
 - v0.3.2:
   - Correct bounds for simulation Variables #56
   - Add script to reproduce simulation studies and store info in an archive #27
+- v0.3.3:
+  - Fix memory error for large parameter variations durring multiproccesing #76
+  - Add option to set only one savepath for saving files of parameter varaiations #74
