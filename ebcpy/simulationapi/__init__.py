@@ -239,6 +239,8 @@ class SimulationAPI:
         :param dict parameters:
             Parameters to simulate.
             Names of parameters are key, values are value of the dict.
+            It is also possible to specify a list of multiple parameter
+            dicts for different parameter variations to be simulated.
             Default is an empty dict.
         :param str return_option:
             How to handle the simulation results. Options are:
@@ -251,10 +253,14 @@ class SimulationAPI:
             Depending on the API, different kwargs may be used to specify file type etc.
         :keyword str,os.path.normpath savepath:
             If path is provided, the relevant simulation results will be saved
-            in the given directory.
+            in the given directory. For multiple parameter variations also a list
+            of savepaths for each parameterset can be specified.
+            The savepaths for each parameter set must be unique.
             Only relevant if return_option equals 'savepath' .
         :keyword str result_file_name:
             Name of the result file. Default is 'resultFile'.
+            For multiple parameter variations a list of names
+            for each result must be specified. 
             Only relevant if return_option equals 'savepath'.
         :keyword (TimeSeriesData, pd.DataFrame) inputs:
             Pandas.Dataframe of the input data for simulating the FMU with fmpy
