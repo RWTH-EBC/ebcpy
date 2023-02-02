@@ -4,6 +4,7 @@ bin
 *.bak
 .project
 .pydevproject
+examples/results
 
 # pip install #
 #####################
