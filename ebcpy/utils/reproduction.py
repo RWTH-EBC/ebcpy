@@ -291,11 +291,8 @@ def _get_python_package_information(search_on_pypi: bool):
     Function to get the content of python packages installed
     as a requirement.txt format content.
     """
-    try:
-        from pip._internal.utils.misc import get_installed_distributions
-    except ImportError:  # pip<10
-        from pip import get_installed_distributions
-    installed_packages = get_installed_distributions()
+    import pkg_resources
+    installed_packages = [pack for pack in pkg_resources.working_set]
     diff_paths = []
     requirement_txt_content = []
     for package in installed_packages:

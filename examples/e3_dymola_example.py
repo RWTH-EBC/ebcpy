@@ -142,7 +142,15 @@ def main(
         result_file_name="anotherResultFile"
     )
     print(result_sp_2)
-    
+
+    # Save the data for later reproduction
+    file = dym_api.save_for_reproduction(
+        title="MyDymolaStudy",
+        files=[result_sp, result_sp_2],
+        log_message="This is just an example."
+    )
+    print("ZIP-File to reproduce all this:", file)
+
     # ######################### Closing ##########################
     # Close Dymola. If you forget to do so,
     # we call this function at the exit of your script.
@@ -169,13 +177,6 @@ def main(
     plt.title("Input of CombiTimeTable 'timTab'")
     if with_plot:
         plt.show()
-    # Save the data for later reproduction
-    file = dym_api.save_for_reproduction(
-        title="MyDymolaStudy",
-        files=[result_sp, result_sp_2],
-        log_message="This is just an example."
-    )
-    print("ZIP-File to reproduce all this:", file)
 
 
 if __name__ == '__main__':

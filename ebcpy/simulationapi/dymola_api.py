@@ -818,6 +818,13 @@ class DymolaAPI(SimulationAPI):
         packages = self.dymola.ExecuteCommand(
             'ModelManagement.Structure.AST.Misc.ClassesInPackage("")'
         )
+        if packages is None:
+            self.logger.error("Could not load packages from Dymola, using self.packages")
+            packages = []
+            for pack in self.packages:
+                pack = pathlib.Path(pack)
+                if pack.name == "package.mo":
+                    packages.append(pack.parent.name)
         valid_packages = []
         for pack in packages:
             current_package = f"modelica://{pack}/package.order"
