@@ -72,6 +72,9 @@ class TimeSeriesData(pd.DataFrame):
         argument when loading a xlsx-file.
     :keyword str default_tag:
         Which value to use as tag. Default is 'raw'
+    :keyword str engine:
+        Chose the engine for reading .parquet files. Default is 'pyarrow'
+        Other option is 'fastparquet' (python>=3.9).
 
 
     Examples:
@@ -211,6 +214,9 @@ class TimeSeriesData(pd.DataFrame):
             Specifies the key of the table in the .hdf-file.
         :keyword str sep:
             Separator used for saving as .csv. Default is ','.
+        :keyword str engine:
+            Chose the engine for reading .parquet files. Default is 'pyarrow'
+            Other option is 'fastparquet' (python>=3.9).
         :return:
         """
         # If new settings are needed, update existing ones
@@ -234,16 +240,20 @@ class TimeSeriesData(pd.DataFrame):
         elif filepath.suffix == ".csv":
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         elif filepath.suffix == ".parquet":
-            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
                                           compression=None,
                                           index=True)
         elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".gzip":
-            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
                                           compression='gzip',
                                           index=True)
         elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".brotli":
-            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
                                           compression='gzip',
+                                          index=True)
+        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".snappy":
+            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
+                                          compression='snappy',
                                           index=True)
         else:
             raise TypeError("Given file-format is not supported."
@@ -318,11 +328,13 @@ class TimeSeriesData(pd.DataFrame):
                                "of the sheet you want to load.")
             df = pd.read_excel(io=file, sheet_name=sheet_name)
         elif file.suffix == ".parquet":
-            df = pd.read_parquet(path=file)
+            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         elif file.name.split('.')[-2] == "parquet" and file.suffix == ".gzip":
-            df = pd.read_parquet(path=file)
+            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         elif file.name.split('.')[-2] == "parquet" and file.suffix == ".brotli":
-            df = pd.read_parquet(path=file)
+            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
+        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".snappy":
+            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
         if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
