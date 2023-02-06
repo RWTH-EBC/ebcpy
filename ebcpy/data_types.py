@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
+
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
 
@@ -223,7 +224,6 @@ class TimeSeriesData(pd.DataFrame):
         if filepath is None:
             raise ValueError("Current TimeSeriesData instance "
                              "has no filepath, please specify one.")
-
         # Save based on file suffix
         if filepath.suffix == ".hdf":
             if "key" not in kwargs:
@@ -233,6 +233,18 @@ class TimeSeriesData(pd.DataFrame):
 
         elif filepath.suffix == ".csv":
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
+        elif filepath.suffix == ".parquet":
+            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+                                          compression=None,
+                                          index=True)
+        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".gzip":
+            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+                                          compression='gzip',
+                                          index=True)
+        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".brotli":
+            pd.DataFrame(self).to_parquet(filepath, engine='pyarrow',
+                                          compression='gzip',
+                                          index=True)
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf or .csv")
@@ -296,7 +308,6 @@ class TimeSeriesData(pd.DataFrame):
                 index_col=self._loader_kwargs.get("index_col", 0),
                 header=self._loader_kwargs.get("header", _hea_def)
             )
-
         elif file.suffix == ".mat":
             df = sr.mat_to_pandas(fname=file, with_unit=False)
         elif file.suffix in ['.xlsx', '.xls', '.odf', '.ods', '.odt']:
@@ -306,6 +317,12 @@ class TimeSeriesData(pd.DataFrame):
                                "Please pass a string to specify the name "
                                "of the sheet you want to load.")
             df = pd.read_excel(io=file, sheet_name=sheet_name)
+        elif file.suffix == ".parquet":
+            df = pd.read_parquet(path=file)
+        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".gzip":
+            df = pd.read_parquet(path=file)
+        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".brotli":
+            df = pd.read_parquet(path=file)
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
         if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
@@ -317,11 +334,10 @@ class TimeSeriesData(pd.DataFrame):
                     f"Currently only "
                     f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
                     f"are supported."
-                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"Automatic conversion to pd.DateTimeIndex failed"
                     f"see error above."
                 ) from err
         return df
-
 
     def get_variable_names(self) -> List[str]:
         """
@@ -357,8 +373,8 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_columns_by_tag(self,
                            tag: str,
-                           variables: list =None,
-                           return_type: str='pandas',
+                           variables: list = None,
+                           return_type: str = 'pandas',
                            drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
