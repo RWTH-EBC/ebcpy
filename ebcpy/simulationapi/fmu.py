@@ -164,6 +164,11 @@ class FMU_API(simulationapi.SimulationAPI):
             Suffix of the result file. Supported options can be extracted
             from the TimeSeriesData.save() function.
             Default is 'csv'.
+        :keyword str parquet_engine:
+            The engine to use for the data format parquet.
+            Supported options can be extracted
+            from the TimeSeriesData.save() function.
+            Default is 'pyarrow'.
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
@@ -250,6 +255,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if return_option == "savepath":
             result_file_name = kwargs.get("result_file_name", "resultFile")
             result_file_suffix = kwargs.get("result_file_suffix", "csv")
+            parquet_engine = kwargs.get('parquet_engine', 'pyarrow')
             savepath = kwargs.get("savepath", None)
 
             if savepath is None:
@@ -259,7 +265,8 @@ class FMU_API(simulationapi.SimulationAPI):
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
             TimeSeriesData(df).droplevel(1, axis=1).save(
                 filepath=filepath,
-                key="simulation"
+                key="simulation",
+                engine=parquet_engine
             )
 
             return filepath
