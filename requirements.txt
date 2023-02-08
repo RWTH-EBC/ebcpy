@@ -11,4 +11,4 @@ pymoo==0.5.0
 pydantic>=1.8.2
 h5py>=3.1.0
 fastparquet>=2023.1.0; python_version >= '3.9'
-pyarrow>=6.0.1
+pyarrow>=11.0.0; python_version>='3.7'
