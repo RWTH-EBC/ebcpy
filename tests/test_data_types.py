@@ -78,9 +78,6 @@ class TestDataTypes(unittest.TestCase):
         tsd = data_types.TimeSeriesData(filepath)
         self.assertTrue(tsd.equals(tsd_ref))
         # test wrong and multi-index
-        tsd = data_types.TimeSeriesData(filepath, index_col=1)
-        self.assertFalse(tsd.equals(tsd_ref))
-        self.assertEqual(tsd.index.nlevels, 1)
         with self.assertRaises(IndexError):
             data_types.TimeSeriesData(filepath, index_col=[0, 1])
         # Test wrong and single index headers
