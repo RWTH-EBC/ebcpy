@@ -22,7 +22,6 @@ include:
     file: 'python/unit-tests/unittest.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/unittest_clean_env.gitlab-ci.yml'
-    ref: 31-add-new-python-versions-with-clean-environment
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
