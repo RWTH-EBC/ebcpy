@@ -14,7 +14,7 @@ EXTRAS_REQUIRE = {
         'xlrd>=2.0.1',
         'pymoo==0.5.0',
         'GitPython>=3.1.27',
-        'pyarrow>=11.0.0'
+        'pyarrow>=6.1.0'
     ]
 }
 
