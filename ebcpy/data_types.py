@@ -49,7 +49,8 @@ class TimeSeriesData(pd.DataFrame):
     visualization and preprocessing access.
 
     :param str,os.path.normpath,pd.DataFrame data:
-        Filepath ending with either .hdf, .mat or .csv containing
+        Filepath ending with either .hdf, .mat, .csv, .parquet,
+        .parquet.snappy, .parquet.gzip or .parquet.brotli containing
         time-dependent data to be loaded as a pandas.DataFrame.
         Alternative option is to pass a DataFrame directly.
     :keyword str key:
@@ -200,10 +201,9 @@ class TimeSeriesData(pd.DataFrame):
         """
         Save the current time-series-data into the given file-format.
         Currently supported are .hdf, which is an easy and fast storage,
-        but only supported on python 3.7 and 3.8 on all systems.
-        For more information on python 3.9 on windows, check
-        https://github.com/PyTables/PyTables/issues/823.
-        Also, .csv is supported as an easy-readable option.
+        and, .csv is supported as an easy-readable option.
+        Also, .parquet, .parquet.snappy, .parquet.gzip and .parquet.brotli
+        are supported.
 
         :param str,os.path.normpath filepath:
             Filepath were to store the data. Either .hdf or .csv
