@@ -239,25 +239,15 @@ class TimeSeriesData(pd.DataFrame):
 
         elif filepath.suffix == ".csv":
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
-        elif filepath.suffix == ".parquet":
+        elif ".parquet" in filepath.name:
+            parquet_split = filepath.name.split(".parquet")
             pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression=None,
-                                          index=True)
-        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".gzip":
-            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression='gzip',
-                                          index=True)
-        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".brotli":
-            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression='gzip',
-                                          index=True)
-        elif filepath.name.split('.')[-2] == "parquet" and filepath.suffix == ".snappy":
-            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression='snappy',
+                                          compression=parquet_split[-1][1:] if parquet_split[-1] else None,
                                           index=True)
         else:
             raise TypeError("Given file-format is not supported."
-                            "You can only store TimeSeriesData as .hdf or .csv")
+                            "You can only store TimeSeriesData as .hdf, .csv, .parquet, "
+                            "and .parquet.COMPRESSION_NAME with additional compression options")
 
     def to_df(self, force_single_index=False):
         """
@@ -327,13 +317,7 @@ class TimeSeriesData(pd.DataFrame):
                                "Please pass a string to specify the name "
                                "of the sheet you want to load.")
             df = pd.read_excel(io=file, sheet_name=sheet_name)
-        elif file.suffix == ".parquet":
-            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
-        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".gzip":
-            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
-        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".brotli":
-            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
-        elif file.name.split('.')[-2] == "parquet" and file.suffix == ".snappy":
+        elif ".parquet" in file.name:
             df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
