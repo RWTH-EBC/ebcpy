@@ -13,7 +13,8 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo==0.5.0',
-        'GitPython>=3.1.27'
+        'GitPython>=3.1.27',
+        'pyarrow>=11.0.0'
     ]
 }
 
@@ -31,8 +32,7 @@ INSTALL_REQUIRES = [
     
 if sys.version_info.minor >= 9 and sys.version_info.major == 3:
     EXTRAS_REQUIRE['full'].append('fastparquet>=2023.1.0')
-if sys.version_info.minor >= 7 and sys.version_info.major == 3:
-    EXTRAS_REQUIRE['full'].append('pyarrow>=11.0.0')
+
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
