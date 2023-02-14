@@ -50,7 +50,7 @@ class TimeSeriesData(pd.DataFrame):
 
     :param str,os.path.normpath,pd.DataFrame data:
         Filepath ending with either .hdf, .mat, .csv, .parquet,
-        .parquet.snappy, .parquet.gzip or .parquet.brotli containing
+        or .parquet.COMPRESSION_NAME containing
         time-dependent data to be loaded as a pandas.DataFrame.
         Alternative option is to pass a DataFrame directly.
     :keyword str key:
@@ -202,12 +202,14 @@ class TimeSeriesData(pd.DataFrame):
         Save the current time-series-data into the given file-format.
         Currently supported are .hdf, which is an easy and fast storage,
         and, .csv is supported as an easy-readable option.
-        Also, .parquet, .parquet.snappy, .parquet.gzip and .parquet.brotli
-        are supported.
+        Also, .parquet, and with additional compression .parquet.COMPRESSION_NAME
+        are supported. Compressions could be gzip, brotli or snappy. For all possible
+        compressions see the documentation of the parquet engines.
+        For a small comparison of these data formats see https://github.com/RWTH-EBC/ebcpy/issues/81
 
         :param str,os.path.normpath filepath:
-            Filepath were to store the data. Either .hdf or .csv
-            has to be the file-ending.
+            Filepath were to store the data. Either .hdf, .csv, .parquet
+            or .parquet.COMPRESSION_NAME has to be the file-ending.
             Default is current filepath of class.
         :keyword str key:
             Necessary keyword-argument for saving a .hdf-file.
