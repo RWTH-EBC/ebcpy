@@ -136,7 +136,7 @@ def save_reproduction_archive(
     ))
 
     # Python-Reproduction:
-    py_requirements_content, diff_files = _get_python_package_information(
+    py_requirements_content, diff_files, pip_version = _get_python_package_information(
         search_on_pypi=search_on_pypi
     )
     files.append(ReproductionFile(
@@ -146,7 +146,8 @@ def save_reproduction_archive(
     files.extend(diff_files)
 
     py_repro = _get_python_reproduction(
-        title=title
+        title=title,
+        pip_version=pip_version
     )
     files.append(ReproductionFile(
         filename="python/Reproduce_python_environment.txt",
@@ -295,6 +296,7 @@ def _get_python_package_information(search_on_pypi: bool):
     installed_packages = [pack for pack in pkg_resources.working_set]
     diff_paths = []
     requirement_txt_content = []
+    pip_version = ""
     for package in installed_packages:
         repo_info = get_git_information(
             path=package.location,
@@ -303,9 +305,12 @@ def _get_python_package_information(search_on_pypi: bool):
         )
         if repo_info is None:
             # Check if in python path:
-            requirement_txt_content.append(
-                f"{package.key}=={package.version}"
-            )
+            if package.key == "pip":  # exclude pip in requirements and give info to _get_python_reproduction
+                pip_version = f"=={package.version}"
+            else:
+                requirement_txt_content.append(
+                    f"{package.key}=={package.version}"
+                )
             if search_on_pypi:
                 from pypisearch.search import Search
                 res = Search(package.key).result
@@ -322,10 +327,10 @@ def _get_python_package_information(search_on_pypi: bool):
                 f"git+{repo_info['url']}.git@{cmt_sha}#egg={package.key}"
             )
             diff_paths.extend(repo_info["difference_files"])
-    return "\n".join(requirement_txt_content), diff_paths
+    return "\n".join(requirement_txt_content), diff_paths, pip_version
 
 
-def _get_python_reproduction(title: str):
+def _get_python_reproduction(title: str, pip_version: str):
     """
     Get the content of a script to reproduce the python
     environment used for the study.
@@ -336,7 +341,7 @@ def _get_python_reproduction(title: str):
     py_reproduce_content = [
         f"conda create -n {env_name} python={py_version} -y",
         f"conda activate {env_name}",
-        f"pip install --upgrade pip",
+        f"python -m pip install pip{pip_version}",
         f"pip install -r requirements.txt",
     ]
     return "\n".join(py_reproduce_content)
