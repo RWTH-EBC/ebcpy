@@ -52,7 +52,7 @@ class CopyFile:
 
 
 def save_reproduction_archive(
-        title: str,
+        title: str = None,
         path: Union[pathlib.Path, str] = None,
         log_message: str = None,
         files: List[Union[ReproductionFile, CopyFile]] = None,
@@ -120,7 +120,7 @@ def save_reproduction_archive(
         log_message = input("Please enter the specifications / log for this study: ")
         if not log_message:
             log_message = "The user was to lazy to pass any useful information on " \
-                  "what made this research study different to others."
+                          "what made this research study different to others."
 
     with open(path.joinpath(f"Study_Log_{title}.txt"), "a+") as f:
         f.write(f"{current_time}: {log_message}\n")
@@ -253,7 +253,39 @@ def get_git_information(
     return data
 
 
-def _get_general_information(title: str, log_message: str, current_time:str):
+def creat_copy_files_from_dir(foldername: str,
+                              sourcepath: pathlib.Path,
+                              remove: bool = False):
+    """
+    Creates a list with CopyFiles for each file in a directory
+    where which will be saved in the zip under the foldername
+    with all subdirectories.
+
+    :param str foldername:
+        Name of the folder in the zip. Can be a relative path.
+    :param pathlib.Path sourcepath:
+        Path on the current machine where the directory to copy
+        is located
+    :param bool remove:
+        If True, the files in the directory will be moved
+        instead of just copied.
+
+    :return list:
+        Returns a list with CopyFiles for each file in the directory source path.
+    """
+    files = []
+    for dirpath, dirnames, filenames in os.walk(sourcepath):
+        for file in filenames:
+            filename = foldername + dirpath.__str__().split(sourcepath.name)[-1] + '/' + file
+            files.append(CopyFile(
+                sourcepath=os.path.join(dirpath, file),
+                filename=filename,
+                remove=remove
+            ))
+    return files
+
+
+def _get_general_information(title: str, log_message: str, current_time: str):
     """
     Function to save the general information of the study.
     Time, machine information, and an intro on how to reproduce
@@ -284,9 +316,9 @@ For future use, be sure to commit and push your changes before running any resea
         "Processor": platform.processor(),
     }
     _content_lines = [
-        info_header + "\n",
-        "General system information of performed study:",
-    ] + [f"{k}: {v}" for k, v in _data.items()]
+                         info_header + "\n",
+                         "General system information of performed study:",
+                     ] + [f"{k}: {v}" for k, v in _data.items()]
     return "\n".join(_content_lines)
 
 
