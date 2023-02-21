@@ -4,11 +4,12 @@ simulations for energy and building climate related models.
 Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.
 """
-import logging
 import pathlib
 import warnings
 import os
 import itertools
+import time
+from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
@@ -320,6 +321,7 @@ class SimulationAPI:
                  }
             )
         # Decide between mp and single core
+        t_sim_start = time.time()
         if self.use_mp:
             self._n_sim_counter = 0
             self._n_sim_total = len(kwargs)
@@ -329,27 +331,39 @@ class SimulationAPI:
             results = []
             for result in self.pool.imap(self._single_simulation, kwargs):
                 results.append(result)
-                self._log_simulation_process()
+                self._n_sim_counter += 1
+                if self._n_sim_counter == self.n_cpu:
+                    t1 = time.time()
+                if self._n_sim_counter > self.n_cpu:
+                    self._remaining_time(t1)
                 if self._n_sim_counter == 1 and return_option == 'savepath':
                     self._check_disk_space(result)
+            print(" ")
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
                 "return_option": _single_kwargs["return_option"],
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
+        self.logger.info(f"Finished {len(parameters)} simulations on {self.n_cpu} processes in "
+                         f"{timedelta(seconds=int(time.time()-t_sim_start))}")
         if len(results) == 1:
             return results[0]
         return results
 
-    def _log_simulation_process(self):
-        """Log the simulation progress"""
-        self._n_sim_counter += 1
-        progress = int(self._n_sim_counter / self._n_sim_total * 100)
-        if progress == self._progress_int + 10:
-            if self.logger.isEnabledFor(level=logging.INFO):
-                self.logger.info(f"Finished {progress} % of all {self._n_sim_total} simulations")
-            self._progress_int = progress
+    def _remaining_time(self, t1):
+        """
+        Helper function to calculate the remaining simulation time and log the finished simulations.
+        The function can first be used when a simulation has finished on each used cpu, so that the
+        start-up time is not considered in the time estimation.
+
+        :param float t1:
+            Start time after n_cpu simulations.
+        """
+        t_remaining = (time.time() - t1)/(self._n_sim_counter-self.n_cpu) * (self._n_sim_total - self._n_sim_counter)
+        p_finished = self._n_sim_counter/self._n_sim_total * 100
+        print(f"\rFinished {np.round(p_finished, 1)} %. "
+              f"Approximately remaining time: {timedelta(seconds=int(t_remaining))} ", end="")
 
     def _check_disk_space(self, filepath):
         """
