@@ -16,6 +16,7 @@ from pydantic import BaseModel, Field, validator
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.utils.reproduction import save_reproduction_archive
+from shutil import disk_usage
 
 
 class Variable(BaseModel):
@@ -329,6 +330,8 @@ class SimulationAPI:
             for result in self.pool.imap(self._single_simulation, kwargs):
                 results.append(result)
                 self._log_simulation_process()
+                if self._n_sim_counter == 1 and return_option == 'savepath':
+                    self._check_disk_space(result)
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
@@ -347,6 +350,28 @@ class SimulationAPI:
             if self.logger.isEnabledFor(level=logging.INFO):
                 self.logger.info(f"Finished {progress} % of all {self._n_sim_total} simulations")
             self._progress_int = progress
+
+    def _check_disk_space(self, filepath):
+        """
+        Checks how much disk space all simulations will need on a hard drive
+        and throws a warning when not enough space is free.
+        Works only for multiprocessing.
+        """
+        def convert_bytes(size):
+            suffixes = ['B', 'KB', 'MB', 'GB', 'TB']
+            suffix_idx = 0
+            while size >= 1024 and suffix_idx < len(suffixes):
+                suffix_idx += 1
+                size = size / 1024.0
+            return f'{str(np.round(size, 2))} {suffixes[suffix_idx]}'
+
+        sim_file_size = os.stat(filepath).st_size
+        sim_files_size = sim_file_size * self._n_sim_total
+        self.logger.info(f"Simulations files need approximately {convert_bytes(sim_files_size)} of disk space")
+        total, used, free = disk_usage(filepath)
+        if sim_files_size > free - 0.05 * total:
+            warnings.warn(f"{convert_bytes(free)} of free disk space on {filepath[:2]} "
+                          f"is not enough for all simulation files.")
 
     @abstractmethod
     def _single_simulation(self, kwargs):
