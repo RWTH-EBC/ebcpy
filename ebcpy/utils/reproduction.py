@@ -171,7 +171,10 @@ def save_reproduction_archive(
             elif isinstance(file, CopyFile):
                 zip_file.write(file.sourcepath, file.filename)
                 if file.remove:
-                    os.remove(file.sourcepath)
+                    try:
+                        os.remove(file.sourcepath)
+                    except PermissionError:
+                        logger.error(f"Could not remove {file.sourcepath}")
             else:
                 raise TypeError(
                     f"Given file '{file}' has no "
