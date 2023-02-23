@@ -236,6 +236,7 @@ class TestReproduction(unittest.TestCase):
         self.cd_files = []
 
     def test_save_reproduction_archive(self):
+        os.getlogin = lambda: "test_login"
         # test no input
         reproduction.input = lambda _: ""
         zip_file = reproduction.save_reproduction_archive()
@@ -298,10 +299,6 @@ class TestReproduction(unittest.TestCase):
                 os.remove(file)
         except Exception:
             pass
-        # recreate the file which was removed
-        # f = open(self.data_dir.joinpath('remove.txt'), 'w')
-        # f.write('test file to remove')
-        # f.close()
 
 
 if __name__ == "__main__":
