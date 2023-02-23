@@ -267,8 +267,8 @@ def creat_copy_files_from_dir(foldername: str,
         Path on the current machine where the directory to copy
         is located
     :param bool remove:
-        If True, the files in the directory will be moved
-        instead of just copied.
+        Default is False. If True, the files in the directory
+        will be moved instead of just copied.
 
     :return list:
         Returns a list with CopyFiles for each file in the directory source path.
