@@ -249,6 +249,7 @@ class TestReproduction(unittest.TestCase):
         # create a file to remove with CopyFile but leave it open for executing except block
         f = open(self.data_dir.joinpath('remove.txt'), 'w')
         f.write('test file to remove')
+        f.close()
         # test different correct inputs
         test_files = [
             'not a file string',
@@ -270,8 +271,6 @@ class TestReproduction(unittest.TestCase):
             files=test_files
         )
         self.assertTrue(zipfile.is_zipfile(zip_file))
-        f.close()
-        os.remove(self.data_dir.joinpath('remove.txt'))
         # test false inputs
         false_test_files = [1]
         with self.assertRaises(TypeError):
