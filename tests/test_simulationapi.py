@@ -191,7 +191,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
                 cd=self.example_sim_dir,
                 model_name=model_name,
                 packages=packages,
-                dymola_path=dymola_path,
+                # dymola_path=dymola_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
                 mos_script_post=mos_script
