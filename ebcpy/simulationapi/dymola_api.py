@@ -1065,7 +1065,7 @@ class DymolaAPI(SimulationAPI):
         if basedir is None:
             if "linux" in sys.platform:
                 basedir = os.path.normpath("/opt")
-                for root, dirs, files in os.walk(basedir):
+                for root, dirs, files in os.walk("/"):
                     if 'dymola' in root.__str__():
                         print(root)
                         print(dirs)
