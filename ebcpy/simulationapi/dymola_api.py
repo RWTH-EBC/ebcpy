@@ -1066,9 +1066,10 @@ class DymolaAPI(SimulationAPI):
             if "linux" in sys.platform:
                 basedir = os.path.normpath("/opt")
                 for root, dirs, files in os.walk(basedir):
-                    print(root)
-                    print(dirs)
-                    print(files)
+                    if 'dymola' in root.__str__():
+                        print(root)
+                        print(dirs)
+                        print(files)
             elif "win" in sys.platform:
                 basedir = os.path.normpath("C:/Program Files")
             elif "darwin" in sys.platform:
