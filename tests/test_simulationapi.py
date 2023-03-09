@@ -183,7 +183,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
 
         # Just for tests in the ci:
         if "linux" in sys.platform:
-            dymola_path = "/usr/local/bin/dymola"
+            dymola_path = "/opt/dymola-2020-x86_64"
         else:
             dymola_path = None
         try:
@@ -191,7 +191,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
                 cd=self.example_sim_dir,
                 model_name=model_name,
                 packages=packages,
-                # dymola_path=dymola_path,
+                dymola_path=dymola_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
                 mos_script_post=mos_script
