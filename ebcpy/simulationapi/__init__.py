@@ -7,6 +7,7 @@ much more user-friendly than the provided APIs by Dymola or fmpy.
 import pathlib
 import warnings
 import os
+import sys
 import itertools
 import time
 from datetime import timedelta
@@ -342,7 +343,7 @@ class SimulationAPI:
                     self._remaining_time(t1)
                 if self._n_sim_counter == 1 and return_option == 'savepath':
                     self._check_disk_space(result)
-            print(" ")
+            sys.stderr.write("\r")
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
@@ -350,7 +351,7 @@ class SimulationAPI:
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
         self.logger.info(f"Finished {len(parameters)} simulations on {self.n_cpu} processes in "
-                         f"{timedelta(seconds=int(time.time()-t_sim_start))}")
+                         f"{timedelta(seconds=int(time.time() - t_sim_start))}")
         if len(results) == 1:
             return results[0]
         return results
@@ -364,10 +365,11 @@ class SimulationAPI:
         :param float t1:
             Start time after n_cpu simulations.
         """
-        t_remaining = (time.time() - t1)/(self._n_sim_counter-self.n_cpu) * (self._n_sim_total - self._n_sim_counter)
-        p_finished = self._n_sim_counter/self._n_sim_total * 100
-        print(f"\rFinished {np.round(p_finished, 1)} %. "
-              f"Approximately remaining time: {timedelta(seconds=int(t_remaining))} ", end="")
+        t_remaining = (time.time() - t1) / (self._n_sim_counter - self.n_cpu) * (
+                    self._n_sim_total - self._n_sim_counter)
+        p_finished = self._n_sim_counter / self._n_sim_total * 100
+        sys.stderr.write(f"\rFinished {np.round(p_finished, 1)} %. "
+                         f"Approximately remaining time: {timedelta(seconds=int(t_remaining))} ")
 
     def _check_disk_space(self, filepath):
         """
@@ -376,6 +378,7 @@ class SimulationAPI:
         after all simulations.
         Works only for multiprocessing.
         """
+
         def convert_bytes(size):
             suffixes = ['B', 'KB', 'MB', 'GB', 'TB']
             suffix_idx = 0
