@@ -52,7 +52,7 @@ class CopyFile:
 
 
 def save_reproduction_archive(
-        title: str,
+        title: str = None,
         path: Union[pathlib.Path, str] = None,
         log_message: str = None,
         files: List[Union[ReproductionFile, CopyFile]] = None,
@@ -120,7 +120,7 @@ def save_reproduction_archive(
         log_message = input("Please enter the specifications / log for this study: ")
         if not log_message:
             log_message = "The user was to lazy to pass any useful information on " \
-                  "what made this research study different to others."
+                          "what made this research study different to others."
 
     with open(path.joinpath(f"Study_Log_{title}.txt"), "a+") as f:
         f.write(f"{current_time}: {log_message}\n")
@@ -136,7 +136,7 @@ def save_reproduction_archive(
     ))
 
     # Python-Reproduction:
-    py_requirements_content, diff_files = _get_python_package_information(
+    py_requirements_content, diff_files, pip_version = _get_python_package_information(
         search_on_pypi=search_on_pypi
     )
     files.append(ReproductionFile(
@@ -146,7 +146,8 @@ def save_reproduction_archive(
     files.extend(diff_files)
 
     py_repro = _get_python_reproduction(
-        title=title
+        title=title,
+        pip_version=pip_version
     )
     files.append(ReproductionFile(
         filename="python/Reproduce_python_environment.txt",
@@ -170,7 +171,10 @@ def save_reproduction_archive(
             elif isinstance(file, CopyFile):
                 zip_file.write(file.sourcepath, file.filename)
                 if file.remove:
-                    os.remove(file.sourcepath)
+                    try:
+                        os.remove(file.sourcepath)
+                    except PermissionError:
+                        logger.error(f"Could not remove {file.sourcepath}")
             else:
                 raise TypeError(
                     f"Given file '{file}' has no "
@@ -249,7 +253,39 @@ def get_git_information(
     return data
 
 
-def _get_general_information(title: str, log_message: str, current_time:str):
+def creat_copy_files_from_dir(foldername: str,
+                              sourcepath: pathlib.Path,
+                              remove: bool = False):
+    """
+    Creates a list with CopyFiles for each file in a directory
+    where which will be saved in the zip under the foldername
+    with all subdirectories.
+
+    :param str foldername:
+        Name of the folder in the zip. Can be a relative path.
+    :param pathlib.Path sourcepath:
+        Path on the current machine where the directory to copy
+        is located
+    :param bool remove:
+        Default is False. If True, the files in the directory
+        will be moved instead of just copied.
+
+    :return list:
+        Returns a list with CopyFiles for each file in the directory source path.
+    """
+    files = []
+    for dirpath, dirnames, filenames in os.walk(sourcepath):
+        for file in filenames:
+            filename = foldername + dirpath.__str__().split(sourcepath.name)[-1] + '/' + file
+            files.append(CopyFile(
+                sourcepath=os.path.join(dirpath, file),
+                filename=filename,
+                remove=remove
+            ))
+    return files
+
+
+def _get_general_information(title: str, log_message: str, current_time: str):
     """
     Function to save the general information of the study.
     Time, machine information, and an intro on how to reproduce
@@ -280,9 +316,9 @@ For future use, be sure to commit and push your changes before running any resea
         "Processor": platform.processor(),
     }
     _content_lines = [
-        info_header + "\n",
-        "General system information of performed study:",
-    ] + [f"{k}: {v}" for k, v in _data.items()]
+                         info_header + "\n",
+                         "General system information of performed study:",
+                     ] + [f"{k}: {v}" for k, v in _data.items()]
     return "\n".join(_content_lines)
 
 
@@ -295,6 +331,7 @@ def _get_python_package_information(search_on_pypi: bool):
     installed_packages = [pack for pack in pkg_resources.working_set]
     diff_paths = []
     requirement_txt_content = []
+    pip_version = ""
     for package in installed_packages:
         repo_info = get_git_information(
             path=package.location,
@@ -303,9 +340,12 @@ def _get_python_package_information(search_on_pypi: bool):
         )
         if repo_info is None:
             # Check if in python path:
-            requirement_txt_content.append(
-                f"{package.key}=={package.version}"
-            )
+            if package.key == "pip":  # exclude pip in requirements and give info to _get_python_reproduction
+                pip_version = f"=={package.version}"
+            else:
+                requirement_txt_content.append(
+                    f"{package.key}=={package.version}"
+                )
             if search_on_pypi:
                 from pypisearch.search import Search
                 res = Search(package.key).result
@@ -322,10 +362,10 @@ def _get_python_package_information(search_on_pypi: bool):
                 f"git+{repo_info['url']}.git@{cmt_sha}#egg={package.key}"
             )
             diff_paths.extend(repo_info["difference_files"])
-    return "\n".join(requirement_txt_content), diff_paths
+    return "\n".join(requirement_txt_content), diff_paths, pip_version
 
 
-def _get_python_reproduction(title: str):
+def _get_python_reproduction(title: str, pip_version: str):
     """
     Get the content of a script to reproduce the python
     environment used for the study.
@@ -336,7 +376,7 @@ def _get_python_reproduction(title: str):
     py_reproduce_content = [
         f"conda create -n {env_name} python={py_version} -y",
         f"conda activate {env_name}",
-        f"pip install --upgrade pip",
+        f"python -m pip install pip{pip_version}",
         f"pip install -r requirements.txt",
     ]
     return "\n".join(py_reproduce_content)

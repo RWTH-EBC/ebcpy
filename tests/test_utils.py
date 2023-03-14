@@ -1,14 +1,16 @@
 """Test-module for all classes inside
 ebcpy.utils."""
-
+import shutil
+import sys
 import unittest
 import os
 from pathlib import Path
+import zipfile
 import numpy as np
 import pandas as pd
 import scipy.io as spio
 from ebcpy import TimeSeriesData
-from ebcpy.utils import setup_logger, conversion, statistics_analyzer
+from ebcpy.utils import setup_logger, conversion, statistics_analyzer, reproduction
 
 
 class TestConversion(unittest.TestCase):
@@ -124,7 +126,7 @@ class TestStatisticsAnalyzer(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("data")
         self.meas_ex = np.random.rand(1000)
-        self.sim_ex = np.random.rand(1000)*10
+        self.sim_ex = np.random.rand(1000) * 10
 
     def test_calc(self):
         """Test class StatisticsAnalyzer"""
@@ -165,7 +167,7 @@ class TestStatisticsAnalyzer(unittest.TestCase):
         self.assertIsInstance(stat_analyzer.calc_nrmse(self.meas_ex, self.sim_ex),
                               float)
         with self.assertRaises(ValueError):
-            custom_meas = self.meas_ex/self.meas_ex
+            custom_meas = self.meas_ex / self.meas_ex
             stat_analyzer.calc_nrmse(custom_meas, self.sim_ex)
 
     def test_calc_cvrmse(self):
@@ -185,6 +187,7 @@ class TestStatisticsAnalyzer(unittest.TestCase):
 
     def test_custom_func(self):
         """Test custom function calc_r2"""
+
         def my_func(x, y):
             return x - y
 
@@ -219,6 +222,81 @@ class TestLogger(unittest.TestCase):
         try:
             os.remove(self.logger.handlers[1].baseFilename)
         except PermissionError:
+            pass
+
+
+class TestReproduction(unittest.TestCase):
+    """Test-class for the reproduction functions"""
+
+    def setUp(self):
+        """Called before every test.
+        Used to setup relevant paths and APIs etc."""
+        self.data_dir = Path(__file__).parent.joinpath("data")
+        self.save_dir = self.data_dir.joinpath('testzone', 'reproduction_tests')
+        self.cd_files = []
+
+    def test_save_reproduction_archive(self):
+        os.getlogin = lambda: "test_login"
+        # test no input
+        reproduction.input = lambda _: ""
+        zip_file = reproduction.save_reproduction_archive()
+        # for tearDown of the files which will be saved in cd when no path is given
+        self.cd_files.append(zip_file)
+        file = Path(sys.modules['__main__'].__file__).absolute().name.replace(".py", "")
+        logger_name = f"Study_log_{file}.txt"
+        self.cd_files.append(logger_name)
+        self.assertTrue(zipfile.is_zipfile(zip_file))
+        # create a file to remove with CopyFile but leave it open for executing except block
+        f = open(self.data_dir.joinpath('remove.txt'), 'w')
+        f.write('test file to remove')
+        f.close()
+        # test different correct inputs
+        test_files = [
+            'not a file string',
+            str(self.data_dir.joinpath('example_data.csv')),
+            reproduction.CopyFile(
+                filename='example_data_copy_file.csv',
+                sourcepath=self.data_dir.joinpath('example_data.csv'),
+                remove=False),
+            reproduction.CopyFile(
+                filename="test_remove_file.txt",
+                sourcepath=self.data_dir.joinpath('remove.txt'),
+                remove=True
+            )
+        ]
+        zip_file = reproduction.save_reproduction_archive(
+            title="Test_correct_inputs",
+            path=self.save_dir,
+            log_message="Test study correct inputs",
+            files=test_files
+        )
+        self.assertTrue(zipfile.is_zipfile(zip_file))
+        # test false inputs
+        false_test_files = [1]
+        with self.assertRaises(TypeError):
+            reproduction.save_reproduction_archive(
+                title="Test_false_inputs",
+                path=self.save_dir,
+                log_message="Test study false inputs",
+                files=false_test_files
+            )
+
+    def test_creat_copy_files_from_dir(self):
+        files = reproduction.creat_copy_files_from_dir(
+            foldername='test_dir',
+            sourcepath=self.data_dir,
+            remove=False
+        )
+        for copy_file in files:
+            self.assertIsInstance(copy_file, reproduction.CopyFile)
+
+    def tearDown(self) -> None:
+        """Delete saved files"""
+        try:
+            shutil.rmtree(self.save_dir, ignore_errors=True)
+            for file in self.cd_files:
+                os.remove(file)
+        except Exception:
             pass
 
 

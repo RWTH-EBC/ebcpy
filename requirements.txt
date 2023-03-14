@@ -10,5 +10,6 @@ xlrd>=2.0.1
 pymoo==0.5.0
 pydantic>=1.8.2
 h5py>=3.1.0
+GitPython>=3.1.30
 fastparquet>=2023.1.0; python_version >= '3.9'
 pyarrow>=11.0.0; python_version>='3.7'
