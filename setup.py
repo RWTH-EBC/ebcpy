@@ -13,7 +13,8 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo==0.5.0',
-        'GitPython>=3.1.27'
+        'GitPython>=3.1.27',
+        'pyarrow>=11.0.0'
     ]
 }
 
@@ -25,15 +26,17 @@ INSTALL_REQUIRES = [
     'scikit-learn>=0.24.2',
     'fmpy>=0.2.27',
     'pydantic>=1.8.2',
-    'h5py>=3.1.0'
+    'h5py>=3.1.0',
+    'tables>=3.6.1'
 ]
-# TODO: Remove once tables in enables for python >3.9
-if sys.version_info.minor < 9 and sys.version_info.major == 3:
-    INSTALL_REQUIRES.append('tables>=3.6.1')
+    
+if sys.version_info.minor >= 9 and sys.version_info.major == 3:
+    EXTRAS_REQUIRE['full'].append('fastparquet>=2023.1.0')
+
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 
 setuptools.setup(
     name='ebcpy',
