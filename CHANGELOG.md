@@ -65,3 +65,6 @@
 - v0.3.3:
   - Fix memory error for large parameter variations durring multiproccesing #76
   - Add option to set only one savepath for saving files of parameter varaiations #74
+- v0.3.4:
+  - Fix reproduction for new pip versions and old Dymola versions #80
+  - Add support for the data format parquet with compression options #81
