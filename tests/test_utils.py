@@ -284,7 +284,7 @@ class TestReproduction(unittest.TestCase):
     def test_creat_copy_files_from_dir(self):
         files = reproduction.creat_copy_files_from_dir(
             foldername='test_dir',
-            sourcepath=self.data_dir.joinpath("example_reproduction_dir"),
+            sourcepath=self.data_dir,
             remove=False
         )
         for copy_file in files:
