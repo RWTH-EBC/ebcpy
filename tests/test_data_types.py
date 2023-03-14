@@ -84,6 +84,29 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(IndexError):
             data_types.TimeSeriesData(filepath, header=0)
 
+    def test_load_save_parquet(self):
+        """Test correct loading and saving for all parquet options"""
+        tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
+                                            sep=";")
+        parquet_formats = ['parquet', 'parquet.snappy', 'parquet.gzip', 'parquet.brotli']
+        # Test parquet engine pyarrow
+        try:
+            for suffix in parquet_formats:
+                filepath = self.savedir.joinpath(f"test_parquet.{suffix}")
+                tsd_ref.save(filepath=filepath, engine='pyarrow')
+                self.assertTrue(os.path.isfile(filepath))
+                tsd = data_types.TimeSeriesData(filepath, engine='pyarrow')
+                self.assertTrue(tsd.equals(tsd_ref))
+        # Test parquet engine fastparquet
+            for suffix in parquet_formats:
+                filepath = self.savedir.joinpath(f"test_parquet.{suffix}")
+                tsd_ref.save(filepath=filepath, engine='fastparquet')
+                self.assertTrue(os.path.isfile(filepath))
+                tsd = data_types.TimeSeriesData(filepath, engine='fastparquet')
+                self.assertTrue(tsd.equals(tsd_ref))
+        except ImportError:
+            pass  # Skip the optional part
+
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
         # Test if wrong input leads to FileNotFoundError

@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
+
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
 
@@ -48,7 +49,8 @@ class TimeSeriesData(pd.DataFrame):
     visualization and preprocessing access.
 
     :param str,os.path.normpath,pd.DataFrame data:
-        Filepath ending with either .hdf, .mat or .csv containing
+        Filepath ending with either .hdf, .mat, .csv, .parquet,
+        or .parquet.COMPRESSION_NAME containing
         time-dependent data to be loaded as a pandas.DataFrame.
         Alternative option is to pass a DataFrame directly.
     :keyword str key:
@@ -71,6 +73,9 @@ class TimeSeriesData(pd.DataFrame):
         argument when loading a xlsx-file.
     :keyword str default_tag:
         Which value to use as tag. Default is 'raw'
+    :keyword str engine:
+        Chose the engine for reading .parquet files. Default is 'pyarrow'
+        Other option is 'fastparquet' (python>=3.9).
 
 
     Examples:
@@ -196,20 +201,24 @@ class TimeSeriesData(pd.DataFrame):
         """
         Save the current time-series-data into the given file-format.
         Currently supported are .hdf, which is an easy and fast storage,
-        but only supported on python 3.7 and 3.8 on all systems.
-        For more information on python 3.9 on windows, check
-        https://github.com/PyTables/PyTables/issues/823.
-        Also, .csv is supported as an easy-readable option.
+        and, .csv is supported as an easy-readable option.
+        Also, .parquet, and with additional compression .parquet.COMPRESSION_NAME
+        are supported. Compressions could be gzip, brotli or snappy. For all possible
+        compressions see the documentation of the parquet engines.
+        For a small comparison of these data formats see https://github.com/RWTH-EBC/ebcpy/issues/81
 
         :param str,os.path.normpath filepath:
-            Filepath were to store the data. Either .hdf or .csv
-            has to be the file-ending.
+            Filepath were to store the data. Either .hdf, .csv, .parquet
+            or .parquet.COMPRESSION_NAME has to be the file-ending.
             Default is current filepath of class.
         :keyword str key:
             Necessary keyword-argument for saving a .hdf-file.
             Specifies the key of the table in the .hdf-file.
         :keyword str sep:
             Separator used for saving as .csv. Default is ','.
+        :keyword str engine:
+            Chose the engine for reading .parquet files. Default is 'pyarrow'
+            Other option is 'fastparquet' (python>=3.9).
         :return:
         """
         # If new settings are needed, update existing ones
@@ -223,7 +232,6 @@ class TimeSeriesData(pd.DataFrame):
         if filepath is None:
             raise ValueError("Current TimeSeriesData instance "
                              "has no filepath, please specify one.")
-
         # Save based on file suffix
         if filepath.suffix == ".hdf":
             if "key" not in kwargs:
@@ -233,9 +241,15 @@ class TimeSeriesData(pd.DataFrame):
 
         elif filepath.suffix == ".csv":
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
+        elif ".parquet" in filepath.name:
+            parquet_split = filepath.name.split(".parquet")
+            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
+                                          compression=parquet_split[-1][1:] if parquet_split[-1] else None,
+                                          index=True)
         else:
             raise TypeError("Given file-format is not supported."
-                            "You can only store TimeSeriesData as .hdf or .csv")
+                            "You can only store TimeSeriesData as .hdf, .csv, .parquet, "
+                            "and .parquet.COMPRESSION_NAME with additional compression options")
 
     def to_df(self, force_single_index=False):
         """
@@ -296,7 +310,6 @@ class TimeSeriesData(pd.DataFrame):
                 index_col=self._loader_kwargs.get("index_col", 0),
                 header=self._loader_kwargs.get("header", _hea_def)
             )
-
         elif file.suffix == ".mat":
             df = sr.mat_to_pandas(fname=file, with_unit=False)
         elif file.suffix in ['.xlsx', '.xls', '.odf', '.ods', '.odt']:
@@ -306,6 +319,8 @@ class TimeSeriesData(pd.DataFrame):
                                "Please pass a string to specify the name "
                                "of the sheet you want to load.")
             df = pd.read_excel(io=file, sheet_name=sheet_name)
+        elif ".parquet" in file.name:
+            df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
         if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
@@ -317,11 +332,10 @@ class TimeSeriesData(pd.DataFrame):
                     f"Currently only "
                     f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
                     f"are supported."
-                    f"Automatic conversion to pd.DateTimeIndex failed" 
+                    f"Automatic conversion to pd.DateTimeIndex failed"
                     f"see error above."
                 ) from err
         return df
-
 
     def get_variable_names(self) -> List[str]:
         """
@@ -357,8 +371,8 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_columns_by_tag(self,
                            tag: str,
-                           variables: list =None,
-                           return_type: str='pandas',
+                           variables: list = None,
+                           return_type: str = 'pandas',
                            drop_level: bool = False):
         """
         Returning all columns with defined tag in the form of ndarray.
