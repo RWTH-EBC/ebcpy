@@ -332,6 +332,10 @@ class SimulationAPI:
             for result in self.pool.imap(self._single_simulation, kwargs):
                 results.append(result)
                 self._n_sim_counter += 1
+                # Assuming that all worker start and finish their first simulation
+                # at the same time, so that the time estimation begins after
+                # n_cpu simulations. Otherwise, the translation and start process
+                # could falsify the time estimation.
                 if self._n_sim_counter == self.n_cpu:
                     t1 = time.time()
                 if self._n_sim_counter > self.n_cpu:
@@ -355,7 +359,7 @@ class SimulationAPI:
         """
         Helper function to calculate the remaining simulation time and log the finished simulations.
         The function can first be used when a simulation has finished on each used cpu, so that the
-        start-up time is not considered in the time estimation.
+        translation of the model is not considered in the time estimation.
 
         :param float t1:
             Start time after n_cpu simulations.
@@ -368,7 +372,8 @@ class SimulationAPI:
     def _check_disk_space(self, filepath):
         """
         Checks how much disk space all simulations will need on a hard drive
-        and throws a warning when not enough space is free.
+        and throws a warning when less than 5 % would be free on the hard drive
+        after all simulations.
         Works only for multiprocessing.
         """
         def convert_bytes(size):
