@@ -68,3 +68,6 @@
 - v0.3.4:
   - Fix reproduction for new pip versions and old Dymola versions #80
   - Add support for the data format parquet with compression options #81
+- v0.3.5:
+  - Add simulation time estimation and checking of free hard drive space for saving #86
+  - Add saving of directories for reproduction and tests for reproduction functions #87

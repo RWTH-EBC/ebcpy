@@ -36,7 +36,7 @@ if sys.version_info.minor >= 9 and sys.version_info.major == 3:
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
-VERSION = "0.3.4"
+VERSION = "0.3.5"
 
 setuptools.setup(
     name='ebcpy',
