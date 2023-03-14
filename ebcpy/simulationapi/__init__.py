@@ -4,11 +4,13 @@ simulations for energy and building climate related models.
 Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.
 """
-import logging
 import pathlib
 import warnings
 import os
+import sys
 import itertools
+import time
+from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
@@ -16,6 +18,7 @@ from pydantic import BaseModel, Field, validator
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.utils.reproduction import save_reproduction_archive
+from shutil import disk_usage
 
 
 class Variable(BaseModel):
@@ -319,6 +322,7 @@ class SimulationAPI:
                  }
             )
         # Decide between mp and single core
+        t_sim_start = time.time()
         if self.use_mp:
             self._n_sim_counter = 0
             self._n_sim_total = len(kwargs)
@@ -328,25 +332,68 @@ class SimulationAPI:
             results = []
             for result in self.pool.imap(self._single_simulation, kwargs):
                 results.append(result)
-                self._log_simulation_process()
+                self._n_sim_counter += 1
+                # Assuming that all worker start and finish their first simulation
+                # at the same time, so that the time estimation begins after
+                # n_cpu simulations. Otherwise, the translation and start process
+                # could falsify the time estimation.
+                if self._n_sim_counter == self.n_cpu:
+                    t1 = time.time()
+                if self._n_sim_counter > self.n_cpu:
+                    self._remaining_time(t1)
+                if self._n_sim_counter == 1 and return_option == 'savepath':
+                    self._check_disk_space(result)
+            sys.stderr.write("\r")
         else:
             results = [self._single_simulation(kwargs={
                 "parameters": _single_kwargs["parameters"],
                 "return_option": _single_kwargs["return_option"],
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
+        self.logger.info(f"Finished {len(parameters)} simulations on {self.n_cpu} processes in "
+                         f"{timedelta(seconds=int(time.time() - t_sim_start))}")
         if len(results) == 1:
             return results[0]
         return results
 
-    def _log_simulation_process(self):
-        """Log the simulation progress"""
-        self._n_sim_counter += 1
-        progress = int(self._n_sim_counter / self._n_sim_total * 100)
-        if progress == self._progress_int + 10:
-            if self.logger.isEnabledFor(level=logging.INFO):
-                self.logger.info(f"Finished {progress} % of all {self._n_sim_total} simulations")
-            self._progress_int = progress
+    def _remaining_time(self, t1):
+        """
+        Helper function to calculate the remaining simulation time and log the finished simulations.
+        The function can first be used when a simulation has finished on each used cpu, so that the
+        translation of the model is not considered in the time estimation.
+
+        :param float t1:
+            Start time after n_cpu simulations.
+        """
+        t_remaining = (time.time() - t1) / (self._n_sim_counter - self.n_cpu) * (
+                    self._n_sim_total - self._n_sim_counter)
+        p_finished = self._n_sim_counter / self._n_sim_total * 100
+        sys.stderr.write(f"\rFinished {np.round(p_finished, 1)} %. "
+                         f"Approximately remaining time: {timedelta(seconds=int(t_remaining))} ")
+
+    def _check_disk_space(self, filepath):
+        """
+        Checks how much disk space all simulations will need on a hard drive
+        and throws a warning when less than 5 % would be free on the hard drive
+        after all simulations.
+        Works only for multiprocessing.
+        """
+
+        def convert_bytes(size):
+            suffixes = ['B', 'KB', 'MB', 'GB', 'TB']
+            suffix_idx = 0
+            while size >= 1024 and suffix_idx < len(suffixes):
+                suffix_idx += 1
+                size = size / 1024.0
+            return f'{str(np.round(size, 2))} {suffixes[suffix_idx]}'
+
+        sim_file_size = os.stat(filepath).st_size
+        sim_files_size = sim_file_size * self._n_sim_total
+        self.logger.info(f"Simulations files need approximately {convert_bytes(sim_files_size)} of disk space")
+        total, used, free = disk_usage(filepath)
+        if sim_files_size > free - 0.05 * total:
+            warnings.warn(f"{convert_bytes(free)} of free disk space on {filepath[:2]} "
+                          f"is not enough for all simulation files.")
 
     @abstractmethod
     def _single_simulation(self, kwargs):
