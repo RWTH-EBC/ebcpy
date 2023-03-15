@@ -8,12 +8,14 @@ stages:
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
+  PYTHON_VERSION: "python:3.9"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/code-quality/pylint.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/doc/sphinxdoc.gitlab-ci.yml'
+    ref: '33-remove-images'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/build/build.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
