@@ -183,6 +183,12 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
 
         # Just for tests in the ci:
         if "linux" in sys.platform:
+            basedir = os.path.normpath("/opt")
+            for root, dirs, files in os.walk(basedir):
+                if 'dymola' in root.__str__():
+                    print(root)
+                    print(dirs)
+                    print(files)
             dymola_path = "/opt/dymola-2022-x86_64"
         else:
             dymola_path = None

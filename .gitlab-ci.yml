@@ -9,6 +9,7 @@ variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
   PYTHON_VERSION: "python:3.9"
+  TEST_ENGINE: "unittest"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
