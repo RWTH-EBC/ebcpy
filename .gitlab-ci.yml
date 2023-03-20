@@ -1,4 +1,5 @@
 stages:
+  - examples
   - test
   - doc
   - code_quality
@@ -8,6 +9,7 @@ stages:
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
+  GIT_REPO: RWTH-EBC/ebcpy
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
@@ -24,5 +26,8 @@ include:
     file: 'python/unit-tests/unittest_clean_env.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/unit-tests/coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/examples/examples.gitlab-ci.yml'
+    ref: '18-add-example-file-converter'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
