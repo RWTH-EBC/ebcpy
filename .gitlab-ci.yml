@@ -8,7 +8,7 @@ stages:
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
-  PYTHON_VERSION: "python:3.9"
+  PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
   TEST_ENGINE: "unittest"
 
 include:
