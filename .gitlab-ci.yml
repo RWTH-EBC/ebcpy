@@ -8,6 +8,8 @@ stages:
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
+  PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
+  TEST_ENGINE: "unittest"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
@@ -19,10 +21,8 @@ include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'pages/pages.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/unit-tests/unittest.gitlab-ci.yml'
+    file: 'python/tests/tests.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/unit-tests/unittest_clean_env.gitlab-ci.yml'
-  - project: 'EBC/EBC_all/gitlab_ci/templates'
-    file: 'python/unit-tests/coverage.gitlab-ci.yml'
+    file: 'python/tests/coverage.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
