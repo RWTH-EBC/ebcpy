@@ -7,7 +7,7 @@ import scipy.io as spio
 import numpy as np
 import pandas as pd
 
-from ebcpy.data_types import numeric_indexes, datetime_indexes
+from ebcpy.data_types import index_is_numeric, datetime_indexes
 
 
 def convert_tsd_to_modelica_mat(tsd, save_path_file, **kwargs):
@@ -210,7 +210,7 @@ def _convert_to_subset(df, columns, offset):
     if isinstance(df.index, tuple(datetime_indexes)):
         df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
         df[_time_header] = df.index.total_seconds() + offset
-    elif isinstance(df.index, tuple(numeric_indexes)):
+    elif index_is_numeric(df.index):
         df[_time_header] = df.index - df.iloc[0].name + offset
     else:
         # Should not happen as error is raised in data_types. But just to be sure:

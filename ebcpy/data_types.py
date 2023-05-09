@@ -25,15 +25,21 @@ __all__ = ['TimeSeries',
            'numeric_indexes',
            'datetime_indexes']
 
-numeric_indexes = [
-    type(pd.Index([], dtype="float64")),
-    pd.RangeIndex,
-    type(pd.Index([], dtype="int64"))
+numeric_index_dtypes = [
+    pd.Index([], dtype=dtype).dtype for dtype in
+    ["int8", "int16", "int32", "int64",
+     "uint8", "uint16", "uint32", "uint64",
+     "float32", "float64"]
 ]
 
 datetime_indexes = [
     pd.DatetimeIndex
 ]
+
+
+def index_is_numeric(index: pd.Index):
+    """Check if pandas Index is numeric"""
+    return isinstance(index, pd.RangeIndex) or index.dtype in numeric_index_dtypes
 
 
 class TimeSeriesData(pd.DataFrame):
@@ -323,15 +329,14 @@ class TimeSeriesData(pd.DataFrame):
             df = pd.read_parquet(path=file, engine=self._loader_kwargs.get('engine', 'pyarrow'))
         else:
             raise TypeError("Only .hdf, .csv, .xlsx and .mat are supported!")
-        if not isinstance(df.index, tuple(numeric_indexes + datetime_indexes)):
+        if not isinstance(df.index, tuple(datetime_indexes)) and not index_is_numeric(df.index):
             try:
                 df.index = pd.DatetimeIndex(df.index)
             except Exception as err:
                 raise IndexError(
                     f"Given data has index of type {type(df.index)}. "
-                    f"Currently only "
-                    f"{' ,'.join([str(idx) for idx in numeric_indexes + datetime_indexes])} "
-                    f"are supported."
+                    f"Currently only numeric indexes and the following are supported:"
+                    f"{' ,'.join([str(idx) for idx in [pd.RangeIndex] + datetime_indexes])} "
                     f"Automatic conversion to pd.DateTimeIndex failed"
                     f"see error above."
                 ) from err
