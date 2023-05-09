@@ -1,6 +1,7 @@
 """Test-module for all classes inside
 ebcpy.data_types."""
 import os
+import sys
 import shutil
 import unittest
 from pathlib import Path
@@ -84,28 +85,31 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(IndexError):
             data_types.TimeSeriesData(filepath, header=0)
 
-    def test_load_save_parquet(self):
+    def _load_save_parquet(self, engine):
         """Test correct loading and saving for all parquet options"""
         tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
                                             sep=";")
         parquet_formats = ['parquet', 'parquet.snappy', 'parquet.gzip', 'parquet.brotli']
         # Test parquet engine pyarrow
+        for suffix in parquet_formats:
+            filepath = self.savedir.joinpath(f"test_parquet.{suffix}")
+            tsd_ref.save(filepath=filepath, engine=engine)
+            self.assertTrue(os.path.isfile(filepath))
+            tsd = data_types.TimeSeriesData(filepath, engine=engine)
+            self.assertTrue(tsd.equals(tsd_ref))
+
+    def test_load_save_parquet_pyarrow(self):
+        """Test correct loading and saving for parquet pyarrow options"""
+        self._load_save_parquet(engine="pyarrow")
+
+    @unittest.skipIf(sys.version_info.minor >= 9 and sys.version_info.major == 3,
+                     reason="Not supported for py<3.9")
+    def test_load_save_parquet_fastparquet(self):
+        """Test correct loading and saving for parquet fastparquet options"""
         try:
-            for suffix in parquet_formats:
-                filepath = self.savedir.joinpath(f"test_parquet.{suffix}")
-                tsd_ref.save(filepath=filepath, engine='pyarrow')
-                self.assertTrue(os.path.isfile(filepath))
-                tsd = data_types.TimeSeriesData(filepath, engine='pyarrow')
-                self.assertTrue(tsd.equals(tsd_ref))
-        # Test parquet engine fastparquet
-            for suffix in parquet_formats:
-                filepath = self.savedir.joinpath(f"test_parquet.{suffix}")
-                tsd_ref.save(filepath=filepath, engine='fastparquet')
-                self.assertTrue(os.path.isfile(filepath))
-                tsd = data_types.TimeSeriesData(filepath, engine='fastparquet')
-                self.assertTrue(tsd.equals(tsd_ref))
-        except ImportError:
-            pass  # Skip the optional part
+            self._load_save_parquet(engine="fastparquet")
+        except KeyError:
+            self.skipTest("fastparquet error which is currently not handled")
 
     def test_time_series_data(self):
         """Test the class TimeSeriesData"""
