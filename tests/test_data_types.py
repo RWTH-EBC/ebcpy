@@ -102,7 +102,7 @@ class TestDataTypes(unittest.TestCase):
         """Test correct loading and saving for parquet pyarrow options"""
         self._load_save_parquet(engine="pyarrow")
 
-    @unittest.skipIf(sys.version_info.minor >= 9 and sys.version_info.major == 3,
+    @unittest.skipIf(sys.version_info.minor < 9 and sys.version_info.major == 3,
                      reason="Not supported for py<3.9")
     def test_load_save_parquet_fastparquet(self):
         """Test correct loading and saving for parquet fastparquet options"""
