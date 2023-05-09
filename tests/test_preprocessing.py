@@ -61,7 +61,7 @@ class TestPreProcessing(unittest.TestCase):
         df = pd.DataFrame(np.random.rand(dim, 4), columns=list('ABCD'))
         df_temp = preprocessing.convert_index_to_datetime_index(df.copy())
         df_temp = preprocessing.convert_datetime_index_to_float_index(df_temp.copy(), offset=0.0)
-        self.assertIsInstance(df_temp.index, pd.Float64Index)
+        self.assertIsInstance(df_temp.index, type(pd.Index([], dtype="float64")))
         self.assertTrue(all((df_temp-df) == 0))
 
     def test_time_based_weighted_mean(self):
