@@ -539,16 +539,9 @@ class TimeSeriesData(pd.DataFrame):
             float: Mean value
             float: Standard deviation
         """
-
-        freq = []
-        for i in range(len(self.index) - 1):
-            delta = self.index[i + 1] - self.index[i]
-            if isinstance(self.index, pd.DatetimeIndex):
-                freq.append(delta.total_seconds())
-            else:
-                freq.append(delta)
-        freq = np.array(freq)
-        return freq.mean(), freq.std()
+        return preprocessing.get_df_index_frequency_mean_and_std(
+            df_index=self.index
+        )
 
 
 class TimeSeries(pd.Series):
