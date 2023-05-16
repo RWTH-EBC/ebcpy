@@ -286,10 +286,11 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
 
     # Make user warning for two cases: Upsampling and data input without a freq:
     # Check if the frequency differs
-    old_freq = df.index.freq
-    if old_freq is None:
+    old_freq, old_freq_std = get_df_index_frequency_mean_and_std(df_index=df.index)
+    if old_freq_std > 0:
+        _ns_to_s = 1e9
         # Construct a frequency by converting it first to int, then to timedelta back again:
-        _artificial_freq = df.index.to_series().diff().dropna().values.astype(np.int64)
+        _artificial_freq = old_freq / _ns_to_s
         cfd_int = st.t.interval(confidence_warning,
                                 len(_artificial_freq)-1,
                                 loc=np.mean(_artificial_freq),
@@ -298,7 +299,6 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         cfd_int = pd.to_timedelta(cfd_int)
         _td_freq = pd.to_timedelta(desired_freq)
         if (_td_freq < cfd_int[0]) or (_td_freq > cfd_int[1]):
-            _ns_to_s = 1e9
             in_seconds = np.array(cfd_int.values.tolist()) / _ns_to_s  # From nanoseconds
             warnings.warn(f"Input data has no frequency, but the desired frequency "
                           f"{_td_freq.value / _ns_to_s} seconds is outside the given "
@@ -309,10 +309,11 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     #%% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
     time_index = pd.date_range(start=df.index[0], end=df.index[-1], freq=desired_freq)
+    new_freq, _ = get_df_index_frequency_mean_and_std(df_index=time_index)
 
     # Check if the user is trying to upsample the data:
-    if old_freq:
-        if time_index.freq > old_freq:
+    if old_freq_std == 0:
+        if new_freq > old_freq:
             warnings.warn("You are upsampling your data. This may be dangerous. "
                           "Carefully check the result to see if you introduced errors to the data.")
 
@@ -642,3 +643,22 @@ def cross_validation(x, y, test_size=0.3):
     4
     """
     return model_selection.train_test_split(x, y, test_size=test_size)
+
+
+def get_df_index_frequency_mean_and_std(df_index: pd.Index):
+    """
+    Function to get the mean and std of the index-frequency.
+    If the index is a DatetimeIndex, the seconds are converted from nanoseconds
+    to seconds.
+    Else, seconds are assumed as values.
+
+    :returns:
+        float: Mean value
+        float: Standard deviation
+    """
+
+    if isinstance(df_index, pd.DatetimeIndex):
+        index_in_s = df_index.to_series().diff().dropna().values.astype(np.int64) * 1e-9
+    else:
+        index_in_s = df_index.to_series().diff().dropna().values.astype(np.int64)
+    return np.mean(index_in_s), np.std(index_in_s)
