@@ -420,6 +420,36 @@ class FMU_API_Dis:
        start_values: Optional[Dict[str, Union[float, int, bool]]]: parameters and initial values to be set before sim
        start_time: int = 0
        sim_tolerance: Optional[float]: if None, default tolerance of 1e-4 is used
+
+       Example:
+
+    >>> import matplotlib.pyplot as plt
+    >>> from ebcpy import FMU_API_Dis
+    >>> import pandas as pd
+    >>> # Select any valid fmu. Replace the line below if
+    >>> # you don't have this file on your device.
+    >>> path = "../../examples/data/ThermalZone_bus.fmu"
+    >>> fmu = FMU_API_Dis(path, stop_time = 3, step_size = 1)
+    >>> # simulation loop (typically there is interaction to other FMUs or python code)
+    >>> # for continuous simulation use FMU API
+    >>> out_vals = fmu.find_vars('bus')
+    >>> res = [fmu.read_variables(out_vals)]
+    >>> while not fmu.finished:
+    ...     fmu.do_step()
+    ...     res.append(fmu.read_variables(out_vals))
+    False
+    False
+    False
+    True
+    >>> result_df = pd.DataFrame(res)
+    >>> fmu.close()
+    >>> # Select an exemplary column
+    >>> col = result_df.columns[0]
+    >>> plt.plot(result_df[col], label=col)  #doctest: +ELLIPSIS
+    [...]
+    >>> _ = plt.legend()
+    >>> _ = plt.show()
+    >>> plt.close()
     """
 
     def __init__(self,
