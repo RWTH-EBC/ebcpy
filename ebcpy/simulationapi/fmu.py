@@ -404,3 +404,186 @@ class FMU_API(simulationapi.SimulationAPI):
             files=files,
             **kwargs
         )
+
+
+from typing import Optional, Dict
+
+
+class FMU_API_Dis:
+    """
+       Class for discrete/stepwise simulation using the fmpy library and
+       a functional mockup interface as a model input.
+
+       fmu_file: Union[str, bytes, os.PathLike]: path to fmu file
+       stop_time: int
+       step_size: int: sampling step time for one simulation step
+       start_values: Optional[Dict[str, Union[float, int, bool]]]: parameters and initial values to be set before sim
+       start_time: int = 0
+       sim_tolerance: Optional[float]: if None, default tolerance of 1e-4 is used
+    """
+
+    def __init__(self,
+                 fmu_file: Union[str, bytes, os.PathLike],
+                 stop_time: int,
+                 step_size: int,
+                 start_values: Optional[Dict[str, Union[float, int, bool]]] = None,
+                 start_time: int = 0,
+                 sim_tolerance: Optional[float] = None,
+                 ):
+
+        # set base attributes
+        self.fmu_file = fmu_file
+        self.start_time = start_time  # start time
+        self.stop_time = stop_time  # stop time
+        self.step_size = step_size  # communication step size  # todo: support for float
+        self.start_values = start_values
+        self.sim_tolerance = sim_tolerance
+
+        # read the model description
+        self.model_description = fmpy.read_model_description(self.fmu_file)
+
+        # read variables from model description
+        self.variables = {}
+        for variable in self.model_description.modelVariables:
+            self.variables[variable.name] = variable
+
+        # extract fmu in temporary dir
+        self.extr_dir = os.path.join(os.getcwd(), 'tmp')
+        os.makedirs(os.path.join(self.extr_dir), exist_ok=True)
+        self.extr_dir = fmpy.extract(self.fmu_file, unzipdir=self.extr_dir)
+
+        # instantiate fmu
+        self.fmu = fmpy.instantiate_fmu(unzipdir=self.extr_dir,
+                                        model_description=self.model_description,
+                                        fmi_type='CoSimulation')
+
+        # setup experiment
+        self.current_time = self.start_time
+        self.fmu.reset()
+        self.fmu.setupExperiment(
+            startTime=self.start_time, stopTime=self.stop_time, tolerance=self.sim_tolerance)
+
+        # apply start values and initialize
+        if self.start_values:
+            self.set_variables(self.start_values)
+        self.fmu.enterInitializationMode()
+        self.fmu.exitInitializationMode()
+        self.finished = False
+
+    def read_variables(self, vrs_list: List[str], include_sim_time: bool = True):
+        """
+        reads multiple variable values
+
+        vrs_list: List[str]: list of variable names
+        include_sim_time: bool: if true, simulation time is added to output
+
+        :returns: Dict[str, Union[float, int, bool]
+            result dictionary with variable name/variable value pair
+        """
+        res = {}
+        # read current variable values ans store in dict
+        for var in vrs_list:
+            res[var] = self._get_value(var)
+
+        if include_sim_time:
+            # add current time to results
+            res['SimTime'] = self.current_time
+
+        return res
+
+    def set_variables(self, var_dict: Dict[str, Union[float, int, bool]]):
+        """
+        sets multiple variables.
+
+        var_dict: Dict[str, Union[float, int, bool]]: dictionary with variable name/variable set value pair.
+        """
+
+        for key in var_dict:
+            self._set_value(key, var_dict[key])
+
+    def do_step(self):
+        """
+        performs simulation step
+
+        :returns: bool
+            if true, stop time is reached, simulation is finished
+        """
+        # check if stop time is reached
+        if self.current_time < self.stop_time:
+            # perform simulation step
+            self.fmu.doStep(
+                currentCommunicationPoint=self.current_time,
+                communicationStepSize=self.step_size)
+            # update current time
+            self.current_time += self.step_size
+        else:
+            self.finished = True
+        return self.finished
+
+    def find_vars(self, start_str: str):
+        """
+        returns all variables starting with start_str
+
+        start_str: str: search string
+        :ret
+        """
+        key = list(self.variables.keys())
+        key_list = []
+        for i in range(len(key)):
+            if key[i].startswith(start_str):
+                key_list.append(key[i])
+        return key_list
+
+    def close(self):
+        """
+        closes fmu and removes temporary unzip dir
+        """
+        self.fmu.terminate()
+        self.fmu.freeInstance()
+        try:
+            shutil.rmtree(self.extr_dir, ignore_errors=True)  # todo: does it make sense to ignore_errs in try?
+        except FileNotFoundError:
+            pass  # Nothing to delete
+        except PermissionError as err:
+            print(f"Could not delete unzipped fmu in location {self.extr_dir}. Delete it yourself.")
+
+    def _get_value(self, var_name: str):
+        """
+        Get a single value.
+
+        var_name: str: name of the variable
+        :return: Union[Integer, Real, Boolean]
+            value of the variable
+        """
+        variable = self.variables[var_name]
+        vr = [variable.valueReference]
+
+        if variable.type == 'Real':
+            return self.fmu.getReal(vr)[0]
+        elif variable.type in ['Integer', 'Enumeration']:
+            return self.fmu.getInteger(vr)[0]
+        elif variable.type == 'Boolean':
+            value = self.fmu.getBoolean(vr)[0]
+            return value != 0
+        else:
+            raise Exception(f"Unsupported type: {variable.type}")
+
+    def _set_value(self, var_name: str, value: Union[float, int, bool]):
+        """
+        Set a single variable.
+
+        var_name: str: name of the variable
+        value: Union[float, int, bool]: value of the variable
+        """
+
+        variable = self.variables[var_name]
+        vr = [variable.valueReference]
+
+        if variable.type == 'Real':
+            self.fmu.setReal(vr, [float(value)])
+        elif variable.type in ['Integer', 'Enumeration']:
+            self.fmu.setInteger(vr, [int(value)])
+        elif variable.type == 'Boolean':
+            self.fmu.setBoolean(vr, [value == 1.0 or value is True or value == "True"])
+        else:
+            raise Exception(f"Unsupported type: {variable.type}")
