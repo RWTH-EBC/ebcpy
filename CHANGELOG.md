@@ -71,3 +71,7 @@
 - v0.3.5:
   - Add simulation time estimation and checking of free hard drive space for saving #86
   - Add saving of directories for reproduction and tests for reproduction functions #87
+- v0.3.6
+  - Fix mp issue #95
+  - fix tests for newer dependency versions
+  - Remove warnings and update frequency if TimeSeriesData

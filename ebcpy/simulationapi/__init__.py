@@ -433,9 +433,12 @@ class SimulationAPI:
         to load parameters etc.
         """
         self._model_name = model_name
-        # Empty all variables again.
-        if self.worker_idx:
+        # Only update model if it's the first setup. On multiprocessing,
+        # all objects are duplicated and thus this setter is triggered again.
+        # This if statement catches this case.
+        if self.worker_idx and self.use_mp:
             return
+        # Empty all variables again.
         self._update_model_variables()
 
     def _update_model_variables(self):
