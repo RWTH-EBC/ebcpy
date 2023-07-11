@@ -380,7 +380,7 @@ class DymolaAPI(SimulationAPI):
 
         # Handle eventlog
         if show_eventlog:
-            if self.equidistant_output:
+            if not self.experiment_setup_output.events:
                 raise ValueError("You can't log events and have an "
                                  "equidistant output, set equidistant output=False")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
