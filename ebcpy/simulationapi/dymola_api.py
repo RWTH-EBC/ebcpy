@@ -9,7 +9,7 @@ import warnings
 import atexit
 import json
 from typing import Union, List
-from pydantic import Field
+from pydantic import Field, BaseModel
 import pandas as pd
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
@@ -36,6 +36,27 @@ class DymolaSimulationSetup(SimulationSetup):
                         "Radau", "Dopri45", "Dopri853", "Sdirk34hw"]
 
 
+class ExperimentSetupOutput(BaseModel):
+    """
+    Experiment setup output data model with
+    defaults equal to those in Dymola
+    """
+    states: bool = True
+    derivatives: bool = True
+    inputs: bool = True
+    outputs: bool = True
+    auxiliaries: bool = True
+    equidistant: bool = False
+    events: bool = True
+
+    class Config:
+        """
+        Pydantic internal model settings
+        """
+        # pylint: disable=too-few-public-methods
+        extra = "forbid"
+
+
 class DymolaAPI(SimulationAPI):
     """
     API to a Dymola instance.
@@ -56,6 +77,15 @@ class DymolaAPI(SimulationAPI):
     :keyword Boolean equidistant_output:
         If True (Default), Dymola stores variables in an
         equisdistant output and does not store variables at events.
+    :keyword dict[str,bool] variables_to_save:
+        A dictionary to select which variables are going
+        to be stored if the simulation creates .mat files.
+        Options (with the default being all True):
+            - states=True
+            - derivatives=True
+            - inputs=True
+            - outputs=True
+            - auxiliaries=False
     :keyword str dymola_path:
          Path to the dymola installation on the device. Necessary
          e.g. on linux, if we can't find the path automatically.
@@ -124,6 +154,7 @@ class DymolaAPI(SimulationAPI):
         "modify_structural_parameters",
         "dymola_path",
         "equidistant_output",
+        "variables_to_save",
         "n_restart",
         "debug",
         "mos_script_pre",
@@ -142,6 +173,16 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
+        _variables_to_save = kwargs.get("variables_to_save", {})
+        self.experiment_setup_output = ExperimentSetupOutput(**_variables_to_save)
+
+        if self.equidistant_output:
+            # Change the Simulation Output, to ensure all
+            # simulation results have the same array shape.
+            # Events can also cause errors in the shape.
+            self.experiment_setup_output.equidistant = True
+            self.experiment_setup_output.events = False
+
         self.mos_script_pre = kwargs.pop("mos_script_pre", None)
         self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
@@ -339,7 +380,9 @@ class DymolaAPI(SimulationAPI):
 
         # Handle eventlog
         if show_eventlog:
-            self.dymola.experimentSetupOutput(events=True)
+            if self.equidistant_output:
+                raise ValueError("You can't log events and have an "
+                                 "equidistant output, set equidistant output=False")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEvents = true")
             self.dymola.ExecuteCommand("Advanced.Debug.LogEventsInitialization = true")
 
@@ -764,12 +807,8 @@ class DymolaAPI(SimulationAPI):
             if not res:
                 raise ImportError(dymola.getLastErrorLog())
         self.logger.info("Loaded modules")
-        if self.equidistant_output:
-            # Change the Simulation Output, to ensure all
-            # simulation results have the same array shape.
-            # Events can also cause errors in the shape.
-            dymola.experimentSetupOutput(equidistant=True,
-                                         events=False)
+
+        dymola.experimentSetupOutput(**self.experiment_setup_output.dict())
         if not dymola.RequestOption("Standard"):
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
