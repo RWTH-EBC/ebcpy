@@ -1,15 +1,17 @@
 stages:
-  - test
-  - doc
-  - code_quality
-  - build
-  - deploy
+  - release
+  #- test
+  #- doc
+  #- code_quality
+  #- build
+  #- deploy
 
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
   PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
   TEST_ENGINE: "unittest"
+  GIT_REPO: "RWTH-EBC/ebcpy"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
@@ -24,5 +26,8 @@ include:
     file: 'python/tests/tests.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/tests/coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/pypi-release/release.gitlab-ci.yml'
+    ref: "35-add-pypi-release"
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
