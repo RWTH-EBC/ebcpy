@@ -28,6 +28,6 @@ include:
     file: 'python/tests/coverage.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/pypi-release/release.gitlab-ci.yml'
-    ref: "35-add-pypi-release"
+    ref: 35-add-pypi-release
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
