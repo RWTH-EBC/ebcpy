@@ -75,3 +75,4 @@
   - Fix mp issue #95
   - fix tests for newer dependency versions
   - Remove warnings and update frequency if TimeSeriesData
+  - Add CI based pypi release
