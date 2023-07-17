@@ -1,10 +1,10 @@
 stages:
   - release
-  #- test
-  #- doc
-  #- code_quality
-  #- build
-  #- deploy
+  - test
+  - doc
+  - code_quality
+  - build
+  - deploy
 
 variables:
   COVERAGE_TYPE: "Dymola"
@@ -14,20 +14,20 @@ variables:
   GIT_REPO: "RWTH-EBC/ebcpy"
 
 include:
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/code-quality/pylint.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/doc/sphinxdoc.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/build/build.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'pages/pages.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/tests/tests.gitlab-ci.yml'
-  #- project: 'EBC/EBC_all/gitlab_ci/templates'
-  #  file: 'python/tests/coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/code-quality/pylint.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/doc/sphinxdoc.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/build/build.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'pages/pages.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/tests/tests.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/tests/coverage.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/pypi-release/release.gitlab-ci.yml'
     ref: 35-add-pypi-release
-  #- template: Dependency-Scanning.gitlab-ci.yml
-  #- template: SAST.gitlab-ci.yml
+  - template: Dependency-Scanning.gitlab-ci.yml
+  - template: SAST.gitlab-ci.yml
