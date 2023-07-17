@@ -6,6 +6,7 @@ stages:
   - build
   - deploy
 
+
 variables:
   COVERAGE_TYPE: "Dymola"
   PAGES_BRANCH: master
