@@ -3,6 +3,7 @@ stages:
   - doc
   - code_quality
   - build
+  - release
   - deploy
 
 variables:
@@ -10,6 +11,7 @@ variables:
   PAGES_BRANCH: master
   PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
   TEST_ENGINE: "unittest"
+  GIT_REPO: "RWTH-EBC/ebcpy"
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
@@ -24,5 +26,7 @@ include:
     file: 'python/tests/tests.gitlab-ci.yml'
   - project: 'EBC/EBC_all/gitlab_ci/templates'
     file: 'python/tests/coverage.gitlab-ci.yml'
+  - project: 'EBC/EBC_all/gitlab_ci/templates'
+    file: 'python/pypi-release/release.gitlab-ci.yml'
   - template: Dependency-Scanning.gitlab-ci.yml
   - template: SAST.gitlab-ci.yml
