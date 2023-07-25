@@ -25,7 +25,7 @@ INSTALL_REQUIRES = [
     'pandas>=1.1.5',
     'scikit-learn>=0.24.2',
     'fmpy>=0.2.27',
-    'pydantic>=1.8.2',
+    'pydantic<2.0',
     'h5py>=3.1.0',
     'tables>=3.6.1'
 ]
