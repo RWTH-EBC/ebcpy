@@ -14,7 +14,9 @@ from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
-from pydantic import BaseModel, Field, validator
+
+import pydantic
+from pydantic import BaseModel, Field, field_validator
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.utils.reproduction import save_reproduction_archive
@@ -47,10 +49,11 @@ class Variable(BaseModel):
                     'Only for ints and floats variables.'
     )
 
-    @validator("value")
-    def check_value_type(cls, value, values):
+    @field_validator("value")
+    @classmethod
+    def check_value_type(cls, value, info: pydantic.FieldValidationInfo):
         """Check if the given value has correct type"""
-        _type = values["type"]
+        _type = info.data["type"]
         if _type is None:
             return value   # No type -> no conversion
         if value is None:
@@ -59,11 +62,12 @@ class Variable(BaseModel):
             return _type(value)
         return value
 
-    @validator('max', 'min', always=True)
-    def check_value(cls, value, values, field):
+    @field_validator('max', 'min')
+    @classmethod
+    def check_value(cls, value, info: pydantic.FieldValidationInfo):
         """Check if the given bounds are correct."""
         # Check if the variable type even allows for min/max bounds
-        _type = values["type"]
+        _type = info.data["type"]
         if _type is None:
             return value   # No type -> no conversion
         if _type not in (float, int, bool):
@@ -75,7 +79,7 @@ class Variable(BaseModel):
             return None
         if value is not None:
             return _type(value)
-        if field.name == "min":
+        if info.field_name == "min":
             return -np.inf if _type != bool else False
         # else it is max
         return np.inf if _type != bool else True
@@ -109,13 +113,14 @@ class SimulationSetup(BaseModel):
     )
     solver: str = Field(
         title="solver",
-        default="",  # Is added in the validator
+        default="",  # Is added in the field_validator
         description="The solver to be used for numerical integration."
     )
     _default_solver: str = None
     _allowed_solvers: list = []
 
-    @validator("solver", always=True, allow_reuse=True)
+    @field_validator("solver")
+    @classmethod
     def check_valid_solver(cls, solver):
         """
         Check if the solver is in the list of valid solvers
@@ -131,7 +136,6 @@ class SimulationSetup(BaseModel):
     class Config:
         """Overwrite default pydantic Config"""
         extra = 'forbid'
-        underscore_attrs_are_private = True
 
 
 SimulationSetupClass = TypeVar("SimulationSetupClass", bound=SimulationSetup)

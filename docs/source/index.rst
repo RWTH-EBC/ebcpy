@@ -13,7 +13,7 @@ About ebcpy
 
    examples
    code/modules
-   contribution
+   Contribution
    Reproduction
    version_his
 
