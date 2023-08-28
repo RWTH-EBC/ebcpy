@@ -302,17 +302,19 @@ def mat_to_pandas(fname='dsres.mat',
     data = {}
     for name in names:
 
-        # Get the values.
+        # Get the values
+        array_values = _variables[name].values()
         if np.array_equal(_variables[name].times(), times):
-            values = _variables[name].values()  # Save computation.
+            values = array_values  # Save computation.
+        elif np.isinf(array_values).all():
+            values = array_values[0]  # Inf values can't be resampled
         # Check if all values are constant to save resampling time
-        elif np.count_nonzero(_variables[name].values() -
-                              np.max(_variables[name].values())) == 0:
+        elif np.count_nonzero(array_values -
+                              np.max(array_values)) == 0:
             # Passing a scalar converts automatically to an array.
-            values = np.max(_variables[name].values())
+            values = array_values[0]
         else:
             values = _variables[name].values(t=times)  # Resample.
-
         unit = _variables[name].unit
 
         # Apply an alias if available.
