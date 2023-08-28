@@ -20,6 +20,7 @@ class StatisticsAnalyzer:
             - RMSE(root mean square error)
             - CVRMSE(variance of RMSE)
             - NRMSE(Normalized RMSE)
+
         If callable, the function needs to take
         exactly two arguments and return a scalar value (e.g. float).
         The arguments should be able to handle list and numpy arrays.

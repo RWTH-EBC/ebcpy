@@ -197,7 +197,7 @@ def get_git_information(
         If not given, the name in the URL will be used.
     :param str zip_folder_path:
         If given, the PATH of the difference_files for the .zip
-        will be "zip_folder_path/WARNING_GIT_DIFFERENCE_..."
+        will be zip_folder_path plus WARNING_GIT_DIFFERENCE...
 
     Returns:
         If the path is not a git repository, this function returns None.
