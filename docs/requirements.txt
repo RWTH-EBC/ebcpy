@@ -1,0 +1,5 @@
+sphinx
+m2r2
+sphinx-material
+autodoc_pydantic
+sphinx-rtd-theme

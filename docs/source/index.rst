@@ -12,7 +12,7 @@ About ebcpy
    :maxdepth: 2
 
    examples
-   ebcpy
+   code/modules
    contribution
    Reproduction
    version_his
