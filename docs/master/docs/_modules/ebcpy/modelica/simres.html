@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ebcpy.modelica.simres &mdash; ebcpy 0.3.7 documentation</title>
+  <title>ebcpy.modelica.simres &mdash; ebcpy 0.3.8 documentation</title>
   
 
   
@@ -468,17 +468,19 @@
     <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="k">for</span> <span class="n">name</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
 
-        <span class="c1"># Get the values.</span>
+        <span class="c1"># Get the values</span>
+        <span class="n">array_values</span> <span class="o">=</span> <span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">np</span><span class="o">.</span><span class="n">array_equal</span><span class="p">(</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">times</span><span class="p">(),</span> <span class="n">times</span><span class="p">):</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span>  <span class="c1"># Save computation.</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">array_values</span>  <span class="c1"># Save computation.</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">isinf</span><span class="p">(</span><span class="n">array_values</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">():</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">array_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># Inf values can&#39;t be resampled</span>
         <span class="c1"># Check if all values are constant to save resampling time</span>
-        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()</span> <span class="o">-</span>
-                              <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="n">np</span><span class="o">.</span><span class="n">count_nonzero</span><span class="p">(</span><span class="n">array_values</span> <span class="o">-</span>
+                              <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">array_values</span><span class="p">))</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
             <span class="c1"># Passing a scalar converts automatically to an array.</span>
-            <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="n">values</span> <span class="o">=</span> <span class="n">array_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">values</span> <span class="o">=</span> <span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">(</span><span class="n">t</span><span class="o">=</span><span class="n">times</span><span class="p">)</span>  <span class="c1"># Resample.</span>
-
         <span class="n">unit</span> <span class="o">=</span> <span class="n">_variables</span><span class="p">[</span><span class="n">name</span><span class="p">]</span><span class="o">.</span><span class="n">unit</span>
 
         <span class="c1"># Apply an alias if available.</span>

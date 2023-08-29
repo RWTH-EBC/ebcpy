@@ -110,7 +110,7 @@ ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could 
 ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
 ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:254:0: R0912: Too many branches (13/12) (too-many-branches)
+ebcpy/modelica/simres.py:254:0: R0912: Too many branches (14/12) (too-many-branches)
 ************* Module ebcpy.utils.reproduction
 ebcpy/utils/reproduction.py:295:0: C0301: Line too long (126/100) (line-too-long)
 ebcpy/utils/reproduction.py:343:0: C0301: Line too long (109/100) (line-too-long)
@@ -187,17 +187,13 @@ ebcpy/simulationapi/dymola_api.py:353:12: W0201: Attribute '_model_name' defined
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[936:947]
 ==ebcpy.simulationapi.fmu:[401:408]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        """Save model as an FMU""" (duplicate-code)
+        ) (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
