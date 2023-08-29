@@ -45,7 +45,7 @@ class TestVariable(unittest.TestCase):
                     Variable(value=_value, type=_type).value,
                     _type
                 )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(TypeError):
             Variable(value="10c", type="int")
         self.assertIsInstance(Variable(value="Some String", type=str).value, str)
 

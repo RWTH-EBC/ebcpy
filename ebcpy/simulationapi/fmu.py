@@ -160,6 +160,7 @@ class FMU_API(simulationapi.SimulationAPI):
         See the docstring of simulate() for information on kwargs.
 
         Additional kwargs:
+
         :keyword str result_file_suffix:
             Suffix of the result file. Supported options can be extracted
             from the TimeSeriesData.save() function.
@@ -169,6 +170,7 @@ class FMU_API(simulationapi.SimulationAPI):
             Supported options can be extracted
             from the TimeSeriesData.save() function.
             Default is 'pyarrow'.
+
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
