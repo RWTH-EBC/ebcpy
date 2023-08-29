@@ -78,3 +78,5 @@
   - Add CI based pypi release
 - v0.3.7
   - Fix setup.py pydantic version
+- v0.3.8
+  - Fix sampling error for non-numeric values #69 #102
