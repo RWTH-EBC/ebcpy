@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>ebcpy.utils.reproduction &mdash; ebcpy 0.3.8 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../../_static/autodoc_pydantic.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+        <script src="../../../_static/sphinx_highlight.js"></script>
+    
+    <script type="text/javascript" src="../../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../../index.html" class="icon icon-home"> ebcpy
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.3
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/modules.html">ebcpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version_his.html">Version History</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ebcpy</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+        
+          <li><a href="../utils.html">ebcpy.utils</a> &raquo;</li>
+        
+      <li>ebcpy.utils.reproduction</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for ebcpy.utils.reproduction</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This module contains scripts to extract information</span>
+<span class="sd">out of simulation / programming based research and</span>
+<span class="sd">enable a reproduction of the results at a later stage.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">platform</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">zipfile</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+
+<span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="ReproductionFile"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.ReproductionFile">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">ReproductionFile</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data-class for a text-file which will be written to te zip.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        filename: str</span>
+<span class="sd">            Name of the file in the zip. Can be a relative path.</span>
+<span class="sd">        content: str</span>
+<span class="sd">            Content of the text file</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span></div>
+
+
+<div class="viewcode-block" id="CopyFile"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.CopyFile">[docs]</a><span class="nd">@dataclass</span>
+<span class="k">class</span> <span class="nc">CopyFile</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Data-class for information on a file</span>
+<span class="sd">    which will be copied to the zip</span>
+
+<span class="sd">    :param str filename:</span>
+<span class="sd">        Name of the file in the zip. Can be a relative path.</span>
+<span class="sd">    :param pathlib.Path sourcepath:</span>
+<span class="sd">        Path on the current machine where the file to copy</span>
+<span class="sd">        is located</span>
+<span class="sd">    :param bool remove:</span>
+<span class="sd">        If True, the file will be moved instead of just copied.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">sourcepath</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span>
+    <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span></div>
+
+
+<div class="viewcode-block" id="save_reproduction_archive"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.save_reproduction_archive">[docs]</a><span class="k">def</span> <span class="nf">save_reproduction_archive</span><span class="p">(</span>
+        <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">log_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">files</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">ReproductionFile</span><span class="p">,</span> <span class="n">CopyFile</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">search_on_pypi</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to save a reproduction archive which contains</span>
+<span class="sd">    files to reproduce any simulation/software based study.</span>
+
+<span class="sd">    :param str title:</span>
+<span class="sd">        Title of the study</span>
+<span class="sd">    :param pathlib.Path path:</span>
+<span class="sd">        Where to store the .zip file. If not given, os.getcwd() is used.</span>
+<span class="sd">    :param str log_message:</span>
+<span class="sd">         Specific message for this run of the study. If given,</span>
+<span class="sd">         you are not asked at the end of your script to give the</span>
+<span class="sd">         log_message.</span>
+<span class="sd">    :param list files:</span>
+<span class="sd">        List of files to save along the standard ones.</span>
+<span class="sd">        Examples would be plots, tables etc.</span>
+<span class="sd">    :param pathlib.Path file:</span>
+<span class="sd">        The file which is used to run.</span>
+<span class="sd">        Default is __file__ of __main__ module</span>
+<span class="sd">    :param bool search_on_pypi:</span>
+<span class="sd">        If True, all python packages which are</span>
+<span class="sd">        not a git-repo are checked for availability on pypi</span>
+<span class="sd">        Default is False. Does not work if no internet connection</span>
+<span class="sd">        is available.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_py_requirements_name</span> <span class="o">=</span> <span class="s2">&quot;python/requirements.txt&quot;</span>
+    <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">file</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">file</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">modules</span><span class="p">[</span><span class="s1">&#39;__main__&#39;</span><span class="p">]</span><span class="o">.</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">title</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.py&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">_%H%M%S&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Start with the file currently running:</span>
+    <span class="n">file_running</span> <span class="o">=</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">file_running</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">file_running</span><span class="o">.</span><span class="n">read_text</span><span class="p">()</span>
+    <span class="p">))</span>
+    <span class="c1"># Check if it&#39;s a git-repo:</span>
+    <span class="k">for</span> <span class="n">_dir_path</span> <span class="ow">in</span> <span class="p">[</span><span class="n">file_running</span><span class="p">]</span> <span class="o">+</span> <span class="nb">list</span><span class="p">(</span><span class="n">file_running</span><span class="o">.</span><span class="n">parents</span><span class="p">):</span>
+        <span class="n">repo_info</span> <span class="o">=</span> <span class="n">get_git_information</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">_dir_path</span><span class="p">,</span>
+            <span class="n">zip_folder_path</span><span class="o">=</span><span class="s2">&quot;study_repository&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">repo_info</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># That means it&#39;s a repo</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">repo_info</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;difference_files&quot;</span><span class="p">,</span> <span class="p">[]))</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+                <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;study_repository/repo_info.txt&quot;</span><span class="p">,</span>
+                <span class="n">content</span><span class="o">=</span><span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">repo_info</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="p">))</span>
+            <span class="k">break</span>
+    <span class="c1"># Get log</span>
+    <span class="k">if</span> <span class="n">log_message</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">log_message</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Please enter the specifications / log for this study: &quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">log_message</span><span class="p">:</span>
+            <span class="n">log_message</span> <span class="o">=</span> <span class="s2">&quot;The user was to lazy to pass any useful information on &quot;</span> \
+                          <span class="s2">&quot;what made this research study different to others.&quot;</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Study_Log_</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">.txt&quot;</span><span class="p">),</span> <span class="s2">&quot;a+&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_time</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">log_message</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1"># General info</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;Information_to_reproduce.txt&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">_get_general_information</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">log_message</span><span class="o">=</span><span class="n">log_message</span><span class="p">,</span>
+            <span class="n">current_time</span><span class="o">=</span><span class="n">current_time</span>
+        <span class="p">)</span>
+    <span class="p">))</span>
+
+    <span class="c1"># Python-Reproduction:</span>
+    <span class="n">py_requirements_content</span><span class="p">,</span> <span class="n">diff_files</span><span class="p">,</span> <span class="n">pip_version</span> <span class="o">=</span> <span class="n">_get_python_package_information</span><span class="p">(</span>
+        <span class="n">search_on_pypi</span><span class="o">=</span><span class="n">search_on_pypi</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="n">_py_requirements_name</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">py_requirements_content</span><span class="p">,</span>
+    <span class="p">))</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">diff_files</span><span class="p">)</span>
+
+    <span class="n">py_repro</span> <span class="o">=</span> <span class="n">_get_python_reproduction</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+        <span class="n">pip_version</span><span class="o">=</span><span class="n">pip_version</span>
+    <span class="p">)</span>
+    <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+        <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;python/Reproduce_python_environment.txt&quot;</span><span class="p">,</span>
+        <span class="n">content</span><span class="o">=</span><span class="n">py_repro</span><span class="p">,</span>
+    <span class="p">))</span>
+
+    <span class="n">zip_file_name</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">current_time</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">.zip&quot;</span>
+    <span class="p">)</span>
+    <span class="k">with</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZipFile</span><span class="p">(</span><span class="n">zip_file_name</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">zipfile</span><span class="o">.</span><span class="n">ZIP_DEFLATED</span><span class="p">)</span> <span class="k">as</span> <span class="n">zip_file</span><span class="p">:</span>
+        <span class="c1"># Save all result files:</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">files</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">file</span><span class="p">):</span>
+                    <span class="n">zip_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;Results/</span><span class="si">{</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Given file &#39;</span><span class="si">%s</span><span class="s2">&#39; is a string but &quot;</span>
+                                 <span class="s2">&quot;not an existing file. Skipping...&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">ReproductionFile</span><span class="p">):</span>
+                <span class="n">zip_file</span><span class="o">.</span><span class="n">writestr</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">CopyFile</span><span class="p">):</span>
+                <span class="n">zip_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">sourcepath</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">remove</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">sourcepath</span><span class="p">)</span>
+                    <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+                        <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not remove </span><span class="si">{</span><span class="n">file</span><span class="o">.</span><span class="n">sourcepath</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Given file &#39;</span><span class="si">{</span><span class="n">file</span><span class="si">}</span><span class="s2">&#39; has no &quot;</span>
+                    <span class="sa">f</span><span class="s2">&quot;valid type. Type is &#39;</span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">file</span><span class="p">)</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">zip_file_name</span></div>
+
+
+<div class="viewcode-block" id="get_git_information"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_git_information">[docs]</a><span class="k">def</span> <span class="nf">get_git_information</span><span class="p">(</span>
+        <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+        <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">zip_folder_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get the git information for a given path.</span>
+
+<span class="sd">    :param pathlib.Path path:</span>
+<span class="sd">        Path to possible git repo</span>
+<span class="sd">    :param str name:</span>
+<span class="sd">        Name of the repo.</span>
+<span class="sd">        If not given, the name in the URL will be used.</span>
+<span class="sd">    :param str zip_folder_path:</span>
+<span class="sd">        If given, the PATH of the difference_files for the .zip</span>
+<span class="sd">        will be zip_folder_path plus WARNING_GIT_DIFFERENCE...</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        If the path is not a git repository, this function returns None.</span>
+<span class="sd">        Else, a dictionary with the keys &#39;url&#39;, &#39;commit&#39; and &#39;difference_files&#39;.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">git</span> <span class="kn">import</span> <span class="n">Repo</span><span class="p">,</span> <span class="n">InvalidGitRepositoryError</span><span class="p">,</span> <span class="n">RemoteReference</span>
+    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
+            <span class="s2">&quot;Could not save data for reproduction, install GitPython using &quot;</span>
+            <span class="s2">&quot;`pip install GitPython`: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">err</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">repo</span> <span class="o">=</span> <span class="n">Repo</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+    <span class="k">except</span> <span class="n">InvalidGitRepositoryError</span><span class="p">:</span>
+        <span class="k">return</span>
+    <span class="n">commit</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">head</span><span class="o">.</span><span class="n">commit</span>
+    <span class="n">commit_hex</span> <span class="o">=</span> <span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span>
+    <span class="n">diff_last_cmt</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">commit</span><span class="p">)</span>
+    <span class="n">diff_remote_main</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">remote_main_cmt</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">ref</span> <span class="ow">in</span> <span class="n">repo</span><span class="o">.</span><span class="n">references</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ref</span><span class="p">,</span> <span class="n">RemoteReference</span><span class="p">)</span> <span class="ow">and</span> <span class="n">ref</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;origin/master&#39;</span><span class="p">,</span> <span class="s1">&#39;origin/main&#39;</span><span class="p">]:</span>
+            <span class="n">diff_remote_main</span> <span class="o">=</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">ref</span><span class="o">.</span><span class="n">commit</span><span class="p">)</span>
+            <span class="n">remote_main_cmt</span> <span class="o">=</span> <span class="n">ref</span><span class="o">.</span><span class="n">commit</span><span class="o">.</span><span class="n">hexsha</span>
+            <span class="k">break</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;url&quot;</span><span class="p">:</span> <span class="nb">next</span><span class="p">(</span><span class="n">repo</span><span class="o">.</span><span class="n">remotes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
+        <span class="s2">&quot;commit&quot;</span><span class="p">:</span> <span class="n">commit_hex</span><span class="p">,</span>
+        <span class="s2">&quot;difference_files&quot;</span><span class="p">:</span> <span class="p">[]</span>
+    <span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># Get last part of url</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;.git&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">zip_folder_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">zip_folder_path</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">zip_folder_path</span> <span class="o">+=</span> <span class="s2">&quot;/&quot;</span>
+    <span class="c1"># Check new files</span>
+    <span class="k">if</span> <span class="n">diff_last_cmt</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;difference_files&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+            <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">zip_folder_path</span><span class="si">}</span><span class="s2">WARNING_GIT_DIFFERENCE_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_to_local_head.txt&quot;</span><span class="p">,</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">diff_last_cmt</span><span class="p">,</span>
+        <span class="p">))</span>
+    <span class="c1"># Check if pushed to remote</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">repo</span><span class="o">.</span><span class="n">git</span><span class="o">.</span><span class="n">branch</span><span class="p">(</span><span class="s2">&quot;-r&quot;</span><span class="p">,</span> <span class="n">contains</span><span class="o">=</span><span class="n">commit_hex</span><span class="p">):</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;difference_files&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
+            <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">zip_folder_path</span><span class="si">}</span><span class="s2">WARNING_GIT_DIFFERENCE_</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2">_to_remote_main.txt&quot;</span><span class="p">,</span>
+            <span class="n">content</span><span class="o">=</span><span class="n">diff_remote_main</span><span class="p">,</span>
+        <span class="p">))</span>
+        <span class="n">data</span><span class="p">[</span><span class="s2">&quot;commit&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">remote_main_cmt</span>
+    <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="creat_copy_files_from_dir"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.creat_copy_files_from_dir">[docs]</a><span class="k">def</span> <span class="nf">creat_copy_files_from_dir</span><span class="p">(</span><span class="n">foldername</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                              <span class="n">sourcepath</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
+                              <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates a list with CopyFiles for each file in a directory</span>
+<span class="sd">    where which will be saved in the zip under the foldername</span>
+<span class="sd">    with all subdirectories.</span>
+
+<span class="sd">    :param str foldername:</span>
+<span class="sd">        Name of the folder in the zip. Can be a relative path.</span>
+<span class="sd">    :param pathlib.Path sourcepath:</span>
+<span class="sd">        Path on the current machine where the directory to copy</span>
+<span class="sd">        is located</span>
+<span class="sd">    :param bool remove:</span>
+<span class="sd">        Default is False. If True, the files in the directory</span>
+<span class="sd">        will be moved instead of just copied.</span>
+
+<span class="sd">    :return list:</span>
+<span class="sd">        Returns a list with CopyFiles for each file in the directory source path.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">dirpath</span><span class="p">,</span> <span class="n">dirnames</span><span class="p">,</span> <span class="n">filenames</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">walk</span><span class="p">(</span><span class="n">sourcepath</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">file</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="n">filename</span> <span class="o">=</span> <span class="n">foldername</span> <span class="o">+</span> <span class="n">dirpath</span><span class="o">.</span><span class="fm">__str__</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sourcepath</span><span class="o">.</span><span class="n">name</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">file</span>
+            <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CopyFile</span><span class="p">(</span>
+                <span class="n">sourcepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirpath</span><span class="p">,</span> <span class="n">file</span><span class="p">),</span>
+                <span class="n">filename</span><span class="o">=</span><span class="n">filename</span><span class="p">,</span>
+                <span class="n">remove</span><span class="o">=</span><span class="n">remove</span>
+            <span class="p">))</span>
+    <span class="k">return</span> <span class="n">files</span></div>
+
+
+<span class="k">def</span> <span class="nf">_get_general_information</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to save the general information of the study.</span>
+<span class="sd">    Time, machine information, and an intro on how to reproduce</span>
+<span class="sd">    the study is given.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">info_header</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&quot;&quot;This folder contains information necessary to reproduce the python based research study named &#39;</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&#39;.</span>
+<span class="s2">Reason the user performed this study:</span>
+<span class="s2">&quot;%s&quot;</span>
+
+<span class="s2">To reproduce, make sure you have installed the following programs:</span>
+<span class="s2">- Anaconda</span>
+<span class="s2">- Dymola (If a folder named Dymola exists in this zip)</span>
+
+<span class="s2">Run the lines in the file &#39;python/reproduce_python_environment.txt&#39; in a shell with the PATH variable pointing to anaconda (or in Anaconda Prompt).</span>
+<span class="s2">After execution, make sure to check for any differences in git-based python code.</span>
+<span class="s2">These files are included in this folder and are named e.g. &quot;WARNING_GIT_DIFFERENCE_some_package&quot;.</span>
+<span class="s2">If this happens, make sure to change the files in the git-based python packages after installation.</span>
+<span class="s2">For future use, be sure to commit and push your changes before running any research study.</span>
+<span class="s2">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="n">log_message</span>
+    <span class="n">_data</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;Time&quot;</span><span class="p">:</span> <span class="n">current_time</span><span class="p">,</span>
+        <span class="s2">&quot;Author&quot;</span><span class="p">:</span> <span class="n">os</span><span class="o">.</span><span class="n">getlogin</span><span class="p">(),</span>
+        <span class="s2">&quot;Machine&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">machine</span><span class="p">(),</span>
+        <span class="s2">&quot;Version&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">version</span><span class="p">(),</span>
+        <span class="s2">&quot;Platform&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">platform</span><span class="p">(),</span>
+        <span class="s2">&quot;System&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">system</span><span class="p">(),</span>
+        <span class="s2">&quot;Processor&quot;</span><span class="p">:</span> <span class="n">platform</span><span class="o">.</span><span class="n">processor</span><span class="p">(),</span>
+    <span class="p">}</span>
+    <span class="n">_content_lines</span> <span class="o">=</span> <span class="p">[</span>
+                         <span class="n">info_header</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;General system information of performed study:&quot;</span><span class="p">,</span>
+                     <span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">k</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">_data</span><span class="o">.</span><span class="n">items</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_content_lines</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_python_package_information</span><span class="p">(</span><span class="n">search_on_pypi</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to get the content of python packages installed</span>
+<span class="sd">    as a requirement.txt format content.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pkg_resources</span>
+    <span class="n">installed_packages</span> <span class="o">=</span> <span class="p">[</span><span class="n">pack</span> <span class="k">for</span> <span class="n">pack</span> <span class="ow">in</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">working_set</span><span class="p">]</span>
+    <span class="n">diff_paths</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">requirement_txt_content</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">pip_version</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">package</span> <span class="ow">in</span> <span class="n">installed_packages</span><span class="p">:</span>
+        <span class="n">repo_info</span> <span class="o">=</span> <span class="n">get_git_information</span><span class="p">(</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">package</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">zip_folder_path</span><span class="o">=</span><span class="s2">&quot;python&quot;</span>
+        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">repo_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1"># Check if in python path:</span>
+            <span class="k">if</span> <span class="n">package</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;pip&quot;</span><span class="p">:</span>  <span class="c1"># exclude pip in requirements and give info to _get_python_reproduction</span>
+                <span class="n">pip_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;==</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">requirement_txt_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">==</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+            <span class="k">if</span> <span class="n">search_on_pypi</span><span class="p">:</span>
+                <span class="kn">from</span> <span class="nn">pypisearch.search</span> <span class="kn">import</span> <span class="n">Search</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">Search</span><span class="p">(</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
+                        <span class="s2">&quot;Package &#39;</span><span class="si">%s</span><span class="s2">&#39; is neither a git &quot;</span>
+                        <span class="s2">&quot;repo nor a package on pypi. &quot;</span>
+                        <span class="s2">&quot;Won&#39;t be able to reproduce it!&quot;</span><span class="p">,</span>
+                        <span class="n">package</span><span class="o">.</span><span class="n">key</span>
+                    <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">cmt_sha</span> <span class="o">=</span> <span class="n">repo_info</span><span class="p">[</span><span class="s2">&quot;commit&quot;</span><span class="p">]</span>
+            <span class="n">requirement_txt_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;git+</span><span class="si">{</span><span class="n">repo_info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.git@</span><span class="si">{</span><span class="n">cmt_sha</span><span class="si">}</span><span class="s2">#egg=</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+            <span class="n">diff_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">repo_info</span><span class="p">[</span><span class="s2">&quot;difference_files&quot;</span><span class="p">])</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requirement_txt_content</span><span class="p">),</span> <span class="n">diff_paths</span><span class="p">,</span> <span class="n">pip_version</span>
+
+
+<span class="k">def</span> <span class="nf">_get_python_reproduction</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pip_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the content of a script to reproduce the python</span>
+<span class="sd">    environment used for the study.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_v</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">version_info</span>
+    <span class="n">py_version</span> <span class="o">=</span> <span class="s2">&quot;.&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">_v</span><span class="o">.</span><span class="n">major</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">_v</span><span class="o">.</span><span class="n">minor</span><span class="p">),</span> <span class="nb">str</span><span class="p">(</span><span class="n">_v</span><span class="o">.</span><span class="n">micro</span><span class="p">)])</span>
+    <span class="n">env_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;py_</span><span class="si">{</span><span class="n">title</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="n">py_reproduce_content</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="sa">f</span><span class="s2">&quot;conda create -n </span><span class="si">{</span><span class="n">env_name</span><span class="si">}</span><span class="s2"> python=</span><span class="si">{</span><span class="n">py_version</span><span class="si">}</span><span class="s2"> -y&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;conda activate </span><span class="si">{</span><span class="n">env_name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;python -m pip install pip</span><span class="si">{</span><span class="n">pip_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="sa">f</span><span class="s2">&quot;pip install -r requirements.txt&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+    <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">py_reproduce_content</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">save_reproduction_archive</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;my_study&quot;</span><span class="p">,</span>
+        <span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;D:\00_temp\reproduction&quot;</span><span class="p">,</span>
+    <span class="p">)</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2019, EON EBC.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
