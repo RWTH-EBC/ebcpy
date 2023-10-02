@@ -168,6 +168,8 @@
 <span class="sd">dsfinal.txt and dsin.txt files created by Modelica.&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 
@@ -203,17 +205,22 @@
 <span class="sd">    :return: pd.DataFrame</span>
 <span class="sd">        Converted DataFrame</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Define relevant parameters</span>
-    <span class="n">number_line_initial_name</span> <span class="o">=</span> <span class="mi">104</span>  <span class="c1"># Line where the string char initialName(,) is always stored</span>
-
     <span class="c1"># Open file and get relevant content by splitting the lines.</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
         <span class="n">content</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 
     <span class="c1"># Gets the X out of &#39;char initialName(X,Y)&#39;</span>
-    <span class="n">size_initial_names</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">content</span><span class="p">[</span><span class="n">number_line_initial_name</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="n">pattern_size_initial_name</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;^char initialName\((\d+),(\d+)\)$&#39;</span>
+    <span class="k">for</span> <span class="n">number_line_initial_name</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">content</span><span class="p">):</span>
+        <span class="n">match_size_initial_name</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern_size_initial_name</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">match_size_initial_name</span><span class="p">:</span>
+            <span class="n">size_initial_names</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_size_initial_name</span><span class="o">.</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="k">break</span>
+
     <span class="c1"># Number of line below line &quot;double initialValue(X,Y)&quot;</span>
     <span class="n">number_line_initial_value</span> <span class="o">=</span> <span class="n">number_line_initial_name</span> <span class="o">+</span> <span class="n">size_initial_names</span> <span class="o">+</span> <span class="mi">3</span>
+    <span class="k">if</span> <span class="s2">&quot;double initialValue&quot;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">[</span><span class="n">number_line_initial_value</span><span class="p">]:</span>
+        <span class="n">number_line_initial_value</span> <span class="o">+=</span> <span class="mi">1</span>
 
     <span class="c1"># Check if two or on-line dsfinal / dsin</span>
     <span class="k">if</span> <span class="s2">&quot;#&quot;</span> <span class="ow">in</span> <span class="n">content</span><span class="p">[</span><span class="n">number_line_initial_value</span><span class="p">]:</span>

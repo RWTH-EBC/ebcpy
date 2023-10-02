@@ -97,12 +97,14 @@ ebcpy/modelica/__init__.py:56:15: C0209: Formatting a regular string which could
 ebcpy/modelica/__init__.py:60:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ebcpy/modelica/__init__.py:9:0: R0912: Too many branches (13/12) (too-many-branches)
 ************* Module ebcpy.modelica.manipulate_ds
-ebcpy/modelica/manipulate_ds.py:44:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:107:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:123:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:125:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:134:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:140:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:55:32: W0631: Using possibly undefined loop variable 'number_line_initial_name' (undefined-loop-variable)
+ebcpy/modelica/manipulate_ds.py:114:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:130:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:132:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:141:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:147:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ************* Module ebcpy.modelica.simres
 ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
 ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
@@ -199,9 +201,9 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
     def _save_to_fmu(self, fail_on_error):
         """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
-ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
+ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.34/10
+Your code has been rated at 9.33/10
 
