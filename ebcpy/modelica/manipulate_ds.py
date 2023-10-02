@@ -2,6 +2,8 @@
 dsfinal.txt and dsin.txt files created by Modelica."""
 
 from io import StringIO
+import re
+
 import pandas as pd
 
 
