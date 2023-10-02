@@ -51,6 +51,8 @@ def convert_ds_file_to_dataframe(filename):
 
     # Number of line below line "double initialValue(X,Y)"
     number_line_initial_value = number_line_initial_name + size_initial_names + 3
+    if "double initialValue" in content[number_line_initial_value]:
+        number_line_initial_value += 1
 
     # Check if two or on-line dsfinal / dsin
     if "#" in content[number_line_initial_value]:
