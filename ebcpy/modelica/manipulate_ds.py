@@ -46,7 +46,7 @@ def convert_ds_file_to_dataframe(filename):
     for number_line_initial_name, line in enumerate(content):
         match_size_initial_name = re.match(pattern_size_initial_name, line)
         if match_size_initial_name:
-            size_initial_names = int(match.string.split("(")[-1].split(",")[0])
+            size_initial_names = int(match_size_initial_name.string.split("(")[-1].split(",")[0])
             break
 
     # Number of line below line "double initialValue(X,Y)"
