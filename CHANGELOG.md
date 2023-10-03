@@ -80,3 +80,5 @@
   - Fix setup.py pydantic version
 - v0.3.8
   - Fix sampling error for non-numeric values #69 #102
+- v0.3.9
+  - Fix error in loading newer ds-data from Dymola #70
