@@ -73,7 +73,7 @@ class TestManipulateDS(unittest.TestCase):
             Used to setup relevant paths and APIs etc."""
         self.ds_paths = []
         for file in ["dsfinal_old.txt", "dsin_2023.txt", "dsfinal_2023.txt"]:
-            self.ds_paths = Path(__file__).parent.joinpath("data", "ds_files", file)
+            self.ds_paths.append(Path(__file__).parent.joinpath("data", "ds_files", file))
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""
