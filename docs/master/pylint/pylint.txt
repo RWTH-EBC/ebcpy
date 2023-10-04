@@ -97,12 +97,13 @@ ebcpy/modelica/__init__.py:56:15: C0209: Formatting a regular string which could
 ebcpy/modelica/__init__.py:60:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ebcpy/modelica/__init__.py:9:0: R0912: Too many branches (13/12) (too-many-branches)
 ************* Module ebcpy.modelica.manipulate_ds
-ebcpy/modelica/manipulate_ds.py:44:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:107:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:123:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:125:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:134:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:140:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:116:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:132:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:134:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:143:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:149:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ************* Module ebcpy.modelica.simres
 ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
 ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
@@ -187,13 +188,17 @@ ebcpy/simulationapi/dymola_api.py:353:12: W0201: Attribute '_model_name' defined
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[936:947]
 ==ebcpy.simulationapi.fmu:[401:408]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        ) (duplicate-code)
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
