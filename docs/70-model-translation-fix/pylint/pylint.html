@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        9.33 / 10
+        9.34 / 10
             
-            (previous score: 9.33 / 10)
+            (previous score: 9.34 / 10)
             
         
 
@@ -197,27 +197,7 @@
             </tr>
             
             <tr>
-                <td>55</td>
-                <td>32</td>
-                <td>warning</td>
-                <td><code>undefined-loop-variable</code></td>
-                <td>W0631</td>
-                <td>convert_ds_file_to_dataframe</td>
-                <td><pre>Using possibly undefined loop variable &#39;number_line_initial_name&#39;</pre></td>
-            </tr>
-            
-            <tr>
-                <td>114</td>
-                <td>24</td>
-                <td>convention</td>
-                <td><code>consider-using-f-string</code></td>
-                <td>C0209</td>
-                <td>eliminate_parameters_from_ds_file</td>
-                <td><pre>Formatting a regular string which could be a f-string</pre></td>
-            </tr>
-            
-            <tr>
-                <td>130</td>
+                <td>116</td>
                 <td>24</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -228,6 +208,16 @@
             
             <tr>
                 <td>132</td>
+                <td>24</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>134</td>
                 <td>27</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -237,7 +227,7 @@
             </tr>
             
             <tr>
-                <td>141</td>
+                <td>143</td>
                 <td>9</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -247,7 +237,7 @@
             </tr>
             
             <tr>
-                <td>147</td>
+                <td>149</td>
                 <td>9</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -680,17 +670,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[936:947]
 ==ebcpy.simulationapi.fmu:[401:408]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -710,7 +696,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -720,7 +706,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -2044,7 +2030,7 @@
             
             <tr>
                 <td>warning</td>
-                <td>35</td>
+                <td>34</td>
             </tr>
             
             <tr>
@@ -2125,11 +2111,6 @@
             <tr>
                 <td>consider-using-f-string</td>
                 <td>10</td>
-            </tr>
-            
-            <tr>
-                <td>undefined-loop-variable</td>
-                <td>1</td>
             </tr>
             
             <tr>
@@ -2299,7 +2280,7 @@
             
             <tr>
                 <td>ebcpy.modelica.manipulate_ds</td>
-                <td>8</td>
+                <td>7</td>
             </tr>
             
             <tr>
@@ -2374,7 +2355,7 @@
             
             <tr>
                 <td>ebcpy/modelica/manipulate_ds.py</td>
-                <td>8</td>
+                <td>7</td>
             </tr>
             
             <tr>

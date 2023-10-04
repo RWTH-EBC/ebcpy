@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>ebcpy.modelica.manipulate_ds &mdash; ebcpy 0.3.8 documentation</title>
+  <title>ebcpy.modelica.manipulate_ds &mdash; ebcpy 0.3.9 documentation</title>
   
 
   
@@ -216,6 +216,8 @@
         <span class="k">if</span> <span class="n">match_size_initial_name</span><span class="p">:</span>
             <span class="n">size_initial_names</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">match_size_initial_name</span><span class="o">.</span><span class="n">string</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;(&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
             <span class="k">break</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Could not find initial names in file&quot;</span><span class="p">)</span>
 
     <span class="c1"># Number of line below line &quot;double initialValue(X,Y)&quot;</span>
     <span class="n">number_line_initial_value</span> <span class="o">=</span> <span class="n">number_line_initial_name</span> <span class="o">+</span> <span class="n">size_initial_names</span> <span class="o">+</span> <span class="mi">3</span>
