@@ -658,7 +658,7 @@ def get_df_index_frequency_mean_and_std(df_index: pd.Index):
     """
 
     if isinstance(df_index, pd.DatetimeIndex):
-        index_in_s = df_index.to_series().diff().dropna().values.astype(np.int64) * 1e-9
+        index_in_s = df_index.to_series().diff().dropna().values.astype(np.float64) * 1e-9
     else:
-        index_in_s = df_index.to_series().diff().dropna().values.astype(np.int64)
+        index_in_s = df_index.to_series().diff().dropna().values.astype(np.float64)
     return np.mean(index_in_s), np.std(index_in_s)
