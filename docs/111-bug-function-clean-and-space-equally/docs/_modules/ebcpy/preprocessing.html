@@ -423,8 +423,8 @@
     <span class="c1"># Convert indexes to datetime_index:</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_types</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">):</span>
-            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;DataFrame needs a DateTimeIndex for executing this function. &quot;</span>
-                            <span class="s2">&quot;Call to_datetime_index() to convert any index to &quot;</span>
+            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;TimeSeriesData needs a DateTimeIndex for executing this function. &quot;</span>
+                            <span class="s2">&quot;Call convert_index_to_datetime_index() to convert any index to &quot;</span>
                             <span class="s2">&quot;a DateTimeIndex&quot;</span><span class="p">)</span>
         <span class="c1"># Else</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;DataFrame needs a DateTimeIndex for executing this function. &quot;</span>
