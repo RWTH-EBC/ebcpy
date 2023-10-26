@@ -82,3 +82,7 @@
   - Fix sampling error for non-numeric values #69 #102
 - v0.3.9
   - Fix error in loading newer ds-data from Dymola #70
+- v0.3.10
+  - Fix fmpy version #109
+  - Fix data format for index frequency of tsd #107
+  - Fix bug in function clean_and_space_equally_time_series #111
