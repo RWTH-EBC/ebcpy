@@ -119,14 +119,14 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     # Check for unit of given index. Maybe one uses hour-based data.
     _unit_conversion_to_seconds = {"ms": 1e-3,
                                    "s": 1,
-                                   "min": 1/60,
-                                   "h": 1/3600,
-                                   "d": 1/86400}
+                                   "min": 1 / 60,
+                                   "h": 1 / 3600,
+                                   "d": 1 / 86400}
     if unit_of_index not in _unit_conversion_to_seconds:
         raise ValueError("Given unit_of_index is not supported.")
     _unit_factor_to_seconds = _unit_conversion_to_seconds.get(unit_of_index)
 
-    #Convert
+    # Convert
     old_index = df.index.copy()
     # Check if already converted:
     if isinstance(old_index, pd.DatetimeIndex):
@@ -207,8 +207,8 @@ def time_based_weighted_mean(df):
     if not isinstance(df.index, pd.DatetimeIndex):
         raise IndexError(f"df.index must be DatetimeIndex, but it is {type(df.index)}.")
 
-    time_delta = [(x-y).total_seconds() for x, y in zip(df.index[1:], df.index[:-1])]
-    weights = [x+y for x, y in zip([0] + time_delta, time_delta + [0])]
+    time_delta = [(x - y).total_seconds() for x, y in zip(df.index[1:], df.index[:-1])]
+    weights = [x + y for x, y in zip([0] + time_delta, time_delta + [0])]
     # Create empty numpy array
     res = np.empty(len(df.columns))
     res[:] = np.nan
@@ -266,7 +266,7 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
                         "Call convert_index_to_datetime_index() to convert any index to "
                         "a DateTimeIndex")
-    #%% Check DataFrame for NANs
+    # %% Check DataFrame for NANs
     # Create a pandas Series with number of invalid values for each column of df
     series_with_na = df.isnull().sum()
     for name in series_with_na.index:
@@ -286,27 +286,27 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
 
     # Make user warning for two cases: Upsampling and data input without a freq:
     # Check if the frequency differs
-    old_freq, old_freq_std = get_df_index_frequency_mean_and_std(df_index=df.index)
+    old_freq, old_freq_std, old_freq_sem, time_steps = get_df_index_frequency_mean_and_std(df_index=df.index,
+                                                                                           verbose=True)
     if old_freq_std > 0:
         _ns_to_s = 1e9
-        # Construct a frequency by converting it first to int, then to timedelta back again:
-        _artificial_freq = old_freq / _ns_to_s
+        # Calculate confidence interval of the mean value of the old frequency
         cfd_int = st.t.interval(confidence_warning,
-                                len(_artificial_freq)-1,
-                                loc=np.mean(_artificial_freq),
-                                scale=st.sem(_artificial_freq))
-        # Convert back to timedelta
-        cfd_int = pd.to_timedelta(cfd_int)
+                                time_steps - 1,
+                                loc=old_freq,
+                                scale=old_freq_sem)
+        # Convert to timedelta
+        cfd_int = pd.to_timedelta((cfd_int[0] * _ns_to_s, cfd_int[1] * _ns_to_s))
         _td_freq = pd.to_timedelta(desired_freq)
         if (_td_freq < cfd_int[0]) or (_td_freq > cfd_int[1]):
             in_seconds = np.array(cfd_int.values.tolist()) / _ns_to_s  # From nanoseconds
             warnings.warn(f"Input data has no frequency, but the desired frequency "
                           f"{_td_freq.value / _ns_to_s} seconds is outside the given "
-                          f"confidence interval {in_seconds} (in seconds). "
+                          f"confidence interval {in_seconds} (in seconds) "
                           "Carefully check the result to see if you "
                           "introduced errors to the data.")
 
-    #%% Re-sampling to new frequency with linear interpolation
+    # %% Re-sampling to new frequency with linear interpolation
     # Create new equally spaced DatetimeIndex. Last entry is always < df.index[-1]
     time_index = pd.date_range(start=df.index[0], end=df.index[-1], freq=desired_freq)
     new_freq, _ = get_df_index_frequency_mean_and_std(df_index=time_index)
@@ -416,7 +416,7 @@ def moving_average(data, window):
     >>> plt.show()
 
     """
-    if len(data.shape) > 1: # Check if given data has multiple dimensions
+    if len(data.shape) > 1:  # Check if given data has multiple dimensions
         if data.shape[1] == 1:
             data = data[:, 0]  # Resize to 1D-Array
         else:
@@ -426,9 +426,9 @@ def moving_average(data, window):
     weights = np.repeat(1.0, window) / window
     sma = np.convolve(data, weights, 'valid')
     # Create array with first entries and window/2 elements
-    fill_start = np.full((int(np.floor(window/2)), 1), sma[0])
+    fill_start = np.full((int(np.floor(window / 2)), 1), sma[0])
     # Same with last value of -data-
-    fill_end = np.full((int(np.ceil(window/2)) - 1, 1), sma[-1])
+    fill_end = np.full((int(np.ceil(window / 2)) - 1, 1), sma[-1])
     # Stack the arrays
     sma = np.concatenate((fill_start[:, 0], sma, fill_end[:, 0]), axis=0)
     return sma
@@ -555,7 +555,7 @@ def z_score(x, limit=3):
     """
     mean = np.mean(x)
     standard_deviation = np.std(x)
-    z_score_value = (x-mean)/standard_deviation
+    z_score_value = (x - mean) / standard_deviation
     return np.where(np.abs(z_score_value) > limit)[0]
 
 
@@ -580,8 +580,8 @@ def modified_z_score(x, limit=3.5):
 
     """
     median = np.median(x)
-    median_average_deviation = np.median(np.abs(x-median))
-    z_score_mod = 0.6745*(x-median)/median_average_deviation
+    median_average_deviation = np.median(np.abs(x - median))
+    z_score_mod = 0.6745 * (x - median) / median_average_deviation
     return np.where(np.abs(z_score_mod) > limit)[0]
 
 
@@ -645,12 +645,18 @@ def cross_validation(x, y, test_size=0.3):
     return model_selection.train_test_split(x, y, test_size=test_size)
 
 
-def get_df_index_frequency_mean_and_std(df_index: pd.Index):
+def get_df_index_frequency_mean_and_std(df_index: pd.Index, verbose: bool = False):
     """
     Function to get the mean and std of the index-frequency.
     If the index is a DatetimeIndex, the seconds are converted from nanoseconds
     to seconds.
     Else, seconds are assumed as values.
+
+    :param pd.Index df_index:
+        Time index.
+    :param bool verbose:
+        Default false. If true, additional to the mean value and standard deviation,
+        the standard error of the mean and number of time steps are returned.
 
     :returns:
         float: Mean value
@@ -661,4 +667,7 @@ def get_df_index_frequency_mean_and_std(df_index: pd.Index):
         index_in_s = df_index.to_series().diff().dropna().values.astype(np.float64) * 1e-9
     else:
         index_in_s = df_index.to_series().diff().dropna().values.astype(np.float64)
-    return np.mean(index_in_s), np.std(index_in_s)
+    if verbose:
+        return np.mean(index_in_s), np.std(index_in_s), st.sem(index_in_s), len(index_in_s)
+    else:
+        return np.mean(index_in_s), np.std(index_in_s)
