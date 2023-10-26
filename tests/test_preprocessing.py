@@ -6,7 +6,7 @@ from pathlib import Path
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from ebcpy import preprocessing
+from ebcpy import preprocessing, TimeSeriesData
 
 
 class TestPreProcessing(unittest.TestCase):
@@ -89,6 +89,8 @@ class TestPreProcessing(unittest.TestCase):
         # Check if wrong index input raises error:
         with self.assertRaises(TypeError):
             preprocessing.clean_and_space_equally_time_series(df, "1s")
+        with self.assertRaises(TypeError):
+            preprocessing.clean_and_space_equally_time_series(TimeSeriesData(df), "1s")
         df = preprocessing.convert_index_to_datetime_index(df)
         df_temp = preprocessing.clean_and_space_equally_time_series(df, "1s")
         self.assertIsInstance(df_temp, pd.DataFrame)

@@ -259,8 +259,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
         if isinstance(df, data_types.TimeSeriesData):
-            raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
-                            "Call to_datetime_index() to convert any index to "
+            raise TypeError("TimeSeriesData needs a DateTimeIndex for executing this function. "
+                            "Call convert_index_to_datetime_index() to convert any index to "
                             "a DateTimeIndex")
         # Else
         raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
