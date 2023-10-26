@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        9.34 / 10
+        9.32 / 10
             
-            (previous score: 9.34 / 10)
+            (previous score: 9.32 / 10)
             
         
 
@@ -495,7 +495,7 @@
                 <td><code>too-many-locals</code></td>
                 <td>R0914</td>
                 <td>clean_and_space_equally_time_series</td>
-                <td><pre>Too many local variables (18/15)</pre></td>
+                <td><pre>Too many local variables (19/15)</pre></td>
             </tr>
             
             <tr>
@@ -509,6 +509,36 @@
             </tr>
             
             <tr>
+                <td>289</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (109/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>290</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (104/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>312</td>
+                <td>4</td>
+                <td>warning</td>
+                <td><code>unbalanced-tuple-unpacking</code></td>
+                <td>W0632</td>
+                <td>clean_and_space_equally_time_series</td>
+                <td><pre>Possible unbalanced tuple unpacking with sequence defined at line 671: left side has 2 labels, right side has 4 values</pre></td>
+            </tr>
+            
+            <tr>
                 <td>437</td>
                 <td>0</td>
                 <td>refactor</td>
@@ -516,6 +546,16 @@
                 <td>R0913</td>
                 <td>create_on_off_signal</td>
                 <td><pre>Too many arguments (6/5)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>670</td>
+                <td>4</td>
+                <td>refactor</td>
+                <td><code>no-else-return</code></td>
+                <td>R1705</td>
+                <td>get_df_index_frequency_mean_and_std</td>
+                <td><pre>Unnecessary &#34;else&#34; after &#34;return&#34;, remove the &#34;else&#34; and de-indent the code inside it</pre></td>
             </tr>
             
         </table>
@@ -670,13 +710,17 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[936:947]
 ==ebcpy.simulationapi.fmu:[401:408]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )</pre></td>
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
             </tr>
             
             <tr>
@@ -696,7 +740,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -706,7 +750,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -2025,17 +2069,17 @@
             
             <tr>
                 <td>refactor</td>
-                <td>105</td>
+                <td>106</td>
             </tr>
             
             <tr>
                 <td>warning</td>
-                <td>34</td>
+                <td>35</td>
             </tr>
             
             <tr>
                 <td>convention</td>
-                <td>34</td>
+                <td>36</td>
             </tr>
             
         </table>
@@ -2065,7 +2109,7 @@
             
             <tr>
                 <td>line-too-long</td>
-                <td>10</td>
+                <td>12</td>
             </tr>
             
             <tr>
@@ -2106,6 +2150,16 @@
             <tr>
                 <td>unused-import</td>
                 <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>unbalanced-tuple-unpacking</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>no-else-return</td>
+                <td>1</td>
             </tr>
             
             <tr>
@@ -2270,7 +2324,7 @@
             
             <tr>
                 <td>ebcpy.preprocessing</td>
-                <td>3</td>
+                <td>7</td>
             </tr>
             
             <tr>
@@ -2345,7 +2399,7 @@
             
             <tr>
                 <td>ebcpy/preprocessing.py</td>
-                <td>3</td>
+                <td>7</td>
             </tr>
             
             <tr>
