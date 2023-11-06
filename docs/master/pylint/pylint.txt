@@ -88,9 +88,13 @@ ebcpy/data_types.py:465:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/data_types.py:25:11: E0603: Undefined variable name 'numeric_indexes' in __all__ (undefined-all-variable)
 ebcpy/data_types.py:16:0: W0611: Unused numpy imported as np (unused-import)
 ************* Module ebcpy.preprocessing
-ebcpy/preprocessing.py:220:0: R0914: Too many local variables (18/15) (too-many-locals)
+ebcpy/preprocessing.py:289:0: C0301: Line too long (109/100) (line-too-long)
+ebcpy/preprocessing.py:290:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/preprocessing.py:220:0: R0914: Too many local variables (19/15) (too-many-locals)
+ebcpy/preprocessing.py:312:4: W0632: Possible unbalanced tuple unpacking with sequence defined at line 671: left side has 2 labels, right side has 4 values (unbalanced-tuple-unpacking)
 ebcpy/preprocessing.py:220:0: R0912: Too many branches (13/12) (too-many-branches)
 ebcpy/preprocessing.py:437:0: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/preprocessing.py:670:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 ************* Module ebcpy.modelica
 ebcpy/modelica/__init__.py:9:0: R0914: Too many local variables (20/15) (too-many-locals)
 ebcpy/modelica/__init__.py:56:15: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
@@ -200,9 +204,9 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
     def _save_to_fmu(self, fail_on_error):
         """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
-ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
+ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.34/10
+Your code has been rated at 9.32/10
 
