@@ -204,8 +204,8 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
     def _save_to_fmu(self, fail_on_error):
         """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
-ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
 Your code has been rated at 9.32/10
