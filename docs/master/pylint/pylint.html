@@ -710,13 +710,17 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[936:947]
 ==ebcpy.simulationapi.fmu:[401:408]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )</pre></td>
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
             </tr>
             
             <tr>
