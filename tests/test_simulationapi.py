@@ -183,21 +183,18 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
 
         # Just for tests in the gitlab-ci:
         if "linux" in sys.platform:
-            dymola_path = "/usr/local"
-            dymola_interface_path = "/opt/dymola-2022-x86_64/Modelica/Library/python_interface/dymola.egg"
+            dymola_exe_path = "/usr/local/bin64/dymola"
         else:
-            dymola_path = None
-            dymola_interface_path = None
+            dymola_exe_path = None
         try:
             self.sim_api = dymola_api.DymolaAPI(
                 cd=self.example_sim_dir,
                 model_name=model_name,
                 packages=packages,
-                dymola_path=dymola_path,
+                dymola_exe_path=dymola_exe_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
-                mos_script_post=mos_script,
-                dymola_interface_path=dymola_interface_path
+                mos_script_post=mos_script
             )
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "

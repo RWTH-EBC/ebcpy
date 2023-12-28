@@ -56,10 +56,6 @@ class DymolaAPI(SimulationAPI):
     :keyword Boolean equidistant_output:
         If True (Default), Dymola stores variables in an
         equisdistant output and does not store variables at events.
-    :keyword str dymola_path:
-         Path to the dymola installation on the device. Necessary
-         e.g. on linux, if we can't find the path automatically.
-         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
     :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
@@ -86,7 +82,7 @@ class DymolaAPI(SimulationAPI):
         If given, the Version needs to be equal to the folder name
         of your installation.
 
-        **Example:** If you have two version installed at
+        **Example:** If you have two versions installed at
 
         - ``C://Program Files//Dymola 2021`` and
         - ``C://Program Files//Dymola 2020x``
@@ -95,9 +91,18 @@ class DymolaAPI(SimulationAPI):
         ``dymola_version='Dymola 2020x'``.
 
         This parameter is overwritten if ``dymola_path`` is specified.
+    :keyword str dymola_path:
+         Path to the dymola installation on the device. Necessary
+         e.g. on linux, if we can't find the path automatically.
+         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
     :keyword str dymola_interface_path:
-        Only relevant for the case when the dymola-exe path
+        Direct path to the .egg-file of the dymola interface.
+        Only relevant when the dymola_path
         differs from the interface path.
+    :keyword str dymola_exe_path:
+        Direct path to the dymola executable.
+        Only relevant if the dymola installation do not follow
+        the official guideline.
 
     Example:
 
@@ -129,7 +134,8 @@ class DymolaAPI(SimulationAPI):
         "mos_script_pre",
         "mos_script_post",
         "dymola_version",
-        "dymola_interface_path"
+        "dymola_interface_path",
+        "dymola_exe_path"
     ]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
@@ -146,6 +152,7 @@ class DymolaAPI(SimulationAPI):
         self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
         self.dymola_interface_path = kwargs.pop("dymola_interface_path", None)
+        self.dymola_exe_path = kwargs.pop("dymola_exe_path", None)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
                 if not os.path.isfile(mos_script):
@@ -175,31 +182,30 @@ class DymolaAPI(SimulationAPI):
             if not os.path.exists(dymola_path):
                 raise FileNotFoundError(f"Given path '{dymola_path}' can not be found on "
                                         "your machine.")
-            _dym_install = dymola_path
         else:
             # Get the dymola-install-path:
             _dym_installations = self.get_dymola_install_paths()
             if _dym_installations:
                 if self.dymola_version:
-                    _found_version = False
-                    for _dym_install in _dym_installations:
-                        if _dym_install.endswith(self.dymola_version):
-                            _found_version = True
-                            break
-                    if not _found_version:
-                        raise ValueError(
-                            f"Given dymola_version '{self.dymola_version}' not found in "
-                            f"the list of dymola installations {_dym_installations}"
-                        )
+                    dymola_path = _get_dymola_path_of_version(
+                        dymola_installations=_dym_installations,
+                        dymola_version=self.dymola_version
+                    )
                 else:
-                    _dym_install = _dym_installations[0]  # 0 is the newest
-                self.logger.info("Using dymola installation at %s", _dym_install)
+                    dymola_path = _dym_installations[0]  # 0 is the newest
+                self.logger.info("Using dymola installation at %s", dymola_path)
             else:
-                raise FileNotFoundError("Could not find a dymola-interface on your machine.")
-        self.dymola_exe_path = self.get_dymola_path(_dym_install)
+                if self.dymola_exe_path is None or self.dymola_interface_path is None:
+                    raise FileNotFoundError(
+                        "Could not find dymola on your machine. "
+                        "Thus, not able to find the `dymola_exe_path` and `dymola_interface_path`. "
+                        "Either specify both or pass an existing `dymola_path`."
+                    )
+        if self.dymola_exe_path is None:
+            self.dymola_exe_path = self.get_dymola_path(dymola_path)
         self.logger.info("Using dymola.exe: %s", self.dymola_exe_path)
         if self.dymola_interface_path is None:
-            self.dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+            self.dymola_interface_path = self.get_dymola_interface_path(dymola_path)
         self.logger.info("Using dymola interface: %s", self.dymola_interface_path)
 
         self.packages = []
@@ -1022,7 +1028,7 @@ class DymolaAPI(SimulationAPI):
         """
         if dymola_name is None:
             if "linux" in sys.platform:
-                dymola_name = "dymola"
+                dymola_name = "dymola.sh"
             elif "win" in sys.platform:
                 dymola_name = "Dymola.exe"
             else:
@@ -1166,3 +1172,18 @@ class DymolaAPI(SimulationAPI):
             self.sim_counter = 1
         else:
             self.sim_counter += 1
+
+
+def _get_dymola_path_of_version(dymola_installations: list, dymola_version: str):
+    """
+    Helper function to get the path associated to the dymola_version
+    from the list of all installations
+    """
+    for dymola_path in dymola_installations:
+        if dymola_path.endswith(dymola_version):
+            return dymola_path
+    # If still here, version was not found
+    raise ValueError(
+        f"Given dymola_version '{dymola_version}' not found in "
+        f"the list of dymola installations {dymola_installations}"
+    )

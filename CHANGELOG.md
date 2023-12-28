@@ -86,3 +86,5 @@
   - Fix fmpy version #109
   - Fix data format for index frequency of tsd #107
   - Fix bug in function clean_and_space_equally_time_series #111
+- v0.3.11
+  - Add dymola_exe_path to set of kwargs in DymolaAPI #115
