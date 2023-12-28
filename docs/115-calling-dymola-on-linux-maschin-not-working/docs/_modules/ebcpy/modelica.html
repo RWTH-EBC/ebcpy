@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.modelica &mdash; ebcpy 0.3.11 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+              <div class="version">
+                0.3
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../code/modules.html">ebcpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">ebcpy.modelica</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ebcpy.modelica</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">This package aims to help manipulate simulation files (dsfinal.txt or dsin.txt)</span>
+<span class="sd">or to load simulation result files (.mat) efficiently into a pandas.DataFrame</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
+
+<div class="viewcode-block" id="get_expressions"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_expressions">[docs]</a><span class="k">def</span> <span class="nf">get_expressions</span><span class="p">(</span><span class="n">filepath_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                    <span class="n">get_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+                    <span class="n">modelica_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;parameters&quot;</span><span class="p">,</span>
+                    <span class="n">excludes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function extracts specific expressions out of modelica models.</span>
+
+<span class="sd">    :param str,os.path.normpath filepath_model:</span>
+<span class="sd">        Full path of modelica model on the given os</span>
+<span class="sd">        e.g. path_model = &quot;C://MyLibrary//TestModel.mo&quot;</span>
+<span class="sd">    :param str,list modelica_type:</span>
+<span class="sd">        Type you want to have matched. &quot;parameters&quot; and &quot;variables&quot;</span>
+<span class="sd">        have a special regex pattern.</span>
+<span class="sd">        For other models, you can parse a string like:</span>
+<span class="sd">        &quot;replaceable package Medium&quot; and it will yield all</span>
+<span class="sd">        afflicted lines. You can also give a list of strings if</span>
+<span class="sd">        multiple strings are relevant to you.</span>
+<span class="sd">        Special cases:</span>
+<span class="sd">        parameters:</span>
+<span class="sd">        - include: [&quot;parameter&quot;]</span>
+<span class="sd">        - excludes: [&quot;final&quot;, &quot;in&quot;, &quot;of&quot;, &quot;replaceable&quot;]</span>
+<span class="sd">        variables: Note: The case for already imported SIUnits is not considered here.</span>
+<span class="sd">        - include: [&quot;Modelica.SIunits&quot;, &quot;Real&quot;, &quot;Boolean&quot;, &quot;Integer&quot;]</span>
+<span class="sd">        - excludes: [&quot;parameter&quot;, &quot;import&quot;, &quot;constant&quot;]</span>
+<span class="sd">    :param list excludes:</span>
+<span class="sd">        List of strings to exclude from expression. Default is None.</span>
+<span class="sd">    :param Boolean get_protected:</span>
+<span class="sd">        Whether to extract protected parameters or not. Default is false</span>
+
+<span class="sd">    :return: list matches</span>
+<span class="sd">        List with all lines matching the given expression.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">excludes</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">excludes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">if</span> <span class="n">modelica_type</span> <span class="o">==</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:</span>
+        <span class="n">_includes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;parameter&quot;</span><span class="p">]</span>
+        <span class="n">_excludes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;final&quot;</span><span class="p">,</span> <span class="s2">&quot;in&quot;</span><span class="p">,</span> <span class="s2">&quot;of&quot;</span><span class="p">,</span> <span class="s2">&quot;replaceable&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">excludes</span>
+    <span class="k">elif</span> <span class="n">modelica_type</span> <span class="o">==</span> <span class="s2">&quot;variables&quot;</span><span class="p">:</span>
+        <span class="n">_includes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Modelica.SIunits&quot;</span><span class="p">,</span> <span class="s2">&quot;Real&quot;</span><span class="p">,</span> <span class="s2">&quot;Boolean&quot;</span><span class="p">,</span> <span class="s2">&quot;Integer&quot;</span><span class="p">]</span>
+        <span class="n">_excludes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;parameter&quot;</span><span class="p">,</span> <span class="s2">&quot;import&quot;</span><span class="p">,</span> <span class="s2">&quot;constant&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">excludes</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_includes</span> <span class="o">=</span> <span class="p">[</span><span class="n">modelica_type</span><span class="p">]</span>
+        <span class="n">_excludes</span> <span class="o">=</span> <span class="n">excludes</span>
+    <span class="k">if</span> <span class="n">_excludes</span><span class="p">:</span>
+        <span class="n">_exclude_str</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;(?&lt;!&quot;</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\s)(?&lt;!&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_excludes</span><span class="p">)</span> <span class="o">+</span> <span class="sa">r</span><span class="s2">&quot;\s)&quot;</span>
+    <span class="k">else</span><span class="p">:</span>  <span class="c1"># Case if list is empty</span>
+        <span class="n">_exclude_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="n">_pattern</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;((?:\s.+)?</span><span class="si">{}</span><span class="s1">(</span><span class="si">{}</span><span class="s1">)(.|\n)*?;)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_exclude_str</span><span class="p">,</span>
+                                                    <span class="s2">&quot;|&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_includes</span><span class="p">))</span>
+
+    <span class="c1"># Open the file</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filepath_model</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">script</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+    <span class="c1"># Find desired expression in modelica script</span>
+    <span class="n">expr</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="n">_pattern</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">)</span>
+
+    <span class="n">expr_filtered</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot; &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">expr_unfiltered</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">())</span> <span class="k">for</span> <span class="n">expr_unfiltered</span> <span class="ow">in</span> <span class="n">expr</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">get_protected</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">expr_filtered</span>
+
+    <span class="c1"># Get position of expressions</span>
+    <span class="n">pos_expr</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">re</span><span class="o">.</span><span class="n">finditer</span><span class="p">(</span><span class="n">_pattern</span><span class="p">,</span> <span class="n">script</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">MULTILINE</span><span class="p">):</span>
+        <span class="n">pos_expr</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">match</span><span class="o">.</span><span class="n">span</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+
+    <span class="c1"># Check if parameter are protected</span>
+    <span class="n">expr_unprotected</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">expr_protected</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="c1"># Get position of &quot;protected&quot;-expression</span>
+    <span class="n">protected</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;protected&#39;</span><span class="p">,</span> <span class="n">script</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">protected</span><span class="p">:</span>
+        <span class="n">pos_protected</span> <span class="o">=</span> <span class="n">protected</span><span class="o">.</span><span class="n">span</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">temp_expr</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">expr</span><span class="p">):</span>
+            <span class="c1"># If expressions is before &#39;proteceted&#39; --&gt; refer to expr_unprotected</span>
+            <span class="k">if</span> <span class="n">pos_expr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">pos_protected</span><span class="p">:</span>
+                <span class="n">expr_unprotected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_expr</span><span class="p">)</span>
+            <span class="c1"># If expressions is after &#39;proteceted&#39; --&gt; refer to expr_protected</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">expr_protected</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_expr</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">expr_unprotected</span> <span class="o">=</span> <span class="n">expr</span>
+
+    <span class="k">return</span> <span class="n">expr_unprotected</span><span class="p">,</span> <span class="n">expr_protected</span></div>
+
+
+<div class="viewcode-block" id="get_names_and_values_of_lines"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_names_and_values_of_lines">[docs]</a><span class="k">def</span> <span class="nf">get_names_and_values_of_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    All unnecessary code is deleted (annotations, doc).</span>
+<span class="sd">    Only the name of the variable and the value is extracted.</span>
+
+<span class="sd">    :param List[str] lines:</span>
+<span class="sd">        List of strings with lines from a modelica file.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        dict: Containing the names as key and values as value.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; lines = [&#39;parameter Boolean my_boolean=true &quot;Some description&quot;&#39;,</span>
+<span class="sd">    &gt;&gt;&gt;          &#39;parameter Real my_real=12.0 &quot;Some description&quot; annotation(&quot;Some annotation&quot;)&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; output = get_names_and_values_of_lines(lines=lines)</span>
+<span class="sd">    &gt;&gt;&gt; print(output)</span>
+<span class="sd">    {&#39;my_boolean&#39;: True, &#39;my_real&#39;: 12.0}</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;;&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Check if line is a commented line and if so, skip the line:</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;//&quot;</span><span class="p">):</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># Remove part behind possible annotation:</span>
+        <span class="n">loc</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;annotation&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">loc</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="p">[:</span><span class="n">loc</span><span class="p">]</span>
+        <span class="c1"># Remove possible brackets, like &quot;param(min=0, start=5)</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;[\(\[].*?[\)\]]&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="c1"># And now any quotes / doc / strings</span>
+        <span class="n">line</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;&quot;.*&quot;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">)</span>
+        <span class="c1"># If a value is present (e.g. for parameters, one = sign is still present (always)</span>
+        <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">name_str</span><span class="p">,</span> <span class="n">val_str</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)</span>
+            <span class="n">name_str</span> <span class="o">=</span> <span class="n">name_str</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">name_str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">val_str_stripped</span> <span class="o">=</span> <span class="n">val_str</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">val_str_stripped</span> <span class="ow">in</span> <span class="p">[</span><span class="s2">&quot;true&quot;</span><span class="p">,</span> <span class="s2">&quot;false&quot;</span><span class="p">]:</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">val_str_stripped</span> <span class="o">==</span> <span class="s2">&quot;true&quot;</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">val_str_stripped</span><span class="p">)</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="c1"># Neither float, integer nor boolean, hence None</span>
+                    <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="c1"># else no value is stored in the line</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span>
+            <span class="n">name</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">res</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">name</span><span class="p">:</span> <span class="n">value</span><span class="p">})</span>
+
+    <span class="k">return</span> <span class="n">res</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
