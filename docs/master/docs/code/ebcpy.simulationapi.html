@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi package &mdash; ebcpy 0.3.10 documentation</title>
+  <title>ebcpy.simulationapi package &mdash; ebcpy 0.3.11 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -475,9 +475,6 @@ See also the keyword <code class="docutils literal notranslate"><span class="pre
 of the <code class="docutils literal notranslate"><span class="pre">simulate</span></code> function.</p></li>
 <li><p><strong>equidistant_output</strong> (<em>Boolean</em>) – If True (Default), Dymola stores variables in an
 equisdistant output and does not store variables at events.</p></li>
-<li><p><strong>dymola_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to the dymola installation on the device. Necessary
-e.g. on linux, if we can’t find the path automatically.
-Example: <code class="docutils literal notranslate"><span class="pre">dymola_path=&quot;C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2020x&quot;</span></code></p></li>
 <li><p><strong>n_restart</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of iterations after which Dymola should restart.
 This is done to free memory. Default value -1. For values
 below 1 Dymola does not restart.</p></li>
@@ -497,7 +494,7 @@ If given, the script is executed before closing Dymola.</p></li>
 If not given, newest version will be used.
 If given, the Version needs to be equal to the folder name
 of your installation.</p>
-<p><strong>Example:</strong> If you have two version installed at</p>
+<p><strong>Example:</strong> If you have two versions installed at</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2021</span></code> and</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2020x</span></code></p></li>
@@ -506,8 +503,15 @@ of your installation.</p>
 <code class="docutils literal notranslate"><span class="pre">dymola_version='Dymola</span> <span class="pre">2020x'</span></code>.</p>
 <p>This parameter is overwritten if <code class="docutils literal notranslate"><span class="pre">dymola_path</span></code> is specified.</p>
 </p></li>
-<li><p><strong>dymola_interface_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Only relevant for the case when the dymola-exe path
+<li><p><strong>dymola_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to the dymola installation on the device. Necessary
+e.g. on linux, if we can’t find the path automatically.
+Example: <code class="docutils literal notranslate"><span class="pre">dymola_path=&quot;C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2020x&quot;</span></code></p></li>
+<li><p><strong>dymola_interface_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Direct path to the .egg-file of the dymola interface.
+Only relevant when the dymola_path
 differs from the interface path.</p></li>
+<li><p><strong>dymola_exe_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Direct path to the dymola executable.
+Only relevant if the dymola installation do not follow
+the official guideline.</p></li>
 </ul>
 </dd>
 </dl>
