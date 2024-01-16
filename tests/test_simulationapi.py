@@ -183,7 +183,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
 
         # Just for tests in the gitlab-ci:
         if "linux" in sys.platform:
-            dymola_exe_path = "/usr/local/bin64/dymola"
+            dymola_exe_path = "/usr/local/bin/dymola"
         else:
             dymola_exe_path = None
         try:
