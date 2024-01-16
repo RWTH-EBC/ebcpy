@@ -292,6 +292,10 @@ class SimulationAPI:
             parameters = [{}]
         if isinstance(parameters, dict):
             parameters = [parameters]
+
+        if return_option not in ["time_series", "savepath", "last_point"]:
+            raise ValueError(f"Given return option '{return_option}' is not supported.")
+
         new_kwargs = {}
         kwargs["return_option"] = return_option  # Update with arg
         n_simulations = len(parameters)
