@@ -94,10 +94,10 @@ class PartialTestSimAPI(unittest.TestCase):
         _some_par = list(self.sim_api.parameters.keys())[0]
         pars = {_some_par: self.sim_api.parameters[_some_par].value}
         parameters = [pars for i in range(2)]
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             res = self.sim_api.simulate(parameters=parameters,
                                         return_option='savepath')
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             res = self.sim_api.simulate(parameters=parameters,
                                         return_option='savepath',
                                         result_file_name=["t", "t"],

@@ -332,7 +332,7 @@ class DymolaAPI(SimulationAPI):
         result_file_name = kwargs.pop("result_file_name", 'resultFile')
         parameters = kwargs.pop("parameters")
         return_option = kwargs.pop("return_option")
-        model_names = kwargs.pop("model_names")
+        model_names = kwargs.pop("model_names", None)
         inputs = kwargs.pop("inputs", None)
         fail_on_error = kwargs.pop("fail_on_error", True)
         structural_parameters = kwargs.pop("structural_parameters", [])
