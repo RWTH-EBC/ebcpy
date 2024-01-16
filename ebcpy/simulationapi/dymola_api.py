@@ -327,15 +327,24 @@ class DymolaAPI(SimulationAPI):
 
     def _single_simulation(self, kwargs):
         # Unpack kwargs
-        show_eventlog = kwargs.get("show_eventlog", False)
-        squeeze = kwargs.get("squeeze", True)
-        result_file_name = kwargs.get("result_file_name", 'resultFile')
-        parameters = kwargs.get("parameters")
-        return_option = kwargs.get("return_option")
-        model_names = kwargs.get("model_names")
-        inputs = kwargs.get("inputs", None)
-        fail_on_error = kwargs.get("fail_on_error", True)
-        structural_parameters = kwargs.get("structural_parameters", [])
+        show_eventlog = kwargs.pop("show_eventlog", False)
+        squeeze = kwargs.pop("squeeze", True)
+        result_file_name = kwargs.pop("result_file_name", 'resultFile')
+        parameters = kwargs.pop("parameters")
+        return_option = kwargs.pop("return_option")
+        model_names = kwargs.pop("model_names")
+        inputs = kwargs.pop("inputs", None)
+        fail_on_error = kwargs.pop("fail_on_error", True)
+        structural_parameters = kwargs.pop("structural_parameters", [])
+        table_name = kwargs.pop("table_name", None)
+        file_name = kwargs.pop("file_name", None)
+        savepath = kwargs.pop("savepath", None)
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
+
 
         # Handle multiprocessing
         if self.use_mp:
@@ -422,10 +431,7 @@ class DymolaAPI(SimulationAPI):
         # Handle inputs
         if inputs is not None:
             # Unpack additional kwargs
-            try:
-                table_name = kwargs["table_name"]
-                file_name = kwargs["file_name"]
-            except KeyError as err:
+            if table_name is None or file_name is None:
                 raise KeyError("For inputs to be used by DymolaAPI.simulate, you "
                                "have to specify the 'table_name' and the 'file_name' "
                                "as keyword arguments of the function. These must match"
@@ -529,7 +535,6 @@ class DymolaAPI(SimulationAPI):
 
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
-            savepath = kwargs.pop("savepath", None)
             # Get the cd of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
@@ -1028,7 +1033,7 @@ class DymolaAPI(SimulationAPI):
         """
         if dymola_name is None:
             if "linux" in sys.platform:
-                dymola_name = "dymola.sh"
+                dymola_name = "dymola"
             elif "win" in sys.platform:
                 dymola_name = "Dymola.exe"
             else:
