@@ -542,7 +542,10 @@ class DymolaAPI(SimulationAPI):
             if savepath is None or str(savepath) == dymola_cd:
                 return os.path.join(dymola_cd, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
-            for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
+            for filename in [_save_name_dsres]:
+            # Copying dslogs and dsfinals can lead to errors,
+            # as the names are not unique
+            #for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 try:
                     os.remove(os.path.join(savepath, filename))
