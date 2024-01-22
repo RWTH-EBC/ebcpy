@@ -246,10 +246,10 @@ class DymolaAPI(SimulationAPI):
             ports = _get_n_available_ports(n_ports=self.n_cpu)
             self.pool.map(
                 self._setup_dymola_interface,
-                [(True, port) for port in ports]
+                [dict(use_mp=True, port=port) for port in ports]
             )
         # For translation etc. always setup a default dymola instance
-        self.dymola = self._setup_dymola_interface(use_mp=False, port=-1)
+        self.dymola = self._setup_dymola_interface(dict(use_mp=False, port=-1))
 
         self.fully_initialized = True
         # Trigger on init.
@@ -358,7 +358,7 @@ class DymolaAPI(SimulationAPI):
             if self.dymola is None:
                 # This should not affect #119, as this rarely happens. Thus, the
                 # method used in the DymolaInterface should work.
-                self._setup_dymola_interface(use_mp=True, port=-1)
+                self._setup_dymola_interface(dict(use_mp=True, port=-1))
 
         # Handle eventlog
         if show_eventlog:
@@ -762,8 +762,10 @@ class DymolaAPI(SimulationAPI):
             else:
                 self.states[idx] = _var_ebcpy
 
-    def _setup_dymola_interface(self, use_mp: bool, port: int):
+    def _setup_dymola_interface(self, kwargs: dict):
         """Load all packages and change the current working directory"""
+        use_mp = kwargs["use_mp"]
+        port = kwargs["port"]
         dymola = self._open_dymola_interface(port=port)
         self._check_dymola_instances()
         if use_mp:
@@ -1185,7 +1187,7 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False, port=-1)
+            self._dummy_dymola_instance = self._setup_dymola_interface(dict(use_mp=False, port=-1))
             self.sim_counter = 1
         else:
             self.sim_counter += 1
