@@ -292,32 +292,44 @@ class SimulationAPI:
             parameters = [{}]
         if isinstance(parameters, dict):
             parameters = [parameters]
+
+        if return_option not in ["time_series", "savepath", "last_point"]:
+            raise ValueError(f"Given return option '{return_option}' is not supported.")
+
         new_kwargs = {}
         kwargs["return_option"] = return_option  # Update with arg
+        n_simulations = len(parameters)
         # Handle special case for saving files:
-        if return_option == "savepath" and len(parameters) > 1:
+        if return_option == "savepath" and n_simulations > 1:
             savepath = kwargs.get("savepath", [])
             if isinstance(savepath, (str, os.PathLike)):
-                savepath = [savepath] * len(parameters)
+                savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])
-            if (len(set(savepath)) != len(parameters) and
-                    len(set(result_file_name)) != len(parameters)):
-                raise TypeError(
+            if isinstance(result_file_name, str):
+                result_file_name = [result_file_name] * n_simulations
+            if len(savepath) != len(result_file_name):
+                raise ValueError("Given savepath and result_file_name "
+                                 "have not the same lenght.")
+            joined_save_paths = []
+            for _single_save_path, _single_result_name in zip(savepath, result_file_name):
+                joined_save_paths.append(os.path.join(_single_save_path, _single_result_name))
+            if len(set(joined_save_paths)) != n_simulations:
+                raise ValueError(
                     "Simulating multiple parameter set's on "
-                    "the same savepath will overwrite old "
-                    "results or even cause errors. "
-                    "Specify a result_file_name or savepath for each "
-                    "parameter combination"
+                    "the same combination of savepath and result_file_name "
+                    "will override results or even cause errors. "
+                    "Specify a unqiue result_file_name-savepath combination "
+                    "for each parameter combination"
                 )
         for key, value in kwargs.items():
             if isinstance(value, list):
-                if len(value) != len(parameters):
+                if len(value) != n_simulations:
                     raise ValueError(f"Mismatch in multiprocessing of "
-                                     f"given parameters ({len(parameters)}) "
+                                     f"given parameters ({n_simulations}) "
                                      f"and given {key} ({len(value)})")
                 new_kwargs[key] = value
             else:
-                new_kwargs[key] = [value] * len(parameters)
+                new_kwargs[key] = [value] * n_simulations
         kwargs = []
         for _idx, _parameters in enumerate(parameters):
             kwargs.append(
@@ -354,7 +366,7 @@ class SimulationAPI:
                 "return_option": _single_kwargs["return_option"],
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
-        self.logger.info(f"Finished {len(parameters)} simulations on {self.n_cpu} processes in "
+        self.logger.info(f"Finished {n_simulations} simulations on {self.n_cpu} processes in "
                          f"{timedelta(seconds=int(time.time() - t_sim_start))}")
         if len(results) == 1:
             return results[0]

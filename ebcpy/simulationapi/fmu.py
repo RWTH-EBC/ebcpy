@@ -186,8 +186,17 @@ class FMU_API(simulationapi.SimulationAPI):
         # Unpack kwargs:
         parameters = kwargs.pop("parameters", None)
         return_option = kwargs.pop("return_option", "time_series")
-        inputs = kwargs.get("inputs", None)
-        fail_on_error = kwargs.get("fail_on_error", True)
+        inputs = kwargs.pop("inputs", None)
+        fail_on_error = kwargs.pop("fail_on_error", True)
+        result_file_name = kwargs.pop("result_file_name", "resultFile")
+        result_file_suffix = kwargs.pop("result_file_suffix", "csv")
+        parquet_engine = kwargs.pop('parquet_engine', 'pyarrow')
+        savepath = kwargs.pop("savepath", None)
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
         if self.use_mp:
             if self._fmu_instance is None:
@@ -255,11 +264,6 @@ class FMU_API(simulationapi.SimulationAPI):
                             str(self.sim_setup.output_interval)[::-1].find('.'))
 
         if return_option == "savepath":
-            result_file_name = kwargs.get("result_file_name", "resultFile")
-            result_file_suffix = kwargs.get("result_file_suffix", "csv")
-            parquet_engine = kwargs.get('parquet_engine', 'pyarrow')
-            savepath = kwargs.get("savepath", None)
-
             if savepath is None:
                 savepath = self.cd
 
