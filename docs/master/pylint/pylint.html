@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        9.32 / 10
+        9.30 / 10
             
-            (previous score: 9.32 / 10)
+            (previous score: 9.30 / 10)
             
         
 
@@ -573,7 +573,7 @@
             </tr>
             
             <tr>
-                <td>396</td>
+                <td>408</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -640,14 +640,34 @@
                 <td>239</td>
                 <td>4</td>
                 <td>refactor</td>
-                <td><code>too-many-branches</code></td>
-                <td>R0912</td>
+                <td><code>too-many-locals</code></td>
+                <td>R0914</td>
                 <td>SimulationAPI.simulate</td>
-                <td><pre>Too many branches (17/12)</pre></td>
+                <td><pre>Too many local variables (19/15)</pre></td>
             </tr>
             
             <tr>
-                <td>345</td>
+                <td>239</td>
+                <td>4</td>
+                <td>refactor</td>
+                <td><code>too-many-branches</code></td>
+                <td>R0912</td>
+                <td>SimulationAPI.simulate</td>
+                <td><pre>Too many branches (21/12)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>239</td>
+                <td>4</td>
+                <td>refactor</td>
+                <td><code>too-many-statements</code></td>
+                <td>R0915</td>
+                <td>SimulationAPI.simulate</td>
+                <td><pre>Too many statements (51/50)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>357</td>
                 <td>20</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -657,7 +677,7 @@
             </tr>
             
             <tr>
-                <td>363</td>
+                <td>375</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -667,7 +687,7 @@
             </tr>
             
             <tr>
-                <td>397</td>
+                <td>409</td>
                 <td>15</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -697,7 +717,7 @@
                 <td><code>too-many-lines</code></td>
                 <td>C0302</td>
                 <td></td>
-                <td><pre>Too many lines in module (1189/1000)</pre></td>
+                <td><pre>Too many lines in module (1197/1000)</pre></td>
             </tr>
             
             <tr>
@@ -708,8 +728,8 @@
                 <td>R0801</td>
                 <td></td>
                 <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[942:953]
-==ebcpy.simulationapi.fmu:[401:408]
+==ebcpy.simulationapi.dymola_api:[950:961]
+==ebcpy.simulationapi.fmu:[405:412]
                 ))
 
         return super().save_for_reproduction(
@@ -721,6 +741,57 @@
 
     def _save_to_fmu(self, fail_on_error):
         &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[340:350]
+==ebcpy.simulationapi.fmu:[193:201]
+        savepath = kwargs.pop(&#34;savepath&#34;, None)
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+
+        if self.use_mp:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[254:263]
+==ebcpy.simulationapi.fmu:[194:200]
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -741,16 +812,6 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -820,7 +881,7 @@
                 <td><code>too-many-branches</code></td>
                 <td>R0912</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many branches (32/12)</pre></td>
+                <td><pre>Too many branches (33/12)</pre></td>
             </tr>
             
             <tr>
@@ -830,11 +891,11 @@
                 <td><code>too-many-statements</code></td>
                 <td>R0915</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many statements (115/50)</pre></td>
+                <td><pre>Too many statements (116/50)</pre></td>
             </tr>
             
             <tr>
-                <td>342</td>
+                <td>351</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -844,7 +905,7 @@
             </tr>
             
             <tr>
-                <td>359</td>
+                <td>368</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>attribute-defined-outside-init</code></td>
@@ -854,7 +915,7 @@
             </tr>
             
             <tr>
-                <td>517</td>
+                <td>523</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -864,7 +925,7 @@
             </tr>
             
             <tr>
-                <td>520</td>
+                <td>526</td>
                 <td>19</td>
                 <td>warning</td>
                 <td><code>broad-exception-caught</code></td>
@@ -874,7 +935,7 @@
             </tr>
             
             <tr>
-                <td>525</td>
+                <td>531</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -884,7 +945,7 @@
             </tr>
             
             <tr>
-                <td>586</td>
+                <td>594</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -894,7 +955,7 @@
             </tr>
             
             <tr>
-                <td>588</td>
+                <td>596</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -904,7 +965,7 @@
             </tr>
             
             <tr>
-                <td>653</td>
+                <td>661</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -914,7 +975,7 @@
             </tr>
             
             <tr>
-                <td>792</td>
+                <td>800</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -924,7 +985,7 @@
             </tr>
             
             <tr>
-                <td>793</td>
+                <td>801</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -934,7 +995,7 @@
             </tr>
             
             <tr>
-                <td>797</td>
+                <td>805</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -944,7 +1005,7 @@
             </tr>
             
             <tr>
-                <td>848</td>
+                <td>856</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -954,7 +1015,7 @@
             </tr>
             
             <tr>
-                <td>848</td>
+                <td>856</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -964,7 +1025,7 @@
             </tr>
             
             <tr>
-                <td>874</td>
+                <td>882</td>
                 <td>8</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -974,7 +1035,7 @@
             </tr>
             
             <tr>
-                <td>910</td>
+                <td>918</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -984,7 +1045,7 @@
             </tr>
             
             <tr>
-                <td>929</td>
+                <td>937</td>
                 <td>28</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -994,7 +1055,7 @@
             </tr>
             
             <tr>
-                <td>952</td>
+                <td>960</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -1004,7 +1065,7 @@
             </tr>
             
             <tr>
-                <td>964</td>
+                <td>972</td>
                 <td>18</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1014,7 +1075,7 @@
             </tr>
             
             <tr>
-                <td>967</td>
+                <td>975</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1024,7 +1085,7 @@
             </tr>
             
             <tr>
-                <td>1131</td>
+                <td>1139</td>
                 <td>26</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1084,11 +1145,11 @@
                 <td><code>too-many-branches</code></td>
                 <td>R0912</td>
                 <td>FMU_API._single_simulation</td>
-                <td><pre>Too many branches (13/12)</pre></td>
+                <td><pre>Too many branches (14/12)</pre></td>
             </tr>
             
             <tr>
-                <td>325</td>
+                <td>329</td>
                 <td>17</td>
                 <td>refactor</td>
                 <td><code>consider-using-in</code></td>
@@ -1098,7 +1159,7 @@
             </tr>
             
             <tr>
-                <td>374</td>
+                <td>378</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -2069,7 +2130,7 @@
             
             <tr>
                 <td>refactor</td>
-                <td>106</td>
+                <td>110</td>
             </tr>
             
             <tr>
@@ -2124,7 +2185,7 @@
             
             <tr>
                 <td>too-many-locals</td>
-                <td>10</td>
+                <td>11</td>
             </tr>
             
             <tr>
@@ -2253,6 +2314,11 @@
             </tr>
             
             <tr>
+                <td>too-many-statements</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
                 <td>wrong-import-order</td>
                 <td>1</td>
             </tr>
@@ -2260,11 +2326,6 @@
             <tr>
                 <td>too-many-lines</td>
                 <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>too-many-statements</td>
-                <td>2</td>
             </tr>
             
             <tr>
@@ -2289,7 +2350,7 @@
             
             <tr>
                 <td>duplicate-code</td>
-                <td>1</td>
+                <td>3</td>
             </tr>
             
             <tr>
@@ -2364,12 +2425,12 @@
             
             <tr>
                 <td>ebcpy.simulationapi</td>
-                <td>8</td>
+                <td>10</td>
             </tr>
             
             <tr>
                 <td>ebcpy.simulationapi.dymola_api</td>
-                <td>33</td>
+                <td>35</td>
             </tr>
             
         </table>
@@ -2434,12 +2495,12 @@
             
             <tr>
                 <td>ebcpy/simulationapi/__init__.py</td>
-                <td>9</td>
+                <td>11</td>
             </tr>
             
             <tr>
                 <td>ebcpy/simulationapi/dymola_api.py</td>
-                <td>33</td>
+                <td>35</td>
             </tr>
             
         </table>

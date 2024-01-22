@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.fmu &mdash; ebcpy 0.3.11 documentation</title>
+  <title>ebcpy.simulationapi.fmu &mdash; ebcpy 0.3.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -268,8 +268,17 @@
         <span class="c1"># Unpack kwargs:</span>
         <span class="n">parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">return_option</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;return_option&quot;</span><span class="p">,</span> <span class="s2">&quot;time_series&quot;</span><span class="p">)</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">result_file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;result_file_name&quot;</span><span class="p">,</span> <span class="s2">&quot;resultFile&quot;</span><span class="p">)</span>
+        <span class="n">result_file_suffix</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;result_file_suffix&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+        <span class="n">parquet_engine</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;parquet_engine&#39;</span><span class="p">,</span> <span class="s1">&#39;pyarrow&#39;</span><span class="p">)</span>
+        <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;You passed the following kwargs which &quot;</span>
+                <span class="s2">&quot;are not part of the supported kwargs and &quot;</span>
+                <span class="s2">&quot;have thus no effect: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -337,11 +346,6 @@
                             <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">output_interval</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="n">return_option</span> <span class="o">==</span> <span class="s2">&quot;savepath&quot;</span><span class="p">:</span>
-            <span class="n">result_file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result_file_name&quot;</span><span class="p">,</span> <span class="s2">&quot;resultFile&quot;</span><span class="p">)</span>
-            <span class="n">result_file_suffix</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result_file_suffix&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
-            <span class="n">parquet_engine</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;parquet_engine&#39;</span><span class="p">,</span> <span class="s1">&#39;pyarrow&#39;</span><span class="p">)</span>
-            <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-
             <span class="k">if</span> <span class="n">savepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">savepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cd</span>
 

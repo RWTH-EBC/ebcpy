@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.3.11 documentation</title>
+  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.3.12 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -409,15 +409,24 @@
 
     <span class="k">def</span> <span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Unpack kwargs</span>
-        <span class="n">show_eventlog</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;show_eventlog&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
-        <span class="n">squeeze</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="n">result_file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;result_file_name&quot;</span><span class="p">,</span> <span class="s1">&#39;resultFile&#39;</span><span class="p">)</span>
-        <span class="n">parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">)</span>
-        <span class="n">return_option</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;return_option&quot;</span><span class="p">)</span>
-        <span class="n">model_names</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;model_names&quot;</span><span class="p">)</span>
-        <span class="n">inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
-        <span class="n">structural_parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;structural_parameters&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">show_eventlog</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_eventlog&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="n">squeeze</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;squeeze&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">result_file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;result_file_name&quot;</span><span class="p">,</span> <span class="s1">&#39;resultFile&#39;</span><span class="p">)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">)</span>
+        <span class="n">return_option</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;return_option&quot;</span><span class="p">)</span>
+        <span class="n">model_names</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;model_names&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">structural_parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;structural_parameters&quot;</span><span class="p">,</span> <span class="p">[])</span>
+        <span class="n">table_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;file_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;You passed the following kwargs which &quot;</span>
+                <span class="s2">&quot;are not part of the supported kwargs and &quot;</span>
+                <span class="s2">&quot;have thus no effect: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
 
         <span class="c1"># Handle multiprocessing</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
@@ -504,10 +513,7 @@
         <span class="c1"># Handle inputs</span>
         <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Unpack additional kwargs</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">table_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;table_name&quot;</span><span class="p">]</span>
-                <span class="n">file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;file_name&quot;</span><span class="p">]</span>
-            <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">table_name</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">file_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s2">&quot;For inputs to be used by DymolaAPI.simulate, you &quot;</span>
                                <span class="s2">&quot;have to specify the &#39;table_name&#39; and the &#39;file_name&#39; &quot;</span>
                                <span class="s2">&quot;as keyword arguments of the function. These must match&quot;</span>
@@ -611,7 +617,6 @@
 
         <span class="k">if</span> <span class="n">return_option</span> <span class="o">==</span> <span class="s2">&quot;savepath&quot;</span><span class="p">:</span>
             <span class="n">_save_name_dsres</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result_file_name</span><span class="si">}</span><span class="s2">.mat&quot;</span>
-            <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># Get the cd of the current dymola instance</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">cd</span><span class="p">()</span>
             <span class="c1"># Get the value and convert it to a 100 % fitting str-path</span>
@@ -619,7 +624,10 @@
             <span class="k">if</span> <span class="n">savepath</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">savepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">dymola_cd</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_cd</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_save_name_dsres</span><span class="p">,</span> <span class="s2">&quot;dslog.txt&quot;</span><span class="p">,</span> <span class="s2">&quot;dsfinal.txt&quot;</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_save_name_dsres</span><span class="p">]:</span>
+            <span class="c1"># Copying dslogs and dsfinals can lead to errors,</span>
+            <span class="c1"># as the names are not unique</span>
+            <span class="c1"># for filename in [_save_name_dsres, &quot;dslog.txt&quot;, &quot;dsfinal.txt&quot;]:</span>
                 <span class="c1"># Delete existing files</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
@@ -1110,7 +1118,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">dymola_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">if</span> <span class="s2">&quot;linux&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">:</span>
-                <span class="n">dymola_name</span> <span class="o">=</span> <span class="s2">&quot;dymola.sh&quot;</span>
+                <span class="n">dymola_name</span> <span class="o">=</span> <span class="s2">&quot;dymola&quot;</span>
             <span class="k">elif</span> <span class="s2">&quot;win&quot;</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span><span class="p">:</span>
                 <span class="n">dymola_name</span> <span class="o">=</span> <span class="s2">&quot;Dymola.exe&quot;</span>
             <span class="k">else</span><span class="p">:</span>
