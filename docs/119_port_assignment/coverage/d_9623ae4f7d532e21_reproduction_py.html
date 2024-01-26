@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Coverage for ebcpy/utils/reproduction.py: 89%</title>
+    <title>Coverage for ebcpy/utils/reproduction.py: 87%</title>
     <link rel="icon" sizes="32x32" href="favicon_32.png">
     <link rel="stylesheet" href="style.css" type="text/css">
     <script type="text/javascript" src="coverage_html.js" defer></script>
@@ -12,7 +12,7 @@
     <div class="content">
         <h1>
             <span class="text">Coverage for </span><b>ebcpy/utils/reproduction.py</b>:
-            <span class="pc_cov">89%</span>
+            <span class="pc_cov">87%</span>
         </h1>
         <aside id="help_panel_wrapper">
             <input id="help_panel_state" type="checkbox">
@@ -55,8 +55,8 @@
         </aside>
         <h2>
             <span class="text">140 statements &nbsp;</span>
-            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">125<span class="text"> run</span></button>
-            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">15<span class="text"> missing</span></button>
+            <button type="button" class="run button_toggle_run" value="run" data-shortcut="r" title="Toggle lines run">122<span class="text"> run</span></button>
+            <button type="button" class="mis show_mis button_toggle_mis" value="mis" data-shortcut="m" title="Toggle lines missing">18<span class="text"> missing</span></button>
             <button type="button" class="exc show_exc button_toggle_exc" value="exc" data-shortcut="x" title="Toggle lines excluded">3<span class="text"> excluded</span></button>
         </h2>
         <p class="text">
@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_9623ae4f7d532e21_statistics_analyzer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.0">coverage.py v7.4.0</a>,
-            created at 2024-01-22 13:08 +0000
+            created at 2024-01-26 16:34 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -303,9 +303,9 @@
     <p class="run"><span class="n"><a id="t221" href="#t221">221</a></span><span class="t">    <span class="nam">remote_main_cmt</span> <span class="op">=</span> <span class="str">""</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t222" href="#t222">222</a></span><span class="t">    <span class="key">for</span> <span class="nam">ref</span> <span class="key">in</span> <span class="nam">repo</span><span class="op">.</span><span class="nam">references</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t223" href="#t223">223</a></span><span class="t">        <span class="key">if</span> <span class="nam">isinstance</span><span class="op">(</span><span class="nam">ref</span><span class="op">,</span> <span class="nam">RemoteReference</span><span class="op">)</span> <span class="key">and</span> <span class="nam">ref</span><span class="op">.</span><span class="nam">name</span> <span class="key">in</span> <span class="op">[</span><span class="str">'origin/master'</span><span class="op">,</span> <span class="str">'origin/main'</span><span class="op">]</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t224" href="#t224">224</a></span><span class="t">            <span class="nam">diff_remote_main</span> <span class="op">=</span> <span class="nam">repo</span><span class="op">.</span><span class="nam">git</span><span class="op">.</span><span class="nam">diff</span><span class="op">(</span><span class="nam">ref</span><span class="op">.</span><span class="nam">commit</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t225" href="#t225">225</a></span><span class="t">            <span class="nam">remote_main_cmt</span> <span class="op">=</span> <span class="nam">ref</span><span class="op">.</span><span class="nam">commit</span><span class="op">.</span><span class="nam">hexsha</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t226" href="#t226">226</a></span><span class="t">            <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t224" href="#t224">224</a></span><span class="t">            <span class="nam">diff_remote_main</span> <span class="op">=</span> <span class="nam">repo</span><span class="op">.</span><span class="nam">git</span><span class="op">.</span><span class="nam">diff</span><span class="op">(</span><span class="nam">ref</span><span class="op">.</span><span class="nam">commit</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t225" href="#t225">225</a></span><span class="t">            <span class="nam">remote_main_cmt</span> <span class="op">=</span> <span class="nam">ref</span><span class="op">.</span><span class="nam">commit</span><span class="op">.</span><span class="nam">hexsha</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t226" href="#t226">226</a></span><span class="t">            <span class="key">break</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t227" href="#t227">227</a></span><span class="t">    <span class="nam">data</span> <span class="op">=</span> <span class="op">{</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t228" href="#t228">228</a></span><span class="t">        <span class="str">"url"</span><span class="op">:</span> <span class="nam">next</span><span class="op">(</span><span class="nam">repo</span><span class="op">.</span><span class="nam">remotes</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">.</span><span class="nam">urls</span><span class="op">)</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t229" href="#t229">229</a></span><span class="t">        <span class="str">"commit"</span><span class="op">:</span> <span class="nam">commit_hex</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
@@ -478,7 +478,7 @@
             <a id="nextFileLink" class="nav" href="d_9623ae4f7d532e21_statistics_analyzer_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.0">coverage.py v7.4.0</a>,
-            created at 2024-01-22 13:08 +0000
+            created at 2024-01-26 16:34 +0000
         </p>
     </div>
 </footer>
