@@ -8,11 +8,14 @@ import pathlib
 import warnings
 import atexit
 import json
+import time
 import socket
 from contextlib import closing
 from typing import Union, List
+
 from pydantic import Field
 import pandas as pd
+
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
@@ -105,6 +108,14 @@ class DymolaAPI(SimulationAPI):
         Direct path to the dymola executable.
         Only relevant if the dymola installation do not follow
         the official guideline.
+    :keyword float time_delay_between_starts:
+        If starting multiple Dymola instances on multiple
+        cores, a time delay between each start avoids weird
+        behaviour, such as requiring to set the C-Compiler again
+        as Dymola overrides the default .dymx setup file.
+        If you start e.g. 20 instances and specify `time_delay_between_starts=5`,
+        each 5 seconds one instance will start, taking in total
+        100 seconds. Default is no delay.
 
     Example:
 
@@ -137,7 +148,8 @@ class DymolaAPI(SimulationAPI):
         "mos_script_post",
         "dymola_version",
         "dymola_interface_path",
-        "dymola_exe_path"
+        "dymola_exe_path",
+        "time_delay_between_starts"
     ]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
@@ -155,6 +167,7 @@ class DymolaAPI(SimulationAPI):
         self.dymola_version = kwargs.pop("dymola_version", None)
         self.dymola_interface_path = kwargs.pop("dymola_interface_path", None)
         self.dymola_exe_path = kwargs.pop("dymola_exe_path", None)
+        _time_delay_between_starts = kwargs.pop("time_delay_between_starts", 0)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
                 if not os.path.isfile(mos_script):
@@ -246,10 +259,11 @@ class DymolaAPI(SimulationAPI):
             ports = _get_n_available_ports(n_ports=self.n_cpu)
             self.pool.map(
                 self._setup_dymola_interface,
-                [dict(use_mp=True, port=port) for port in ports]
+                [dict(use_mp=True, port=port, time_delay=i * _time_delay_between_starts)
+                 for i, port in enumerate(ports)]
             )
         # For translation etc. always setup a default dymola instance
-        self.dymola = self._setup_dymola_interface(dict(use_mp=False, port=-1))
+        self.dymola = self._setup_dymola_interface(dict(use_mp=False))
 
         self.fully_initialized = True
         # Trigger on init.
@@ -358,7 +372,7 @@ class DymolaAPI(SimulationAPI):
             if self.dymola is None:
                 # This should not affect #119, as this rarely happens. Thus, the
                 # method used in the DymolaInterface should work.
-                self._setup_dymola_interface(dict(use_mp=True, port=-1))
+                self._setup_dymola_interface(dict(use_mp=True))
 
         # Handle eventlog
         if show_eventlog:
@@ -765,7 +779,9 @@ class DymolaAPI(SimulationAPI):
     def _setup_dymola_interface(self, kwargs: dict):
         """Load all packages and change the current working directory"""
         use_mp = kwargs["use_mp"]
-        port = kwargs["port"]
+        port = kwargs.get("port", -1)
+        time_delay = kwargs.get("time_delay", 0)
+        time.sleep(time_delay)
         dymola = self._open_dymola_interface(port=port)
         self._check_dymola_instances()
         if use_mp:
@@ -1187,7 +1203,7 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self._dummy_dymola_instance = self._setup_dymola_interface(dict(use_mp=False, port=-1))
+            self._dummy_dymola_instance = self._setup_dymola_interface(dict(use_mp=False))
             self.sim_counter = 1
         else:
             self.sim_counter += 1
