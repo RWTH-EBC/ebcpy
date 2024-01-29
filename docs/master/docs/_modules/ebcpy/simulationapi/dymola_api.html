@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.3.12 documentation</title>
+  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.3.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -90,9 +90,14 @@
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">atexit</span>
 <span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">closing</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
 <span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
 <span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">TimeSeriesData</span>
 <span class="kn">from</span> <span class="nn">ebcpy.modelica</span> <span class="kn">import</span> <span class="n">manipulate_ds</span>
 <span class="kn">from</span> <span class="nn">ebcpy.simulationapi</span> <span class="kn">import</span> <span class="n">SimulationSetup</span><span class="p">,</span> <span class="n">SimulationAPI</span><span class="p">,</span> \
@@ -185,6 +190,14 @@
 <span class="sd">        Direct path to the dymola executable.</span>
 <span class="sd">        Only relevant if the dymola installation do not follow</span>
 <span class="sd">        the official guideline.</span>
+<span class="sd">    :keyword float time_delay_between_starts:</span>
+<span class="sd">        If starting multiple Dymola instances on multiple</span>
+<span class="sd">        cores, a time delay between each start avoids weird</span>
+<span class="sd">        behaviour, such as requiring to set the C-Compiler again</span>
+<span class="sd">        as Dymola overrides the default .dymx setup file.</span>
+<span class="sd">        If you start e.g. 20 instances and specify `time_delay_between_starts=5`,</span>
+<span class="sd">        each 5 seconds one instance will start, taking in total</span>
+<span class="sd">        100 seconds. Default is no delay.</span>
 
 <span class="sd">    Example:</span>
 
@@ -217,7 +230,8 @@
         <span class="s2">&quot;mos_script_post&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dymola_version&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dymola_interface_path&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;dymola_exe_path&quot;</span>
+        <span class="s2">&quot;dymola_exe_path&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;time_delay_between_starts&quot;</span>
     <span class="p">]</span>
 
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">packages</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -235,6 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola_version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_interface_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_exe_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">_time_delay_between_starts</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;time_delay_between_starts&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">mos_script</span> <span class="ow">in</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">mos_script_pre</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">mos_script_post</span><span class="p">]:</span>
             <span class="k">if</span> <span class="n">mos_script</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">mos_script</span><span class="p">):</span>
@@ -312,7 +327,8 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_restart</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Open blank placeholder Dymola instance to ensure&quot;</span>
                              <span class="s2">&quot; a licence during Dymola restarts&quot;</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_dymola_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_dymola_interface</span><span class="p">()</span>
+            <span class="c1"># Use standard port allocation, should always work</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_dymola_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_dymola_interface</span><span class="p">(</span><span class="n">port</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
             <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_close_dummy</span><span class="p">)</span>
 
         <span class="c1"># List storing structural parameters for later modifying the simulation-name.</span>
@@ -322,9 +338,14 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">debug</span><span class="p">:</span>
             <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">,</span> <span class="p">[</span><span class="kc">True</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)])</span>
+            <span class="n">ports</span> <span class="o">=</span> <span class="n">_get_n_available_ports</span><span class="p">(</span><span class="n">n_ports</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">,</span>
+                <span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">,</span> <span class="n">time_delay</span><span class="o">=</span><span class="n">i</span> <span class="o">*</span> <span class="n">_time_delay_between_starts</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ports</span><span class="p">)]</span>
+            <span class="p">)</span>
         <span class="c1"># For translation etc. always setup a default dymola instance</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Trigger on init.</span>
@@ -427,12 +448,13 @@
                 <span class="s2">&quot;are not part of the supported kwargs and &quot;</span>
                 <span class="s2">&quot;have thus no effect: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
 
-
         <span class="c1"># Handle multiprocessing</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
             <span class="n">idx_worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="c1"># This should not affect #119, as this rarely happens. Thus, the</span>
+                <span class="c1"># method used in the DymolaInterface should work.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
         <span class="c1"># Handle eventlog</span>
         <span class="k">if</span> <span class="n">show_eventlog</span><span class="p">:</span>
@@ -625,9 +647,9 @@
                 <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_cd</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_save_name_dsres</span><span class="p">]:</span>
-            <span class="c1"># Copying dslogs and dsfinals can lead to errors,</span>
-            <span class="c1"># as the names are not unique</span>
-            <span class="c1"># for filename in [_save_name_dsres, &quot;dslog.txt&quot;, &quot;dsfinal.txt&quot;]:</span>
+                <span class="c1"># Copying dslogs and dsfinals can lead to errors,</span>
+                <span class="c1"># as the names are not unique</span>
+                <span class="c1"># for filename in [_save_name_dsres, &quot;dslog.txt&quot;, &quot;dsfinal.txt&quot;]:</span>
                 <span class="c1"># Delete existing files</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
@@ -836,9 +858,13 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="n">_var_ebcpy</span></div>
 
-    <span class="k">def</span> <span class="nf">_setup_dymola_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_mp</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_setup_dymola_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Load all packages and change the current working directory&quot;&quot;&quot;</span>
-        <span class="n">dymola</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_dymola_interface</span><span class="p">()</span>
+        <span class="n">use_mp</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;use_mp&quot;</span><span class="p">]</span>
+        <span class="n">port</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;port&quot;</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">time_delay</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;time_delay&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="n">time_delay</span><span class="p">)</span>
+        <span class="n">dymola</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_open_dymola_interface</span><span class="p">(</span><span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_check_dymola_instances</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
             <span class="n">cd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cd</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;worker_</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -874,7 +900,7 @@
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">dymola</span>
 
-    <span class="k">def</span> <span class="nf">_open_dymola_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_open_dymola_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open an instance of dymola and return the API-Object&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="p">:</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span><span class="p">)</span>
@@ -882,7 +908,8 @@
             <span class="kn">from</span> <span class="nn">dymola.dymola_interface</span> <span class="kn">import</span> <span class="n">DymolaInterface</span>
             <span class="kn">from</span> <span class="nn">dymola.dymola_exception</span> <span class="kn">import</span> <span class="n">DymolaConnectionException</span>
             <span class="k">return</span> <span class="n">DymolaInterface</span><span class="p">(</span><span class="n">showwindow</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">show_window</span><span class="p">,</span>
-                                   <span class="n">dymolapath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span><span class="p">)</span>
+                                   <span class="n">dymolapath</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span><span class="p">,</span>
+                                   <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Given dymola-interface could not be &quot;</span>
                               <span class="s2">&quot;loaded:</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
@@ -1258,7 +1285,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sim_counter</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_restart</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Closing and restarting Dymola to free memory&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_dymola_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_dymola_instance</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim_counter</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">sim_counter</span> <span class="o">+=</span> <span class="mi">1</span></div>
@@ -1276,6 +1303,60 @@
     <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
         <span class="sa">f</span><span class="s2">&quot;Given dymola_version &#39;</span><span class="si">{</span><span class="n">dymola_version</span><span class="si">}</span><span class="s2">&#39; not found in &quot;</span>
         <span class="sa">f</span><span class="s2">&quot;the list of dymola installations </span><span class="si">{</span><span class="n">dymola_installations</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_n_available_ports</span><span class="p">(</span><span class="n">n_ports</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">start_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44000</span><span class="p">,</span> <span class="n">end_range</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">44400</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get a specified number of available network ports within a given range.</span>
+
+<span class="sd">    This function uses socket connections to check the availability of ports within the specified range.</span>
+<span class="sd">    If the required number of open ports is found, it returns a list of those ports. If not, it raises</span>
+<span class="sd">    a ConnectionError with a descriptive message indicating the failure to find the necessary ports.</span>
+
+<span class="sd">    Parameters:</span>
+<span class="sd">    - n_ports (int): The number of open ports to find.</span>
+<span class="sd">    - start_range (int, optional):</span>
+<span class="sd">        The starting port of the range to check (inclusive).</span>
+<span class="sd">        Default is 44000.</span>
+<span class="sd">    - end_range (int, optional):</span>
+<span class="sd">        The ending port of the range to check (exclusive).</span>
+<span class="sd">        Default is 44400.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">    - list of int:</span>
+<span class="sd">        A list containing the available ports.</span>
+<span class="sd">        The length of the list is equal to &#39;n_ports&#39;.</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">    - ConnectionError:</span>
+<span class="sd">        If the required number of open ports cannot</span>
+<span class="sd">        be found within the specified range.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    ```</span>
+<span class="sd">    try:</span>
+<span class="sd">        open_ports = _get_n_available_ports(3, start_range=50000, end_range=50500)</span>
+<span class="sd">        print(f&quot;Found open ports: {open_ports}&quot;)</span>
+<span class="sd">    except ConnectionError as e:</span>
+<span class="sd">        print(f&quot;Error: {e}&quot;)</span>
+<span class="sd">    ```</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">ports</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">port</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">start_range</span><span class="p">,</span> <span class="n">end_range</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">closing</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">socket</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SOCK_STREAM</span><span class="p">))</span> <span class="k">as</span> <span class="n">sock</span><span class="p">:</span>
+                <span class="n">sock</span><span class="o">.</span><span class="n">setsockopt</span><span class="p">(</span><span class="n">socket</span><span class="o">.</span><span class="n">SOL_SOCKET</span><span class="p">,</span> <span class="n">socket</span><span class="o">.</span><span class="n">SO_REUSEADDR</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">sock</span><span class="o">.</span><span class="n">bind</span><span class="p">((</span><span class="s2">&quot;127.0.0.1&quot;</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+            <span class="n">ports</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ports</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_ports</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">ports</span>
+    <span class="k">raise</span> <span class="ne">ConnectionError</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;Could not find </span><span class="si">{</span><span class="n">n_ports</span><span class="si">}</span><span class="s2"> open ports in range </span><span class="si">{</span><span class="n">start_range</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">end_range</span><span class="si">}</span><span class="s2">.&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;Can&#39;t open </span><span class="si">{</span><span class="n">n_ports</span><span class="si">}</span><span class="s2"> Dymola instances&quot;</span>
     <span class="p">)</span>
 </pre></div>
 

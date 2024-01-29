@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        9.30 / 10
+        9.28 / 10
             
-            (previous score: 9.30 / 10)
+            (previous score: 9.28 / 10)
             
         
 
@@ -717,7 +717,7 @@
                 <td><code>too-many-lines</code></td>
                 <td>C0302</td>
                 <td></td>
-                <td><pre>Too many lines in module (1197/1000)</pre></td>
+                <td><pre>Too many lines in module (1278/1000)</pre></td>
             </tr>
             
             <tr>
@@ -728,19 +728,15 @@
                 <td>R0801</td>
                 <td></td>
                 <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[950:961]
+==ebcpy.simulationapi.dymola_api:[977:988]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -751,7 +747,7 @@
                 <td>R0801</td>
                 <td></td>
                 <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[340:350]
+==ebcpy.simulationapi.dymola_api:[361:370]
 ==ebcpy.simulationapi.fmu:[193:201]
         savepath = kwargs.pop(&#34;savepath&#34;, None)
         if kwargs:
@@ -760,6 +756,7 @@
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp:</pre></td>
             </tr>
             
@@ -771,7 +768,7 @@
                 <td>R0801</td>
                 <td></td>
                 <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[254:263]
+==ebcpy.simulationapi.dymola_api:[275:284]
 ==ebcpy.simulationapi.fmu:[194:200]
         if kwargs:
             self.logger.error(
@@ -815,7 +812,7 @@
             </tr>
             
             <tr>
-                <td>39</td>
+                <td>44</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-instance-attributes</code></td>
@@ -825,7 +822,7 @@
             </tr>
             
             <tr>
-                <td>141</td>
+                <td>155</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -835,17 +832,37 @@
             </tr>
             
             <tr>
-                <td>141</td>
+                <td>155</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-statements</code></td>
                 <td>R0915</td>
                 <td>DymolaAPI.__init__</td>
-                <td><pre>Too many statements (71/50)</pre></td>
+                <td><pre>Too many statements (73/50)</pre></td>
             </tr>
             
             <tr>
-                <td>305</td>
+                <td>262</td>
+                <td>17</td>
+                <td>refactor</td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>DymolaAPI.__init__</td>
+                <td><pre>Consider using &#39;{&#34;use_mp&#34;: True, &#34;port&#34;: port, &#34;time_delay&#34;: i * _time_delay_between_starts, ... }&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>266</td>
+                <td>51</td>
+                <td>refactor</td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>DymolaAPI.__init__</td>
+                <td><pre>Consider using &#39;{&#34;use_mp&#34;: False}&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>326</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -855,7 +872,7 @@
             </tr>
             
             <tr>
-                <td>328</td>
+                <td>349</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -865,7 +882,7 @@
             </tr>
             
             <tr>
-                <td>328</td>
+                <td>349</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-return-statements</code></td>
@@ -875,7 +892,7 @@
             </tr>
             
             <tr>
-                <td>328</td>
+                <td>349</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -885,7 +902,7 @@
             </tr>
             
             <tr>
-                <td>328</td>
+                <td>349</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-statements</code></td>
@@ -895,7 +912,7 @@
             </tr>
             
             <tr>
-                <td>351</td>
+                <td>371</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -905,7 +922,17 @@
             </tr>
             
             <tr>
-                <td>368</td>
+                <td>375</td>
+                <td>45</td>
+                <td>refactor</td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>DymolaAPI._single_simulation</td>
+                <td><pre>Consider using &#39;{&#34;use_mp&#34;: True}&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>390</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>attribute-defined-outside-init</code></td>
@@ -915,7 +942,7 @@
             </tr>
             
             <tr>
-                <td>523</td>
+                <td>545</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -925,7 +952,7 @@
             </tr>
             
             <tr>
-                <td>526</td>
+                <td>548</td>
                 <td>19</td>
                 <td>warning</td>
                 <td><code>broad-exception-caught</code></td>
@@ -935,7 +962,7 @@
             </tr>
             
             <tr>
-                <td>531</td>
+                <td>553</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -945,7 +972,7 @@
             </tr>
             
             <tr>
-                <td>594</td>
+                <td>616</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -955,7 +982,7 @@
             </tr>
             
             <tr>
-                <td>596</td>
+                <td>618</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -965,7 +992,7 @@
             </tr>
             
             <tr>
-                <td>661</td>
+                <td>683</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -975,7 +1002,7 @@
             </tr>
             
             <tr>
-                <td>800</td>
+                <td>826</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -985,7 +1012,7 @@
             </tr>
             
             <tr>
-                <td>801</td>
+                <td>827</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -995,7 +1022,7 @@
             </tr>
             
             <tr>
-                <td>805</td>
+                <td>832</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1005,7 +1032,7 @@
             </tr>
             
             <tr>
-                <td>856</td>
+                <td>883</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1015,7 +1042,7 @@
             </tr>
             
             <tr>
-                <td>856</td>
+                <td>883</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -1025,7 +1052,7 @@
             </tr>
             
             <tr>
-                <td>882</td>
+                <td>909</td>
                 <td>8</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1035,7 +1062,7 @@
             </tr>
             
             <tr>
-                <td>918</td>
+                <td>945</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1045,7 +1072,7 @@
             </tr>
             
             <tr>
-                <td>937</td>
+                <td>964</td>
                 <td>28</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1055,7 +1082,7 @@
             </tr>
             
             <tr>
-                <td>960</td>
+                <td>987</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -1065,7 +1092,7 @@
             </tr>
             
             <tr>
-                <td>972</td>
+                <td>999</td>
                 <td>18</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1075,7 +1102,7 @@
             </tr>
             
             <tr>
-                <td>975</td>
+                <td>1002</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1085,13 +1112,43 @@
             </tr>
             
             <tr>
-                <td>1139</td>
+                <td>1166</td>
                 <td>26</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
                 <td>C0209</td>
                 <td>DymolaAPI._check_dymola_instances</td>
                 <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1206</td>
+                <td>71</td>
+                <td>refactor</td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>DymolaAPI._check_restart</td>
+                <td><pre>Consider using &#39;{&#34;use_mp&#34;: False}&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1231</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (104/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1232</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (102/100)</pre></td>
             </tr>
             
         </table>
@@ -2130,7 +2187,7 @@
             
             <tr>
                 <td>refactor</td>
-                <td>110</td>
+                <td>114</td>
             </tr>
             
             <tr>
@@ -2140,7 +2197,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>36</td>
+                <td>38</td>
             </tr>
             
         </table>
@@ -2170,7 +2227,7 @@
             
             <tr>
                 <td>line-too-long</td>
-                <td>12</td>
+                <td>14</td>
             </tr>
             
             <tr>
@@ -2230,7 +2287,7 @@
             
             <tr>
                 <td>use-dict-literal</td>
-                <td>1</td>
+                <td>5</td>
             </tr>
             
             <tr>
@@ -2430,7 +2487,7 @@
             
             <tr>
                 <td>ebcpy.simulationapi.dymola_api</td>
-                <td>35</td>
+                <td>41</td>
             </tr>
             
         </table>
@@ -2500,7 +2557,7 @@
             
             <tr>
                 <td>ebcpy/simulationapi/dymola_api.py</td>
-                <td>35</td>
+                <td>41</td>
             </tr>
             
         </table>

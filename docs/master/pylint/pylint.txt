@@ -162,37 +162,43 @@ ebcpy/simulationapi/__init__.py:375:30: C0103: Argument name "t1" doesn't confor
 ebcpy/simulationapi/__init__.py:409:15: W0612: Unused variable 'used' (unused-variable)
 ebcpy/simulationapi/__init__.py:23:0: C0411: standard import "from shutil import disk_usage" should be placed before "import pydantic" (wrong-import-order)
 ************* Module ebcpy.simulationapi.dymola_api
-ebcpy/simulationapi/dymola_api.py:305:0: C0301: Line too long (102/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:918:0: C0301: Line too long (118/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1197/1000) (too-many-lines)
-ebcpy/simulationapi/dymola_api.py:39:0: R0902: Too many instance attributes (21/7) (too-many-instance-attributes)
-ebcpy/simulationapi/dymola_api.py:141:4: R0912: Too many branches (25/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:141:4: R0915: Too many statements (71/50) (too-many-statements)
-ebcpy/simulationapi/dymola_api.py:328:4: R0914: Too many local variables (41/15) (too-many-locals)
-ebcpy/simulationapi/dymola_api.py:526:19: W0718: Catching too general exception Exception (broad-exception-caught)
-ebcpy/simulationapi/dymola_api.py:523:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:531:16: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:328:4: R0911: Too many return statements (7/6) (too-many-return-statements)
-ebcpy/simulationapi/dymola_api.py:328:4: R0912: Too many branches (33/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:328:4: R0915: Too many statements (116/50) (too-many-statements)
-ebcpy/simulationapi/dymola_api.py:351:12: W0612: Unused variable 'idx_worker' (unused-variable)
-ebcpy/simulationapi/dymola_api.py:594:12: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:596:4: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/simulationapi/dymola_api.py:661:12: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:800:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:801:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:805:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:856:4: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/simulationapi/dymola_api.py:856:4: R0914: Too many local variables (21/15) (too-many-locals)
-ebcpy/simulationapi/dymola_api.py:882:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:937:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:972:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:975:16: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:960:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/simulationapi/dymola_api.py:1139:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:368:12: W0201: Attribute '_model_name' defined outside __init__ (attribute-defined-outside-init)
+ebcpy/simulationapi/dymola_api.py:326:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:945:0: C0301: Line too long (118/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1231:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1232:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1278/1000) (too-many-lines)
+ebcpy/simulationapi/dymola_api.py:44:0: R0902: Too many instance attributes (21/7) (too-many-instance-attributes)
+ebcpy/simulationapi/dymola_api.py:262:17: R1735: Consider using '{"use_mp": True, "port": port, "time_delay": i * _time_delay_between_starts, ... }' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:266:51: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:155:4: R0912: Too many branches (25/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:155:4: R0915: Too many statements (73/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:349:4: R0914: Too many local variables (41/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:375:45: R1735: Consider using '{"use_mp": True}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:548:19: W0718: Catching too general exception Exception (broad-exception-caught)
+ebcpy/simulationapi/dymola_api.py:545:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:553:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:349:4: R0911: Too many return statements (7/6) (too-many-return-statements)
+ebcpy/simulationapi/dymola_api.py:349:4: R0912: Too many branches (33/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:349:4: R0915: Too many statements (116/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:371:12: W0612: Unused variable 'idx_worker' (unused-variable)
+ebcpy/simulationapi/dymola_api.py:616:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:618:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:683:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:826:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:827:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:832:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:883:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:883:4: R0914: Too many local variables (21/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:909:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:964:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:999:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1002:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:987:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/simulationapi/dymola_api.py:1166:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1206:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:390:12: W0201: Attribute '_model_name' defined outside __init__ (attribute-defined-outside-init)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[950:961]
+==ebcpy.simulationapi.dymola_api:[977:988]
 ==ebcpy.simulationapi.fmu:[405:412]
                 ))
 
@@ -206,7 +212,7 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
     def _save_to_fmu(self, fail_on_error):
         """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[340:350]
+==ebcpy.simulationapi.dymola_api:[361:370]
 ==ebcpy.simulationapi.fmu:[193:201]
         savepath = kwargs.pop("savepath", None)
         if kwargs:
@@ -215,23 +221,21 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[254:263]
+==ebcpy.simulationapi.dymola_api:[275:284]
 ==ebcpy.simulationapi.fmu:[194:200]
         if kwargs:
             self.logger.error(
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to: (duplicate-code)
-ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
+ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.30/10
+Your code has been rated at 9.28/10
 

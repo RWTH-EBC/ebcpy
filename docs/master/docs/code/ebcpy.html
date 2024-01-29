@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy package &mdash; ebcpy 0.3.12 documentation</title>
+  <title>ebcpy package &mdash; ebcpy 0.3.13 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -185,6 +185,7 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.check_valid_solver</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.model_post_init"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.model_post_init()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a><ul>
@@ -194,6 +195,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.value"><code class="docutils literal notranslate"><span class="pre">Variable.value</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value"><code class="docutils literal notranslate"><span class="pre">Variable.check_value</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value_type"><code class="docutils literal notranslate"><span class="pre">Variable.check_value_type</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">Variable.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.simulationapi.html#submodules">Submodules</a></li>
@@ -219,6 +221,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.tolerance</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.model_post_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -234,6 +237,7 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup"><code class="docutils literal notranslate"><span class="pre">FMU_Setup</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.timeout"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.timeout</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.model_post_init"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.model_post_init()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -544,7 +548,7 @@ Other option is ‘fastparquet’ (python&gt;=3.9).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.to_datetime_index">
-<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">22,</span> <span class="pre">8,</span> <span class="pre">55,</span> <span class="pre">0,</span> <span class="pre">514661)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">15,</span> <span class="pre">19,</span> <span class="pre">52,</span> <span class="pre">334209)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the current index to a float based index using
 ebcpy.preprocessing.convert_index_to_datetime_index()</p>
 <dl class="field-list simple">
@@ -866,7 +870,7 @@ DataFrame with correct index</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ebcpy.preprocessing.convert_index_to_datetime_index">
-<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">22,</span> <span class="pre">8,</span> <span class="pre">55,</span> <span class="pre">0,</span> <span class="pre">513145)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">15,</span> <span class="pre">19,</span> <span class="pre">52,</span> <span class="pre">332871)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Converts the index of the given DataFrame to a
 pandas.core.indexes.datetimes.DatetimeIndex.</p>
 <dl class="field-list simple">
