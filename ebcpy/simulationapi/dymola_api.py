@@ -8,9 +8,14 @@ import pathlib
 import warnings
 import atexit
 import json
+import time
+import socket
+from contextlib import closing
 from typing import Union, List
+
 from pydantic import Field
 import pandas as pd
+
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
@@ -103,6 +108,14 @@ class DymolaAPI(SimulationAPI):
         Direct path to the dymola executable.
         Only relevant if the dymola installation do not follow
         the official guideline.
+    :keyword float time_delay_between_starts:
+        If starting multiple Dymola instances on multiple
+        cores, a time delay between each start avoids weird
+        behaviour, such as requiring to set the C-Compiler again
+        as Dymola overrides the default .dymx setup file.
+        If you start e.g. 20 instances and specify `time_delay_between_starts=5`,
+        each 5 seconds one instance will start, taking in total
+        100 seconds. Default is no delay.
 
     Example:
 
@@ -135,7 +148,8 @@ class DymolaAPI(SimulationAPI):
         "mos_script_post",
         "dymola_version",
         "dymola_interface_path",
-        "dymola_exe_path"
+        "dymola_exe_path",
+        "time_delay_between_starts"
     ]
 
     def __init__(self, cd, model_name, packages=None, **kwargs):
@@ -153,6 +167,7 @@ class DymolaAPI(SimulationAPI):
         self.dymola_version = kwargs.pop("dymola_version", None)
         self.dymola_interface_path = kwargs.pop("dymola_interface_path", None)
         self.dymola_exe_path = kwargs.pop("dymola_exe_path", None)
+        _time_delay_between_starts = kwargs.pop("time_delay_between_starts", 0)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
                 if not os.path.isfile(mos_script):
@@ -230,7 +245,8 @@ class DymolaAPI(SimulationAPI):
         if self.n_restart > 0:
             self.logger.info("Open blank placeholder Dymola instance to ensure"
                              " a licence during Dymola restarts")
-            self._dummy_dymola_instance = self._open_dymola_interface()
+            # Use standard port allocation, should always work
+            self._dummy_dymola_instance = self._open_dymola_interface(port=-1)
             atexit.register(self._close_dummy)
 
         # List storing structural parameters for later modifying the simulation-name.
@@ -240,9 +256,14 @@ class DymolaAPI(SimulationAPI):
         if not self.debug:
             atexit.register(self.close)
         if self.use_mp:
-            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+            ports = _get_n_available_ports(n_ports=self.n_cpu)
+            self.pool.map(
+                self._setup_dymola_interface,
+                [dict(use_mp=True, port=port, time_delay=i * _time_delay_between_starts)
+                 for i, port in enumerate(ports)]
+            )
         # For translation etc. always setup a default dymola instance
-        self.dymola = self._setup_dymola_interface(use_mp=False)
+        self.dymola = self._setup_dymola_interface(dict(use_mp=False))
 
         self.fully_initialized = True
         # Trigger on init.
@@ -345,12 +366,13 @@ class DymolaAPI(SimulationAPI):
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-
         # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx
             if self.dymola is None:
-                self._setup_dymola_interface(use_mp=True)
+                # This should not affect #119, as this rarely happens. Thus, the
+                # method used in the DymolaInterface should work.
+                self._setup_dymola_interface(dict(use_mp=True))
 
         # Handle eventlog
         if show_eventlog:
@@ -543,9 +565,9 @@ class DymolaAPI(SimulationAPI):
                 return os.path.join(dymola_cd, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
             for filename in [_save_name_dsres]:
-            # Copying dslogs and dsfinals can lead to errors,
-            # as the names are not unique
-            # for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
+                # Copying dslogs and dsfinals can lead to errors,
+                # as the names are not unique
+                # for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 try:
                     os.remove(os.path.join(savepath, filename))
@@ -754,9 +776,13 @@ class DymolaAPI(SimulationAPI):
             else:
                 self.states[idx] = _var_ebcpy
 
-    def _setup_dymola_interface(self, use_mp):
+    def _setup_dymola_interface(self, kwargs: dict):
         """Load all packages and change the current working directory"""
-        dymola = self._open_dymola_interface()
+        use_mp = kwargs["use_mp"]
+        port = kwargs.get("port", -1)
+        time_delay = kwargs.get("time_delay", 0)
+        time.sleep(time_delay)
+        dymola = self._open_dymola_interface(port=port)
         self._check_dymola_instances()
         if use_mp:
             cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
@@ -792,7 +818,7 @@ class DymolaAPI(SimulationAPI):
             return None
         return dymola
 
-    def _open_dymola_interface(self):
+    def _open_dymola_interface(self, port):
         """Open an instance of dymola and return the API-Object"""
         if self.dymola_interface_path not in sys.path:
             sys.path.insert(0, self.dymola_interface_path)
@@ -800,7 +826,8 @@ class DymolaAPI(SimulationAPI):
             from dymola.dymola_interface import DymolaInterface
             from dymola.dymola_exception import DymolaConnectionException
             return DymolaInterface(showwindow=self.show_window,
-                                   dymolapath=self.dymola_exe_path)
+                                   dymolapath=self.dymola_exe_path,
+                                   port=port)
         except ImportError as error:
             raise ImportError("Given dymola-interface could not be "
                               "loaded:\n %s" % self.dymola_interface_path) from error
@@ -1176,7 +1203,7 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
+            self._dummy_dymola_instance = self._setup_dymola_interface(dict(use_mp=False))
             self.sim_counter = 1
         else:
             self.sim_counter += 1
@@ -1194,4 +1221,58 @@ def _get_dymola_path_of_version(dymola_installations: list, dymola_version: str)
     raise ValueError(
         f"Given dymola_version '{dymola_version}' not found in "
         f"the list of dymola installations {dymola_installations}"
+    )
+
+
+def _get_n_available_ports(n_ports: int, start_range: int = 44000, end_range: int = 44400):
+    """
+    Get a specified number of available network ports within a given range.
+
+    This function uses socket connections to check the availability of ports within the specified range.
+    If the required number of open ports is found, it returns a list of those ports. If not, it raises
+    a ConnectionError with a descriptive message indicating the failure to find the necessary ports.
+
+    Parameters:
+    - n_ports (int): The number of open ports to find.
+    - start_range (int, optional):
+        The starting port of the range to check (inclusive).
+        Default is 44000.
+    - end_range (int, optional):
+        The ending port of the range to check (exclusive).
+        Default is 44400.
+
+    Returns:
+    - list of int:
+        A list containing the available ports.
+        The length of the list is equal to 'n_ports'.
+
+    Raises:
+    - ConnectionError:
+        If the required number of open ports cannot
+        be found within the specified range.
+
+    Example:
+
+    ```
+    try:
+        open_ports = _get_n_available_ports(3, start_range=50000, end_range=50500)
+        print(f"Found open ports: {open_ports}")
+    except ConnectionError as e:
+        print(f"Error: {e}")
+    ```
+    """
+    ports = []
+    for port in range(start_range, end_range):
+        try:
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                sock.bind(("127.0.0.1", port))
+            ports.append(port)
+        except OSError:
+            pass
+        if len(ports) == n_ports:
+            return ports
+    raise ConnectionError(
+        f"Could not find {n_ports} open ports in range {start_range}-{end_range}."
+        f"Can't open {n_ports} Dymola instances"
     )
