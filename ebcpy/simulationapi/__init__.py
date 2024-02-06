@@ -448,6 +448,9 @@ class SimulationAPI:
         Set new model_name and trigger further functions
         to load parameters etc.
         """
+        # Only update if the model_name actually changes
+        if hasattr(self, "_model_name") and self._model_name == model_name:
+            return
         self._model_name = model_name
         # Only update model if it's the first setup. On multiprocessing,
         # all objects are duplicated and thus this setter is triggered again.
