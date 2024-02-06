@@ -45,7 +45,7 @@ class DymolaAPI(SimulationAPI):
     """
     API to a Dymola instance.
 
-    :param str,os.path.normpath cd:
+    :param str,os.path.normpath cwd:
         Dirpath for the current working directory of dymola
     :param str model_name:
         Name of the model to be simulated
@@ -123,7 +123,7 @@ class DymolaAPI(SimulationAPI):
     >>> from ebcpy import DymolaAPI
     >>> # Specify the model name
     >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
-    >>> dym_api = DymolaAPI(cd=os.getcwd(),
+    >>> dym_api = DymolaAPI(cwd=os.getcwd(),
     >>>                     model_name=model_name,
     >>>                     packages=[],
     >>>                     show_window=True)
@@ -152,7 +152,7 @@ class DymolaAPI(SimulationAPI):
         "time_delay_between_starts"
     ]
 
-    def __init__(self, cd, model_name, packages=None, **kwargs):
+    def __init__(self, cwd, model_name, packages=None, **kwargs):
         """Instantiate class objects."""
         self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
         # Update kwargs with regard to what kwargs are supported.
@@ -187,7 +187,7 @@ class DymolaAPI(SimulationAPI):
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
 
-        super().__init__(cd=cd,
+        super().__init__(cwd=cwd,
                          model_name=model_name,
                          n_cpu=kwargs.pop("n_cpu", 1))
 
@@ -540,7 +540,7 @@ class DymolaAPI(SimulationAPI):
             log = self.dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
-            dslog_path = os.path.join(self.cd, 'dslog.txt')
+            dslog_path = os.path.join(self.cwd, 'dslog.txt')
             try:
                 with open(dslog_path, "r") as dslog_file:
                     dslog_content = dslog_file.read()
@@ -557,12 +557,12 @@ class DymolaAPI(SimulationAPI):
 
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
-            # Get the cd of the current dymola instance
+            # Get the cwd of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_cd = str(pathlib.Path(self.dymola.getLastErrorLog().replace("\n", "")))
-            if savepath is None or str(savepath) == dymola_cd:
-                return os.path.join(dymola_cd, _save_name_dsres)
+            dymola_cwd = str(pathlib.Path(self.dymola.getLastErrorLog().replace("\n", "")))
+            if savepath is None or str(savepath) == dymola_cwd:
+                return os.path.join(dymola_cwd, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
             for filename in [_save_name_dsres]:
                 # Copying dslogs and dsfinals can lead to errors,
@@ -574,9 +574,9 @@ class DymolaAPI(SimulationAPI):
                 except OSError:
                     pass
                 # Move files
-                shutil.copy(os.path.join(dymola_cd, filename),
+                shutil.copy(os.path.join(dymola_cwd, filename),
                             os.path.join(savepath, filename))
-                os.remove(os.path.join(dymola_cd, filename))
+                os.remove(os.path.join(dymola_cwd, filename))
             return os.path.join(savepath, _save_name_dsres)
 
         data = res[1]  # Get data
@@ -682,18 +682,23 @@ class DymolaAPI(SimulationAPI):
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
-    @SimulationAPI.cd.setter
-    def cd(self, cd):
+    @SimulationAPI.cwd.setter
+    def cwd(self, cwd):
         """Set the working directory to the given path"""
-        self._cd = cd
+        self._cwd = cwd
         if self.dymola is None:  # Not yet started
             return
-        # Also set the cd in the dymola api
+        # Also set the cwd in the dymola api
         self.set_dymola_cd(dymola=self.dymola,
-                           cd=cd)
+                           cd=cwd)
         if self.use_mp:
-            self.logger.warning("Won't set the cd for all workers, "
+            self.logger.warning("Won't set the cwd for all workers, "
                                 "not yet implemented.")
+
+    @SimulationAPI.cd.setter
+    def cd(self, cd):
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead.", category=DeprecationWarning)
+        self.cwd = cd
 
     def set_dymola_cd(self, dymola, cd):
         """

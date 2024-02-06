@@ -145,7 +145,7 @@ class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
 
-    :param str,os.path.normpath cd:
+    :param str,os.path.normpath cwd:
         Working directory path
     :param str model_name:
         Name of the model being simulated.
@@ -162,13 +162,19 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, cwd, model_name, **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
+        # Handle deprication warning
+        if cwd is None and "cd" in kwargs:
+            cwd = kwargs["cd"]
+            warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        if cwd is None:
+            raise ValueError("Must supply current working directory (cwd)")
+        self.logger = setup_logger(cwd=cwd, name=self.__class__.__name__)
         # Setup the logger
-        self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # Check multiprocessing
         self.n_cpu = kwargs.get("n_cpu", 1)
@@ -185,7 +191,7 @@ class SimulationAPI:
             self.use_mp = False
         # Setup the model
         self._sim_setup = self._sim_setup_class()
-        self.cd = cd
+        self.cwd = cwd
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
@@ -481,20 +487,34 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    def set_cd(self, cd):
+    def set_cwd(self, cwd):
         """Base function for changing the current working directory."""
-        self.cd = cd
+        self.cwd = cwd
+
+    @property
+    def cwd(self) -> str:
+        """Get the current working directory"""
+        return self._cwd
+
+    @cwd.setter
+    def cwd(self, cwd: str):
+        """Set the current working directory"""
+        os.makedirs(cwd, exist_ok=True)
+        self._cwd = cwd
+
+    def set_cd(self, cd):
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        self.cwd = cd
 
     @property
     def cd(self) -> str:
-        """Get the current working directory"""
-        return self._cd
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        return self.cwd
 
     @cd.setter
     def cd(self, cd: str):
-        """Set the current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        self.cwd = cd
 
     @property
     def result_names(self) -> List[str]:

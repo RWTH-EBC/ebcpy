@@ -3,6 +3,7 @@ Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
 import os
+import warnings
 from typing import List, Tuple, Union
 from collections import namedtuple
 from abc import abstractmethod
@@ -24,7 +25,7 @@ class Optimizer:
     self.optimize().
 
 
-    :param str,os.path.normpath cd:
+    :param str,os.path.normpath cwd:
         Directory for storing all output of optimization via a logger.
     :keyword list bounds:
         The boundaries for the optimization variables.
@@ -40,14 +41,17 @@ class Optimizer:
     # Can be used, but will enlarge runtime
     _obj_his = []
 
-    def __init__(self, cd=None, **kwargs):
+    def __init__(self, cwd=None, **kwargs):
         """Instantiate class parameters"""
-        if cd is None:
-            self._cd = None
+        if cwd is None and "cd" in kwargs:
+            warnings.warn("cd was renamed to cwd in all classes. Use cwd instead.", category=DeprecationWarning)
+            self.cwd = kwargs["cd"]
+        elif cwd is None:
+            self._cwd = None
         else:
-            self.cd = cd
+            self.cwd = cwd
 
-        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
+        self.logger = setup_logger(cwd=self.cwd, name=self.__class__.__name__)
         # Set kwargs
         self.bounds = kwargs.get("bounds", None)
 
@@ -93,15 +97,25 @@ class Optimizer:
                 "pymoo"]
 
     @property
-    def cd(self) -> str:
+    def cwd(self) -> str:
         """The current working directory"""
-        return self._cd
+        return self._cwd
+
+    @cwd.setter
+    def cwd(self, cwd: str):
+        """Set current working directory"""
+        os.makedirs(cwd, exist_ok=True)
+        self._cwd = cwd
+
+    @property
+    def cd(self) -> str:
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        return self.cwd
 
     @cd.setter
     def cd(self, cd: str):
-        """Set current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
+        self.cwd = cd
 
     @property
     def bounds(self) -> List[Union[Tuple, List]]:
