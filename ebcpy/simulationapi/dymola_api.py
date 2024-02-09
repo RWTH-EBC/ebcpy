@@ -157,7 +157,7 @@ class DymolaAPI(SimulationAPI):
             self,
             working_directory: Union[Path, str],
             model_name: str,
-            packages: List[Union[Path, str]]=None,
+            packages: List[Union[Path, str]] = None,
             **kwargs
     ):
         """Instantiate class objects."""

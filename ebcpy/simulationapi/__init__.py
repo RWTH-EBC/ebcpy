@@ -319,7 +319,7 @@ class SimulationAPI:
                 result_file_name = [result_file_name] * n_simulations
             if len(savepath) != len(result_file_name):
                 raise ValueError("Given savepath and result_file_name "
-                                 "have not the same lenght.")
+                                 "have not the same length.")
             joined_save_paths = []
             for _single_save_path, _single_result_name in zip(savepath, result_file_name):
                 joined_save_paths.append(os.path.join(_single_save_path, _single_result_name))
@@ -328,7 +328,7 @@ class SimulationAPI:
                     "Simulating multiple parameter set's on "
                     "the same combination of savepath and result_file_name "
                     "will override results or even cause errors. "
-                    "Specify a unqiue result_file_name-savepath combination "
+                    "Specify a unique result_file_name-savepath combination "
                     "for each parameter combination"
                 )
         for key, value in kwargs.items():
