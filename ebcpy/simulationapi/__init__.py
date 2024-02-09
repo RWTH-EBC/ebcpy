@@ -145,7 +145,7 @@ class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
 
-    :param str,os.path.normpath cwd:
+    :param str,os.path.normpath working_directory:
         Working directory path
     :param str model_name:
         Name of the model being simulated.
@@ -162,18 +162,18 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, cwd, model_name, **kwargs):
+    def __init__(self, working_directory, model_name, **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprication warning
-        if cwd is None and "cd" in kwargs:
-            cwd = kwargs["cd"]
-            warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
-        if cwd is None:
-            raise ValueError("Must supply current working directory (cwd)")
-        self.logger = setup_logger(cwd=cwd, name=self.__class__.__name__)
+        if working_directory is None and "cd" in kwargs:
+            working_directory = kwargs["cd"]
+            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        if working_directory is None:
+            raise ValueError("Must supply current working directory (working_directory)")
+        self.logger = setup_logger(working_directory=working_directory, name=self.__class__.__name__)
         # Setup the logger
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # Check multiprocessing
@@ -191,7 +191,7 @@ class SimulationAPI:
             self.use_mp = False
         # Setup the model
         self._sim_setup = self._sim_setup_class()
-        self.cwd = cwd
+        self.working_directory = working_directory
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
@@ -487,17 +487,17 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    def set_cwd(self, cwd):
+    def set_working_directory(self, working_directory):
         """Base function for changing the current working directory."""
-        self.cwd = cwd
+        self.working_directory = working_directory
 
     @property
-    def cwd(self) -> str:
+    def working_directory(self) -> str:
         """Get the current working directory"""
-        return self._cwd
+        return self._working_directory
 
-    @cwd.setter
-    def cwd(self, cwd: str):
+    @working_directory.setter
+    def working_directory(self, working_directory: str):
         """Set the current working directory"""
         os.makedirs(cwd, exist_ok=True)
         self._cwd = cwd

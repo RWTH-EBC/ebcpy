@@ -7,7 +7,7 @@ import os
 
 
 def setup_logger(name: str,
-                 cwd: str = None,
+                 working_directory: str = None,
                  level=logging.DEBUG):
     """
     Setup an class or module specific logger instance
@@ -15,7 +15,7 @@ def setup_logger(name: str,
 
     :param str name:
         The name of the logger instance
-    :param str cwd:
+    :param str working_directory:
         The path where to store the logfile.
         If None is given, logs are not stored.
     :param str level:
@@ -35,9 +35,9 @@ def setup_logger(name: str,
     console = logging.StreamHandler()
     console.setFormatter(fmt=formatter)
     logger.addHandler(hdlr=console)
-    if cwd is not None:
-        os.makedirs(cwd, exist_ok=True)
-        file_handler = logging.FileHandler(filename=os.path.join(cwd, f"{name}.log"))
+    if working_directory is not None:
+        os.makedirs(working_directory, exist_ok=True)
+        file_handler = logging.FileHandler(filename=os.path.join(working_directory, f"{name}.log"))
         file_handler.setFormatter(fmt=formatter)
         logger.addHandler(hdlr=file_handler)
     return logger

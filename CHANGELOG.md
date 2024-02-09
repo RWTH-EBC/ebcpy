@@ -92,4 +92,4 @@
   - Port handling Add dymola_exe_path to set of kwargs in DymolaAPI #118
 - v0.3.13
   - Fix retranslation #121
-  - refactor cd to cwd #61
+  - refactor cd to working_directory #61

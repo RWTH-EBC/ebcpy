@@ -74,7 +74,7 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, cwd, model_name, **kwargs):
+    def __init__(self, working_directory, model_name, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
         self._model_description = None
@@ -88,9 +88,9 @@ class FMU_API(simulationapi.SimulationAPI):
             model_name = str(model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError(f"{model_name} is not a valid fmu file!")
-        if cwd is None:
-            cwd = os.path.dirname(model_name)
-        super().__init__(cwd, model_name, **kwargs)
+        if working_directory is None:
+            working_directory = os.path.dirname(model_name)
+        super().__init__(working_directory, model_name, **kwargs)
         # Register exit option
         atexit.register(self.close)
 
@@ -265,7 +265,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
         if return_option == "savepath":
             if savepath is None:
-                savepath = self.cwd
+                savepath = self.working_directory
 
             os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
@@ -289,7 +289,7 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         self.logger.info("Extracting fmu and reading fmu model description")
         # First load model description and extract variables
-        self._single_unzip_dir = os.path.join(self.cwd,
+        self._single_unzip_dir = os.path.join(self.working_directory,
                                               os.path.basename(self.model_name)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
         self._single_unzip_dir = fmpy.extract(self.model_name,
