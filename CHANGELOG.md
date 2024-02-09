@@ -93,3 +93,4 @@
 - v0.3.13
   - Fix retranslation #121
   - refactor cd to working_directory #61
+  - Propagate `names` of simres to TimeSeriesData to speed up mat-loading
