@@ -10,6 +10,7 @@ import os
 import sys
 import itertools
 import time
+from pathlib import Path
 from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
@@ -145,7 +146,7 @@ class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
 
-    :param str,os.path.normpath working_directory:
+    :param str,Path working_directory:
         Working directory path
     :param str model_name:
         Name of the model being simulated.
@@ -162,7 +163,7 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, working_directory, model_name, **kwargs):
+    def __init__(self, working_directory: Union[Path, str], model_name: str, **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
@@ -174,6 +175,8 @@ class SimulationAPI:
                           "Use working_directory instead instead.", category=DeprecationWarning)
         if working_directory is None:
             raise ValueError("Must supply current working directory (working_directory)")
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
         self.logger = setup_logger(working_directory=working_directory, name=self.__class__.__name__)
         # Setup the logger
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
@@ -265,7 +268,7 @@ class SimulationAPI:
             Only variables specified in result_names will be returned.
             - 'savepath': Returns the savepath where the results are stored.
             Depending on the API, different kwargs may be used to specify file type etc.
-        :keyword str,os.path.normpath savepath:
+        :keyword str,Path savepath:
             If path is provided, the relevant simulation results will be saved
             in the given directory. For multiple parameter variations also a list
             of savepaths for each parameterset can be specified.
@@ -309,7 +312,7 @@ class SimulationAPI:
         # Handle special case for saving files:
         if return_option == "savepath" and n_simulations > 1:
             savepath = kwargs.get("savepath", [])
-            if isinstance(savepath, (str, os.PathLike)):
+            if isinstance(savepath, (str, os.PathLike, Path)):
                 savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])
             if isinstance(result_file_name, str):
@@ -498,8 +501,10 @@ class SimulationAPI:
         return self._working_directory
 
     @working_directory.setter
-    def working_directory(self, working_directory: str):
+    def working_directory(self, working_directory: Union[Path, str]):
         """Set the current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 

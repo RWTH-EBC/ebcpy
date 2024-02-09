@@ -10,6 +10,7 @@ import atexit
 import json
 import time
 import socket
+from pathlib import Path
 from contextlib import closing
 from typing import Union, List
 
@@ -45,7 +46,7 @@ class DymolaAPI(SimulationAPI):
     """
     API to a Dymola instance.
 
-    :param str,os.path.normpath working_directory:
+    :param str,Path working_directory:
         Dirpath for the current working directory of dymola
     :param str model_name:
         Name of the model to be simulated
@@ -152,7 +153,13 @@ class DymolaAPI(SimulationAPI):
         "time_delay_between_starts"
     ]
 
-    def __init__(self, working_directory, model_name, packages=None, **kwargs):
+    def __init__(
+            self,
+            working_directory: Union[Path, str],
+            model_name: str,
+            packages: List[Union[Path, str]]=None,
+            **kwargs
+    ):
         """Instantiate class objects."""
         self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
         # Update kwargs with regard to what kwargs are supported.
@@ -226,7 +233,7 @@ class DymolaAPI(SimulationAPI):
         self.packages = []
         if packages is not None:
             for package in packages:
-                if isinstance(package, pathlib.Path):
+                if isinstance(package, Path):
                     self.packages.append(str(package))
                 elif isinstance(package, str):
                     self.packages.append(package)
@@ -540,7 +547,7 @@ class DymolaAPI(SimulationAPI):
             log = self.dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
-            dslog_path = os.path.join(self.working_directory, 'dslog.txt')
+            dslog_path = self.working_directory.joinpath('dslog.txt')
             try:
                 with open(dslog_path, "r") as dslog_file:
                     dslog_content = dslog_file.read()
@@ -560,7 +567,7 @@ class DymolaAPI(SimulationAPI):
             # Get the working_directory of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_working_directory = str(pathlib.Path(self.dymola.getLastErrorLog().replace("\n", "")))
+            dymola_working_directory = str(Path(self.dymola.getLastErrorLog().replace("\n", "")))
             if savepath is None or str(savepath) == dymola_working_directory:
                 return os.path.join(dymola_working_directory, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
@@ -683,8 +690,10 @@ class DymolaAPI(SimulationAPI):
             raise Exception("Could not load dsfinal into Dymola.")
 
     @SimulationAPI.working_directory.setter
-    def working_directory(self, working_directory):
+    def working_directory(self, working_directory: Union[Path, str]):
         """Set the working directory to the given path"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
         self._working_directory = working_directory
         if self.dymola is None:  # Not yet started
             return
@@ -870,7 +879,7 @@ class DymolaAPI(SimulationAPI):
             self.logger.error("Could not load packages from Dymola, using self.packages")
             packages = []
             for pack in self.packages:
-                pack = pathlib.Path(pack)
+                pack = Path(pack)
                 if pack.name == "package.mo":
                     packages.append(pack.parent.name)
         valid_packages = []
@@ -882,13 +891,13 @@ class DymolaAPI(SimulationAPI):
             if not isinstance(pack_path, str):
                 self.logger.error("Could not load model resource for package %s", pack)
             if os.path.isfile(pack_path):
-                valid_packages.append(pathlib.Path(pack_path).parent)
+                valid_packages.append(Path(pack_path).parent)
         return valid_packages
 
     def save_for_reproduction(
             self,
             title: str,
-            path: pathlib.Path = None,
+            path: Path = None,
             files: list = None,
             save_total_model: bool = True,
             export_fmu: bool = True,
@@ -957,7 +966,7 @@ class DymolaAPI(SimulationAPI):
         # Total model
         if save_total_model:
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
-            _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
+            _total_model = Path(self.cd).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
@@ -1006,7 +1015,7 @@ class DymolaAPI(SimulationAPI):
             if fail_on_error:
                 raise Exception(msg)
         else:
-            path = pathlib.Path(self.cd).joinpath(res + ".fmu")
+            path = Path(self.cd).joinpath(res + ".fmu")
             return path
 
     @staticmethod
@@ -1021,7 +1030,7 @@ class DymolaAPI(SimulationAPI):
         :return: str
             Path readable in dymola
         """
-        if isinstance(path, pathlib.Path):
+        if isinstance(path, Path):
             path = str(path)
 
         path = path.replace("\\", "/")

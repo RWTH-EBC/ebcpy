@@ -3,6 +3,7 @@ Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
 import os
+from pathlib import Path
 import warnings
 from typing import List, Tuple, Union
 from collections import namedtuple
@@ -25,7 +26,7 @@ class Optimizer:
     self.optimize().
 
 
-    :param str,os.path.normpath working_directory:
+    :param str,Path working_directory:
         Directory for storing all output of optimization via a logger.
     :keyword list bounds:
         The boundaries for the optimization variables.
@@ -41,7 +42,7 @@ class Optimizer:
     # Can be used, but will enlarge runtime
     _obj_his = []
 
-    def __init__(self, working_directory=None, **kwargs):
+    def __init__(self, working_directory: Union[Path, str] = None, **kwargs):
         """Instantiate class parameters"""
         if working_directory is None and "cd" in kwargs:
             warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
