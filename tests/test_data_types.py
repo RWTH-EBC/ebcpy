@@ -157,6 +157,16 @@ class TestDataTypes(unittest.TestCase):
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
+        # Load with variable names:
+        variable_names = ["combiTimeTable.y[6]"]
+        time_series_data = data_types.TimeSeriesData(
+            self.example_data_mat_path, variable_names=variable_names
+        )
+        self.assertIsInstance(
+            time_series_data,
+            type(pd.DataFrame()))
+        self.assertEqual(len(time_series_data.columns), 1)
+        self.assertEqual(time_series_data.to_df().columns[0], variable_names[0])
         # Test load and set df functions:
         df = time_series_data
         self.assertIsInstance(
