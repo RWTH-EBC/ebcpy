@@ -685,20 +685,20 @@ class DymolaAPI(SimulationAPI):
     @SimulationAPI.working_directory.setter
     def working_directory(self, working_directory):
         """Set the working directory to the given path"""
-        self._working_directory = cwd
+        self._working_directory = working_directory
         if self.dymola is None:  # Not yet started
             return
-        # Also set the cwd in the dymola api
+        # Also set the working_directory in the dymola api
         self.set_dymola_cd(dymola=self.dymola,
-                           cd=cwd)
+                           cd=working_directory)
         if self.use_mp:
-            self.logger.warning("Won't set the cwd for all workers, "
+            self.logger.warning("Won't set the working_directory for all workers, "
                                 "not yet implemented.")
 
     @SimulationAPI.cd.setter
     def cd(self, cd):
-        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead.", category=DeprecationWarning)
-        self.cwd = cd
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     def set_dymola_cd(self, dymola, cd):
         """

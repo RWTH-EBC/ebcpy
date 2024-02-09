@@ -39,13 +39,13 @@ class TestOptimizer(unittest.TestCase):
         with self.assertRaises(TypeError):
             opt._choose_framework("not_supported_framework")
 
-    def test_set_and_delete_cwd(self):
-        """Test the cwd and delete functions"""
+    def test_set_and_delete_working_directory(self):
+        """Test the working_directory and delete functions"""
         opt = Optimizer()
-        self.assertIsNone(opt.cwd)
-        opt = Optimizer(cwd=self.example_opt_dir)
-        self.assertEqual(opt.cwd, self.example_opt_dir)
-        shutil.rmtree(opt.cwd)
+        self.assertIsNone(opt.working_directory)
+        opt = Optimizer(working_directory=self.example_opt_dir)
+        self.assertEqual(opt.working_directory, self.example_opt_dir)
+        shutil.rmtree(opt.working_directory)
 
     def test_custom_optimizer(self):
         """Test-case for the customization of the optimization-base-class."""

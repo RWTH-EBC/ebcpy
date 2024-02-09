@@ -205,7 +205,7 @@ class TestLogger(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("test_logger")
-        self.logger = setup_logger(cwd=self.example_dir,
+        self.logger = setup_logger(working_directory=self.example_dir,
                                    name="test_logger")
 
     def test_logging(self):
@@ -233,18 +233,18 @@ class TestReproduction(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.data_dir = Path(__file__).parent.joinpath("data")
         self.save_dir = self.data_dir.joinpath('testzone', 'reproduction_tests')
-        self.cwd_files = []
+        self.working_directory_files = []
 
     def test_save_reproduction_archive(self):
         os.getlogin = lambda: "test_login"
         # test no input
         reproduction.input = lambda _: ""
         zip_file = reproduction.save_reproduction_archive()
-        # for tearDown of the files which will be saved in cwd when no path is given
-        self.cwd_files.append(zip_file)
+        # for tearDown of the files which will be saved in working_directory when no path is given
+        self.working_directory_files.append(zip_file)
         file = Path(sys.modules['__main__'].__file__).absolute().name.replace(".py", "")
         logger_name = f"Study_log_{file}.txt"
-        self.cwd_files.append(logger_name)
+        self.working_directory_files.append(logger_name)
         self.assertTrue(zipfile.is_zipfile(zip_file))
         # create a file to remove with CopyFile but leave it open for executing except block
         f = open(self.data_dir.joinpath('remove.txt'), 'w')
@@ -294,7 +294,7 @@ class TestReproduction(unittest.TestCase):
         """Delete saved files"""
         try:
             shutil.rmtree(self.save_dir, ignore_errors=True)
-            for file in self.cwd_files:
+            for file in self.working_directory_files:
                 os.remove(file)
         except Exception:
             pass

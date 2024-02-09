@@ -167,10 +167,11 @@ class SimulationAPI:
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
-        # Handle deprication warning
+        # Handle deprecation warning
         if working_directory is None and "cd" in kwargs:
             working_directory = kwargs["cd"]
-            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+            warnings.warn("cd was renamed to working_directory in all classes. "
+                          "Use working_directory instead instead.", category=DeprecationWarning)
         if working_directory is None:
             raise ValueError("Must supply current working directory (working_directory)")
         self.logger = setup_logger(working_directory=working_directory, name=self.__class__.__name__)
@@ -499,22 +500,25 @@ class SimulationAPI:
     @working_directory.setter
     def working_directory(self, working_directory: str):
         """Set the current working directory"""
-        os.makedirs(cwd, exist_ok=True)
-        self._cwd = cwd
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
 
     def set_cd(self, cd):
-        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
-        self.cwd = cd
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def cd(self) -> str:
-        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
-        return self.cwd
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        return self.working_directory
 
     @cd.setter
     def cd(self, cd: str):
-        warnings.warn("cd was renamed to cwd in all classes. Use cwd instead instead.", category=DeprecationWarning)
-        self.cwd = cd
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def result_names(self) -> List[str]:
