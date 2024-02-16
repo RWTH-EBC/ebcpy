@@ -127,11 +127,13 @@ class PartialTestSimAPI(unittest.TestCase):
                 self.assertTrue(os.path.isfile(r))
                 self.assertIsInstance(r, str)
 
-
     def test_set_working_directory(self):
         """Test set_working_directory functionality of dymola api"""
         # Test the setting of the function
         self.sim_api.set_working_directory(self.data_dir)
+        self.assertEqual(self.data_dir, self.sim_api.working_directory)
+        # Test setting a str:
+        self.sim_api.set_working_directory(str(self.data_dir))
         self.assertEqual(self.data_dir, self.sim_api.working_directory)
 
     def test_set_sim_setup(self):

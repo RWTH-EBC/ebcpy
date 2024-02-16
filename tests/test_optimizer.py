@@ -4,6 +4,7 @@ import sys
 import unittest
 import os
 import shutil
+import pathlib
 import logging
 import numpy as np
 from ebcpy.optimization import Optimizer
@@ -41,10 +42,13 @@ class TestOptimizer(unittest.TestCase):
 
     def test_set_and_delete_working_directory(self):
         """Test the working_directory and delete functions"""
+        example_dir_as_pathlib_path = pathlib.Path(self.example_opt_dir)
         opt = Optimizer()
         self.assertIsNone(opt.working_directory)
         opt = Optimizer(working_directory=self.example_opt_dir)
-        self.assertEqual(opt.working_directory, self.example_opt_dir)
+        self.assertEqual(opt.working_directory, example_dir_as_pathlib_path)
+        opt = Optimizer(working_directory=example_dir_as_pathlib_path)
+        self.assertEqual(opt.working_directory, example_dir_as_pathlib_path)
         shutil.rmtree(opt.working_directory)
 
     def test_custom_optimizer(self):
