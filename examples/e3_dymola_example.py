@@ -16,7 +16,7 @@ from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 def main(
         aixlib_mo,
-        cd=None,
+        working_directory=None,
         n_cpu=1,
         with_plot=True
 ):
@@ -25,7 +25,7 @@ def main(
     :param str aixlib_mo:
         Path to the package.mo of the AixLib.
         This example was tested for AixLib version 1.0.0.
-    :param str cd:
+    :param str working_directory:
         Path in which to store the output.
         Default is the examples\results folder
     :param int n_cpu:
@@ -35,14 +35,14 @@ def main(
     """
 
     # General settings
-    if cd is None:
-        cd = pathlib.Path(__file__).parent.joinpath("results")
+    if working_directory is None:
+        working_directory = pathlib.Path(__file__).parent.joinpath("results")
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the Dymola-API:
     dym_api = DymolaAPI(
         model_name="AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem",
-        cd=cd,
+        working_directory=working_directory,
         n_cpu=n_cpu,
         packages=[aixlib_mo],
         show_window=True,

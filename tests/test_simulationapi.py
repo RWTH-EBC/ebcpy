@@ -127,12 +127,14 @@ class PartialTestSimAPI(unittest.TestCase):
                 self.assertTrue(os.path.isfile(r))
                 self.assertIsInstance(r, str)
 
-
-    def test_set_cd(self):
-        """Test set_cd functionality of dymola api"""
+    def test_set_working_directory(self):
+        """Test set_working_directory functionality of dymola api"""
         # Test the setting of the function
-        self.sim_api.set_cd(self.data_dir)
-        self.assertEqual(self.data_dir, self.sim_api.cd)
+        self.sim_api.set_working_directory(self.data_dir)
+        self.assertEqual(self.data_dir, self.sim_api.working_directory)
+        # Test setting a str:
+        self.sim_api.set_working_directory(str(self.data_dir))
+        self.assertEqual(self.data_dir, self.sim_api.working_directory)
 
     def test_set_sim_setup(self):
         """Test set_sim_setup functionality of fmu api"""
@@ -188,7 +190,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             dymola_exe_path = None
         try:
             self.sim_api = dymola_api.DymolaAPI(
-                cd=self.example_sim_dir,
+                working_directory=self.example_sim_dir,
                 model_name=model_name,
                 packages=packages,
                 dymola_exe_path=dymola_exe_path,
@@ -283,7 +285,7 @@ class TestFMUAPI(PartialTestSimAPI):
         else:
             model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
 
-        self.sim_api = fmu.FMU_API(cd=self.example_sim_dir,
+        self.sim_api = fmu.FMU_API(working_directory=self.example_sim_dir,
                                    model_name=model_name)
 
     def test_close(self):

@@ -17,7 +17,7 @@ from ebcpy import FMU_API, TimeSeriesData
 
 
 def main(
-        cd=None,
+        working_directory=None,
         n_cpu=1,
         log_fmu=True,
         n_sim=5,
@@ -26,7 +26,7 @@ def main(
 ):
     """
     Arguments of this example:
-    :param str cd:
+    :param str working_directory:
         Path in which to store the output.
         Default is the examples\results folder
     :param int n_cpu:
@@ -42,14 +42,14 @@ def main(
     """
 
     # General settings
-    if cd is None:
-        cd = pathlib.Path(__file__).parent.joinpath("results")
+    if working_directory is None:
+        working_directory = pathlib.Path(__file__).parent.joinpath("results")
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the FMU-API:
     model_name = pathlib.Path(__file__).parent.joinpath("data", "HeatPumpSystemWithInput.fmu")
     fmu_api = FMU_API(model_name=model_name,
-                      cd=cd,
+                      working_directory=working_directory,
                       n_cpu=n_cpu,
                       log_fmu=log_fmu)
     print("Number of variables:", len(fmu_api.variables))

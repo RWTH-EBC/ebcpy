@@ -10,6 +10,7 @@ import os
 import sys
 import itertools
 import time
+from pathlib import Path
 from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
@@ -145,7 +146,7 @@ class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
 
-    :param str,os.path.normpath cd:
+    :param str,Path working_directory:
         Working directory path
     :param str model_name:
         Name of the model being simulated.
@@ -162,13 +163,18 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, working_directory: Union[Path, str], model_name: str, **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
+        # Handle deprecation warning
+        self.working_directory = working_directory
+        self.logger = setup_logger(
+            working_directory=self.working_directory,
+            name=self.__class__.__name__
+        )
         # Setup the logger
-        self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # Check multiprocessing
         self.n_cpu = kwargs.get("n_cpu", 1)
@@ -185,7 +191,6 @@ class SimulationAPI:
             self.use_mp = False
         # Setup the model
         self._sim_setup = self._sim_setup_class()
-        self.cd = cd
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
@@ -258,7 +263,7 @@ class SimulationAPI:
             Only variables specified in result_names will be returned.
             - 'savepath': Returns the savepath where the results are stored.
             Depending on the API, different kwargs may be used to specify file type etc.
-        :keyword str,os.path.normpath savepath:
+        :keyword str,Path savepath:
             If path is provided, the relevant simulation results will be saved
             in the given directory. For multiple parameter variations also a list
             of savepaths for each parameterset can be specified.
@@ -302,14 +307,14 @@ class SimulationAPI:
         # Handle special case for saving files:
         if return_option == "savepath" and n_simulations > 1:
             savepath = kwargs.get("savepath", [])
-            if isinstance(savepath, (str, os.PathLike)):
+            if isinstance(savepath, (str, os.PathLike, Path)):
                 savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])
             if isinstance(result_file_name, str):
                 result_file_name = [result_file_name] * n_simulations
             if len(savepath) != len(result_file_name):
                 raise ValueError("Given savepath and result_file_name "
-                                 "have not the same lenght.")
+                                 "have not the same length.")
             joined_save_paths = []
             for _single_save_path, _single_result_name in zip(savepath, result_file_name):
                 joined_save_paths.append(os.path.join(_single_save_path, _single_result_name))
@@ -318,7 +323,7 @@ class SimulationAPI:
                     "Simulating multiple parameter set's on "
                     "the same combination of savepath and result_file_name "
                     "will override results or even cause errors. "
-                    "Specify a unqiue result_file_name-savepath combination "
+                    "Specify a unique result_file_name-savepath combination "
                     "for each parameter combination"
                 )
         for key, value in kwargs.items():
@@ -448,6 +453,9 @@ class SimulationAPI:
         Set new model_name and trigger further functions
         to load parameters etc.
         """
+        # Only update if the model_name actually changes
+        if hasattr(self, "_model_name") and self._model_name == model_name:
+            return
         self._model_name = model_name
         # Only update model if it's the first setup. On multiprocessing,
         # all objects are duplicated and thus this setter is triggered again.
@@ -478,20 +486,39 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    def set_cd(self, cd):
+    def set_working_directory(self, working_directory: Union[Path, str]):
         """Base function for changing the current working directory."""
-        self.cd = cd
+        self.working_directory = working_directory
 
     @property
-    def cd(self) -> str:
+    def working_directory(self) -> Path:
         """Get the current working directory"""
-        return self._cd
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set the current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    def set_cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
+
+    @property
+    def cd(self) -> Path:
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
-        """Set the current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+    def cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def result_names(self) -> List[str]:

@@ -3,6 +3,8 @@ Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
 import os
+from pathlib import Path
+import warnings
 from typing import List, Tuple, Union
 from collections import namedtuple
 from abc import abstractmethod
@@ -24,7 +26,7 @@ class Optimizer:
     self.optimize().
 
 
-    :param str,os.path.normpath cd:
+    :param str,Path working_directory:
         Directory for storing all output of optimization via a logger.
     :keyword list bounds:
         The boundaries for the optimization variables.
@@ -40,14 +42,17 @@ class Optimizer:
     # Can be used, but will enlarge runtime
     _obj_his = []
 
-    def __init__(self, cd=None, **kwargs):
+    def __init__(self, working_directory: Union[Path, str] = None, **kwargs):
         """Instantiate class parameters"""
-        if cd is None:
-            self._cd = None
+        if working_directory is None and "cd" in kwargs:
+            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
+            self.working_directory = kwargs["cd"]
+        elif working_directory is None:
+            self._working_directory = None
         else:
-            self.cd = cd
+            self.working_directory = working_directory
 
-        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
+        self.logger = setup_logger(working_directory=self.working_directory, name=self.__class__.__name__)
         # Set kwargs
         self.bounds = kwargs.get("bounds", None)
 
@@ -93,15 +98,27 @@ class Optimizer:
                 "pymoo"]
 
     @property
-    def cd(self) -> str:
+    def working_directory(self) -> Path:
         """The current working directory"""
-        return self._cd
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    @property
+    def cd(self) -> Path:
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
-        """Set current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+    def cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def bounds(self) -> List[Union[Tuple, List]]:

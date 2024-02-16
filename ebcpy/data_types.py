@@ -82,7 +82,10 @@ class TimeSeriesData(pd.DataFrame):
     :keyword str engine:
         Chose the engine for reading .parquet files. Default is 'pyarrow'
         Other option is 'fastparquet' (python>=3.9).
-
+    :keyword list variable_names:
+        List of variable names to load from .mat file. If you
+        know which variables you want to plot, this may speed up
+        loading significantly, and reduce memory size drastically.
 
     Examples:
 
@@ -317,7 +320,11 @@ class TimeSeriesData(pd.DataFrame):
                 header=self._loader_kwargs.get("header", _hea_def)
             )
         elif file.suffix == ".mat":
-            df = sr.mat_to_pandas(fname=file, with_unit=False)
+            df = sr.mat_to_pandas(
+                fname=file,
+                with_unit=False,
+                names=self._loader_kwargs.get("variable_names")
+            )
         elif file.suffix in ['.xlsx', '.xls', '.odf', '.ods', '.odt']:
             sheet_name = self._loader_kwargs.get("sheet_name")
             if sheet_name is None:
