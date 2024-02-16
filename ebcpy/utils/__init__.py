@@ -17,7 +17,7 @@ def setup_logger(name: str,
 
     :param str name:
         The name of the logger instance
-    :param str working_directory:
+    :param str,Path working_directory:
         The path where to store the logfile.
         If None is given, logs are not stored.
     :param str level:
@@ -38,8 +38,6 @@ def setup_logger(name: str,
     console.setFormatter(fmt=formatter)
     logger.addHandler(hdlr=console)
     if working_directory is not None:
-        if isinstance(working_directory, str):
-            working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         file_handler = logging.FileHandler(filename=working_directory.joinpath(f"{name}.log"))
         file_handler.setFormatter(fmt=formatter)

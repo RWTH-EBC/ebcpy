@@ -98,23 +98,25 @@ class Optimizer:
                 "pymoo"]
 
     @property
-    def working_directory(self) -> str:
+    def working_directory(self) -> Path:
         """The current working directory"""
         return self._working_directory
 
     @working_directory.setter
-    def working_directory(self, working_directory: str):
+    def working_directory(self, working_directory: Union[Path, str]):
         """Set current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
     @property
-    def cd(self) -> str:
+    def cd(self) -> Path:
         warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
         return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
+    def cd(self, cd: Union[Path, str]):
         warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
         self.working_directory = cd
 

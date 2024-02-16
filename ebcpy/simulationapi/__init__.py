@@ -169,9 +169,11 @@ class SimulationAPI:
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprecation warning
-        if isinstance(working_directory, str):
-            working_directory = Path(working_directory)
-        self.logger = setup_logger(working_directory=working_directory, name=self.__class__.__name__)
+        self.working_directory = working_directory
+        self.logger = setup_logger(
+            working_directory=self.working_directory,
+            name=self.__class__.__name__
+        )
         # Setup the logger
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # Check multiprocessing
@@ -189,7 +191,6 @@ class SimulationAPI:
             self.use_mp = False
         # Setup the model
         self._sim_setup = self._sim_setup_class()
-        self.working_directory = working_directory
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
@@ -485,12 +486,12 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    def set_working_directory(self, working_directory):
+    def set_working_directory(self, working_directory: Union[Path, str]):
         """Base function for changing the current working directory."""
         self.working_directory = working_directory
 
     @property
-    def working_directory(self) -> str:
+    def working_directory(self) -> Path:
         """Get the current working directory"""
         return self._working_directory
 
@@ -502,19 +503,19 @@ class SimulationAPI:
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd):
+    def set_cd(self, cd: Union[Path, str]):
         warnings.warn("cd was renamed to working_directory in all classes. "
                       "Use working_directory instead instead.", category=DeprecationWarning)
         self.working_directory = cd
 
     @property
-    def cd(self) -> str:
+    def cd(self) -> Path:
         warnings.warn("cd was renamed to working_directory in all classes. "
                       "Use working_directory instead instead.", category=DeprecationWarning)
         return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
+    def cd(self, cd: Union[Path, str]):
         warnings.warn("cd was renamed to working_directory in all classes. "
                       "Use working_directory instead instead.", category=DeprecationWarning)
         self.working_directory = cd
