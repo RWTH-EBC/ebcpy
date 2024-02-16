@@ -169,12 +169,6 @@ class SimulationAPI:
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprecation warning
-        if working_directory is None and "cd" in kwargs:
-            working_directory = kwargs["cd"]
-            warnings.warn("cd was renamed to working_directory in all classes. "
-                          "Use working_directory instead instead.", category=DeprecationWarning)
-        if working_directory is None:
-            raise ValueError("Must supply current working directory (working_directory)")
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         self.logger = setup_logger(working_directory=working_directory, name=self.__class__.__name__)
