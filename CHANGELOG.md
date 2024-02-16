@@ -91,6 +91,8 @@
 - v0.3.12
   - Port handling Add dymola_exe_path to set of kwargs in DymolaAPI #118
 - v0.3.13
+  - Fixes in simulate options and add Dymola CI tests #28, #113, #117
+- v0.3.14
   - Fix retranslation #121
   - refactor cd to working_directory #61
   - Propagate `names` of simres to TimeSeriesData to speed up mat-loading
