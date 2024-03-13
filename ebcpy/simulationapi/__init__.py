@@ -226,8 +226,11 @@ class SimulationAPI:
                               list(range(self.n_cpu)))
                 self.pool.close()
                 self.pool.join()
-            except ValueError:
-                pass  # Already closed prior to atexit
+            except ValueError as err:
+                self.logger.info(
+                    "Could not close multiprocessing pool due to ValueError, "
+                    "most likely already closed prior to atexit: %s" % err
+                )
 
     @abstractmethod
     def _close_multiprocessing(self, _):
