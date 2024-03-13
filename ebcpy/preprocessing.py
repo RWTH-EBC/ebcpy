@@ -117,7 +117,7 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
 
     """
     # Check for unit of given index. Maybe one uses hour-based data.
-    _unit_conversion_to_seconds = {"ms": 1e-3,
+    _unit_conversion_to_seconds = {"ms": 1e3,
                                    "s": 1,
                                    "min": 1 / 60,
                                    "h": 1 / 3600,
