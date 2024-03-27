@@ -423,7 +423,7 @@ class TimeSeriesData(pd.DataFrame):
             return _ret.to_numpy().transpose()
         raise TypeError("Unknown return type")
 
-    def to_datetime_index(self, unit_of_index="s", origin=datetime.now(), inplace: bool = False):
+    def to_datetime_index(self, unit_of_index="s", origin=datetime.now(), inplace: bool = True):
         """
         Convert the current index to a float based index using
         ebcpy.preprocessing.convert_index_to_datetime_index()
@@ -446,7 +446,7 @@ class TimeSeriesData(pd.DataFrame):
                                                              origin=origin,
                                                              inplace=inplace)
 
-    def to_float_index(self, offset=0, inplace: bool = False):
+    def to_float_index(self, offset=0, inplace: bool = True):
         """
         Convert the current index to a float based index using
         ebcpy.preprocessing.convert_datetime_index_to_float_index()
@@ -464,7 +464,7 @@ class TimeSeriesData(pd.DataFrame):
                                                                    offset=offset,
                                                                    inplace=inplace)
 
-    def clean_and_space_equally(self, desired_freq, inplace: bool = False):
+    def clean_and_space_equally(self, desired_freq, inplace: bool = True):
         """
         Call to the preprocessing function
         ebcpy.preprocessing.clean_and_space_equally_time_series()

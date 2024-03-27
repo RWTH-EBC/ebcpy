@@ -43,9 +43,9 @@ def main(with_plot=True):
     # ######################### Processing TimeSeriesData ##########################
     # Index changing:
     print(tsd_csv.index)
-    tsd_csv.to_datetime_index(unit_of_index="s", inplace=True)
+    tsd_csv.to_datetime_index(unit_of_index="s")
     print(tsd_csv.index)
-    tsd_csv.to_float_index(offset=0, inplace=True)
+    tsd_csv.to_float_index(offset=0)
     print(tsd_csv.index)
     # Some filter options
     tsd_csv.low_pass_filter(crit_freq=0.1, filter_order=2,
@@ -62,10 +62,10 @@ def main(with_plot=True):
     # Call the function. Desired frequency is a string (s: seconds), 60: 60 seconds.
     # Play around with this value to see what happens.
     # First convert to DateTimeIndex (required for this function)
-    tsd_csv.to_datetime_index(unit_of_index="s", inplace=True)
+    tsd_csv.to_datetime_index(unit_of_index="s")
     # Create a copy to later reference the change.
     tsd_csv_ref = tsd_csv.copy()
-    tsd_csv.clean_and_space_equally(desired_freq="60s", inplace=True)
+    tsd_csv.clean_and_space_equally(desired_freq="60s")
     plt.figure()
     plt.plot(tsd_csv_ref.loc[:, ("outputs.TRoom", "raw")], label="Reference", color="blue")
     plt.plot(tsd_csv.loc[:, ("outputs.TRoom", "raw")], label="Resampled", color="red")
