@@ -253,7 +253,8 @@ class TimeSeriesData(pd.DataFrame):
         elif ".parquet" in filepath.name:
             parquet_split = filepath.name.split(".parquet")
             pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression=parquet_split[-1][1:] if parquet_split[-1] else None,
+                                          compression=parquet_split[-1][1:] if parquet_split[
+                                              -1] else None,
                                           index=True)
         else:
             raise TypeError("Given file-format is not supported."
@@ -422,7 +423,7 @@ class TimeSeriesData(pd.DataFrame):
             return _ret.to_numpy().transpose()
         raise TypeError("Unknown return type")
 
-    def to_datetime_index(self, unit_of_index="s", origin=datetime.now()):
+    def to_datetime_index(self, unit_of_index="s", origin=datetime.now(), inplace: bool = False):
         """
         Convert the current index to a float based index using
         ebcpy.preprocessing.convert_index_to_datetime_index()
@@ -433,25 +434,37 @@ class TimeSeriesData(pd.DataFrame):
         :param datetime.datetime origin:
             The reference datetime object for the first index.
             Default is the current system time.
-        """
-        preprocessing.convert_index_to_datetime_index(df=self,
-                                                      unit_of_index=unit_of_index,
-                                                      origin=origin)
+        :param bool inplace:
+            If True, performs operation inplace and returns None.
+        :return: df
+            Copy of DataFrame with correct index for usage in this
+            framework.
 
-    def to_float_index(self, offset=0):
+        """
+        return preprocessing.convert_index_to_datetime_index(df=self,
+                                                             unit_of_index=unit_of_index,
+                                                             origin=origin,
+                                                             inplace=inplace)
+
+    def to_float_index(self, offset=0, inplace: bool = False):
         """
         Convert the current index to a float based index using
         ebcpy.preprocessing.convert_datetime_index_to_float_index()
 
         :param float offset:
             Offset in seconds
+        :param bool inplace:
+            If True, performs operation inplace and returns None.
+        :return: pd.DataFrame df:
+            DataFrame with correct index.
         """
         if not isinstance(self.index, pd.DatetimeIndex):
             return
-        preprocessing.convert_datetime_index_to_float_index(df=self,
-                                                            offset=offset)
+        return preprocessing.convert_datetime_index_to_float_index(df=self,
+                                                                   offset=offset,
+                                                                   inplace=inplace)
 
-    def clean_and_space_equally(self, desired_freq):
+    def clean_and_space_equally(self, desired_freq, inplace: bool = False):
         """
         Call to the preprocessing function
         ebcpy.preprocessing.clean_and_space_equally_time_series()
@@ -464,10 +477,18 @@ class TimeSeriesData(pd.DataFrame):
             - 5s: Every 5 seconds
             - 6min: Every 6 minutes
             This also works for h, d, m, y, ms etc.
+        :param bool inplace:
+            If True, performs operation inplace and returns None.
+        :return: pd.DataFrame
+            Cleaned and equally spaced data-frame
         """
         df = preprocessing.clean_and_space_equally_time_series(df=self,
-                                                               desired_freq=desired_freq)
-        super().__init__(df)
+                                                               desired_freq=desired_freq,
+                                                               inplace=inplace)
+        if inplace:
+            super().__init__(self)
+        else:
+            super().__init__(df)
 
     def low_pass_filter(self, crit_freq, filter_order, variable,
                         tag=None, new_tag="low_pass_filter"):
