@@ -139,11 +139,12 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     # Convert to seconds.
     old_index /= _unit_factor_to_seconds
     # Alter the index
+    index = pd.to_datetime(old_index, unit="s", origin=origin)
     if inplace:
-        df.index = pd.to_datetime(old_index, unit="s", origin=origin)
+        df.index = index
         return None
     df_copy = df.copy()
-    df_copy.index = pd.to_datetime(old_index, unit="s", origin=origin)
+    df_copy.index = index
     return df_copy
 
 
@@ -181,12 +182,12 @@ def convert_datetime_index_to_float_index(df, offset=0, inplace: bool = False):
     if not isinstance(df.index, pd.DatetimeIndex):
         raise IndexError("Given DataFrame has no DatetimeIndex, conversion not possible")
 
-    new_index = pd.to_timedelta(df.index - df.index[0]).total_seconds()
+    new_index = np.round(pd.to_timedelta(df.index - df.index[0]).total_seconds(), 4) + offset
     if inplace:
-        df.index = np.round(new_index, 4) + offset
+        df.index = new_index
         return None
     df_copy = df.copy()
-    df_copy.index = np.round(new_index, 4) + offset
+    df_copy.index = new_index
     return df_copy
 
 
@@ -229,8 +230,7 @@ def time_based_weighted_mean(df):
     return res
 
 
-def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.95,
-                                        inplace: bool = False):
+def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.95):
     """
     Function for cleaning of the given dataFrame and interpolating
     based on the given desired frequency. Linear interpolation
@@ -249,8 +249,6 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         Value to check the confidence interval of input data without
         a defined frequency. If the desired frequency is outside of
         the resulting confidence interval, a warning is issued.
-    :param bool inplace:
-        If True, performs operation inplace and returns None.
     :return: pd.DataFrame
         Cleaned and equally spaced data-frame
 
@@ -353,7 +351,8 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     # Determine Timedelta between current first index entry
     # in df and the first index entry that would be created
     # when applying df.resample() without loffset
-    delta_time = df.index[0] - df_temp.resample(rule=desired_freq).first().first(desired_freq).index[0]
+    delta_time = df.index[0] - \
+                 df_temp.resample(rule=desired_freq).first().first(desired_freq).index[0]
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
@@ -368,9 +367,6 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
         df_temp.index = df_temp.index + to_offset(delta_time)
     del delta_time
 
-    if inplace:
-        df = df_temp
-        return None
     return df_temp
 
 
@@ -454,8 +450,7 @@ def moving_average(data, window):
 
 
 def create_on_off_signal(df, col_names, threshold, col_names_new,
-                         tags="raw", new_tag="converted_signal",
-                         inplace: bool = False):
+                         tags="raw", new_tag="converted_signal"):
     """
     Create on and off signals based on the given threshold for all column names.
 
@@ -477,10 +472,8 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     :param str new_tag:
         The tag the newly created variable will hold. This can be used to
         indicate where the signal was converted from.
-    :param bool inplace:
-        If True, performs operation inplace and returns None.
     :return: pd.DataFrame
-        Now with the created signals.
+        Copy of DataFrame with the created signals added.
 
     Example:
 
@@ -512,16 +505,14 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
             # Create zero-array
             df_copy.loc[:, (col_names_new[i], new_tag)] = 0.0
             # Change all values to 1.0 according to threshold
-            df_copy.loc[df_copy[col_names[i], tags[i]] >= threshold[i], (col_names_new[i], new_tag)] = 1.0
+            df_copy.loc[
+                df_copy[col_names[i], tags[i]] >= threshold[i], (col_names_new[i], new_tag)] = 1.0
     else:
         for i, _ in enumerate(col_names):
             # Create zero-array
             df_copy.loc[:, col_names_new[i]] = 0.0
             # Change all values to 1.0 according to threshold
             df_copy.loc[df_copy[col_names[i]] >= threshold[i], col_names_new[i]] = 1.0
-    if inplace:
-        df = df_copy
-        return None
     return df_copy
 
 

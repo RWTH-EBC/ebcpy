@@ -252,10 +252,10 @@ class TimeSeriesData(pd.DataFrame):
             pd.DataFrame(self).to_csv(filepath, sep=kwargs.get("sep", ","))
         elif ".parquet" in filepath.name:
             parquet_split = filepath.name.split(".parquet")
-            pd.DataFrame(self).to_parquet(filepath, engine=kwargs.get('engine', 'pyarrow'),
-                                          compression=parquet_split[-1][1:] if parquet_split[
-                                              -1] else None,
-                                          index=True)
+            pd.DataFrame(self).to_parquet(
+                filepath, engine=kwargs.get('engine', 'pyarrow'),
+                compression=parquet_split[-1][1:] if parquet_split[-1] else None,
+                index=True)
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf, .csv, .parquet, "
@@ -460,6 +460,10 @@ class TimeSeriesData(pd.DataFrame):
         """
         if not isinstance(self.index, pd.DatetimeIndex):
             return
+
+        # df = preprocessing.convert_datetime_index_to_float_index(df=self,
+        #                                                            offset=offset,
+        #                                                            inplace=inplace)
         return preprocessing.convert_datetime_index_to_float_index(df=self,
                                                                    offset=offset,
                                                                    inplace=inplace)
@@ -483,12 +487,12 @@ class TimeSeriesData(pd.DataFrame):
             Cleaned and equally spaced data-frame
         """
         df = preprocessing.clean_and_space_equally_time_series(df=self,
-                                                               desired_freq=desired_freq,
-                                                               inplace=inplace)
+                                                               desired_freq=desired_freq)
         if inplace:
-            super().__init__(self)
-        else:
             super().__init__(df)
+            return None
+        else:
+            return df
 
     def low_pass_filter(self, crit_freq, filter_order, variable,
                         tag=None, new_tag="low_pass_filter"):
