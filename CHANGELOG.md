@@ -96,3 +96,7 @@
   - Fix retranslation #121
   - refactor cd to working_directory #61
   - Propagate `names` of simres to TimeSeriesData to speed up mat-loading
+- v0.4.0
+  - Preprocessing functions now copy the input 
+  DataFrame by default with the new inplace argument (default False). #125
+  - Add inplace option to TimeSeriesData function (default True)
