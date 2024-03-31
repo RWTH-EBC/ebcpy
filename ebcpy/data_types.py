@@ -461,9 +461,6 @@ class TimeSeriesData(pd.DataFrame):
         if not isinstance(self.index, pd.DatetimeIndex):
             return
 
-        # df = preprocessing.convert_datetime_index_to_float_index(df=self,
-        #                                                            offset=offset,
-        #                                                            inplace=inplace)
         return preprocessing.convert_datetime_index_to_float_index(df=self,
                                                                    offset=offset,
                                                                    inplace=inplace)
