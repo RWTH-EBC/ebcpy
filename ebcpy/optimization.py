@@ -196,7 +196,82 @@ class Optimizer:
             return self._scipy_differential_evolution, True
         if framework.lower() == "pymoo":
             return self._pymoo, True
+        if framework.lower() == "bayesian_optimization":
+            return self._bayesian_optimization, False
+        
         raise TypeError(f"Given framework {framework} is currently not supported.")
+    
+    def _bayesian_optimization(self, method=None, n_cpu=1, **kwargs):
+        """
+        Possible kwargs for the bayesian_optimization function with default values:
+        
+        random_state = 42
+        allow_dublicate_points = True
+        init_points = 2
+        n_iter = 3
+        """
+        default_kwargs = self.get_default_config(framework="bayesian_optimization")
+        default_kwargs.update(kwargs)
+        
+        try:
+            from bayes_opt import BayesianOptimization, UtilityFunction
+            from sklearn.gaussian_process.kernels import Matern, ConstantKernel as C
+            from sklearn.gaussian_process import GaussianProcessRegressor
+        except ImportError as error:
+            raise ImportError("Please install bayesian-optimization to use "
+                              "the bayesian_optimization function.") from error
+            
+        try:
+            if self.bounds is None:
+                raise ValueError("For the bayesian optimization approach, you need to specify "
+                                 "boundaries. Currently, no bounds are specified.")
+
+            pbounds = {f"x{n}": i for n, i in enumerate(self.bounds)}
+
+            optimizer = BayesianOptimization(
+                f=self._bayesian_opt_obj,
+                pbounds=pbounds,
+                random_state=default_kwargs["random_state"],
+                allow_duplicate_points=default_kwargs["allow_dublicate_points"],
+                verbose=0
+            )
+
+            optimizer._gp = GaussianProcessRegressor(
+                C(1.0, (1e-3, 1e3)) * Matern(length_scale=1.0, nu=2.5),
+                alpha=1e-6,
+                normalize_y=True,
+                n_restarts_optimizer=5,
+                random_state=optimizer._random_state,
+            )
+            acq_function = UtilityFunction(kind="ei", xi=1e-1)
+            
+            from pprint import pprint
+            pprint(default_kwargs)
+            optimizer.maximize(
+                init_points=default_kwargs["init_points"],
+                n_iter=default_kwargs["n_iter"],
+                acquisition_function=acq_function
+            )
+            
+            res = optimizer.max
+            x_res = np.array(list(res["params"].values()))
+            f_res = -res["target"]
+            res_tuple = namedtuple("res_tuple", "x fun")
+            res = res_tuple(x=x_res, fun=f_res)
+            return res
+        except (KeyboardInterrupt, Exception) as error:
+            # pylint: disable=inconsistent-return-statements
+            self._handle_error(error)
+            
+    def _bayesian_opt_obj(self, **kwargs):
+        """
+        This function is needed as the signature for the Bayesian-optimization
+        is different than the standard signature. The Bayesian-optimization gives keyword arguments for
+        every parameter and only maximizes, therefore we will maximize the negative objective function value.
+        """
+        xk = np.array(list(kwargs.values()))
+        return -self.obj(xk)
+            
 
     def _scipy_minimize(self, method, n_cpu=1, **kwargs):
         """
@@ -496,4 +571,9 @@ class Optimizer:
                     "copy_algorithm": False,
                     "copy_termination": False
                     }
+        if framework.lower() == "bayesian_optimization":
+            return {"random_state": 42,
+                    "allow_dublicate_points": True,
+                    "init_points": 50,
+                    "n_iter": 50}
         return {}
