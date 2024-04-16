@@ -95,7 +95,8 @@ class Optimizer:
         return ["scipy_minimize",
                 "scipy_differential_evolution",
                 "dlib_minimize",
-                "pymoo"]
+                "pymoo",
+                "bayesian_optimization"]
 
     @property
     def working_directory(self) -> Path:
