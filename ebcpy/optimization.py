@@ -207,16 +207,20 @@ class Optimizer:
         
         random_state = 42
         allow_dublicate_points = True
-        init_points = 2
-        n_iter = 3
+        init_points = 100
+        n_iter = 100
+        kind_of_utility_function = "ei"
+        xi = 0.1
+        
+        For an explanation of what the parameters do, please refer to the documentation of
+        the bayesian optimization package:
+        https://bayesian-optimization.github.io/BayesianOptimization/index.html
         """
         default_kwargs = self.get_default_config(framework="bayesian_optimization")
         default_kwargs.update(kwargs)
         
         try:
             from bayes_opt import BayesianOptimization, UtilityFunction
-            from sklearn.gaussian_process.kernels import Matern, ConstantKernel as C
-            from sklearn.gaussian_process import GaussianProcessRegressor
         except ImportError as error:
             raise ImportError("Please install bayesian-optimization to use "
                               "the bayesian_optimization function.") from error
@@ -236,17 +240,10 @@ class Optimizer:
                 verbose=0
             )
 
-            optimizer._gp = GaussianProcessRegressor(
-                C(1.0, (1e-3, 1e3)) * Matern(length_scale=1.0, nu=2.5),
-                alpha=1e-6,
-                normalize_y=True,
-                n_restarts_optimizer=5,
-                random_state=optimizer._random_state,
-            )
-            acq_function = UtilityFunction(kind="ei", xi=1e-1)
+            acq_function = UtilityFunction(
+                kind=default_kwargs["kind_of_utility_function"],
+                xi=default_kwargs["xi"])
             
-            from pprint import pprint
-            pprint(default_kwargs)
             optimizer.maximize(
                 init_points=default_kwargs["init_points"],
                 n_iter=default_kwargs["n_iter"],
@@ -574,6 +571,9 @@ class Optimizer:
         if framework.lower() == "bayesian_optimization":
             return {"random_state": 42,
                     "allow_dublicate_points": True,
-                    "init_points": 50,
-                    "n_iter": 50}
+                    "init_points": 100,
+                    "n_iter": 100,
+                    "kind_of_utility_function": "ei",
+                    "xi": 0.1
+                    }
         return {}
