@@ -572,8 +572,8 @@ class Optimizer:
         if framework.lower() == "bayesian_optimization":
             return {"random_state": 42,
                     "allow_dublicate_points": True,
-                    "init_points": 100,
-                    "n_iter": 100,
+                    "init_points": 5,
+                    "n_iter": 25,
                     "kind_of_utility_function": "ei",
                     "xi": 0.1
                     }
