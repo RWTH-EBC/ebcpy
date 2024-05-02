@@ -11,7 +11,9 @@ from ebcpy import DymolaAPI, TimeSeriesData, FMU_API
 
 def main(
         aixlib_mo,
-        modify_parameters,
+        ibpsa_mo,
+        besmod_mo,
+        ext_model_name,
         working_directory=None,
         n_cpu=1,
         with_plot=True
@@ -20,9 +22,15 @@ def main(
     Arguments of this example:
     :param str aixlib_mo:
         Path to the package.mo of the AixLib.
-        This example was tested for AixLib version 1.0.0.
-    :param list modify_parameters:
-        List of parameters and values which should be modified in the model.
+        This example was tested for AixLib version 1.3.2.
+    :param str ibpsa_mo:
+        Path to the package.mo of the IBSPA.
+        This example was tested for IBSPA version 3.0.0.
+    :param str besmod_mo:
+        Path to the package.mo of the BESMod.
+        This example was tested for BESMod version 0.4.0.
+    :param list ext_model_name:
+        Executable model name with redeclared subsystems and modifiers.
     :param str working_directory:
         Path in which to store the output.
         Default is the examples\results folder
@@ -39,10 +47,10 @@ def main(
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the Dymola-API:
     dym_api = DymolaAPI(
-        model_name="AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem",
+        model_name=ext_model_name,
         working_directory=working_directory,
         n_cpu=n_cpu,
-        packages=[aixlib_mo],
+        packages=[aixlib_mo, ibpsa_mo, besmod_mo],
         show_window=True,
         n_restart=-1,
         equidistant_output=False,
@@ -57,23 +65,10 @@ def main(
     print("Number of states:", len(dym_api.states))
 
     # ######################### Settings ##########################
-    # To understand what is happening here we refer to fmu_example.py
-    # As both simulation_apis are based on the same class, most interfaces are equal.
-    # Only difference is the simulation setup:
-    print("Fields of DymolaAPISetup", DymolaAPI.get_simulation_setup_fields())
-    print("Fields of FMU_APISetup", FMU_API.get_simulation_setup_fields())
-
     simulation_setup = {"start_time": 0,
                         "stop_time": 3600,
                         "output_interval": 100}
     dym_api.set_sim_setup(sim_setup=simulation_setup)
-    p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
-    room_vol = "vol.V"
-    dym_api.result_names = [p_el_name, room_vol]
-
-    # ######################### Inputs ##########################
-    # Modified parameters are defined in the main function and handed over in modifiy_paramters.
-    # Parameters will be set when dym_api.simulation() is called.
 
     # ######################### Simulation options ##########################
     # Look at the doc of simulate() in the website
@@ -81,10 +76,7 @@ def main(
 
     # Or change the savepath by using two keyword arguments.
     result_sp_2 = dym_api.simulate(
-        return_option="time_series",
-        savepath=r"D:\00_temp",
-        result_file_name="anotherResultFile",
-        parameters=modify_parameters
+        return_option="time_series"
     )
     print(result_sp_2)
 
@@ -97,15 +89,15 @@ def main(
 
 
 if __name__ == '__main__':
-    # TODO-User: Change the AixLib path!
-
-    # Create array including parameters to modify.
-    # In this example will be the Volume 'V' of object 'vol' set to 20 (m^3).
-    param = {}
-    param["vol.V"] = 20.0  # default = 40.0 m^3
+    # TODO-User: Change the AixLib and BESMod path!
 
     # call function main
+    # - External libraries AixLib, IBSPA and BESMod will be loaded
+    # - Model name will be called. Subsystem for controller will be exchanged from NoControl to DHWSuperheating.
+    #   Additional to the new subsystem, the parameter dTDHW will be set from 5 K to 10 K.
     main(
-        aixlib_mo=r"D:\900_repository\000_general\AixLib\AixLib\package.mo",
-        modify_parameters=param
+        aixlib_mo=r"D:\900_repository\000_general\AixLib-1.3.2\AixLib\package.mo",
+        ibpsa_mo=r"D:\900_repository\000_general\modelica-ibpsa-master\IBPSA\package.mo",
+        besmod_mo=r"D:\900_repository\000_general\BESMod\BESMod\package.mo",
+        ext_model_name='BESMod.Examples.GasBoilerBuildingOnly(redeclare BESMod.Systems.Control.DHWSuperheating control(dTDHW=10))'
     )
