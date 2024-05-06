@@ -44,6 +44,7 @@ class StatisticsAnalyzer:
                               "mse": self.calc_mse,
                               "rmse": self.calc_rmse,
                               "cvrmse": self.calc_cvrmse,
+                              "nmbe": self.calc_nmbe,
                               "nrmse": self.calc_nrmse,
                               "user-function": None}
 
@@ -52,6 +53,7 @@ class StatisticsAnalyzer:
                                  "mse": 1,
                                  "rmse": 1,
                                  "cvrmse": 1,
+                                 "nmbe": 1,
                                  "nrmse": 1,
                                  "user-function": 1}
 
@@ -184,3 +186,28 @@ class StatisticsAnalyzer:
                              "Choose another method.")
 
         return np.sqrt(skmetrics.mean_squared_error(meas, sim)) / np.mean(meas)
+    
+    @staticmethod
+    def calc_nmbe(meas, sim):
+        """
+        Calculates the NMBE (normalized mean bias error)
+        for the given numpy array of measured and simulated data.
+        
+        :param np.array meas:
+            Array with measurement data
+        :param np.array sim:
+            Array with simulation data  
+        :return: float NMBE:
+            NMBE of the given data.
+        """
+        
+        nom = np.sum(meas - sim)
+        denom = np.sum(meas)
+        
+        if denom == 0:
+            raise ValueError("The given measurement data has a sum of 0. "
+                             "This makes the calculation of the NMBE impossible. "
+                             "Choose another method.")
+
+        nmbe = nom/denom
+        return np.abs(nmbe)
