@@ -83,6 +83,9 @@ def main(
     for sizing in sizings:
         parameters.append({"heaCap.C": hea_cap_c * sizing})
 
+    # Additional information: Dynamic exchange of parameter values has the same syntax when using DymolaAPI,
+    # instead of FMU_API.
+
     # ######################### Inputs ##########################
     # Let's also change the input of the simulation:
     print("Inputs names are:", fmu_api.inputs)
