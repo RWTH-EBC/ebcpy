@@ -6,7 +6,7 @@ Goals of this part of the examples:
 # Start by importing all relevant packages
 import pathlib
 # Imports from ebcpy
-from ebcpy import DymolaAPI, TimeSeriesData, FMU_API
+from ebcpy import DymolaAPI
 
 
 def main(
@@ -51,12 +51,9 @@ def main(
         working_directory=working_directory,
         n_cpu=n_cpu,
         packages=[aixlib_mo, ibpsa_mo, besmod_mo],
-        show_window=True,
-        n_restart=-1,
-        equidistant_output=False,
+        show_window=False,
         # Only necessary if you need a specific dymola version
         dymola_path=r"C:\Program Files\Dymola 2023x",
-        #dymola_version=None
     )
     print("Number of variables:", len(dym_api.variables))
     print("Number of outputs:", len(dym_api.outputs))
@@ -71,21 +68,29 @@ def main(
     dym_api.set_sim_setup(sim_setup=simulation_setup)
 
     # ######################### Simulation options ##########################
-    # Look at the doc of simulate() in the website
-    # Besides parameters (explained in fmu_example), return_option is important
-
-    # Or change the savepath by using two keyword arguments.
+    # Look at the doc of simulate() in the website or previous examples
     result_sp_2 = dym_api.simulate(
         return_option="time_series"
     )
     print(result_sp_2)
 
+    # You can also simulate a list of different `model_names` (or modified versions of the same model)
+    # by passing a list to the `simulate` function in `DymolaAPI`:
+    model_names_to_simulate = [
+        "BESMod.Examples.GasBoilerBuildingOnly(redeclare BESMod.Systems.Control.DHWSuperheating control(dTDHW=10))",
+        "BESMod.Examples.GasBoilerBuildingOnly(redeclare BESMod.Systems.Control.DHWSuperheating control(dTDHW=5))",
+        "BESMod.Examples.DesignOptimization.BES",
+    ]
+    results = dym_api.simulate(
+        return_option="time_series",
+        model_names=model_names_to_simulate
+    )
+    print(results)
+
     # ######################### Closing ##########################
     # Close Dymola. If you forget to do so,
     # we call this function at the exit of your script.
     dym_api.close()
-
-    # ######################### Simulation analysis ##########################
 
 
 if __name__ == '__main__':
@@ -93,8 +98,9 @@ if __name__ == '__main__':
 
     # call function main
     # - External libraries AixLib, IBSPA and BESMod will be loaded
-    # - Model name will be called. Subsystem for controller will be exchanged from NoControl to DHWSuperheating.
+    # - Model ext_model_name will be called. Subsystem for controller will be exchanged from NoControl to DHWSuperheating.
     #   Additional to the new subsystem, the parameter dTDHW will be set from 5 K to 10 K.
+    # Furthermore, inside the main function, a method for simulating multiple models at one call is shown.
     main(
         aixlib_mo=r"D:\900_repository\000_general\AixLib-1.3.2\AixLib\package.mo",
         ibpsa_mo=r"D:\900_repository\000_general\modelica-ibpsa-master\IBPSA\package.mo",
