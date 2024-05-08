@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy package &mdash; ebcpy 0.3.13 documentation</title>
+  <title>ebcpy package &mdash; ebcpy 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -38,7 +38,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -167,10 +167,12 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.save_for_reproduction"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.save_for_reproduction()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_cd"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.set_cd()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_sim_setup"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.set_sim_setup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_working_directory"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.set_working_directory()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.sim_setup"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.sim_setup</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.simulate"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.simulate()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.variables"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.variables</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.worker_idx"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.worker_idx</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.working_directory"><code class="docutils literal notranslate"><span class="pre">SimulationAPI.working_directory</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup"><code class="docutils literal notranslate"><span class="pre">SimulationSetup</span></code></a><ul>
@@ -185,7 +187,6 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.check_valid_solver</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.model_post_init"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.model_post_init()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">SimulationSetup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a><ul>
@@ -195,7 +196,6 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.value"><code class="docutils literal notranslate"><span class="pre">Variable.value</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value"><code class="docutils literal notranslate"><span class="pre">Variable.check_value</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value_type"><code class="docutils literal notranslate"><span class="pre">Variable.check_value_type</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">Variable.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.simulationapi.html#submodules">Submodules</a></li>
@@ -216,12 +216,12 @@
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.simulate"><code class="docutils literal notranslate"><span class="pre">DymolaAPI.simulate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.to_dict"><code class="docutils literal notranslate"><span class="pre">DymolaAPI.to_dict()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.translate"><code class="docutils literal notranslate"><span class="pre">DymolaAPI.translate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.working_directory"><code class="docutils literal notranslate"><span class="pre">DymolaAPI.working_directory</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.tolerance</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.model_post_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">DymolaSimulationSetup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -237,7 +237,6 @@
 <li class="toctree-l3"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup"><code class="docutils literal notranslate"><span class="pre">FMU_Setup</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.timeout"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.timeout</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.model_post_init"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.model_post_init()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup.model_computed_fields"><code class="docutils literal notranslate"><span class="pre">FMU_Setup.model_computed_fields</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -345,6 +344,9 @@ argument when loading a xlsx-file.</p></li>
 <li><p><strong>default_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Which value to use as tag. Default is ‘raw’</p></li>
 <li><p><strong>engine</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Chose the engine for reading .parquet files. Default is ‘pyarrow’
 Other option is ‘fastparquet’ (python&gt;=3.9).</p></li>
+<li><p><strong>variable_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – List of variable names to load from .mat file. If you
+know which variables you want to plot, this may speed up
+loading significantly, and reduce memory size drastically.</p></li>
 </ul>
 </dd>
 </dl>
@@ -367,18 +369,25 @@ As we just created the data, we specify the tag
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.clean_and_space_equally">
-<span class="sig-name descname"><span class="pre">clean_and_space_equally</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desired_freq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.clean_and_space_equally"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.clean_and_space_equally" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">clean_and_space_equally</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">desired_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.clean_and_space_equally"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.clean_and_space_equally" title="Permalink to this definition"></a></dt>
 <dd><p>Call to the preprocessing function
 ebcpy.preprocessing.clean_and_space_equally_time_series()
 See the docstring of this function to know what is happening.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>desired_freq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Frequency to determine number of elements in processed dataframe.
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>desired_freq</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Frequency to determine number of elements in processed dataframe.
 Options are for example:
 - s: second-based
 - 5s: Every 5 seconds
 - 6min: Every 6 minutes
-This also works for h, d, m, y, ms etc.</p>
+This also works for h, d, m, y, ms etc.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, performs operation inplace and returns None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame
+Cleaned and equally spaced data-frame</p>
 </dd>
 </dl>
 </dd></dl>
@@ -548,7 +557,7 @@ Other option is ‘fastparquet’ (python&gt;=3.9).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.to_datetime_index">
-<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">15,</span> <span class="pre">19,</span> <span class="pre">52,</span> <span class="pre">334209)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">5,</span> <span class="pre">8,</span> <span class="pre">14,</span> <span class="pre">53,</span> <span class="pre">43,</span> <span class="pre">912210)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the current index to a float based index using
 ebcpy.preprocessing.convert_index_to_datetime_index()</p>
 <dl class="field-list simple">
@@ -559,7 +568,13 @@ The unit of the given index. Used to convert to
 total_seconds later on.</p></li>
 <li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><em>datetime.datetime</em></a>) – The reference datetime object for the first index.
 Default is the current system time.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, performs operation inplace and returns None.</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>df
+Copy of DataFrame with correct index for usage in this
+framework.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -581,12 +596,19 @@ is only done if no variable contains multiple tags.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.to_float_index">
-<span class="sig-name descname"><span class="pre">to_float_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_float_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_float_index" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_float_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_float_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_float_index" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the current index to a float based index using
 ebcpy.preprocessing.convert_datetime_index_to_float_index()</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Offset in seconds</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Offset in seconds</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, performs operation inplace and returns None.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame df:
+DataFrame with correct index.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -601,7 +623,7 @@ Used to define Base-Classes such as Optimizer and
 Calibrator.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ebcpy.optimization.Optimizer">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.optimization.</span></span><span class="sig-name descname"><span class="pre">Optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/optimization.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.optimization.Optimizer" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.optimization.</span></span><span class="sig-name descname"><span class="pre">Optimizer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/optimization.html#Optimizer"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.optimization.Optimizer" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base class for optimization in ebcpy. All classes
 performing optimization tasks must inherit from this
@@ -614,7 +636,7 @@ self.optimize().</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Directory for storing all output of optimization via a logger.</p></li>
+<li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Directory for storing all output of optimization via a logger.</p></li>
 <li><p><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – The boundaries for the optimization variables.</p></li>
 </ul>
 </dd>
@@ -627,9 +649,8 @@ self.optimize().</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="ebcpy.optimization.Optimizer.cd">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#ebcpy.optimization.Optimizer.cd" title="Permalink to this definition"></a></dt>
-<dd><p>The current working directory</p>
-</dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.optimization.Optimizer.cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.optimization.Optimizer.get_default_config">
@@ -726,6 +747,12 @@ Optimization result.</p>
 wrapper class.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.optimization.Optimizer.working_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">working_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.optimization.Optimizer.working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>The current working directory</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -791,7 +818,7 @@ The processed DataFame</p>
 <dt class="sig sig-object py" id="ebcpy.preprocessing.clean_and_space_equally_time_series">
 <span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">clean_and_space_equally_time_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">desired_freq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_warning</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#clean_and_space_equally_time_series"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.clean_and_space_equally_time_series" title="Permalink to this definition"></a></dt>
 <dd><p>Function for cleaning of the given dataFrame and interpolating
-based on the the given desired frequency. Linear interpolation
+based on the given desired frequency. Linear interpolation
 is used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -835,7 +862,7 @@ frequencys. You will be warned if the samping rate is to high or to low.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ebcpy.preprocessing.convert_datetime_index_to_float_index">
-<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_datetime_index_to_float_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_datetime_index_to_float_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_datetime_index_to_float_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_datetime_index_to_float_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_datetime_index_to_float_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_datetime_index_to_float_index" title="Permalink to this definition"></a></dt>
 <dd><p>Convert a datetime-based index to FloatIndex (in seconds).
 Seconds are used as a standard unit as simulation software
 outputs data in seconds (e.g. Modelica)</p>
@@ -844,6 +871,7 @@ outputs data in seconds (e.g. Modelica)</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>df</strong> (<em>pd.DataFrame</em>) – DataFrame to be converted to FloatIndex</p></li>
 <li><p><strong>offset</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – Offset in seconds</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, performs operation inplace and returns None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -870,7 +898,7 @@ DataFrame with correct index</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ebcpy.preprocessing.convert_index_to_datetime_index">
-<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">1,</span> <span class="pre">29,</span> <span class="pre">15,</span> <span class="pre">19,</span> <span class="pre">52,</span> <span class="pre">332871)</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2024,</span> <span class="pre">5,</span> <span class="pre">8,</span> <span class="pre">14,</span> <span class="pre">53,</span> <span class="pre">43,</span> <span class="pre">910729)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Converts the index of the given DataFrame to a
 pandas.core.indexes.datetimes.DatetimeIndex.</p>
 <dl class="field-list simple">
@@ -885,11 +913,12 @@ The unit of the given index. Used to convert to
 total_seconds later on.</p></li>
 <li><p><strong>origin</strong> (<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.12)"><em>datetime.datetime</em></a>) – The reference datetime object for the first index.
 Default is the current system time.</p></li>
+<li><p><strong>inplace</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True, performs operation inplace and returns None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>df
-DataFrame with correct index for usage in this
+Copy of DataFrame with correct index for usage in this
 framework.</p>
 </dd>
 </dl>
@@ -924,7 +953,7 @@ a list with specific thresholds for specific columns.</p></li>
 <li><p><strong>col_names_new</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – New name for the signal-column</p></li>
 <li><p><strong>tags</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – If a 2-Level DataFrame for TimeSeriesData is used, one has to
 specify the tag of the variables. Default value is to use the “raw”
-tag set in the TimeSeriesClass. However one can specify a list
+tag set in the TimeSeriesClass. However, one can specify a list
 (Different tag for each variable), or on can pass a string
 (same tags for all given variables)</p></li>
 <li><p><strong>new_tag</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The tag the newly created variable will hold. This can be used to
@@ -933,7 +962,7 @@ indicate where the signal was converted from.</p></li>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>pd.DataFrame
-Now with the created signals.</p>
+Copy of DataFrame with the created signals added.</p>
 </dd>
 </dl>
 <p>Example:</p>
@@ -1093,7 +1122,7 @@ modified z score</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>values</strong> (<em>pd.Series</em>) – For dataframe e.g. df[‘a_col_name’].values</p></li>
+<li><p><strong>data</strong> (<em>pd.Series</em>) – For dataframe e.g. df[‘a_col_name’].values</p></li>
 <li><p><strong>window</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – sample rate of input</p></li>
 </ul>
 </dd>

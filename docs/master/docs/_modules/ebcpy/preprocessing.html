@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.preprocessing &mdash; ebcpy 0.3.13 documentation</title>
+  <title>ebcpy.preprocessing &mdash; ebcpy 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -35,7 +35,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -161,7 +161,8 @@
     <span class="k">return</span> <span class="n">df_dropped</span></div>
 
 
-<div class="viewcode-block" id="convert_index_to_datetime_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_index_to_datetime_index">[docs]</a><span class="k">def</span> <span class="nf">convert_index_to_datetime_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">unit_of_index</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()):</span>
+<div class="viewcode-block" id="convert_index_to_datetime_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_index_to_datetime_index">[docs]</a><span class="k">def</span> <span class="nf">convert_index_to_datetime_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">unit_of_index</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+                                    <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts the index of the given DataFrame to a</span>
 <span class="sd">    pandas.core.indexes.datetimes.DatetimeIndex.</span>
@@ -177,8 +178,10 @@
 <span class="sd">    :param datetime.datetime origin:</span>
 <span class="sd">        The reference datetime object for the first index.</span>
 <span class="sd">        Default is the current system time.</span>
+<span class="sd">    :param bool inplace:</span>
+<span class="sd">        If True, performs operation inplace and returns None.</span>
 <span class="sd">    :return: df</span>
-<span class="sd">        DataFrame with correct index for usage in this</span>
+<span class="sd">        Copy of DataFrame with correct index for usage in this</span>
 <span class="sd">        framework.</span>
 
 <span class="sd">    Example:</span>
@@ -198,7 +201,7 @@
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># Check for unit of given index. Maybe one uses hour-based data.</span>
-    <span class="n">_unit_conversion_to_seconds</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ms&quot;</span><span class="p">:</span> <span class="mf">1e-3</span><span class="p">,</span>
+    <span class="n">_unit_conversion_to_seconds</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ms&quot;</span><span class="p">:</span> <span class="mf">1e3</span><span class="p">,</span>
                                    <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                                    <span class="s2">&quot;min&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">60</span><span class="p">,</span>
                                    <span class="s2">&quot;h&quot;</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="mi">3600</span><span class="p">,</span>
@@ -217,12 +220,16 @@
     <span class="c1"># Convert to seconds.</span>
     <span class="n">old_index</span> <span class="o">/=</span> <span class="n">_unit_factor_to_seconds</span>
     <span class="c1"># Alter the index</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">old_index</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">old_index</span><span class="p">,</span> <span class="n">unit</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">origin</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">df_copy</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_copy</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">index</span>
+    <span class="k">return</span> <span class="n">df_copy</span></div>
 
-    <span class="k">return</span> <span class="n">df</span></div>
 
-
-<div class="viewcode-block" id="convert_datetime_index_to_float_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_datetime_index_to_float_index">[docs]</a><span class="k">def</span> <span class="nf">convert_datetime_index_to_float_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_datetime_index_to_float_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_datetime_index_to_float_index">[docs]</a><span class="k">def</span> <span class="nf">convert_datetime_index_to_float_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a datetime-based index to FloatIndex (in seconds).</span>
 <span class="sd">    Seconds are used as a standard unit as simulation software</span>
@@ -232,6 +239,8 @@
 <span class="sd">        DataFrame to be converted to FloatIndex</span>
 <span class="sd">    :param float offset:</span>
 <span class="sd">        Offset in seconds</span>
+<span class="sd">    :param bool inplace:</span>
+<span class="sd">        If True, performs operation inplace and returns None.</span>
 <span class="sd">    :return: pd.DataFrame df:</span>
 <span class="sd">        DataFrame with correct index</span>
 
@@ -254,9 +263,13 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DatetimeIndex</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="s2">&quot;Given DataFrame has no DatetimeIndex, conversion not possible&quot;</span><span class="p">)</span>
 
-    <span class="n">new_index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">new_index</span><span class="p">,</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="n">offset</span>
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="n">new_index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_timedelta</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">(),</span> <span class="mi">4</span><span class="p">)</span> <span class="o">+</span> <span class="n">offset</span>
+    <span class="k">if</span> <span class="n">inplace</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">new_index</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="n">df_copy</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">df_copy</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">new_index</span>
+    <span class="k">return</span> <span class="n">df_copy</span></div>
 
 
 <div class="viewcode-block" id="time_based_weighted_mean"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.time_based_weighted_mean">[docs]</a><span class="k">def</span> <span class="nf">time_based_weighted_mean</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
@@ -301,7 +314,7 @@
 <div class="viewcode-block" id="clean_and_space_equally_time_series"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.clean_and_space_equally_time_series">[docs]</a><span class="k">def</span> <span class="nf">clean_and_space_equally_time_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">desired_freq</span><span class="p">,</span> <span class="n">confidence_warning</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function for cleaning of the given dataFrame and interpolating</span>
-<span class="sd">    based on the the given desired frequency. Linear interpolation</span>
+<span class="sd">    based on the given desired frequency. Linear interpolation</span>
 <span class="sd">    is used.</span>
 
 <span class="sd">    :param pd.DataFrame df:</span>
@@ -356,19 +369,20 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> has following number of invalid &quot;</span>
                         <span class="s2">&quot;values</span><span class="se">\n</span><span class="s2"> </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">name</span><span class="p">,</span> <span class="n">series_with_na</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">name</span><span class="p">])</span>
     <span class="c1"># Drop all rows where at least one NA exists</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">)</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">how</span><span class="o">=</span><span class="s1">&#39;any&#39;</span><span class="p">)</span>
 
     <span class="c1"># Check if DataFrame still has non-numeric-values:</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">notnull</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">all</span><span class="p">(</span><span class="n">df_temp</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">notnull</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given DataFrame contains non-numeric values.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Merge duplicate rows using mean.</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">build_average_on_duplicate_rows</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">build_average_on_duplicate_rows</span><span class="p">(</span><span class="n">df_temp</span><span class="p">)</span>
 
     <span class="c1"># Make user warning for two cases: Upsampling and data input without a freq:</span>
     <span class="c1"># Check if the frequency differs</span>
-    <span class="n">old_freq</span><span class="p">,</span> <span class="n">old_freq_std</span><span class="p">,</span> <span class="n">old_freq_sem</span><span class="p">,</span> <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_df_index_frequency_mean_and_std</span><span class="p">(</span><span class="n">df_index</span><span class="o">=</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
-                                                                                           <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">old_freq</span><span class="p">,</span> <span class="n">old_freq_std</span><span class="p">,</span> <span class="n">old_freq_sem</span><span class="p">,</span> <span class="n">time_steps</span> <span class="o">=</span> <span class="n">get_df_index_frequency_mean_and_std</span><span class="p">(</span>
+        <span class="n">df_index</span><span class="o">=</span><span class="n">df_temp</span><span class="o">.</span><span class="n">index</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">old_freq_std</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="n">_ns_to_s</span> <span class="o">=</span> <span class="mf">1e9</span>
         <span class="c1"># Calculate confidence interval of the mean value of the old frequency</span>
@@ -400,7 +414,7 @@
 
     <span class="c1"># Create an empty data frame</span>
     <span class="c1"># If multi-columns is used, first get the old index and make it empty:</span>
-    <span class="n">multi_cols</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span>
+    <span class="n">multi_cols</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">columns</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">multi_cols</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
         <span class="n">empty_multi_cols</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="o">.</span><span class="n">from_product</span><span class="p">([[]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">multi_cols</span><span class="o">.</span><span class="n">nlevels</span><span class="p">)],</span>
                                                       <span class="n">names</span><span class="o">=</span><span class="n">multi_cols</span><span class="o">.</span><span class="n">names</span><span class="p">)</span>
@@ -410,30 +424,31 @@
 
     <span class="c1"># Insert temporary time_index into df. fill_value = 0 can only be used,</span>
     <span class="c1"># since all NaNs should be eliminated prior</span>
-    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">radd</span><span class="p">(</span><span class="n">df_time_temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">radd</span><span class="p">(</span><span class="n">df_time_temp</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="s1">&#39;index&#39;</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">df_time_temp</span>
 
     <span class="c1"># Interpolate linearly according to time index</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">df_temp</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     <span class="c1"># Determine Timedelta between current first index entry</span>
     <span class="c1"># in df and the first index entry that would be created</span>
     <span class="c1"># when applying df.resample() without loffset</span>
-    <span class="n">delta_time</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">delta_time</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> \
+                 <span class="n">df_temp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Resample to equally spaced index.</span>
     <span class="c1"># All fields should already have a value. Thus NaNs and maybe +/- infs</span>
     <span class="c1"># should have been filtered beforehand.</span>
 
     <span class="c1"># Check if given dataframe was a TimeSeriesData object and of so, convert it as such</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">data_types</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">):</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">to_offset</span><span class="p">(</span><span class="n">delta_time</span><span class="p">)</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">data_types</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df_temp</span><span class="p">,</span> <span class="n">data_types</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">):</span>
+        <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">df_temp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">to_offset</span><span class="p">(</span><span class="n">delta_time</span><span class="p">)</span>
+        <span class="n">df_temp</span> <span class="o">=</span> <span class="n">data_types</span><span class="o">.</span><span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df_temp</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">to_offset</span><span class="p">(</span><span class="n">delta_time</span><span class="p">)</span>
+        <span class="n">df_temp</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
+        <span class="n">df_temp</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df_temp</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">to_offset</span><span class="p">(</span><span class="n">delta_time</span><span class="p">)</span>
     <span class="k">del</span> <span class="n">delta_time</span>
 
-    <span class="k">return</span> <span class="n">df</span></div>
+    <span class="k">return</span> <span class="n">df_temp</span></div>
 
 
 <div class="viewcode-block" id="low_pass_filter"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.low_pass_filter">[docs]</a><span class="k">def</span> <span class="nf">low_pass_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">crit_freq</span><span class="p">,</span> <span class="n">filter_order</span><span class="p">):</span>
@@ -476,7 +491,7 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a pandas Series as moving average of the input series.</span>
 
-<span class="sd">    :param pd.Series values:</span>
+<span class="sd">    :param pd.Series data:</span>
 <span class="sd">        For dataframe e.g. df[&#39;a_col_name&#39;].values</span>
 <span class="sd">    :param int window:</span>
 <span class="sd">        sample rate of input</span>
@@ -532,14 +547,14 @@
 <span class="sd">    :param str,list tags:</span>
 <span class="sd">        If a 2-Level DataFrame for TimeSeriesData is used, one has to</span>
 <span class="sd">        specify the tag of the variables. Default value is to use the &quot;raw&quot;</span>
-<span class="sd">        tag set in the TimeSeriesClass. However one can specify a list</span>
+<span class="sd">        tag set in the TimeSeriesClass. However, one can specify a list</span>
 <span class="sd">        (Different tag for each variable), or on can pass a string</span>
 <span class="sd">        (same tags for all given variables)</span>
 <span class="sd">    :param str new_tag:</span>
 <span class="sd">        The tag the newly created variable will hold. This can be used to</span>
 <span class="sd">        indicate where the signal was converted from.</span>
 <span class="sd">    :return: pd.DataFrame</span>
-<span class="sd">        Now with the created signals.</span>
+<span class="sd">        Copy of DataFrame with the created signals added.</span>
 
 <span class="sd">    Example:</span>
 
@@ -561,6 +576,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">threshold</span> <span class="o">=</span> <span class="p">[</span><span class="n">threshold</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_names</span><span class="p">)]</span>
     <span class="c1"># Do on_off signal creation for all desired columns</span>
+    <span class="n">df_copy</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
         <span class="c1"># Convert given tags to a list</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">tags</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
@@ -568,16 +584,17 @@
 
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_names</span><span class="p">):</span>
             <span class="c1"># Create zero-array</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">new_tag</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">df_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">new_tag</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="c1"># Change all values to 1.0 according to threshold</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tags</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">(</span><span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">new_tag</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span>
+            <span class="n">df_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">df_copy</span><span class="p">[</span><span class="n">col_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">tags</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="p">(</span><span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">new_tag</span><span class="p">)]</span> <span class="o">=</span> <span class="mf">1.0</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">col_names</span><span class="p">):</span>
             <span class="c1"># Create zero-array</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="n">df_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">0.0</span>
             <span class="c1"># Change all values to 1.0 according to threshold</span>
-            <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="n">col_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
-    <span class="k">return</span> <span class="n">df</span></div>
+            <span class="n">df_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">df_copy</span><span class="p">[</span><span class="n">col_names</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">&gt;=</span> <span class="n">threshold</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">col_names_new</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="mf">1.0</span>
+    <span class="k">return</span> <span class="n">df_copy</span></div>
 
 
 <div class="viewcode-block" id="number_lines_totally_na"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.number_lines_totally_na">[docs]</a><span class="k">def</span> <span class="nf">number_lines_totally_na</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>

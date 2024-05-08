@@ -67,34 +67,41 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'locally-enabled' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
 ************* Module ebcpy.optimization
-ebcpy/optimization.py:125:0: C0301: Line too long (115/100) (line-too-long)
-ebcpy/optimization.py:126:0: C0301: Line too long (143/100) (line-too-long)
-ebcpy/optimization.py:339:0: C0301: Line too long (109/100) (line-too-long)
-ebcpy/optimization.py:184:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/optimization.py:184:38: W0613: Unused argument 'n_cpu' (unused-argument)
-ebcpy/optimization.py:225:4: R0914: Too many local variables (17/15) (too-many-locals)
-ebcpy/optimization.py:225:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/optimization.py:225:29: W0613: Unused argument 'method' (unused-argument)
-ebcpy/optimization.py:225:42: W0613: Unused argument 'n_cpu' (unused-argument)
-ebcpy/optimization.py:274:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/optimization.py:274:63: W0613: Unused argument 'n_cpu' (unused-argument)
-ebcpy/optimization.py:320:4: R0914: Too many local variables (31/15) (too-many-locals)
-ebcpy/optimization.py:320:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:48:0: C0301: Line too long (140/100) (line-too-long)
+ebcpy/optimization.py:55:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/optimization.py:115:0: C0301: Line too long (144/100) (line-too-long)
+ebcpy/optimization.py:120:0: C0301: Line too long (144/100) (line-too-long)
+ebcpy/optimization.py:142:0: C0301: Line too long (115/100) (line-too-long)
+ebcpy/optimization.py:143:0: C0301: Line too long (143/100) (line-too-long)
+ebcpy/optimization.py:356:0: C0301: Line too long (109/100) (line-too-long)
+ebcpy/optimization.py:114:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/optimization.py:114:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:119:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:119:17: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:201:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:201:38: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:242:4: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/optimization.py:242:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:242:29: W0613: Unused argument 'method' (unused-argument)
+ebcpy/optimization.py:242:42: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:291:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:291:63: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:337:4: R0914: Too many local variables (31/15) (too-many-locals)
+ebcpy/optimization.py:337:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ************* Module ebcpy.data_types
-ebcpy/data_types.py:253:0: C0301: Line too long (107/100) (line-too-long)
-ebcpy/data_types.py:305:17: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/data_types.py:281:4: R0912: Too many branches (14/12) (too-many-branches)
-ebcpy/data_types.py:465:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/data_types.py:309:17: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/data_types.py:285:4: R0912: Too many branches (14/12) (too-many-branches)
+ebcpy/data_types.py:449:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/data_types.py:488:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+ebcpy/data_types.py:494:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/data_types.py:25:11: E0603: Undefined variable name 'numeric_indexes' in __all__ (undefined-all-variable)
 ebcpy/data_types.py:16:0: W0611: Unused numpy imported as np (unused-import)
 ************* Module ebcpy.preprocessing
-ebcpy/preprocessing.py:289:0: C0301: Line too long (109/100) (line-too-long)
-ebcpy/preprocessing.py:290:0: C0301: Line too long (104/100) (line-too-long)
-ebcpy/preprocessing.py:220:0: R0914: Too many local variables (19/15) (too-many-locals)
-ebcpy/preprocessing.py:312:4: W0632: Possible unbalanced tuple unpacking with sequence defined at line 671: left side has 2 labels, right side has 4 values (unbalanced-tuple-unpacking)
-ebcpy/preprocessing.py:220:0: R0912: Too many branches (13/12) (too-many-branches)
-ebcpy/preprocessing.py:437:0: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/preprocessing.py:670:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+ebcpy/preprocessing.py:233:0: R0914: Too many local variables (20/15) (too-many-locals)
+ebcpy/preprocessing.py:326:4: W0632: Possible unbalanced tuple unpacking with sequence defined at line 688: left side has 2 labels, right side has 4 values (unbalanced-tuple-unpacking)
+ebcpy/preprocessing.py:233:0: R0912: Too many branches (13/12) (too-many-branches)
+ebcpy/preprocessing.py:452:0: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/preprocessing.py:687:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 ************* Module ebcpy.modelica
 ebcpy/modelica/__init__.py:9:0: R0914: Too many local variables (20/15) (too-many-locals)
 ebcpy/modelica/__init__.py:56:15: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
@@ -115,7 +122,7 @@ ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could 
 ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
 ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:254:0: R0912: Too many branches (14/12) (too-many-branches)
+ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
 ************* Module ebcpy.utils.reproduction
 ebcpy/utils/reproduction.py:295:0: C0301: Line too long (126/100) (line-too-long)
 ebcpy/utils/reproduction.py:343:0: C0301: Line too long (109/100) (line-too-long)
@@ -149,70 +156,78 @@ ebcpy/simulationapi/fmu.py:177:4: R0912: Too many branches (14/12) (too-many-bra
 ebcpy/simulationapi/fmu.py:329:17: R1714: Consider merging these comparisons with 'in' by using 'var.causality in ('parameter', 'calculatedParameter')'. Use a set instead if elements are hashable. (consider-using-in)
 ebcpy/simulationapi/fmu.py:378:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ************* Module ebcpy.simulationapi.__init__
-ebcpy/simulationapi/__init__.py:408:0: C0301: Line too long (111/100) (line-too-long)
+ebcpy/simulationapi/__init__.py:413:0: C0301: Line too long (111/100) (line-too-long)
 ************* Module ebcpy.simulationapi
-ebcpy/simulationapi/__init__.py:136:4: R0903: Too few public methods (0/2) (too-few-public-methods)
-ebcpy/simulationapi/__init__.py:144:0: R0902: Too many instance attributes (18/7) (too-many-instance-attributes)
-ebcpy/simulationapi/__init__.py:200:14: W0212: Access to a protected member _identity of a client class (protected-access)
-ebcpy/simulationapi/__init__.py:239:4: R0914: Too many local variables (19/15) (too-many-locals)
-ebcpy/simulationapi/__init__.py:357:20: C0103: Variable name "t1" doesn't conform to snake_case naming style (invalid-name)
-ebcpy/simulationapi/__init__.py:239:4: R0912: Too many branches (21/12) (too-many-branches)
-ebcpy/simulationapi/__init__.py:239:4: R0915: Too many statements (51/50) (too-many-statements)
-ebcpy/simulationapi/__init__.py:375:30: C0103: Argument name "t1" doesn't conform to snake_case naming style (invalid-name)
-ebcpy/simulationapi/__init__.py:409:15: W0612: Unused variable 'used' (unused-variable)
-ebcpy/simulationapi/__init__.py:23:0: C0411: standard import "from shutil import disk_usage" should be placed before "import pydantic" (wrong-import-order)
+ebcpy/simulationapi/__init__.py:137:4: R0903: Too few public methods (0/2) (too-few-public-methods)
+ebcpy/simulationapi/__init__.py:145:0: R0902: Too many instance attributes (18/7) (too-many-instance-attributes)
+ebcpy/simulationapi/__init__.py:205:14: W0212: Access to a protected member _identity of a client class (protected-access)
+ebcpy/simulationapi/__init__.py:244:4: R0914: Too many local variables (19/15) (too-many-locals)
+ebcpy/simulationapi/__init__.py:362:20: C0103: Variable name "t1" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:244:4: R0912: Too many branches (21/12) (too-many-branches)
+ebcpy/simulationapi/__init__.py:244:4: R0915: Too many statements (51/50) (too-many-statements)
+ebcpy/simulationapi/__init__.py:380:30: C0103: Argument name "t1" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:414:15: W0612: Unused variable 'used' (unused-variable)
+ebcpy/simulationapi/__init__.py:506:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/simulationapi/__init__.py:506:21: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:512:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/simulationapi/__init__.py:512:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:518:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:518:17: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:457:44: E0203: Access to member '_model_name' before its definition line 459 (access-member-before-definition)
+ebcpy/simulationapi/__init__.py:24:0: C0411: standard import "from shutil import disk_usage" should be placed before "import pydantic" (wrong-import-order)
 ************* Module ebcpy.simulationapi.dymola_api
-ebcpy/simulationapi/dymola_api.py:326:0: C0301: Line too long (102/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:945:0: C0301: Line too long (118/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1231:0: C0301: Line too long (104/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1232:0: C0301: Line too long (102/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1278/1000) (too-many-lines)
-ebcpy/simulationapi/dymola_api.py:44:0: R0902: Too many instance attributes (21/7) (too-many-instance-attributes)
-ebcpy/simulationapi/dymola_api.py:262:17: R1735: Consider using '{"use_mp": True, "port": port, "time_delay": i * _time_delay_between_starts, ... }' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/simulationapi/dymola_api.py:266:51: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/simulationapi/dymola_api.py:155:4: R0912: Too many branches (25/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:155:4: R0915: Too many statements (73/50) (too-many-statements)
-ebcpy/simulationapi/dymola_api.py:349:4: R0914: Too many local variables (41/15) (too-many-locals)
-ebcpy/simulationapi/dymola_api.py:375:45: R1735: Consider using '{"use_mp": True}' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/simulationapi/dymola_api.py:548:19: W0718: Catching too general exception Exception (broad-exception-caught)
-ebcpy/simulationapi/dymola_api.py:545:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:553:16: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:349:4: R0911: Too many return statements (7/6) (too-many-return-statements)
-ebcpy/simulationapi/dymola_api.py:349:4: R0912: Too many branches (33/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:349:4: R0915: Too many statements (116/50) (too-many-statements)
-ebcpy/simulationapi/dymola_api.py:371:12: W0612: Unused variable 'idx_worker' (unused-variable)
-ebcpy/simulationapi/dymola_api.py:616:12: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:618:4: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/simulationapi/dymola_api.py:683:12: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:826:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:827:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:832:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:883:4: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/simulationapi/dymola_api.py:883:4: R0914: Too many local variables (21/15) (too-many-locals)
-ebcpy/simulationapi/dymola_api.py:909:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:964:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:999:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:1002:16: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:987:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/simulationapi/dymola_api.py:1166:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:1206:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/simulationapi/dymola_api.py:390:12: W0201: Attribute '_model_name' defined outside __init__ (attribute-defined-outside-init)
+ebcpy/simulationapi/dymola_api.py:333:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:709:0: C0301: Line too long (136/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:959:0: C0301: Line too long (118/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1245:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1246:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1292/1000) (too-many-lines)
+ebcpy/simulationapi/dymola_api.py:45:0: R0902: Too many instance attributes (22/7) (too-many-instance-attributes)
+ebcpy/simulationapi/dymola_api.py:269:17: R1735: Consider using '{"use_mp": True, "port": port, "time_delay": i * _time_delay_between_starts, ... }' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:273:51: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:156:4: R0912: Too many branches (25/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:156:4: R0915: Too many statements (73/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:356:4: R0914: Too many local variables (41/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:382:45: R1735: Consider using '{"use_mp": True}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:555:19: W0718: Catching too general exception Exception (broad-exception-caught)
+ebcpy/simulationapi/dymola_api.py:552:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:560:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:356:4: R0911: Too many return statements (7/6) (too-many-return-statements)
+ebcpy/simulationapi/dymola_api.py:356:4: R0912: Too many branches (33/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:356:4: R0915: Too many statements (116/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:378:12: W0612: Unused variable 'idx_worker' (unused-variable)
+ebcpy/simulationapi/dymola_api.py:623:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:625:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:690:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:712:36: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/dymola_api.py:802:12: C0103: Variable name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/dymola_api.py:804:12: C0103: Variable name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/dymola_api.py:840:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:841:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:846:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:897:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:897:4: R0914: Too many local variables (21/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:923:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:978:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:1013:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1016:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:1001:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/simulationapi/dymola_api.py:1180:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1220:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:397:12: W0201: Attribute '_model_name' defined outside __init__ (attribute-defined-outside-init)
+ebcpy/simulationapi/dymola_api.py:7:0: W0611: Unused import pathlib (unused-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[977:988]
+==ebcpy.simulationapi.dymola_api:[991:1002]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        """Save model as an FMU""" (duplicate-code)
+        ) (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[361:370]
+==ebcpy.simulationapi.dymola_api:[368:377]
 ==ebcpy.simulationapi.fmu:[193:201]
         savepath = kwargs.pop("savepath", None)
         if kwargs:
@@ -221,21 +236,38 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[275:284]
+==ebcpy.simulationapi.dymola_api:[282:291]
 ==ebcpy.simulationapi.fmu:[194:200]
         if kwargs:
             self.logger.error(
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
- (duplicate-code)
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to: (duplicate-code)
+ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
+==ebcpy.optimization:[102:114]
+==ebcpy.simulationapi.__init__:[495:506]
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    @property
+    def cd(self) -> Path: (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.28/10
+Your code has been rated at 9.18/10
 

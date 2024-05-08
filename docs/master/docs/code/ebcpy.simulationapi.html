@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi package &mdash; ebcpy 0.3.13 documentation</title>
+  <title>ebcpy.simulationapi package &mdash; ebcpy 0.4.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -38,7 +38,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.3
+                0.4
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -106,14 +106,14 @@ Parameters can easily be updated, and the initialization-process is
 much more user-friendly than the provided APIs by Dymola or fmpy.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.</span></span><span class="sig-name descname"><span class="pre">SimulationAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.</span></span><span class="sig-name descname"><span class="pre">SimulationAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Base-class for simulation apis. Every simulation-api class
 must inherit from this class. It defines the structure of each class.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Working directory path</p></li>
+<li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Working directory path</p></li>
 <li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model being simulated.</p></li>
 <li><p><strong>n_cpu</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of cores to be used by simulation.
 If None is given, single core will be used.
@@ -125,9 +125,8 @@ Output will be written to the stream handler, but not to the created .log files.
 </dl>
 <dl class="py property">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.cd">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.cd" title="Permalink to this definition"></a></dt>
-<dd><p>Get the current working directory</p>
-</dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.check_unsupported_variables">
@@ -188,14 +187,19 @@ specified to avoid input during execution.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_cd">
-<span class="sig-name descname"><span class="pre">set_cd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_cd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_cd" title="Permalink to this definition"></a></dt>
-<dd><p>Base function for changing the current working directory.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">set_cd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_cd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_sim_setup">
 <span class="sig-name descname"><span class="pre">set_sim_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_setup</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_sim_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_sim_setup" title="Permalink to this definition"></a></dt>
 <dd><p>Replaced in v0.1.7 by property function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_working_directory">
+<span class="sig-name descname"><span class="pre">set_working_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_working_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Base function for changing the current working directory.</p>
 </dd></dl>
 
 <dl class="py property">
@@ -224,7 +228,7 @@ Relevant for integral metrics like energy consumption.
 Only variables specified in result_names will be returned.
 - ‘savepath’: Returns the savepath where the results are stored.
 Depending on the API, different kwargs may be used to specify file type etc.</p></li>
-<li><p><strong>savepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – If path is provided, the relevant simulation results will be saved
+<li><p><strong>savepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – If path is provided, the relevant simulation results will be saved
 in the given directory. For multiple parameter variations also a list
 of savepaths for each parameterset can be specified.
 The savepaths for each parameter set must be unique.
@@ -268,6 +272,12 @@ dataframe for each set is returned in a list</p>
 <dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.worker_idx">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">worker_idx</span></span><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.worker_idx" title="Permalink to this definition"></a></dt>
 <dd><p>Index of the current worker</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.working_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">working_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current working directory</p>
 </dd></dl>
 
 </dd></dl>
@@ -366,12 +376,6 @@ __context: The context.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.model_computed_fields" title="Permalink to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
 </dd></dl>
 
 <dl class="py class pydantic_model">
@@ -454,12 +458,6 @@ simulation variable (input, parameter, output or local/state).</p>
 <dd><p>Check if the given value has correct type</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ebcpy.simulationapi.Variable.model_computed_fields" title="Permalink to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
 </dd></dl>
 
 <section id="submodules">
@@ -471,13 +469,13 @@ simulation variable (input, parameter, output or local/state).</p>
 of Modelica-Models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationAPI" title="ebcpy.simulationapi.SimulationAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationAPI</span></code></a></p>
 <p>API to a Dymola instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>cd</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Dirpath for the current working directory of dymola</p></li>
+<li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Dirpath for the current working directory of dymola</p></li>
 <li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model to be simulated</p></li>
 <li><p><strong>packages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – List with path’s to the packages needed to simulate the model</p></li>
 <li><p><strong>show_window</strong> (<em>Boolean</em>) – True to show the Dymola window. Default is False</p></li>
@@ -539,7 +537,7 @@ each 5 seconds one instance will start, taking in total
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">DymolaAPI</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify the model name</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve&quot;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span> <span class="o">=</span> <span class="n">DymolaAPI</span><span class="p">(</span><span class="n">cd</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span> <span class="o">=</span> <span class="n">DymolaAPI</span><span class="p">(</span><span class="n">working_directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
 <span class="gp">&gt;&gt;&gt; </span>                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>                    <span class="n">packages</span><span class="o">=</span><span class="p">[],</span>
 <span class="gp">&gt;&gt;&gt; </span>                    <span class="n">show_window</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -551,9 +549,8 @@ each 5 seconds one instance will start, taking in total
 </div>
 <dl class="py property">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.cd">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.cd" title="Permalink to this definition"></a></dt>
-<dd><p>Get the current working directory</p>
-</dd></dl>
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.close">
@@ -767,6 +764,12 @@ Dictionary with keys to re-init this class.</p>
 and checks if erros occur.</p>
 </dd></dl>
 
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.working_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">working_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current working directory</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="py class pydantic_model">
@@ -787,10 +790,7 @@ setup fields.</p>
 </ul>
 </dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.check_valid_solver" title="ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_solver</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span></code></p></li>
-</ul>
-</dd>
+<dd class="field-odd"><p></p></dd>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance">
@@ -805,12 +805,6 @@ setup fields.</p>
 method.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_computed_fields" title="Permalink to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -820,7 +814,7 @@ method.</p>
 simulate models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.fmu.</span></span><span class="sig-name descname"><span class="pre">FMU_API</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.fmu.</span></span><span class="sig-name descname"><span class="pre">FMU_API</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationAPI" title="ebcpy.simulationapi.SimulationAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationAPI</span></code></a></p>
 <p>Class for simulation using the fmpy library and
 a functional mockup interface as a model input.</p>
@@ -917,10 +911,7 @@ to the basic <cite>SimulationSetup</cite></p>
 </ul>
 </dd>
 <dt class="field-odd">Validators<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.check_valid_solver" title="ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_solver</span></code></a> » <code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span></code></p></li>
-</ul>
-</dd>
+<dd class="field-odd"><p></p></dd>
 </dl>
 <dl class="py attribute pydantic_field">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup.timeout">
@@ -933,12 +924,6 @@ to the basic <cite>SimulationSetup</cite></p>
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_ModelMetaclass__context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup.model_post_init" title="Permalink to this definition"></a></dt>
 <dd><p>We need to both initialize private attributes and call the user-defined model_post_init
 method.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup.model_computed_fields">
-<span class="sig-name descname"><span class="pre">model_computed_fields</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ClassVar</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ComputedFieldInfo</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></em><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup.model_computed_fields" title="Permalink to this definition"></a></dt>
-<dd><p>A dictionary of computed field names and their corresponding <cite>ComputedFieldInfo</cite> objects.</p>
 </dd></dl>
 
 </dd></dl>
