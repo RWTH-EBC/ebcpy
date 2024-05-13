@@ -2296,7 +2296,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.optimization:[102:114]\n==ebcpy.simulationapi.__init__:[495:506]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    @property\n    def cd(self) -> Path:",
+            "message": "Similar lines in 2 files\n==ebcpy.optimization:[102:114]\n==ebcpy.simulationapi.__init__:[495:506]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
             "message-id": "R0801"
         },
         {
@@ -2528,9 +2528,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
+                "ebcpy.utils.conversion",
                 "ebcpy.preprocessing",
-                "ebcpy",
-                "ebcpy.utils.conversion"
+                "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -2542,18 +2542,18 @@
                 "ebcpy"
             ],
             "numpy": [
+                "ebcpy.utils.statistics_analyzer",
                 "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
                 "ebcpy.simulationapi.fmu",
                 "ebcpy.simulationapi",
                 "ebcpy.optimization",
+                "ebcpy.modelica.simres",
                 "ebcpy.preprocessing",
-                "ebcpy.utils.statistics_analyzer",
                 "ebcpy.data_types"
             ],
             "ebcpy.utils": [
-                "ebcpy.simulationapi",
-                "ebcpy.optimization"
+                "ebcpy.optimization",
+                "ebcpy.simulationapi"
             ],
             "scipy.optimize": [
                 "ebcpy.optimization"
@@ -2574,13 +2574,13 @@
                 "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing",
+                "ebcpy.modelica.manipulate_ds",
                 "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.modelica.manipulate_ds"
+                "ebcpy.utils.conversion",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.modelica.simres",
+                "ebcpy.preprocessing",
+                "ebcpy.data_types"
             ],
             "ebcpy.modelica.simres": [
                 "ebcpy.data_types"
@@ -2872,9 +2872,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy.utils.conversion",
                 "ebcpy",
-                "ebcpy.preprocessing"
+                "ebcpy.preprocessing",
+                "ebcpy.utils.conversion"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -2886,18 +2886,18 @@
                 "ebcpy"
             ],
             "numpy": [
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
+                "ebcpy.utils.statistics_analyzer",
                 "ebcpy.simulationapi.fmu",
+                "ebcpy.utils.conversion",
                 "ebcpy.simulationapi",
                 "ebcpy.optimization",
+                "ebcpy.modelica.simres",
                 "ebcpy.preprocessing",
-                "ebcpy.utils.statistics_analyzer",
                 "ebcpy.data_types"
             ],
             "ebcpy.utils": [
-                "ebcpy.simulationapi",
-                "ebcpy.optimization"
+                "ebcpy.optimization",
+                "ebcpy.simulationapi"
             ],
             "scipy.optimize": [
                 "ebcpy.optimization"
@@ -2918,13 +2918,13 @@
                 "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing",
                 "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.modelica.manipulate_ds"
+                "ebcpy.modelica.manipulate_ds",
+                "ebcpy.utils.conversion",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.modelica.simres",
+                "ebcpy.preprocessing",
+                "ebcpy.data_types"
             ],
             "ebcpy.modelica.simres": [
                 "ebcpy.data_types"
