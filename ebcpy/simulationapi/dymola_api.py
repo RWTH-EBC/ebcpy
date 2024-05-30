@@ -49,7 +49,8 @@ class DymolaAPI(SimulationAPI):
     :param str,Path working_directory:
         Dirpath for the current working directory of dymola
     :param str model_name:
-        Name of the model to be simulated
+        Name of the model to be simulated.
+        If None, it has to be provided prior to or when calling simulate().
     :param list packages:
         List with path's to the packages needed to simulate the model
     :keyword Boolean show_window:
@@ -156,7 +157,7 @@ class DymolaAPI(SimulationAPI):
     def __init__(
             self,
             working_directory: Union[Path, str],
-            model_name: str,
+            model_name: str = None,
             packages: List[Union[Path, str]] = None,
             **kwargs
     ):
@@ -271,10 +272,14 @@ class DymolaAPI(SimulationAPI):
             )
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(dict(use_mp=False))
+        if not self.license_is_available:
+            warnings.warn("You have no licence to use Dymola. "
+                          "Hence you can only simulate models with 8 or less equations.")
 
         self.fully_initialized = True
         # Trigger on init.
-        self._update_model()
+        if model_name is not None:
+            self._update_model()
         # Set result_names to output variables.
         self.result_names = list(self.outputs.keys())
 
@@ -406,6 +411,13 @@ class DymolaAPI(SimulationAPI):
                     "Difference: %s",
                     " ,".join(list(set(_res_names).difference(self.result_names)))
                 )
+
+        if self.model_name is None:
+            raise ValueError(
+                "You neither passed a model_name when "
+                "starting DymolaAPI, nor when calling simulate. "
+                "Can't simulate no model."
+            )
 
         # Handle parameters:
         if parameters is None:
@@ -824,13 +836,18 @@ class DymolaAPI(SimulationAPI):
             # Events can also cause errors in the shape.
             dymola.experimentSetupOutput(equidistant=True,
                                          events=False)
-        if not dymola.RequestOption("Standard"):
-            warnings.warn("You have no licence to use Dymola. "
-                          "Hence you can only simulate models with 8 or less equations.")
         if use_mp:
             DymolaAPI.dymola = dymola
             return None
         return dymola
+
+    @property
+    def license_is_available(self):
+        """Check if license is available"""
+        if self.dymola is None:
+            warnings.warn("You want to check the license before starting dymola, this is not supported.")
+            return False
+        return self.dymola.RequestOption("Standard")
 
     def _open_dymola_interface(self, port):
         """Open an instance of dymola and return the API-Object"""
