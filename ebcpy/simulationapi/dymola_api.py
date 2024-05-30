@@ -992,8 +992,15 @@ class DymolaAPI(SimulationAPI):
                 with open(temp_model_file, "w") as file:
                     file.write(f"model {temp_mode_name}\n  extends {self.model_name};\nend {temp_mode_name};")
                 res = self.dymola.openModel(str(temp_model_file), changeDirectory=False)
+                if not res:
+                    self.logger.error(
+                        "Could not create separate model for model with modifiers: %s",
+                        self.model_name
+                    )
+                    model_name_to_save = self.model_name
+                else:
+                    model_name_to_save = temp_mode_name
                 os.remove(temp_model_file)
-                model_name_to_save = temp_mode_name
             else:
                 model_name_to_save = self.model_name
             res = self.dymola.saveTotalModel(
