@@ -4,7 +4,7 @@ of Modelica-Models."""
 import sys
 import os
 import shutil
-import pathlib
+import uuid
 import warnings
 import atexit
 import json
@@ -985,9 +985,20 @@ class DymolaAPI(SimulationAPI):
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
             _total_model = Path(self.cd).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
+            if "(" in self.model_name:
+                # Create temporary model:
+                temp_model_file = Path(self.cd).joinpath(f"temp_total_model_{uuid.uuid4()}.mo")
+                temp_mode_name = f"{self.model_name.split('(')[0].split('.')[-1]}WithModifier"
+                with open(temp_model_file, "w") as file:
+                    file.write(f"model {temp_mode_name}\n  extends {self.model_name};\nend {temp_mode_name};")
+                res = self.dymola.openModel(str(temp_model_file), changeDirectory=False)
+                os.remove(temp_model_file)
+                model_name_to_save = temp_mode_name
+            else:
+                model_name_to_save = self.model_name
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
-                modelName=self.model_name
+                modelName=model_name_to_save
             )
             if res:
                 files.append(ReproductionFile(
