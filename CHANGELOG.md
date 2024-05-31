@@ -103,3 +103,4 @@
 - v0.4.1
   - fix reproduction with modifiers #82
   - enable model_name=None upon startup of DymolaAPI #130
+  - Only create logger handler if not already done by root-logger
