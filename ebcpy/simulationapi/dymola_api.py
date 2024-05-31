@@ -224,8 +224,9 @@ class DymolaAPI(SimulationAPI):
                         "Thus, not able to find the `dymola_exe_path` and `dymola_interface_path`. "
                         "Either specify both or pass an existing `dymola_path`."
                     )
+        self.dymola_path = dymola_path
         if self.dymola_exe_path is None:
-            self.dymola_exe_path = self.get_dymola_path(dymola_path)
+            self.dymola_exe_path = self.get_dymola_exe_path(dymola_path)
         self.logger.info("Using dymola.exe: %s", self.dymola_exe_path)
         if self.dymola_interface_path is None:
             self.dymola_interface_path = self.get_dymola_interface_path(dymola_path)
@@ -1096,7 +1097,7 @@ class DymolaAPI(SimulationAPI):
         return egg_file
 
     @staticmethod
-    def get_dymola_path(dymola_install_dir, dymola_name=None):
+    def get_dymola_exe_path(dymola_install_dir, dymola_name=None):
         """
         Function to get the path of the dymola exe-file
         on the current used machine.
