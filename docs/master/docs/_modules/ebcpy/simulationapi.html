@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi &mdash; ebcpy 0.4.0 documentation</title>
+  <title>ebcpy.simulationapi &mdash; ebcpy 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -277,6 +277,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Variable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>   <span class="c1"># Parameter of model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Variable</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>       <span class="c1"># States of model</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result_names</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="o">=</span> <span class="n">model_name</span>
 
     <span class="c1"># MP-Functions</span>
@@ -529,13 +530,13 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span>
 
     <span class="nd">@model_name</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set new model_name and trigger further functions</span>
 <span class="sd">        to load parameters etc.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Only update if the model_name actually changes</span>
-        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;_model_name&quot;</span><span class="p">)</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">==</span> <span class="n">model_name</span><span class="p">:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">==</span> <span class="n">model_name</span><span class="p">:</span>
             <span class="k">return</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span> <span class="o">=</span> <span class="n">model_name</span>
         <span class="c1"># Only update model if it&#39;s the first setup. On multiprocessing,</span>

@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi package &mdash; ebcpy 0.4.0 documentation</title>
+  <title>ebcpy.simulationapi package &mdash; ebcpy 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -448,7 +448,7 @@ simulation variable (input, parameter, output or local/state).</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the given bounds are correct.</p>
 </dd></dl>
 
@@ -469,14 +469,15 @@ simulation variable (input, parameter, output or local/state).</p>
 of Modelica-Models.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationAPI" title="ebcpy.simulationapi.SimulationAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationAPI</span></code></a></p>
 <p>API to a Dymola instance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Dirpath for the current working directory of dymola</p></li>
-<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model to be simulated</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model to be simulated.
+If None, it has to be provided prior to or when calling simulate().</p></li>
 <li><p><strong>packages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – List with path’s to the packages needed to simulate the model</p></li>
 <li><p><strong>show_window</strong> (<em>Boolean</em>) – True to show the Dymola window. Default is False</p></li>
 <li><p><strong>modify_structural_parameters</strong> (<em>Boolean</em>) – True to automatically set the structural parameters of the
@@ -572,6 +573,27 @@ using the manipulate_ds module.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_exe_path">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_exe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dymola_install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dymola_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_exe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_exe_path" title="Permalink to this definition"></a></dt>
+<dd><p>Function to get the path of the dymola exe-file
+on the current used machine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dymola_install_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The dymola installation folder. Example:
+“C://Program Files//Dymola 2020”</p></li>
+<li><p><strong>dymola_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the executable. On Windows it is always Dymola.exe, on
+linux just dymola.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str
+Path to the dymola-exe-file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_install_paths">
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_install_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_install_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_install_paths" title="Permalink to this definition"></a></dt>
 <dd><p>Function to get all paths of dymola installations
@@ -614,27 +636,6 @@ Path to the dymola.egg-file</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_path">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dymola_install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dymola_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_path" title="Permalink to this definition"></a></dt>
-<dd><p>Function to get the path of the dymola exe-file
-on the current used machine.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>dymola_install_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The dymola installation folder. Example:
-“C://Program Files//Dymola 2020”</p></li>
-<li><p><strong>dymola_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the executable. On Windows it is always Dymola.exe, on
-linux just dymola.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>str
-Path to the dymola-exe-file.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_packages">
 <span class="sig-name descname"><span class="pre">get_packages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_packages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_packages" title="Permalink to this definition"></a></dt>
 <dd><p>Get the currently loaded packages of Dymola</p>
@@ -649,6 +650,12 @@ Path to the dymola-exe-file.</p>
 <dd class="field-odd"><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Path to the dsfinal.txt to be loaded</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available">
+<span class="sig-name descname"><span class="pre">license_is_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Standard'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.license_is_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available" title="Permalink to this definition"></a></dt>
+<dd><p>Check if license is available</p>
 </dd></dl>
 
 <dl class="py method">

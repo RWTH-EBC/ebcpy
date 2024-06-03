@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.4.0 documentation</title>
+  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.4.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -86,7 +86,7 @@
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
+<span class="kn">import</span> <span class="nn">uuid</span>
 <span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">atexit</span>
 <span class="kn">import</span> <span class="nn">json</span>
@@ -131,7 +131,8 @@
 <span class="sd">    :param str,Path working_directory:</span>
 <span class="sd">        Dirpath for the current working directory of dymola</span>
 <span class="sd">    :param str model_name:</span>
-<span class="sd">        Name of the model to be simulated</span>
+<span class="sd">        Name of the model to be simulated.</span>
+<span class="sd">        If None, it has to be provided prior to or when calling simulate().</span>
 <span class="sd">    :param list packages:</span>
 <span class="sd">        List with path&#39;s to the packages needed to simulate the model</span>
 <span class="sd">    :keyword Boolean show_window:</span>
@@ -238,7 +239,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span>
-            <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+            <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">packages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -305,8 +306,9 @@
                         <span class="s2">&quot;Thus, not able to find the `dymola_exe_path` and `dymola_interface_path`. &quot;</span>
                         <span class="s2">&quot;Either specify both or pass an existing `dymola_path`.&quot;</span>
                     <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dymola_path</span> <span class="o">=</span> <span class="n">dymola_path</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dymola_path</span><span class="p">(</span><span class="n">dymola_path</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dymola_exe_path</span><span class="p">(</span><span class="n">dymola_path</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Using dymola.exe: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_exe_path</span><span class="p">)</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola_interface_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dymola_interface_path</span><span class="p">(</span><span class="n">dymola_path</span><span class="p">)</span>
@@ -353,10 +355,14 @@
             <span class="p">)</span>
         <span class="c1"># For translation etc. always setup a default dymola instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_is_available</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;You have no licence to use Dymola. &quot;</span>
+                          <span class="s2">&quot;Hence you can only simulate models with 8 or less equations.&quot;</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Trigger on init.</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_update_model</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_model</span><span class="p">()</span>
         <span class="c1"># Set result_names to output variables.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -488,6 +494,13 @@
                     <span class="s2">&quot;Difference: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
                     <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">_res_names</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">result_names</span><span class="p">)))</span>
                 <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;You neither passed a model_name when &quot;</span>
+                <span class="s2">&quot;starting DymolaAPI, nor when calling simulate. &quot;</span>
+                <span class="s2">&quot;Can&#39;t simulate no model.&quot;</span>
+            <span class="p">)</span>
 
         <span class="c1"># Handle parameters:</span>
         <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -906,13 +919,17 @@
             <span class="c1"># Events can also cause errors in the shape.</span>
             <span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="n">equidistant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
                                          <span class="n">events</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">dymola</span><span class="o">.</span><span class="n">RequestOption</span><span class="p">(</span><span class="s2">&quot;Standard&quot;</span><span class="p">):</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;You have no licence to use Dymola. &quot;</span>
-                          <span class="s2">&quot;Hence you can only simulate models with 8 or less equations.&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
             <span class="n">DymolaAPI</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="n">dymola</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">dymola</span>
+
+<div class="viewcode-block" id="DymolaAPI.license_is_available"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available">[docs]</a>    <span class="k">def</span> <span class="nf">license_is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Standard&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if license is available&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;You want to check the license before starting dymola, this is not supported.&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="kc">False</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">RequestOption</span><span class="p">(</span><span class="n">option</span><span class="p">)</span></div>
 
     <span class="k">def</span> <span class="nf">_open_dymola_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">port</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Open an instance of dymola and return the API-Object&quot;&quot;&quot;</span>
@@ -1050,9 +1067,27 @@
             <span class="n">_total_model_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Dymola/</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">_total.mo&quot;</span>
             <span class="n">_total_model</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cd</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">_total_model_name</span><span class="p">)</span>
             <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">_total_model</span><span class="o">.</span><span class="n">parent</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Create to ensure model can be saved.</span>
+            <span class="k">if</span> <span class="s2">&quot;(&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">:</span>
+                <span class="c1"># Create temporary model:</span>
+                <span class="n">temp_model_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">cd</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;temp_total_model_</span><span class="si">{</span><span class="n">uuid</span><span class="o">.</span><span class="n">uuid4</span><span class="p">()</span><span class="si">}</span><span class="s2">.mo&quot;</span><span class="p">)</span>
+                <span class="n">temp_mode_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;(&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="si">}</span><span class="s2">WithModifier&quot;</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">temp_model_file</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                    <span class="n">file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;model </span><span class="si">{</span><span class="n">temp_mode_name</span><span class="si">}</span><span class="se">\n</span><span class="s2">  extends </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="si">}</span><span class="s2">;</span><span class="se">\n</span><span class="s2">end </span><span class="si">{</span><span class="n">temp_mode_name</span><span class="si">}</span><span class="s2">;&quot;</span><span class="p">)</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">openModel</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">temp_model_file</span><span class="p">),</span> <span class="n">changeDirectory</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                        <span class="s2">&quot;Could not create separate model for model with modifiers: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span>
+                    <span class="p">)</span>
+                    <span class="n">model_name_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">model_name_to_save</span> <span class="o">=</span> <span class="n">temp_mode_name</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">temp_model_file</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">model_name_to_save</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span>
             <span class="n">res</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">saveTotalModel</span><span class="p">(</span>
                 <span class="n">fileName</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">_total_model</span><span class="p">),</span>
-                <span class="n">modelName</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span>
+                <span class="n">modelName</span><span class="o">=</span><span class="n">model_name_to_save</span>
             <span class="p">)</span>
             <span class="k">if</span> <span class="n">res</span><span class="p">:</span>
                 <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReproductionFile</span><span class="p">(</span>
@@ -1142,8 +1177,8 @@
                                     <span class="sa">f</span><span class="s2">&quot;dymola-interface egg-file.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">egg_file</span></div>
 
-<div class="viewcode-block" id="DymolaAPI.get_dymola_path"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_path">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">get_dymola_path</span><span class="p">(</span><span class="n">dymola_install_dir</span><span class="p">,</span> <span class="n">dymola_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="DymolaAPI.get_dymola_exe_path"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_exe_path">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">get_dymola_exe_path</span><span class="p">(</span><span class="n">dymola_install_dir</span><span class="p">,</span> <span class="n">dymola_name</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to get the path of the dymola exe-file</span>
 <span class="sd">        on the current used machine.</span>
