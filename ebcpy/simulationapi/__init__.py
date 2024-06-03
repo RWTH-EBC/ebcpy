@@ -196,6 +196,7 @@ class SimulationAPI:
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
         self.states: Dict[str, Variable] = {}       # States of model
         self.result_names = []
+        self._model_name = None
         self.model_name = model_name
 
     # MP-Functions
@@ -448,13 +449,13 @@ class SimulationAPI:
         return self._model_name
 
     @model_name.setter
-    def model_name(self, model_name):
+    def model_name(self, model_name: str):
         """
         Set new model_name and trigger further functions
         to load parameters etc.
         """
         # Only update if the model_name actually changes
-        if hasattr(self, "_model_name") and self._model_name == model_name:
+        if self._model_name == model_name:
             return
         self._model_name = model_name
         # Only update model if it's the first setup. On multiprocessing,
