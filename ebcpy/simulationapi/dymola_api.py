@@ -273,7 +273,7 @@ class DymolaAPI(SimulationAPI):
             )
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(dict(use_mp=False))
-        if not self.license_is_available:
+        if not self.license_is_available():
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
 
@@ -842,13 +842,12 @@ class DymolaAPI(SimulationAPI):
             return None
         return dymola
 
-    @property
-    def license_is_available(self):
+    def license_is_available(self, option: str = "Standard"):
         """Check if license is available"""
         if self.dymola is None:
             warnings.warn("You want to check the license before starting dymola, this is not supported.")
             return False
-        return self.dymola.RequestOption("Standard")
+        return self.dymola.RequestOption(option)
 
     def _open_dymola_interface(self, port):
         """Open an instance of dymola and return the API-Object"""
