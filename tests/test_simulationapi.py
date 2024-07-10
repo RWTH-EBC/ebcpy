@@ -80,7 +80,7 @@ class PartialTestSimAPI(unittest.TestCase):
         self.assertIsInstance(res, str)
         res = self.sim_api.simulate(parameters=self.parameters,
                                     return_option='savepath',
-                                    savepath=self.example_sim_dir,
+                                    savepath=os.path.join(self.example_sim_dir, "my_new_folder"),
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
@@ -106,7 +106,7 @@ class PartialTestSimAPI(unittest.TestCase):
         # Test multiple result_file_names
         _saves = [os.path.join(self.example_sim_dir, f"test_{i}") for i in range(len(parameters))]
         _save_tests = [
-            self.example_sim_dir,
+            os.path.join(self.example_sim_dir, "my_save_folder"),
             _saves,
             _saves
         ]
