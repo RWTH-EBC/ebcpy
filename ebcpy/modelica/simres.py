@@ -53,7 +53,6 @@ necessary functions from modelicares to still be able and use loadsim functions.
 from itertools import count
 from collections import namedtuple
 from scipy.io import loadmat
-from scipy.io.matlab.mio_utils import chars_to_strings
 import pandas as pd
 import numpy as np
 
@@ -229,8 +228,8 @@ def get_strings(str_arr):
 
     Strip the whitespace from the right and recode it as utf-8.
     """
-    return [line.rstrip(' \0').encode('latin-1').decode('utf-8')
-            for line in chars_to_strings(str_arr)]
+    return ["".join(word_arr).replace(" ", "")
+            for word_arr in str_arr]
 
 
 class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit', 'displayUnit'])):
