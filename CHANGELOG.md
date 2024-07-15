@@ -100,3 +100,9 @@
   - Preprocessing functions now copy the input 
   DataFrame by default with the new inplace argument (default False). #125
   - Add inplace option to TimeSeriesData function (default True)
+- v0.4.1
+  - fix reproduction with modifiers #82
+  - enable model_name=None upon startup of DymolaAPI #130
+  - Only create logger handler if not already done by root-logger
+- v0.4.2
+  - Do not use chars_to_strings from scipy #132

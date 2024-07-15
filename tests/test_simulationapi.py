@@ -80,7 +80,7 @@ class PartialTestSimAPI(unittest.TestCase):
         self.assertIsInstance(res, str)
         res = self.sim_api.simulate(parameters=self.parameters,
                                     return_option='savepath',
-                                    savepath=self.example_sim_dir,
+                                    savepath=os.path.join(self.example_sim_dir, "my_new_folder"),
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
@@ -106,7 +106,7 @@ class PartialTestSimAPI(unittest.TestCase):
         # Test multiple result_file_names
         _saves = [os.path.join(self.example_sim_dir, f"test_{i}") for i in range(len(parameters))]
         _save_tests = [
-            self.example_sim_dir,
+            os.path.join(self.example_sim_dir, "my_save_folder"),
             _saves,
             _saves
         ]
@@ -169,7 +169,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         if self.__class__ == PartialTestDymolaAPI:
             self.skipTest("Just a partial class")
         ebcpy_test_package_dir = self.data_dir.joinpath("TestModelVariables.mo")
-        packages = [ebcpy_test_package_dir]
+        self.packages = [ebcpy_test_package_dir]
         model_name = "TestModelVariables"
         self.parameters = {"test_real": 10.0,
                            "test_int": 5,
@@ -182,7 +182,11 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         }
         # Mos script
         mos_script = self.data_dir.joinpath("mos_script_test.mos")
+        self._start_dymola_api(
+            model_name=model_name, mos_script=mos_script
+        )
 
+    def _start_dymola_api(self, model_name: str, mos_script):
         # Just for tests in the gitlab-ci:
         if "linux" in sys.platform:
             dymola_exe_path = "/usr/local/bin/dymola"
@@ -192,7 +196,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             self.sim_api = dymola_api.DymolaAPI(
                 working_directory=self.example_sim_dir,
                 model_name=model_name,
-                packages=packages,
+                packages=self.packages,
                 dymola_exe_path=dymola_exe_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
@@ -201,6 +205,15 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
                           f"on this machine. Error message: {error}")
+
+    def test_no_model_none(self):
+        self.sim_api.close()
+        self._start_dymola_api(
+            mos_script=None, model_name=None,
+        )
+        with self.assertRaises(ValueError):
+            self.sim_api.simulate()
+        self.sim_api.simulate(model_names=["TestModelVariables"], parameters=self.parameters)
 
     def test_close(self):
         """Test close functionality of dymola api"""

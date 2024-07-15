@@ -31,12 +31,13 @@ def setup_logger(name: str,
     # Check if logger was already instantiated. If so, return already.
     if logger.handlers:
         return logger
-    # Add handlers
+    # Add handlers if not set already by logging.basicConfig and if path is specified
     formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s %(name)s: %(message)s',
                                   datefmt='%d.%m.%Y-%H:%M:%S')
-    console = logging.StreamHandler()
-    console.setFormatter(fmt=formatter)
-    logger.addHandler(hdlr=console)
+    if not logging.getLogger().hasHandlers():
+        console = logging.StreamHandler()
+        console.setFormatter(fmt=formatter)
+        logger.addHandler(hdlr=console)
     if working_directory is not None:
         os.makedirs(working_directory, exist_ok=True)
         file_handler = logging.FileHandler(filename=working_directory.joinpath(f"{name}.log"))

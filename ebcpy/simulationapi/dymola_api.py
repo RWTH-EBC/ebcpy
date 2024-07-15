@@ -4,7 +4,7 @@ of Modelica-Models."""
 import sys
 import os
 import shutil
-import pathlib
+import uuid
 import warnings
 import atexit
 import json
@@ -49,7 +49,8 @@ class DymolaAPI(SimulationAPI):
     :param str,Path working_directory:
         Dirpath for the current working directory of dymola
     :param str model_name:
-        Name of the model to be simulated
+        Name of the model to be simulated.
+        If None, it has to be provided prior to or when calling simulate().
     :param list packages:
         List with path's to the packages needed to simulate the model
     :keyword Boolean show_window:
@@ -156,7 +157,7 @@ class DymolaAPI(SimulationAPI):
     def __init__(
             self,
             working_directory: Union[Path, str],
-            model_name: str,
+            model_name: str = None,
             packages: List[Union[Path, str]] = None,
             **kwargs
     ):
@@ -223,8 +224,9 @@ class DymolaAPI(SimulationAPI):
                         "Thus, not able to find the `dymola_exe_path` and `dymola_interface_path`. "
                         "Either specify both or pass an existing `dymola_path`."
                     )
+        self.dymola_path = dymola_path
         if self.dymola_exe_path is None:
-            self.dymola_exe_path = self.get_dymola_path(dymola_path)
+            self.dymola_exe_path = self.get_dymola_exe_path(dymola_path)
         self.logger.info("Using dymola.exe: %s", self.dymola_exe_path)
         if self.dymola_interface_path is None:
             self.dymola_interface_path = self.get_dymola_interface_path(dymola_path)
@@ -271,10 +273,14 @@ class DymolaAPI(SimulationAPI):
             )
         # For translation etc. always setup a default dymola instance
         self.dymola = self._setup_dymola_interface(dict(use_mp=False))
+        if not self.license_is_available():
+            warnings.warn("You have no licence to use Dymola. "
+                          "Hence you can only simulate models with 8 or less equations.")
 
         self.fully_initialized = True
         # Trigger on init.
-        self._update_model()
+        if model_name is not None:
+            self._update_model()
         # Set result_names to output variables.
         self.result_names = list(self.outputs.keys())
 
@@ -406,6 +412,13 @@ class DymolaAPI(SimulationAPI):
                     "Difference: %s",
                     " ,".join(list(set(_res_names).difference(self.result_names)))
                 )
+
+        if self.model_name is None:
+            raise ValueError(
+                "You neither passed a model_name when "
+                "starting DymolaAPI, nor when calling simulate. "
+                "Can't simulate no model."
+            )
 
         # Handle parameters:
         if parameters is None:
@@ -824,13 +837,17 @@ class DymolaAPI(SimulationAPI):
             # Events can also cause errors in the shape.
             dymola.experimentSetupOutput(equidistant=True,
                                          events=False)
-        if not dymola.RequestOption("Standard"):
-            warnings.warn("You have no licence to use Dymola. "
-                          "Hence you can only simulate models with 8 or less equations.")
         if use_mp:
             DymolaAPI.dymola = dymola
             return None
         return dymola
+
+    def license_is_available(self, option: str = "Standard"):
+        """Check if license is available"""
+        if self.dymola is None:
+            warnings.warn("You want to check the license before starting dymola, this is not supported.")
+            return False
+        return self.dymola.RequestOption(option)
 
     def _open_dymola_interface(self, port):
         """Open an instance of dymola and return the API-Object"""
@@ -968,9 +985,27 @@ class DymolaAPI(SimulationAPI):
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
             _total_model = Path(self.cd).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
+            if "(" in self.model_name:
+                # Create temporary model:
+                temp_model_file = Path(self.cd).joinpath(f"temp_total_model_{uuid.uuid4()}.mo")
+                temp_mode_name = f"{self.model_name.split('(')[0].split('.')[-1]}WithModifier"
+                with open(temp_model_file, "w") as file:
+                    file.write(f"model {temp_mode_name}\n  extends {self.model_name};\nend {temp_mode_name};")
+                res = self.dymola.openModel(str(temp_model_file), changeDirectory=False)
+                if not res:
+                    self.logger.error(
+                        "Could not create separate model for model with modifiers: %s",
+                        self.model_name
+                    )
+                    model_name_to_save = self.model_name
+                else:
+                    model_name_to_save = temp_mode_name
+                os.remove(temp_model_file)
+            else:
+                model_name_to_save = self.model_name
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
-                modelName=self.model_name
+                modelName=model_name_to_save
             )
             if res:
                 files.append(ReproductionFile(
@@ -1061,7 +1096,7 @@ class DymolaAPI(SimulationAPI):
         return egg_file
 
     @staticmethod
-    def get_dymola_path(dymola_install_dir, dymola_name=None):
+    def get_dymola_exe_path(dymola_install_dir, dymola_name=None):
         """
         Function to get the path of the dymola exe-file
         on the current used machine.
