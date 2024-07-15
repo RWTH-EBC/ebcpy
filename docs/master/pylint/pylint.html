@@ -281,7 +281,7 @@
             </tr>
             
             <tr>
-                <td>65</td>
+                <td>64</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -291,7 +291,7 @@
             </tr>
             
             <tr>
-                <td>123</td>
+                <td>122</td>
                 <td>17</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -301,13 +301,23 @@
             </tr>
             
             <tr>
-                <td>154</td>
+                <td>153</td>
                 <td>20</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
                 <td>R1735</td>
                 <td>loadsim</td>
                 <td><pre>Consider using &#39;{}&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>156</td>
+                <td>28</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>loadsim</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
             </tr>
             
             <tr>
@@ -321,17 +331,7 @@
             </tr>
             
             <tr>
-                <td>158</td>
-                <td>28</td>
-                <td>convention</td>
-                <td><code>consider-using-f-string</code></td>
-                <td>C0209</td>
-                <td>loadsim</td>
-                <td><pre>Formatting a regular string which could be a f-string</pre></td>
-            </tr>
-            
-            <tr>
-                <td>254</td>
+                <td>253</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -1349,23 +1349,14 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
             </tr>
             
             <tr>
@@ -1386,6 +1377,16 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>

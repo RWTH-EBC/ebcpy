@@ -142,12 +142,12 @@ ebcpy/modelica/__init__.py:60:9: W1514: Using open without explicitly specifying
 ebcpy/modelica/__init__.py:9:0: R0912: Too many branches (13/12) (too-many-branches)
 ************* Module ebcpy.modelica.simres
 ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
-ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
-ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/modelica/simres.py:64:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:122:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:153:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/modelica/simres.py:156:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
+ebcpy/modelica/simres.py:253:0: R0912: Too many branches (15/12) (too-many-branches)
 ************* Module ebcpy.simulationapi.__init__
 ebcpy/simulationapi/__init__.py:414:0: C0301: Line too long (111/100) (line-too-long)
 ************* Module ebcpy.simulationapi
@@ -237,7 +237,6 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[288:297]
@@ -247,10 +246,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to: (duplicate-code)
+ (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[102:114]
 ==ebcpy.simulationapi.__init__:[496:507]
@@ -258,17 +254,16 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
-ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
 Your code has been rated at 9.20/10
