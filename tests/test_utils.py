@@ -104,7 +104,7 @@ class TestConversion(unittest.TestCase):
         self.assertEqual(len(headers), 2)
         # Try with NaN
         df = pd.DataFrame({"val": np.random.rand(100)})
-        df.loc[2, "val"] = np.NAN
+        df.loc[2, "val"] = np.nan
         with self.assertRaises(ValueError):
             conversion._convert_to_subset(
                 df=df,
