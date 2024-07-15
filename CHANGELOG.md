@@ -104,3 +104,5 @@
   - fix reproduction with modifiers #82
   - enable model_name=None upon startup of DymolaAPI #130
   - Only create logger handler if not already done by root-logger
+- v0.4.2
+  - Do not use chars_to_strings from scipy #132
