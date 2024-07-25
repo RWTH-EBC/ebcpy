@@ -251,7 +251,10 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
- (duplicate-code)
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[102:114]
 ==ebcpy.simulationapi.__init__:[496:507]
@@ -259,17 +262,16 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
-ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
 Your code has been rated at 9.20/10

@@ -374,6 +374,7 @@
     <span class="c1"># Create the list of variable names.</span>
     <span class="k">if</span> <span class="n">names</span><span class="p">:</span>
         <span class="k">if</span> <span class="s1">&#39;Time&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">names</span><span class="p">:</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="n">names</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="n">names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;Time&#39;</span><span class="p">)</span>
         <span class="n">non_existing_variables</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">names</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">_variables</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
         <span class="k">if</span> <span class="n">non_existing_variables</span><span class="p">:</span>
