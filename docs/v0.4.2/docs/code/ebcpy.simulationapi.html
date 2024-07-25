@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.simulationapi package &mdash; ebcpy 0.4.2 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ebcpy.utils package" href="ebcpy.utils.html" />
+    <link rel="prev" title="ebcpy.modelica package" href="ebcpy.modelica.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+              <div class="version">
+                0.4
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ebcpy</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ebcpy.html">ebcpy package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ebcpy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.modelica.html">ebcpy.modelica package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ebcpy.simulationapi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.utils.html">ebcpy.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.data_types">ebcpy.data_types module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.optimization">ebcpy.optimization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.preprocessing">ebcpy.preprocessing module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">ebcpy</a></li>
+          <li class="breadcrumb-item"><a href="ebcpy.html">ebcpy package</a></li>
+      <li class="breadcrumb-item active">ebcpy.simulationapi package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/ebcpy.simulationapi.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ebcpy.simulationapi">
+<span id="ebcpy-simulationapi-package"></span><h1>ebcpy.simulationapi package<a class="headerlink" href="#module-ebcpy.simulationapi" title="Permalink to this heading"></a></h1>
+<p>Simulation APIs help you to perform automated
+simulations for energy and building climate related models.
+Parameters can easily be updated, and the initialization-process is
+much more user-friendly than the provided APIs by Dymola or fmpy.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.</span></span><span class="sig-name descname"><span class="pre">SimulationAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Base-class for simulation apis. Every simulation-api class
+must inherit from this class. It defines the structure of each class.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Working directory path</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model being simulated.</p></li>
+<li><p><strong>n_cpu</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of cores to be used by simulation.
+If None is given, single core will be used.
+Maximum number equals the cpu count of the device.
+<strong>Warning</strong>: Logging is not yet fully working on multiple processes.
+Output will be written to the stream handler, but not to the created .log files.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.cd">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.check_unsupported_variables">
+<span class="sig-name descname"><span class="pre">check_unsupported_variables</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variables</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">type_of_var</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.check_unsupported_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.check_unsupported_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Log warnings if variables are not supported.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.close" title="Permalink to this definition"></a></dt>
+<dd><p>Base function for closing the simulation-program.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.get_simulation_setup_fields">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_simulation_setup_fields</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.get_simulation_setup_fields"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.get_simulation_setup_fields" title="Permalink to this definition"></a></dt>
+<dd><p>Return all fields in the chosen SimulationSetup class.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.model_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">model_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.model_name" title="Permalink to this definition"></a></dt>
+<dd><p>Name of the model being simulated</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.result_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">result_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.result_names" title="Permalink to this definition"></a></dt>
+<dd><p>The variables names which to store in results.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>list: List of string where the string is the
+name of the variable to store in the result.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.save_for_reproduction">
+<span class="sig-name descname"><span class="pre">save_for_reproduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.save_for_reproduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.save_for_reproduction" title="Permalink to this definition"></a></dt>
+<dd><p>Save the settings of the SimulationAPI in order to
+reproduce the settings of the used simulation.</p>
+<p>Should be extended by child-classes to allow custom
+saving.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Title of the study</p></li>
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><em>pathlib.Path</em></a>) – Where to store the .zip file. If not given, self.cd is used.</p></li>
+<li><p><strong>files</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – List of files to save along the standard ones.
+Examples would be plots, tables etc.</p></li>
+<li><p><strong>kwargs</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – All keyword arguments except title, files, and path of the function
+<cite>save_reproduction_archive</cite>. Most importantly, <cite>log_message</cite> may be
+specified to avoid input during execution.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_cd">
+<span class="sig-name descname"><span class="pre">set_cd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_cd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_sim_setup">
+<span class="sig-name descname"><span class="pre">set_sim_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_setup</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_sim_setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_sim_setup" title="Permalink to this definition"></a></dt>
+<dd><p>Replaced in v0.1.7 by property function</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.set_working_directory">
+<span class="sig-name descname"><span class="pre">set_working_directory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.set_working_directory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.set_working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Base function for changing the current working directory.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.sim_setup">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">sim_setup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SimulationSetupClass</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.sim_setup" title="Permalink to this definition"></a></dt>
+<dd><p>Return current sim_setup</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.simulate">
+<em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'time_series'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationAPI.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Base function for simulating the simulation-model.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parameters</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><em>dict</em></a>) – Parameters to simulate.
+Names of parameters are key, values are value of the dict.
+It is also possible to specify a list of multiple parameter
+dicts for different parameter variations to be simulated.
+Default is an empty dict.</p></li>
+<li><p><strong>return_option</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – How to handle the simulation results. Options are:
+- ‘time_series’: Returns a DataFrame with the results and does not store anything.
+Only variables specified in result_names will be returned.
+- ‘last_point’: Returns only the last point of the simulation.
+Relevant for integral metrics like energy consumption.
+Only variables specified in result_names will be returned.
+- ‘savepath’: Returns the savepath where the results are stored.
+Depending on the API, different kwargs may be used to specify file type etc.</p></li>
+<li><p><strong>savepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – If path is provided, the relevant simulation results will be saved
+in the given directory. For multiple parameter variations also a list
+of savepaths for each parameterset can be specified.
+The savepaths for each parameter set must be unique.
+Only relevant if return_option equals ‘savepath’ .</p></li>
+<li><p><strong>result_file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the result file. Default is ‘resultFile’.
+For multiple parameter variations a list of names
+for each result must be specified. 
+Only relevant if return_option equals ‘savepath’.</p></li>
+<li><p><strong>inputs</strong> (<em>(</em><a class="reference internal" href="ebcpy.html#ebcpy.data_types.TimeSeriesData" title="ebcpy.data_types.TimeSeriesData"><em>TimeSeriesData</em></a><em>, </em><em>pd.DataFrame</em><em>)</em>) – Pandas.Dataframe of the input data for simulating the FMU with fmpy</p></li>
+<li><p><strong>fail_on_error</strong> (<em>Boolean</em>) – If True, an error in fmpy will trigger an error in this script.
+Default is True</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str,os.path.normpath filepath:
+Only if return_option equals ‘savepath’.
+Filepath of the result file.</p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict:
+Only if return_option equals ‘last_point’.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Union[List[pd.DataFrame],pd.DataFrame]:
+If parameters are scalar and squeeze=True,
+a DataFrame with the columns being equal to
+self.result_names.
+If multiple set’s of initial values are given, one
+dataframe for each set is returned in a list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">variables</span></span><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.variables" title="Permalink to this definition"></a></dt>
+<dd><p>All variables of the simulation model</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.worker_idx">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">worker_idx</span></span><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.worker_idx" title="Permalink to this definition"></a></dt>
+<dd><p>Index of the current worker</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationAPI.working_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">working_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationAPI.working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current working directory</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.</span></span><span class="sig-name descname"><span class="pre">SimulationSetup</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationSetup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>pydantic BaseModel child to define relevant
+parameters to setup the simulation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.fixedstepsize" title="ebcpy.simulationapi.SimulationSetup.fixedstepsize"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fixedstepsize</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.output_interval" title="ebcpy.simulationapi.SimulationSetup.output_interval"><code class="xref py py-obj docutils literal notranslate"><span class="pre">output_interval</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.solver" title="ebcpy.simulationapi.SimulationSetup.solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span> <span class="pre">(str)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.start_time" title="ebcpy.simulationapi.SimulationSetup.start_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">start_time</span> <span class="pre">(float)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.stop_time" title="ebcpy.simulationapi.SimulationSetup.stop_time"><code class="xref py py-obj docutils literal notranslate"><span class="pre">stop_time</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.check_valid_solver" title="ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_solver</span></code></a> » <a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.solver" title="ebcpy.simulationapi.SimulationSetup.solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">solver</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.fixedstepsize">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fixedstepsize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.fixedstepsize" title="Permalink to this definition"></a></dt>
+<dd><p>Fixed step size for Euler</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.output_interval">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">output_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.output_interval" title="Permalink to this definition"></a></dt>
+<dd><p>The step size of the simulation and thus also output interval of results.</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.solver">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">solver</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.solver" title="Permalink to this definition"></a></dt>
+<dd><p>The solver to be used for numerical integration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.check_valid_solver" title="ebcpy.simulationapi.SimulationSetup.check_valid_solver"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_valid_solver</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.start_time">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">start_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.start_time" title="Permalink to this definition"></a></dt>
+<dd><p>The start time of the simulation</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.stop_time">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">stop_time</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.stop_time" title="Permalink to this definition"></a></dt>
+<dd><p>The stop / end time of the simulation</p>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationSetup.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.12)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Overwrite default pydantic Config</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.Config.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'forbid'</span></em><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.Config.extra" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.check_valid_solver">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_valid_solver</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup.solver" title="ebcpy.simulationapi.SimulationSetup.solver"><em class="xref py py-obj"><span class="pre">solver</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#SimulationSetup.check_valid_solver"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.check_valid_solver" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the solver is in the list of valid solvers</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.SimulationSetup.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.SimulationSetup.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>self: The BaseModel instance.
+context: The context.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Data-Class to store relevant information for a
+simulation variable (input, parameter, output or local/state).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Fields<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span> <span class="pre">(Any)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span> <span class="pre">(Any)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.type" title="ebcpy.simulationapi.Variable.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span> <span class="pre">(Any)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.value" title="ebcpy.simulationapi.Variable.value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span> <span class="pre">(Any)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-even">Validators<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value" title="ebcpy.simulationapi.Variable.check_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value</span></code></a> » <a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><code class="xref py py-obj docutils literal notranslate"><span class="pre">max</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value" title="ebcpy.simulationapi.Variable.check_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value</span></code></a> » <a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><code class="xref py py-obj docutils literal notranslate"><span class="pre">min</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value_type" title="ebcpy.simulationapi.Variable.check_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value_type</span></code></a> » <a class="reference internal" href="#ebcpy.simulationapi.Variable.value" title="ebcpy.simulationapi.Variable.value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.max">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">max</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ebcpy.simulationapi.Variable.max" title="Permalink to this definition"></a></dt>
+<dd><p>Maximal value (upper bound) of the variables value. Only for ints and floats variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value" title="ebcpy.simulationapi.Variable.check_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.min">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">min</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ebcpy.simulationapi.Variable.min" title="Permalink to this definition"></a></dt>
+<dd><p>Minimal value (lower bound) of the variables value. Only for ints and floats variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value" title="ebcpy.simulationapi.Variable.check_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.type">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ebcpy.simulationapi.Variable.type" title="Permalink to this definition"></a></dt>
+<dd><p>Type of the variable</p>
+</dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.value">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">value</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Any" title="(in Python v3.12)"><span class="pre">Any</span></a></em><em class="property"> <span class="pre">[Required]</span></em><a class="headerlink" href="#ebcpy.simulationapi.Variable.value" title="Permalink to this definition"></a></dt>
+<dd><p>Default variable value</p>
+<dl class="field-list simple">
+<dt class="field-odd">Validated by<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.Variable.check_value_type" title="ebcpy.simulationapi.Variable.check_value_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">check_value_type</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the given bounds are correct.</p>
+</dd></dl>
+
+<dl class="py method pydantic_validator">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value_type">
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value_type</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.value" title="ebcpy.simulationapi.Variable.value"><em class="xref py py-obj"><span class="pre">value</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value_type"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value_type" title="Permalink to this definition"></a></dt>
+<dd><p>Check if the given value has correct type</p>
+</dd></dl>
+
+</dd></dl>
+
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-ebcpy.simulationapi.dymola_api">
+<span id="ebcpy-simulationapi-dymola-api-module"></span><h2>ebcpy.simulationapi.dymola_api module<a class="headerlink" href="#module-ebcpy.simulationapi.dymola_api" title="Permalink to this heading"></a></h2>
+<p>Module containing the DymolaAPI used for simulation
+of Modelica-Models.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">packages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationAPI" title="ebcpy.simulationapi.SimulationAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationAPI</span></code></a></p>
+<p>API to a Dymola instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>working_directory</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>Path</em>) – Dirpath for the current working directory of dymola</p></li>
+<li><p><strong>model_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the model to be simulated.
+If None, it has to be provided prior to or when calling simulate().</p></li>
+<li><p><strong>packages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><em>list</em></a>) – List with path’s to the packages needed to simulate the model</p></li>
+<li><p><strong>show_window</strong> (<em>Boolean</em>) – True to show the Dymola window. Default is False</p></li>
+<li><p><strong>modify_structural_parameters</strong> (<em>Boolean</em>) – True to automatically set the structural parameters of the
+simulation model via Modelica modifiers. Default is True.
+See also the keyword <code class="docutils literal notranslate"><span class="pre">structural_parameters</span></code>
+of the <code class="docutils literal notranslate"><span class="pre">simulate</span></code> function.</p></li>
+<li><p><strong>equidistant_output</strong> (<em>Boolean</em>) – If True (Default), Dymola stores variables in an
+equisdistant output and does not store variables at events.</p></li>
+<li><p><strong>n_restart</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.12)"><em>int</em></a>) – Number of iterations after which Dymola should restart.
+This is done to free memory. Default value -1. For values
+below 1 Dymola does not restart.</p></li>
+<li><p><strong>extract_variables</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True (the default), all variables of the model will be extracted
+on init of this class.
+This required translating the model.</p></li>
+<li><p><strong>debug</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – If True (not the default), the dymola instance is not closed
+on exit of the python script. This allows further debugging in
+dymola itself if API-functions cause a python error.</p></li>
+<li><p><strong>mos_script_pre</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to a valid mos-script for Modelica/Dymola.
+If given, the script is executed <strong>prior</strong> to laoding any
+package specified in this API.
+May be relevant for handling version conflicts.</p></li>
+<li><p><strong>mos_script_post</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to a valid mos-script for Modelica/Dymola.
+If given, the script is executed before closing Dymola.</p></li>
+<li><p><strong>dymola_version</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – <p>Version of Dymola to use.
+If not given, newest version will be used.
+If given, the Version needs to be equal to the folder name
+of your installation.</p>
+<p><strong>Example:</strong> If you have two versions installed at</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2021</span></code> and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2020x</span></code></p></li>
+</ul>
+<p>and you want to use Dymola 2020x, specify
+<code class="docutils literal notranslate"><span class="pre">dymola_version='Dymola</span> <span class="pre">2020x'</span></code>.</p>
+<p>This parameter is overwritten if <code class="docutils literal notranslate"><span class="pre">dymola_path</span></code> is specified.</p>
+</p></li>
+<li><p><strong>dymola_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Path to the dymola installation on the device. Necessary
+e.g. on linux, if we can’t find the path automatically.
+Example: <code class="docutils literal notranslate"><span class="pre">dymola_path=&quot;C://Program</span> <span class="pre">Files//Dymola</span> <span class="pre">2020x&quot;</span></code></p></li>
+<li><p><strong>dymola_interface_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Direct path to the .egg-file of the dymola interface.
+Only relevant when the dymola_path
+differs from the interface path.</p></li>
+<li><p><strong>dymola_exe_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Direct path to the dymola executable.
+Only relevant if the dymola installation do not follow
+the official guideline.</p></li>
+<li><p><strong>time_delay_between_starts</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><em>float</em></a>) – If starting multiple Dymola instances on multiple
+cores, a time delay between each start avoids weird
+behaviour, such as requiring to set the C-Compiler again
+as Dymola overrides the default .dymx setup file.
+If you start e.g. 20 instances and specify <cite>time_delay_between_starts=5</cite>,
+each 5 seconds one instance will start, taking in total
+100 seconds. Default is no delay.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">DymolaAPI</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Specify the model name</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span> <span class="o">=</span> <span class="n">DymolaAPI</span><span class="p">(</span><span class="n">working_directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">packages</span><span class="o">=</span><span class="p">[],</span>
+<span class="gp">&gt;&gt;&gt; </span>                    <span class="n">show_window</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span><span class="o">.</span><span class="n">sim_setup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;start_time&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>                     <span class="s2">&quot;stop_time&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dym_api</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.cd">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cd</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.cd" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes dymola.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.dymola">
+<span class="sig-name descname"><span class="pre">dymola</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.dymola" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.extract_model_variables">
+<span class="sig-name descname"><span class="pre">extract_model_variables</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.extract_model_variables"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.extract_model_variables" title="Permalink to this definition"></a></dt>
+<dd><p>Extract all variables of the model by
+translating it and then processing the dsin
+using the manipulate_ds module.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_exe_path">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_exe_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dymola_install_dir</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dymola_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_exe_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_exe_path" title="Permalink to this definition"></a></dt>
+<dd><p>Function to get the path of the dymola exe-file
+on the current used machine.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dymola_install_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The dymola installation folder. Example:
+“C://Program Files//Dymola 2020”</p></li>
+<li><p><strong>dymola_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the executable. On Windows it is always Dymola.exe, on
+linux just dymola.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str
+Path to the dymola-exe-file.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_install_paths">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_install_paths</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">basedir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_install_paths"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_install_paths" title="Permalink to this definition"></a></dt>
+<dd><p>Function to get all paths of dymola installations
+on the used machine. Supported platforms are:
+* Windows
+* Linux
+* Mac OS X
+If multiple installation of Dymola are found, the newest version will be returned.
+This assumes the names are sortable, e.g. Dymola 2020, Dymola 2019 etc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>basedir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The base-directory to search for the dymola-installation.
+The default value depends on the platform one is using.
+On Windows it is “C://Program Files” or “C://Program Files (x86)” (for 64 bit)
+On Linux it is “/opt” (based on our ci-Docker configuration
+On Mac OS X “/Application” (based on the default)</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str
+Path to the dymola-installation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_interface_path">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_dymola_interface_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dymola_install_dir</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_dymola_interface_path"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_dymola_interface_path" title="Permalink to this definition"></a></dt>
+<dd><p>Function to get the path of the newest dymola interface
+installment on the used machine</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dymola_install_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The dymola installation folder. Example:
+“C://Program Files//Dymola 2020”</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>str
+Path to the dymola.egg-file</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.get_packages">
+<span class="sig-name descname"><span class="pre">get_packages</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.get_packages"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.get_packages" title="Permalink to this definition"></a></dt>
+<dd><p>Get the currently loaded packages of Dymola</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.import_initial">
+<span class="sig-name descname"><span class="pre">import_initial</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.import_initial"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.import_initial" title="Permalink to this definition"></a></dt>
+<dd><p>Load given dsfinal.txt into dymola</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Path to the dsfinal.txt to be loaded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available">
+<span class="sig-name descname"><span class="pre">license_is_available</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Standard'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.license_is_available"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available" title="Permalink to this definition"></a></dt>
+<dd><p>Check if license is available</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.save_for_reproduction">
+<span class="sig-name descname"><span class="pre">save_for_reproduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_total_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_fmu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.save_for_reproduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.save_for_reproduction" title="Permalink to this definition"></a></dt>
+<dd><p>Additionally to the basic reproduction, add info
+for Dymola packages.</p>
+<p>Content which is saved:
+- DymolaAPI configuration
+- Information on Dymola: Version, flags
+- All loaded packages
+- Total model, if save_total_model = True
+- FMU, if export_fmu = True</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>save_total_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – True to save the total model</p></li>
+<li><p><strong>export_fmu</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – True to export the FMU of the current model.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.set_compiler">
+<span class="sig-name descname"><span class="pre">set_compiler</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dll</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dde</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">opc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.set_compiler"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.set_compiler" title="Permalink to this definition"></a></dt>
+<dd><p>Set up the compiler and compiler options on Windows.
+Optional: Specify if you want to enable dll, dde or opc.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Name of the compiler, avaiable options:
+- ‘vs’: Visual Studio
+- ‘gcc’: GCC</p></li>
+<li><p><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Path to the compiler files.
+Example for name=’vs’: path=’C:/Program Files (x86)/Microsoft Visual Studio 10.0/Vc’
+Example for name=’gcc’: path=’C:/MinGW/bin/gcc’</p></li>
+<li><p><strong>dll</strong> (<em>Boolean</em>) – Set option for dll support. Check Dymolas Manual on what this exactly does.</p></li>
+<li><p><strong>dde</strong> (<em>Boolean</em>) – Set option for dde support. Check Dymolas Manual on what this exactly does.</p></li>
+<li><p><strong>opc</strong> (<em>Boolean</em>) – Set option for opc support. Check Dymolas Manual on what this exactly does.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True, on success.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.set_dymola_cd">
+<span class="sig-name descname"><span class="pre">set_dymola_cd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dymola</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cd</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.set_dymola_cd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.set_dymola_cd" title="Permalink to this definition"></a></dt>
+<dd><p>Set the cd of the Dymola Instance.
+Before calling the Function, create the path and
+convert to a modelica-normpath.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'time_series'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Simulate the given parameters.</p>
+<p>Additional settings:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_names</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – List of Dymola model-names to simulate. Should be either the size
+of parameters or parameters needs to be sized 1.
+Keep in mind that different models may use different parameters!</p></li>
+<li><p><strong>show_eventlog</strong> (<em>Boolean</em>) – Default False. True to show evenlog of simulation (advanced)</p></li>
+<li><p><strong>squeeze</strong> (<em>Boolean</em>) – Default True. If only one set of initialValues is provided,
+a DataFrame is returned directly instead of a list.</p></li>
+<li><p><strong>table_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – If inputs are given, you have to specify the name of the table
+in the instance of CombiTimeTable. In order for the inputs to
+work the value should be equal to the value of ‘tableName’ in Modelica.</p></li>
+<li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – If inputs are given, you have to specify the file_name of the table
+in the instance of CombiTimeTable. In order for the inputs to
+work the value should be equal to the value of ‘fileName’ in Modelica.</p></li>
+<li><p><strong>structural_parameters</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a><em>]</em>) – <p>A list containing all parameter names which are structural in Modelica.
+This means a modifier has to be created in order to change
+the value of this parameter. Internally, the given list
+is added to the known states of the model. Hence, you only have to
+specify this keyword argument if your structural parameter
+does not appear in the dsin.txt file created during translation.</p>
+<p>Example:
+Changing a record in a model:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">sim_api</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">parameters</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;parameterPipe&quot;</span><span class="p">:</span> <span class="s2">&quot;AixLib.DataBase.Pipes.PE_X.DIN_16893_SDR11_d160()&quot;</span><span class="p">},</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">structural_parameters</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;parameterPipe&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.to_dict"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.to_dict" title="Permalink to this definition"></a></dt>
+<dd><p>Store the most relevant information of this class
+into a dictionary. This may be used for future configuration.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict config:
+Dictionary with keys to re-init this class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.translate">
+<span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.translate" title="Permalink to this definition"></a></dt>
+<dd><p>Translates the current model using dymola.translateModel()
+and checks if erros occur.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.working_directory">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">working_directory</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.working_directory" title="Permalink to this definition"></a></dt>
+<dd><p>Get the current working directory</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">DymolaSimulationSetup</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaSimulationSetup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup" title="ebcpy.simulationapi.SimulationSetup"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationSetup</span></code></a></p>
+<p>Adds <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> to the list of possible
+setup fields.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance" title="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tolerance</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">tolerance</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0001</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.tolerance" title="Permalink to this definition"></a></dt>
+<dd><p>Tolerance of integration</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
+method.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-ebcpy.simulationapi.fmu">
+<span id="ebcpy-simulationapi-fmu-module"></span><h2>ebcpy.simulationapi.fmu module<a class="headerlink" href="#module-ebcpy.simulationapi.fmu" title="Permalink to this heading"></a></h2>
+<p>Module for classes using a fmu to
+simulate models.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.fmu.</span></span><span class="sig-name descname"><span class="pre">FMU_API</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">working_directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationAPI" title="ebcpy.simulationapi.SimulationAPI"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationAPI</span></code></a></p>
+<p>Class for simulation using the fmpy library and
+a functional mockup interface as a model input.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>log_fmu</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.12)"><em>bool</em></a>) – Whether to print fmu messages or not.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">FMU_API</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Select any valid fmu. Replace the line below if</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># you don&#39;t have this file on your device.</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">model_name</span> <span class="o">=</span> <span class="s2">&quot;Path to your fmu&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmu_api</span> <span class="o">=</span> <span class="n">FMU_API</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmu_api</span><span class="o">.</span><span class="n">sim_setup</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;stop_time&quot;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">result_df</span> <span class="o">=</span> <span class="n">fmu_api</span><span class="o">.</span><span class="n">simulate</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fmu_api</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Select an exemplary column</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">col</span> <span class="o">=</span> <span class="n">result_df</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">result_df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="n">col</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">_</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.7.</span></p>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API.close">
+<span class="sig-name descname"><span class="pre">close</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API.close"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API.close" title="Permalink to this definition"></a></dt>
+<dd><p>Closes the fmu.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool
+True on success</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction">
+<span class="sig-name descname"><span class="pre">save_for_reproduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.12)"><span class="pre">Path</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.12)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API.save_for_reproduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction" title="Permalink to this definition"></a></dt>
+<dd><p>Additionally to the basic reproduction, add info
+for FMU files.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API.setup_fmu_instance">
+<span class="sig-name descname"><span class="pre">setup_fmu_instance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API.setup_fmu_instance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API.setup_fmu_instance" title="Permalink to this definition"></a></dt>
+<dd><p>Manually set up and extract the data to
+avoid this step in the simulate function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_API.simulate">
+<span class="sig-name descname"><span class="pre">simulate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parameters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.12)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.12)"><span class="pre">dict</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_option</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'time_series'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_API.simulate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_API.simulate" title="Permalink to this definition"></a></dt>
+<dd><p>Perform the single simulation for the given
+unzip directory and fmu_instance.
+See the docstring of simulate() for information on kwargs.</p>
+<p>Additional kwargs:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>result_file_suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – Suffix of the result file. Supported options can be extracted
+from the TimeSeriesData.save() function.
+Default is ‘csv’.</p></li>
+<li><p><strong>parquet_engine</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.12)"><em>str</em></a>) – The engine to use for the data format parquet.
+Supported options can be extracted
+from the TimeSeriesData.save() function.
+Default is ‘pyarrow’.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.fmu.</span></span><span class="sig-name descname"><span class="pre">FMU_Setup</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi/fmu.html#FMU_Setup"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#ebcpy.simulationapi.SimulationSetup" title="ebcpy.simulationapi.SimulationSetup"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationSetup</span></code></a></p>
+<p>Add’s custom setup parameters for simulating FMU’s
+to the basic <cite>SimulationSetup</cite></p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.fmu.FMU_Setup.timeout" title="ebcpy.simulationapi.fmu.FMU_Setup.timeout"><code class="xref py py-obj docutils literal notranslate"><span class="pre">timeout</span> <span class="pre">(float)</span></code></a></p></li>
+</ul>
+</dd>
+<dt class="field-odd">Validators<span class="colon">:</span></dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup.timeout">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timeout</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.12)"><span class="pre">float</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">inf</span></em><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup.timeout" title="Permalink to this definition"></a></dt>
+<dd><p>Timeout after which the simulation stops.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup.model_post_init">
+<span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.12)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup.model_post_init" title="Permalink to this definition"></a></dt>
+<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
+method.</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ebcpy.modelica.html" class="btn btn-neutral float-left" title="ebcpy.modelica package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ebcpy.utils.html" class="btn btn-neutral float-right" title="ebcpy.utils package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
