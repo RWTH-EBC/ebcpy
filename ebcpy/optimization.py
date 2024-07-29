@@ -95,7 +95,8 @@ class Optimizer:
         return ["scipy_minimize",
                 "scipy_differential_evolution",
                 "dlib_minimize",
-                "pymoo"]
+                "pymoo",
+                "bayesian_optimization"]
 
     @property
     def working_directory(self) -> Path:
@@ -196,7 +197,79 @@ class Optimizer:
             return self._scipy_differential_evolution, True
         if framework.lower() == "pymoo":
             return self._pymoo, True
+        if framework.lower() == "bayesian_optimization":
+            return self._bayesian_optimization, False
+        
         raise TypeError(f"Given framework {framework} is currently not supported.")
+    
+    def _bayesian_optimization(self, method=None, n_cpu=1, **kwargs):
+        """
+        Possible kwargs for the bayesian_optimization function with default values:
+        
+        random_state = 42
+        allow_dublicate_points = True
+        init_points = 100
+        n_iter = 100
+        kind_of_utility_function = "ei"
+        xi = 0.1
+        
+        For an explanation of what the parameters do, please refer to the documentation of
+        the bayesian optimization package:
+        https://bayesian-optimization.github.io/BayesianOptimization/index.html
+        """
+        default_kwargs = self.get_default_config(framework="bayesian_optimization")
+        default_kwargs.update(kwargs)
+        
+        try:
+            from bayes_opt import BayesianOptimization, UtilityFunction
+        except ImportError as error:
+            raise ImportError("Please install bayesian-optimization to use "
+                              "the bayesian_optimization function.") from error
+            
+        try:
+            if self.bounds is None:
+                raise ValueError("For the bayesian optimization approach, you need to specify "
+                                 "boundaries. Currently, no bounds are specified.")
+
+            pbounds = {f"x{n}": i for n, i in enumerate(self.bounds)}
+
+            optimizer = BayesianOptimization(
+                f=self._bayesian_opt_obj,
+                pbounds=pbounds,
+                random_state=default_kwargs["random_state"],
+                allow_duplicate_points=default_kwargs["allow_dublicate_points"],
+                verbose=0
+            )
+
+            acq_function = UtilityFunction(
+                kind=default_kwargs["kind_of_utility_function"],
+                xi=default_kwargs["xi"])
+            
+            optimizer.maximize(
+                init_points=default_kwargs["init_points"],
+                n_iter=default_kwargs["n_iter"],
+                acquisition_function=acq_function
+            )
+            
+            res = optimizer.max
+            x_res = np.array(list(res["params"].values()))
+            f_res = -res["target"]
+            res_tuple = namedtuple("res_tuple", "x fun")
+            res = res_tuple(x=x_res, fun=f_res)
+            return res
+        except (KeyboardInterrupt, Exception) as error:
+            # pylint: disable=inconsistent-return-statements
+            self._handle_error(error)
+            
+    def _bayesian_opt_obj(self, **kwargs):
+        """
+        This function is needed as the signature for the Bayesian-optimization
+        is different than the standard signature. The Bayesian-optimization gives keyword arguments for
+        every parameter and only maximizes, therefore we will maximize the negative objective function value.
+        """
+        xk = np.array(list(kwargs.values()))
+        return -self.obj(xk)
+            
 
     def _scipy_minimize(self, method, n_cpu=1, **kwargs):
         """
@@ -495,5 +568,13 @@ class Optimizer:
                     "save_history": False,
                     "copy_algorithm": False,
                     "copy_termination": False
+                    }
+        if framework.lower() == "bayesian_optimization":
+            return {"random_state": 42,
+                    "allow_dublicate_points": True,
+                    "init_points": 5,
+                    "n_iter": 25,
+                    "kind_of_utility_function": "ei",
+                    "xi": 0.1
                     }
         return {}

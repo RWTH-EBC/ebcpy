@@ -35,6 +35,8 @@ class TestOptimizer(unittest.TestCase):
                 reference_function = opt._scipy_differential_evolution
             elif _framework == "pymoo":
                 reference_function = opt._pymoo
+            elif _framework == "bayesian_optimization":
+                reference_function = opt._bayesian_optimization
             _minimize_func, required_method = opt._choose_framework(_framework)
             self.assertEqual(_minimize_func, reference_function)
         with self.assertRaises(TypeError):
