@@ -1085,15 +1085,20 @@ class DymolaAPI(SimulationAPI):
             The dymola installation folder. Example:
             "C://Program Files//Dymola 2020"
         :return: str
-            Path to the dymola.egg-file
+            Path to the dymola.egg-file or .whl file (for 2024 refresh 1 or newer versions)
         """
-        path_to_egg_file = os.path.normpath("Modelica/Library/python_interface/dymola.egg")
-        egg_file = os.path.join(dymola_install_dir, path_to_egg_file)
-        if not os.path.isfile(egg_file):
-            raise FileNotFoundError(f"The given dymola installation directory "
-                                    f"'{dymola_install_dir}' has no "
-                                    f"dymola-interface egg-file.")
-        return egg_file
+        path_to_interface = os.path.join(dymola_install_dir, "Modelica", "Library", "python_interface")
+        path_to_egg_file = os.path.join(path_to_interface, "dymola.egg")
+        if os.path.isfile(path_to_egg_file):
+            return path_to_egg_file
+        # Try to find .whl file:
+        for file in os.listdir(path_to_interface):
+            if file.endswith(".whl"):
+                return os.path.join(path_to_interface, file)
+        # If still here, no .egg or .whl was found
+        raise FileNotFoundError(f"The given dymola installation directory "
+                                f"'{dymola_install_dir}' has no "
+                                f"dymola-interface .egg or .whl-file.")
 
     @staticmethod
     def get_dymola_exe_path(dymola_install_dir, dymola_name=None):
