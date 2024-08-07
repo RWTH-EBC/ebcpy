@@ -847,7 +847,7 @@
                 <td><code>too-many-lines</code></td>
                 <td>C0302</td>
                 <td></td>
-                <td><pre>Too many lines in module (1327/1000)</pre></td>
+                <td><pre>Too many lines in module (1332/1000)</pre></td>
             </tr>
             
             <tr>
@@ -1221,7 +1221,17 @@
             </tr>
             
             <tr>
-                <td>1215</td>
+                <td>1090</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (103/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1220</td>
                 <td>26</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1231,7 +1241,7 @@
             </tr>
             
             <tr>
-                <td>1255</td>
+                <td>1260</td>
                 <td>71</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1241,7 +1251,7 @@
             </tr>
             
             <tr>
-                <td>1280</td>
+                <td>1285</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1251,7 +1261,7 @@
             </tr>
             
             <tr>
-                <td>1281</td>
+                <td>1286</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1284,17 +1294,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1026:1037]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1366,7 +1372,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
             </tr>
             
             <tr>
@@ -1376,7 +1382,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -2421,7 +2427,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>55</td>
+                <td>56</td>
             </tr>
             
         </table>
@@ -2496,7 +2502,7 @@
             
             <tr>
                 <td>line-too-long</td>
-                <td>18</td>
+                <td>19</td>
             </tr>
             
             <tr>
@@ -2706,7 +2712,7 @@
             
             <tr>
                 <td>ebcpy.simulationapi.dymola_api</td>
-                <td>42</td>
+                <td>43</td>
             </tr>
             
             <tr>
@@ -2776,7 +2782,7 @@
             
             <tr>
                 <td>ebcpy/simulationapi/dymola_api.py</td>
-                <td>42</td>
+                <td>43</td>
             </tr>
             
             <tr>
