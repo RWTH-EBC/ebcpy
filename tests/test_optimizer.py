@@ -102,15 +102,14 @@ class TestOptimizer(unittest.TestCase):
                                               method="best2bin")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
-        # Skip dlib test as problems in ci occur.
-        if sys.version_info.minor >= 10:
-            self.skipTest("pymoo is not yet supported in python 3.10")
+        #Skip dlib test as problems in ci occur.
+        # if sys.version_info.minor >= 10:
+        #     self.skipTest("pymoo is not yet supported in python 3.10")
         res_de = my_custom_optimizer.optimize(framework="pymoo",
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         
-        print("Hallo")
 
     def test_error_handler(self):
         """Test if error handling works for each framework"""

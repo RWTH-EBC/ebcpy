@@ -468,30 +468,17 @@ class Optimizer:
             save_history = default_kwargs.pop("save_history")
             copy_algorithm = default_kwargs.pop("copy_algorithm")
             copy_termination = default_kwargs.pop("copy_termination")
-
-            # Init algorithm
-            if method.lower() == "ga":
-                from pymoo.algorithms.soo.nonconvex.ga import GA
-                # GA:
-                pop_size = default_kwargs["pop_size"]
-                sampling = get_sampling(name=default_kwargs["sampling"])
-                selection = get_selection(name=default_kwargs["selection"])
-                crossover = get_crossover(name=default_kwargs["crossover"])
-                mutation = get_mutation(name=default_kwargs["mutation"])
-                eliminate_duplicates = default_kwargs["eliminate_duplicates"]
-                n_offsprings = default_kwargs["n_offsprings"]
-                algorithm = GA(pop_size=pop_size,
-                               sampling=sampling,
-                               selection=selection,
-                               crossover=crossover,
-                               mutation=mutation,
-                               eliminate_duplicates=eliminate_duplicates,
-                               n_offsprings=n_offsprings
-                               )
-            else:
-                default_kwargs.update(kwargs)
-                algorithm = get_algorithm(name=method.lower(),
-                                          **default_kwargs)
+            callback = default_kwargs.pop("callback")
+            display = default_kwargs.pop("display")
+            
+            default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+            default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+            default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+            default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
+        
+            algorithm = get_algorithm(name=method.lower(),
+                                        **default_kwargs)
+            
 
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),
@@ -499,8 +486,8 @@ class Optimizer:
                 termination=termination,
                 seed=seed,
                 verbose=verbose,
-                display=None,
-                callback=None,
+                display=display,
+                callback=callback,
                 save_history=save_history,
                 copy_algorithm=copy_algorithm,
                 copy_termination=copy_termination,
