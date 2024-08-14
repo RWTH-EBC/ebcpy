@@ -213,7 +213,7 @@ class Optimizer:
         kind_of_utility_function = "ei"
         xi = 0.1
         
-        For an explanation of what the parameters do, please refer to the documentation of
+        For an explanation of what the parameters do, we refer to the documentation of
         the bayesian optimization package:
         https://bayesian-optimization.github.io/BayesianOptimization/index.html
         """
@@ -221,7 +221,8 @@ class Optimizer:
         default_kwargs.update(kwargs)
         
         try:
-            from bayes_opt import BayesianOptimization, UtilityFunction
+            from bayes_opt import BayesianOptimization
+            from bayes_opt.util import UtilityFunction
         except ImportError as error:
             raise ImportError("Please install bayesian-optimization to use "
                               "the bayesian_optimization function.") from error
@@ -238,8 +239,12 @@ class Optimizer:
                 pbounds=pbounds,
                 random_state=default_kwargs["random_state"],
                 allow_duplicate_points=default_kwargs["allow_dublicate_points"],
-                verbose=0
+                verbose=default_kwargs["verbose"]
             )
+            
+            gp = default_kwargs.get("gp", None)
+            if gp is not None:
+                optimizer._gp = gp
 
             acq_function = UtilityFunction(
                 kind=default_kwargs["kind_of_utility_function"],
@@ -422,7 +427,8 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
-
+        default_kwargs.update(kwargs)
+        
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
@@ -462,30 +468,17 @@ class Optimizer:
             save_history = default_kwargs.pop("save_history")
             copy_algorithm = default_kwargs.pop("copy_algorithm")
             copy_termination = default_kwargs.pop("copy_termination")
-
-            # Init algorithm
-            if method.lower() == "ga":
-                from pymoo.algorithms.soo.nonconvex.ga import GA
-                # GA:
-                pop_size = kwargs["pop_size"]
-                sampling = get_sampling(name=kwargs["sampling"])
-                selection = get_selection(name=kwargs["selection"])
-                crossover = get_crossover(name=kwargs["crossover"])
-                mutation = get_mutation(name=kwargs["mutation"])
-                eliminate_duplicates = kwargs["eliminate_duplicates"]
-                n_offsprings = kwargs["n_offsprings"]
-                algorithm = GA(pop_size=pop_size,
-                               sampling=sampling,
-                               selection=selection,
-                               crossover=crossover,
-                               mutation=mutation,
-                               eliminate_duplicates=eliminate_duplicates,
-                               n_offsprings=n_offsprings
-                               )
-            else:
-                default_kwargs.update(kwargs)
-                algorithm = get_algorithm(name=method.lower(),
-                                          **default_kwargs)
+            callback = default_kwargs.pop("callback")
+            display = default_kwargs.pop("display")
+            
+            default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+            default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+            default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+            default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
+        
+            algorithm = get_algorithm(name=method.lower(),
+                                        **default_kwargs)
+            
 
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),
@@ -493,8 +486,8 @@ class Optimizer:
                 termination=termination,
                 seed=seed,
                 verbose=verbose,
-                display=None,
-                callback=None,
+                display=display,
+                callback=callback,
                 save_history=save_history,
                 copy_algorithm=copy_algorithm,
                 copy_termination=copy_termination,
@@ -560,6 +553,13 @@ class Optimizer:
                     }
         if framework.lower() == "pymoo":
             return {"n_gen": 1000,
+                    "pop_size": 50,
+                    "sampling": "real_random",
+                    "selection": "random",
+                    "crossover": "real_sbx",
+                    "mutation": "real_pm",
+                    "eliminate_duplicates": True,
+                    "n_offsprings": None,
                     "termination": None,
                     "seed": 1,
                     "verbose": False,
@@ -575,6 +575,7 @@ class Optimizer:
                     "init_points": 5,
                     "n_iter": 25,
                     "kind_of_utility_function": "ei",
-                    "xi": 0.1
+                    "xi": 0.1,
+                    "verbose": False
                     }
         return {}

@@ -42,5 +42,8 @@ Before being able to run these examples, be sure to:
 
 1. Learn how to create a custom `Optimizer` class
 2. Learn the different optimizer frameworks
-3. Learn the usage of `StatisticsAnalyzer`
-4. Understand the motivation behing `AixCaliBuHA`
+3. See the difference in optimization when using newton-based methods and evolutionary algorithms.
+   The difference is, that newton based methods (like L-BFGS-B) are vastly faster in both convex and
+   concave problems, but they are not guaranteed to find the global minimum and can get stock in local optima. 
+   Evolutionary algorithms (like the genetic algorithm) are substantially slower, 
+   but they can overcome local optima, as shown in the concave examples.

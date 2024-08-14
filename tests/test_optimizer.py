@@ -82,6 +82,7 @@ class TestOptimizer(unittest.TestCase):
         res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
                                                method="L-BFGS-B",
                                                x0=np.array([0, 0, 0]))
+    
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # test wrong bounds in pymoo and sp_dif_evo
@@ -101,13 +102,15 @@ class TestOptimizer(unittest.TestCase):
                                               method="best2bin")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
-        # Skip dlib test as problems in ci occur.
+        #Skip dlib test as problems in ci occur.
         if sys.version_info.minor >= 10:
-            self.skipTest("pymoo is not yet supported in python 3.10")
+            self.skipTest("While pymoo is supported for python versions >= 3.10, the CI seems to have problems with it,"
+                          "not beeing able to import cma. Thefore skipping tests for those versions")
         res_de = my_custom_optimizer.optimize(framework="pymoo",
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        
 
     def test_error_handler(self):
         """Test if error handling works for each framework"""
