@@ -297,11 +297,11 @@ def convex_2d_example(with_plot=True):
         plt.legend()
         plt.show()
 
-def main():
-    convex_1d_example()
-    concave_1d_example()
-    convex_2d_example()
-    concave_2d_example()
+def main(with_plot=True):
+    convex_1d_example(with_plot=with_plot)
+    concave_1d_example(with_plot=with_plot)
+    convex_2d_example(with_plot=with_plot)
+    concave_2d_example(with_plot=with_plot)
 
 if __name__ == '__main__':
     main()
