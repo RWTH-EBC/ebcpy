@@ -106,5 +106,7 @@
   - Only create logger handler if not already done by root-logger
 - v0.4.2
   - Do not use chars_to_strings from scipy #132
+- v0.4.3
+  - Fix missing .egg for new Dymola release #138
 - v0.5.0
   - Added bayesian-optimization to the possible optimizers #129

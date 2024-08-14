@@ -292,6 +292,7 @@ def mat_to_pandas(fname='dsres.mat',
     # Create the list of variable names.
     if names:
         if 'Time' not in names:
+            names = names.copy()
             names.append('Time')
         non_existing_variables = list(set(names).difference(_variables.keys()))
         if non_existing_variables:
