@@ -13,6 +13,7 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo==0.5.0',
+        'bayesian-optimization==1.5.1',
         'GitPython>=3.1.27',
         'pyarrow>=11.0.0'
     ]

@@ -82,6 +82,7 @@ class TestOptimizer(unittest.TestCase):
         res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
                                                method="L-BFGS-B",
                                                x0=np.array([0, 0, 0]))
+    
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # test wrong bounds in pymoo and sp_dif_evo
@@ -108,6 +109,8 @@ class TestOptimizer(unittest.TestCase):
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        
+        print("Hallo")
 
     def test_error_handler(self):
         """Test if error handling works for each framework"""
