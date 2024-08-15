@@ -20,7 +20,7 @@ import numpy as np
 # Imports from ebcpy
 from ebcpy.optimization import Optimizer
 
-PLT_STANDARD_COLORS = ['g', 'r', 'c', 'm', 'y', 'k']
+PLT_STANDARD_COLORS = ['go', 'rs', 'c^', 'm+', 'yv', 'k<']
 
 FRAMEWORK_METHODS = {
     "scipy_differential_evolution": ("best1bin", {}),
@@ -30,6 +30,7 @@ FRAMEWORK_METHODS = {
     "bayesian_optimization": (None, {"xi": 1.2,
                                      "kind_of_utility_function": "ucb"})
 }
+
 
 def main_loop(optimizer: Optimizer,
               plot_step: callable,
@@ -65,9 +66,9 @@ def main_loop(optimizer: Optimizer,
             optimizer.logger.error(f"Could not optimize due to import error: {err}")
             continue
         plot_step(res, framework, method, i)
-    
+
     optimizer.logger.info(f"Optimization times summary:\n{pformat(summary)}")
-    
+
 
 def concave_1d_example(with_plot=True):
     """
@@ -83,7 +84,7 @@ def concave_1d_example(with_plot=True):
     Returns:
         None
     """
-    
+
     class ConcaveProblemOptimizer1D(Optimizer):
         """
         Define a custom Optimizer by inheriting.
@@ -91,38 +92,39 @@ def concave_1d_example(with_plot=True):
         f(x) = -1*(exp(-(x - 2) ** 2) + exp(-(x - 6) ** 2 / 10) + 1/ (x ** 2 + 1)), which is an arbitrary 
         concave function.
         """
+
         def __init__(self, **kwargs):
             """
             Theoretically, additional data which is needed for the optimization can be passed here and 
             stored as class attributes. Not necessary for this example.
             """
             super().__init__(**kwargs)
-        
+
         def obj(self, xk, *args):
-            return -1*(np.exp(-(xk[0] - 2) ** 2) + np.exp(-(xk[0] - 6) ** 2 / 10) + 1/ (xk[0] ** 2 + 1))
-        
-        
+            return -1 * (np.exp(-(xk[0] - 2) ** 2) + np.exp(-(xk[0] - 6) ** 2 / 10) + 1 / (xk[0] ** 2 + 1))
+
     bounds = [(-2, 10)]
     x_area = np.linspace(-2, 10, 1000).reshape(1, -1)
     cpo = ConcaveProblemOptimizer1D(bounds=bounds)
     y = cpo.obj(x_area)
     plt.figure()
     plt.plot(x_area.flatten(), y)
-    
+
     def concav_1d_plot_step(res, framework, method, i):
-        plt.plot(res.x, res.fun, f"{PLT_STANDARD_COLORS[i]}o", label=f"{framework}: {method}")
-        
-    main_loop(optimizer=cpo, 
+        plt.plot(res.x, res.fun, PLT_STANDARD_COLORS[i], label=f"{framework}: {method}")
+
+    main_loop(optimizer=cpo,
               plot_step=concav_1d_plot_step,
               n_vars=len(bounds))
-    
+
     if with_plot:
         plt.title("1D Concave Problem Optimization")
         plt.xlabel("X")
         plt.ylabel("objective function value")
         plt.legend()
         plt.show()
-        
+
+
 def convex_1d_example(with_plot=True):
     """
     Run the main optimization routine for a 1D convex problem.
@@ -137,45 +139,46 @@ def convex_1d_example(with_plot=True):
     Returns:
         None
     """
-    
+
     class ConvexProblemOptimizer1D(Optimizer):
         """
         Define a custom Optimizer by inheriting.
         This optimizer tries to find the minimum for the function 
         f(x) = (x - 3)**2 + 2, which is an arbitrary convex function.
         """
+
         def __init__(self, **kwargs):
             """
             Theoretically, additional data which is needed for the optimization can be passed here and 
             stored as class attributes. Not necessary for this example.
             """
             super().__init__(**kwargs)
-        
+
         def obj(self, xk, *args):
-            return (xk[0] - 3)**2 + 2
-        
-        
+            return (xk[0] - 3) ** 2 + 2
+
     bounds = [(-5, 10)]
     x_area = np.linspace(-2, 10, 1000).reshape(1, -1)
     cpo = ConvexProblemOptimizer1D(bounds=bounds)
     y = cpo.obj(x_area)
     plt.figure()
     plt.plot(x_area.flatten(), y)
-    
+
     def convex_1d_plot_step(res, framework, method, i):
-        plt.plot(res.x, res.fun, f"{PLT_STANDARD_COLORS[i]}o", label=f"{framework}: {method}")
-        
-    main_loop(optimizer=cpo, 
+        plt.plot(res.x, res.fun, PLT_STANDARD_COLORS[i], label=f"{framework}: {method}")
+
+    main_loop(optimizer=cpo,
               plot_step=convex_1d_plot_step,
               n_vars=len(bounds))
-    
+
     if with_plot:
         plt.title("1D Convex Problem Optimization")
         plt.xlabel("X")
         plt.ylabel("objective function value")
         plt.legend()
         plt.show()
-        
+
+
 def concave_2d_example(with_plot=True):
     """
     Run the main optimization routine for a 2D concave problem.
@@ -199,18 +202,19 @@ def concave_2d_example(with_plot=True):
                       ((y - 6)**2 / 10)) + 1 / (x**2 + y**2 + 1)),
         which is an arbitrary concave function.
         """
+
         def __init__(self, **kwargs):
             """
             Theoretically, additional data which is needed for the optimization can be passed here and
             stored as class attributes. Not necessary for this example.
             """
             super().__init__(**kwargs)
-        
+
         def obj(self, xk, *args):
             x, y = xk
-            return -1 * (np.exp(-(x - 2)**2 - (y - 2)**2) + 
-                         np.exp(-((x - 6)**2 / 10) - ((y - 6)**2 / 10)) + 
-                         1 / (x**2 + y**2 + 1))
+            return -1 * (np.exp(-(x - 2) ** 2 - (y - 2) ** 2) +
+                         np.exp(-((x - 6) ** 2 / 10) - ((y - 6) ** 2 / 10)) +
+                         1 / (x ** 2 + y ** 2 + 1))
 
     bounds = [(-2, 10), (-2, 10)]
     x_area = np.linspace(-2, 10, 100)
@@ -218,26 +222,27 @@ def concave_2d_example(with_plot=True):
     X, Y = np.meshgrid(x_area, y_area)
     cpo = ConcaveProblemOptimizer2D(bounds=bounds)
     Z = np.array([cpo.obj([x, y]) for x, y in zip(X.flatten(), Y.flatten())]).reshape(X.shape)
-    
+
     plt.figure(figsize=(12, 10))
     contour = plt.contour(X, Y, Z, levels=20)
     plt.colorbar(contour)
-    
+
     def concav_2d_plot_step(res, framework, method, i):
-        plt.plot(res.x[0], res.x[1], f"{PLT_STANDARD_COLORS[i]}o", 
-                     markersize=10, label=f"{framework}: {method} (obj: {res.fun:.2f})")
-    
-    main_loop(optimizer=cpo, 
+        plt.plot(res.x[0], res.x[1], PLT_STANDARD_COLORS[i],
+                 markersize=10, label=f"{framework}: {method} (obj: {res.fun:.2f})")
+
+    main_loop(optimizer=cpo,
               plot_step=concav_2d_plot_step,
               n_vars=len(bounds))
-    
+
     if with_plot:
         plt.title("2D Concave Problem Optimization")
         plt.xlabel("X")
         plt.ylabel("Y")
         plt.legend()
         plt.show()
-        
+
+
 def convex_2d_example(with_plot=True):
     """
     Run the main optimization routine for a 2D convex problem.
@@ -260,16 +265,17 @@ def convex_2d_example(with_plot=True):
         f=(x, y) = (x - 2)**2 + (y - 3)**2 + x*y,
         which is an arbitrary convex function.
         """
+
         def __init__(self, **kwargs):
             """
             Theoretically, additional data which is needed for the optimization can be passed here and
             stored as class attributes. Not necessary for this example.
             """
             super().__init__(**kwargs)
-        
+
         def obj(self, xk, *args):
             x, y = xk
-            return (x - 2)**2 + (y - 3)**2 + x*y
+            return (x - 2) ** 2 + (y - 3) ** 2 + x * y
 
     bounds = [(-5, 10), (-5, 10)]
     x_area = np.linspace(-5, 10, 100)
@@ -277,19 +283,19 @@ def convex_2d_example(with_plot=True):
     X, Y = np.meshgrid(x_area, y_area)
     cpo = ConvexProblemOptimizer2D(bounds=bounds)
     Z = np.array([cpo.obj([x, y]) for x, y in zip(X.flatten(), Y.flatten())]).reshape(X.shape)
-    
+
     plt.figure(figsize=(12, 10))
     contour = plt.contour(X, Y, Z, levels=20)
     plt.colorbar(contour)
-    
+
     def convex_2d_plot_step(res, framework, method, i):
-        plt.plot(res.x[0], res.x[1], f"{PLT_STANDARD_COLORS[i]}o", 
-                     markersize=10, label=f"{framework}: {method} (obj: {res.fun:.2f})")
-    
-    main_loop(optimizer=cpo, 
+        plt.plot(res.x[0], res.x[1], PLT_STANDARD_COLORS[i],
+                 markersize=10, label=f"{framework}: {method} (obj: {res.fun:.2f})")
+
+    main_loop(optimizer=cpo,
               plot_step=convex_2d_plot_step,
               n_vars=len(bounds))
-    
+
     if with_plot:
         plt.title("2D Convex Problem Optimization")
         plt.xlabel("X")
@@ -297,11 +303,13 @@ def convex_2d_example(with_plot=True):
         plt.legend()
         plt.show()
 
+
 def main(with_plot=True):
     convex_1d_example(with_plot=with_plot)
     concave_1d_example(with_plot=with_plot)
     convex_2d_example(with_plot=with_plot)
     concave_2d_example(with_plot=with_plot)
+
 
 if __name__ == '__main__':
     main()
