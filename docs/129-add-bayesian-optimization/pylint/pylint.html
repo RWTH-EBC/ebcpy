@@ -28,9 +28,9 @@
 
         
         <h2>Score</h2>
-        9.09 / 10
+        9.07 / 10
             
-            (previous score: 9.09 / 10)
+            (previous score: 9.07 / 10)
             
         
 
@@ -735,7 +735,17 @@
                 <td><code>too-many-locals</code></td>
                 <td>R0914</td>
                 <td>Optimizer._pymoo</td>
-                <td><pre>Too many local variables (25/15)</pre></td>
+                <td><pre>Too many local variables (38/15)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>415</td>
+                <td>4</td>
+                <td>refactor</td>
+                <td><code>too-many-statements</code></td>
+                <td>R0915</td>
+                <td>Optimizer._pymoo</td>
+                <td><pre>Too many statements (54/50)</pre></td>
             </tr>
             
             <tr>
@@ -759,13 +769,53 @@
             </tr>
             
             <tr>
-                <td>435</td>
+                <td>449</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>452</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>453</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>469</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>471</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
                 <td>C0301</td>
                 <td></td>
-                <td><pre>Line too long (109/100)</pre></td>
+                <td><pre>Line too long (107/100)</pre></td>
             </tr>
             
             <tr>
@@ -779,7 +829,7 @@
             </tr>
             
             <tr>
-                <td>478</td>
+                <td>508</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>trailing-whitespace</code></td>
@@ -789,7 +839,17 @@
             </tr>
             
             <tr>
-                <td>481</td>
+                <td>513</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>515</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>trailing-whitespace</code></td>
@@ -1528,17 +1588,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1026:1037]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1594,23 +1650,14 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
             </tr>
             
             <tr>
@@ -1621,6 +1668,16 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -2699,7 +2756,7 @@
             
             <tr>
                 <td>refactor</td>
-                <td>120</td>
+                <td>121</td>
             </tr>
             
             <tr>
@@ -2709,7 +2766,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>76</td>
+                <td>81</td>
             </tr>
             
         </table>
@@ -2794,7 +2851,7 @@
             
             <tr>
                 <td>trailing-whitespace</td>
-                <td>16</td>
+                <td>21</td>
             </tr>
             
             <tr>
@@ -2815,6 +2872,11 @@
             <tr>
                 <td>unused-argument</td>
                 <td>6</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-statements</td>
+                <td>4</td>
             </tr>
             
             <tr>
@@ -2893,11 +2955,6 @@
             </tr>
             
             <tr>
-                <td>too-many-statements</td>
-                <td>3</td>
-            </tr>
-            
-            <tr>
                 <td>wrong-import-order</td>
                 <td>1</td>
             </tr>
@@ -2969,7 +3026,7 @@
             
             <tr>
                 <td>ebcpy.optimization</td>
-                <td>42</td>
+                <td>48</td>
             </tr>
             
             <tr>
@@ -3054,7 +3111,7 @@
             
             <tr>
                 <td>ebcpy/optimization.py</td>
-                <td>42</td>
+                <td>48</td>
             </tr>
             
             <tr>

@@ -101,10 +101,15 @@ ebcpy/optimization.py:272:0: C0301: Line too long (103/100) (line-too-long)
 ebcpy/optimization.py:273:0: C0301: Line too long (109/100) (line-too-long)
 ebcpy/optimization.py:277:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/optimization.py:431:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/optimization.py:435:0: C0301: Line too long (109/100) (line-too-long)
+ebcpy/optimization.py:449:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:452:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:453:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:469:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:471:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/optimization.py:473:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/optimization.py:478:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/optimization.py:481:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:508:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:513:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:515:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/optimization.py:115:4: C0116: Missing function or method docstring (missing-function-docstring)
 ebcpy/optimization.py:115:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
 ebcpy/optimization.py:120:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
@@ -123,7 +128,8 @@ ebcpy/optimization.py:320:29: W0613: Unused argument 'method' (unused-argument)
 ebcpy/optimization.py:320:42: W0613: Unused argument 'n_cpu' (unused-argument)
 ebcpy/optimization.py:369:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ebcpy/optimization.py:369:63: W0613: Unused argument 'n_cpu' (unused-argument)
-ebcpy/optimization.py:415:4: R0914: Too many local variables (25/15) (too-many-locals)
+ebcpy/optimization.py:415:4: R0914: Too many local variables (38/15) (too-many-locals)
+ebcpy/optimization.py:415:4: R0915: Too many statements (54/50) (too-many-statements)
 ebcpy/optimization.py:415:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ************* Module ebcpy.utils.statistics_analyzer
 ebcpy/utils/statistics_analyzer.py:189:0: C0303: Trailing whitespace (trailing-whitespace)
@@ -248,13 +254,17 @@ ebcpy/simulationapi/fmu.py:378:4: R0913: Too many arguments (6/5) (too-many-argu
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1026:1037]
 ==ebcpy.simulationapi.fmu:[405:412]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        ) (duplicate-code)
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[374:383]
 ==ebcpy.simulationapi.fmu:[193:201]
@@ -290,10 +300,10 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
         self._working_directory = working_directory
 
     def set_cd(self, cd: Union[Path, str]): (duplicate-code)
-ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.09/10
+Your code has been rated at 9.07/10
 
