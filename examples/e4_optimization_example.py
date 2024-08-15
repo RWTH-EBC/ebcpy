@@ -4,12 +4,11 @@ Goals of this part of the examples:
 2. Learn the different optimizer frameworks
 3. See the difference in optimization when using newton-based methods and evolutionary algorithms.
    The difference is, that newton based methods (like L-BFGS-B) are vastly faster in both convex and
-   concave problems, but they are not guaranteed to find the global minimum and can get stock in local optima. 
+   concave problems, but they are not guaranteed to find the global minimum and can get stuck in local optima. 
    Evolutionary algorithms (like the genetic algorithm) are substantially slower, 
    but they can overcome local optima, as shown in the concave examples.
-   
-   
 """
+
 import time
 from pprint import pformat
 

@@ -412,7 +412,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _pymoo(self, method="NSGA2", n_cpu=1, **kwargs):
+    def _pymoo(self, method="GA", n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -432,10 +432,45 @@ class Optimizer:
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_algorithm, get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.algorithms.moo.ctaea import CTAEA
+            from pymoo.algorithms.moo.moead import MOEAD
+            from pymoo.algorithms.moo.nsga2 import NSGA2
+            from pymoo.algorithms.moo.nsga3 import NSGA3
+            from pymoo.algorithms.moo.rnsga2 import RNSGA2
+            from pymoo.algorithms.moo.rnsga3 import RNSGA3
+            from pymoo.algorithms.soo.nonconvex.de import DE
+            from pymoo.algorithms.soo.nonconvex.ga import GA
+            from pymoo.algorithms.moo.unsga3 import UNSGA3
+            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
+            from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
+            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
+            from pymoo.algorithms.soo.nonconvex.pso import PSO
+        
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
-
+        
+        
+        pymoo_algorithms = {
+            "ga": GA,
+            "brkga": BRKGA,
+            "de": DE,
+            "nelder-mead": NelderMead,
+            "pattern-search": PatternSearch,
+            "pso": PSO,
+            "nsga2": NSGA2,
+            "rnsga2": RNSGA2,
+            "nsga3": NSGA3,
+            "unsga3": UNSGA3,
+            "rnsga3": RNSGA3,
+            "moead": MOEAD,
+            "ctaea": CTAEA,
+        }
+        
+        if method.lower() not in pymoo_algorithms:
+            raise ValueError(f"Given method {method} is currently not supported. Please choose one of the "
+                             "following: " + ", ".join(pymoo_algorithms.keys()))
+        
         class EBCPYProblem(Problem):
             """Construct wrapper problem class."""
             def __init__(self,
@@ -476,10 +511,8 @@ class Optimizer:
             default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
             default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
         
-            algorithm = get_algorithm(name=method.lower(),
-                                        **default_kwargs)
+            algorithm = pymoo_algorithms[method.lower()](**default_kwargs)
             
-
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),
                 algorithm=algorithm,
