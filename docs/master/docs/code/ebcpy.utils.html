@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.utils package &mdash; ebcpy 0.4.3 documentation</title>
+  <title>ebcpy.utils package &mdash; ebcpy 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -38,7 +38,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.4
+                0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
@@ -492,6 +492,25 @@ for the given numpy array of measured and simulated data.</p>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>float MSE:
 MSE of the given data.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_nmbe">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">calc_nmbe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/utils/statistics_analyzer.html#StatisticsAnalyzer.calc_nmbe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_nmbe" title="Permalink to this definition"></a></dt>
+<dd><p>Calculates the NMBE (normalized mean bias error)
+for the given numpy array of measured and simulated data.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>meas</strong> (<em>np.array</em>) – Array with measurement data</p></li>
+<li><p><strong>sim</strong> (<em>np.array</em>) – Array with simulation data</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>float NMBE:
+NMBE of the given data.</p>
 </dd>
 </dl>
 </dd></dl>

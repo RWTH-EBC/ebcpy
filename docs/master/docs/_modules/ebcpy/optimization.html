@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.optimization &mdash; ebcpy 0.4.3 documentation</title>
+  <title>ebcpy.optimization &mdash; ebcpy 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -35,7 +35,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.4
+                0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
@@ -176,7 +176,8 @@
         <span class="k">return</span> <span class="p">[</span><span class="s2">&quot;scipy_minimize&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;scipy_differential_evolution&quot;</span><span class="p">,</span>
                 <span class="s2">&quot;dlib_minimize&quot;</span><span class="p">,</span>
-                <span class="s2">&quot;pymoo&quot;</span><span class="p">]</span>
+                <span class="s2">&quot;pymoo&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;bayesian_optimization&quot;</span><span class="p">]</span>
 
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
@@ -277,7 +278,84 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_scipy_differential_evolution</span><span class="p">,</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pymoo&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymoo</span><span class="p">,</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bayesian_optimization&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bayesian_optimization</span><span class="p">,</span> <span class="kc">False</span>
+        
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given framework </span><span class="si">{</span><span class="n">framework</span><span class="si">}</span><span class="s2"> is currently not supported.&quot;</span><span class="p">)</span>
+    
+    <span class="k">def</span> <span class="nf">_bayesian_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Possible kwargs for the bayesian_optimization function with default values:</span>
+<span class="sd">        </span>
+<span class="sd">        random_state = 42</span>
+<span class="sd">        allow_dublicate_points = True</span>
+<span class="sd">        init_points = 100</span>
+<span class="sd">        n_iter = 100</span>
+<span class="sd">        kind_of_utility_function = &quot;ei&quot;</span>
+<span class="sd">        xi = 0.1</span>
+<span class="sd">        </span>
+<span class="sd">        For an explanation of what the parameters do, we refer to the documentation of</span>
+<span class="sd">        the bayesian optimization package:</span>
+<span class="sd">        https://bayesian-optimization.github.io/BayesianOptimization/index.html</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">default_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">(</span><span class="n">framework</span><span class="o">=</span><span class="s2">&quot;bayesian_optimization&quot;</span><span class="p">)</span>
+        <span class="n">default_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        
+        <span class="k">try</span><span class="p">:</span>
+            <span class="kn">from</span> <span class="nn">bayes_opt</span> <span class="kn">import</span> <span class="n">BayesianOptimization</span>
+            <span class="kn">from</span> <span class="nn">bayes_opt.util</span> <span class="kn">import</span> <span class="n">UtilityFunction</span>
+        <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install bayesian-optimization to use &quot;</span>
+                              <span class="s2">&quot;the bayesian_optimization function.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+            
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">bounds</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;For the bayesian optimization approach, you need to specify &quot;</span>
+                                 <span class="s2">&quot;boundaries. Currently, no bounds are specified.&quot;</span><span class="p">)</span>
+
+            <span class="n">pbounds</span> <span class="o">=</span> <span class="p">{</span><span class="sa">f</span><span class="s2">&quot;x</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">i</span> <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bounds</span><span class="p">)}</span>
+
+            <span class="n">optimizer</span> <span class="o">=</span> <span class="n">BayesianOptimization</span><span class="p">(</span>
+                <span class="n">f</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_bayesian_opt_obj</span><span class="p">,</span>
+                <span class="n">pbounds</span><span class="o">=</span><span class="n">pbounds</span><span class="p">,</span>
+                <span class="n">random_state</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;random_state&quot;</span><span class="p">],</span>
+                <span class="n">allow_duplicate_points</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;allow_dublicate_points&quot;</span><span class="p">],</span>
+                <span class="n">verbose</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;verbose&quot;</span><span class="p">]</span>
+            <span class="p">)</span>
+            
+            <span class="n">gp</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;gp&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">gp</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">optimizer</span><span class="o">.</span><span class="n">_gp</span> <span class="o">=</span> <span class="n">gp</span>
+
+            <span class="n">acq_function</span> <span class="o">=</span> <span class="n">UtilityFunction</span><span class="p">(</span>
+                <span class="n">kind</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;kind_of_utility_function&quot;</span><span class="p">],</span>
+                <span class="n">xi</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;xi&quot;</span><span class="p">])</span>
+            
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">maximize</span><span class="p">(</span>
+                <span class="n">init_points</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;init_points&quot;</span><span class="p">],</span>
+                <span class="n">n_iter</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;n_iter&quot;</span><span class="p">],</span>
+                <span class="n">acquisition_function</span><span class="o">=</span><span class="n">acq_function</span>
+            <span class="p">)</span>
+            
+            <span class="n">res</span> <span class="o">=</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">max</span>
+            <span class="n">x_res</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;params&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+            <span class="n">f_res</span> <span class="o">=</span> <span class="o">-</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span>
+            <span class="n">res_tuple</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s2">&quot;res_tuple&quot;</span><span class="p">,</span> <span class="s2">&quot;x fun&quot;</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">res_tuple</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x_res</span><span class="p">,</span> <span class="n">fun</span><span class="o">=</span><span class="n">f_res</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">res</span>
+        <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="c1"># pylint: disable=inconsistent-return-statements</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_handle_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
+            
+    <span class="k">def</span> <span class="nf">_bayesian_opt_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        This function is needed as the signature for the Bayesian-optimization</span>
+<span class="sd">        is different than the standard signature. The Bayesian-optimization gives keyword arguments for</span>
+<span class="sd">        every parameter and only maximizes, therefore we will maximize the negative objective function value.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">xk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
+        <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span>
+            
 
     <span class="k">def</span> <span class="nf">_scipy_minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -415,7 +493,7 @@
             <span class="c1"># pylint: disable=inconsistent-return-statements</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_pymoo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;NSGA2&quot;</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_pymoo</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s2">&quot;GA&quot;</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Possible kwargs for the dlib minimize function with default values:</span>
 
@@ -430,14 +508,50 @@
 <span class="sd">        copy_termination=False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">default_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">(</span><span class="n">framework</span><span class="o">=</span><span class="s2">&quot;pymoo&quot;</span><span class="p">)</span>
-
+        <span class="n">default_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+        
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span> <span class="nn">pymoo.optimize</span> <span class="kn">import</span> <span class="n">minimize</span>
             <span class="kn">from</span> <span class="nn">pymoo.problems.single</span> <span class="kn">import</span> <span class="n">Problem</span>
-            <span class="kn">from</span> <span class="nn">pymoo.factory</span> <span class="kn">import</span> <span class="n">get_algorithm</span><span class="p">,</span> <span class="n">get_sampling</span><span class="p">,</span> <span class="n">get_mutation</span><span class="p">,</span> <span class="n">get_crossover</span><span class="p">,</span> <span class="n">get_selection</span>
+            <span class="kn">from</span> <span class="nn">pymoo.factory</span> <span class="kn">import</span> <span class="n">get_sampling</span><span class="p">,</span> <span class="n">get_mutation</span><span class="p">,</span> <span class="n">get_crossover</span><span class="p">,</span> <span class="n">get_selection</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.ctaea</span> <span class="kn">import</span> <span class="n">CTAEA</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.moead</span> <span class="kn">import</span> <span class="n">MOEAD</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.nsga2</span> <span class="kn">import</span> <span class="n">NSGA2</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.nsga3</span> <span class="kn">import</span> <span class="n">NSGA3</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.rnsga2</span> <span class="kn">import</span> <span class="n">RNSGA2</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.rnsga3</span> <span class="kn">import</span> <span class="n">RNSGA3</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.de</span> <span class="kn">import</span> <span class="n">DE</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.ga</span> <span class="kn">import</span> <span class="n">GA</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.moo.unsga3</span> <span class="kn">import</span> <span class="n">UNSGA3</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.nelder_mead</span> <span class="kn">import</span> <span class="n">NelderMead</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.brkga</span> <span class="kn">import</span> <span class="n">BRKGA</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.pattern_search</span> <span class="kn">import</span> <span class="n">PatternSearch</span>
+            <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.pso</span> <span class="kn">import</span> <span class="n">PSO</span>
+        
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install pymoo to use this function.&quot;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
-
+        
+        
+        <span class="n">pymoo_algorithms</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;ga&quot;</span><span class="p">:</span> <span class="n">GA</span><span class="p">,</span>
+            <span class="s2">&quot;brkga&quot;</span><span class="p">:</span> <span class="n">BRKGA</span><span class="p">,</span>
+            <span class="s2">&quot;de&quot;</span><span class="p">:</span> <span class="n">DE</span><span class="p">,</span>
+            <span class="s2">&quot;nelder-mead&quot;</span><span class="p">:</span> <span class="n">NelderMead</span><span class="p">,</span>
+            <span class="s2">&quot;pattern-search&quot;</span><span class="p">:</span> <span class="n">PatternSearch</span><span class="p">,</span>
+            <span class="s2">&quot;pso&quot;</span><span class="p">:</span> <span class="n">PSO</span><span class="p">,</span>
+            <span class="s2">&quot;nsga2&quot;</span><span class="p">:</span> <span class="n">NSGA2</span><span class="p">,</span>
+            <span class="s2">&quot;rnsga2&quot;</span><span class="p">:</span> <span class="n">RNSGA2</span><span class="p">,</span>
+            <span class="s2">&quot;nsga3&quot;</span><span class="p">:</span> <span class="n">NSGA3</span><span class="p">,</span>
+            <span class="s2">&quot;unsga3&quot;</span><span class="p">:</span> <span class="n">UNSGA3</span><span class="p">,</span>
+            <span class="s2">&quot;rnsga3&quot;</span><span class="p">:</span> <span class="n">RNSGA3</span><span class="p">,</span>
+            <span class="s2">&quot;moead&quot;</span><span class="p">:</span> <span class="n">MOEAD</span><span class="p">,</span>
+            <span class="s2">&quot;ctaea&quot;</span><span class="p">:</span> <span class="n">CTAEA</span><span class="p">,</span>
+        <span class="p">}</span>
+        
+        <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pymoo_algorithms</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is currently not supported. Please choose one of the &quot;</span>
+                             <span class="s2">&quot;following: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pymoo_algorithms</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
+        
         <span class="k">class</span> <span class="nc">EBCPYProblem</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Construct wrapper problem class.&quot;&quot;&quot;</span>
             <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -470,39 +584,24 @@
             <span class="n">save_history</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;save_history&quot;</span><span class="p">)</span>
             <span class="n">copy_algorithm</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;copy_algorithm&quot;</span><span class="p">)</span>
             <span class="n">copy_termination</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;copy_termination&quot;</span><span class="p">)</span>
-
-            <span class="c1"># Init algorithm</span>
-            <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;ga&quot;</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">pymoo.algorithms.soo.nonconvex.ga</span> <span class="kn">import</span> <span class="n">GA</span>
-                <span class="c1"># GA:</span>
-                <span class="n">pop_size</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;pop_size&quot;</span><span class="p">]</span>
-                <span class="n">sampling</span> <span class="o">=</span> <span class="n">get_sampling</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">])</span>
-                <span class="n">selection</span> <span class="o">=</span> <span class="n">get_selection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">])</span>
-                <span class="n">crossover</span> <span class="o">=</span> <span class="n">get_crossover</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">])</span>
-                <span class="n">mutation</span> <span class="o">=</span> <span class="n">get_mutation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">])</span>
-                <span class="n">eliminate_duplicates</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;eliminate_duplicates&quot;</span><span class="p">]</span>
-                <span class="n">n_offsprings</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;n_offsprings&quot;</span><span class="p">]</span>
-                <span class="n">algorithm</span> <span class="o">=</span> <span class="n">GA</span><span class="p">(</span><span class="n">pop_size</span><span class="o">=</span><span class="n">pop_size</span><span class="p">,</span>
-                               <span class="n">sampling</span><span class="o">=</span><span class="n">sampling</span><span class="p">,</span>
-                               <span class="n">selection</span><span class="o">=</span><span class="n">selection</span><span class="p">,</span>
-                               <span class="n">crossover</span><span class="o">=</span><span class="n">crossover</span><span class="p">,</span>
-                               <span class="n">mutation</span><span class="o">=</span><span class="n">mutation</span><span class="p">,</span>
-                               <span class="n">eliminate_duplicates</span><span class="o">=</span><span class="n">eliminate_duplicates</span><span class="p">,</span>
-                               <span class="n">n_offsprings</span><span class="o">=</span><span class="n">n_offsprings</span>
-                               <span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">default_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-                <span class="n">algorithm</span> <span class="o">=</span> <span class="n">get_algorithm</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span>
-                                          <span class="o">**</span><span class="n">default_kwargs</span><span class="p">)</span>
-
+            <span class="n">callback</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;callback&quot;</span><span class="p">)</span>
+            <span class="n">display</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">)</span>
+            
+            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_sampling</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">])</span>
+            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_selection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">])</span>
+            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_crossover</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">])</span>
+            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_mutation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">])</span>
+        
+            <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pymoo_algorithms</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()](</span><span class="o">**</span><span class="n">default_kwargs</span><span class="p">)</span>
+            
             <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
                 <span class="n">problem</span><span class="o">=</span><span class="n">EBCPYProblem</span><span class="p">(</span><span class="n">ebcpy_class</span><span class="o">=</span><span class="bp">self</span><span class="p">),</span>
                 <span class="n">algorithm</span><span class="o">=</span><span class="n">algorithm</span><span class="p">,</span>
                 <span class="n">termination</span><span class="o">=</span><span class="n">termination</span><span class="p">,</span>
                 <span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">,</span>
                 <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-                <span class="n">display</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
-                <span class="n">callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">display</span><span class="o">=</span><span class="n">display</span><span class="p">,</span>
+                <span class="n">callback</span><span class="o">=</span><span class="n">callback</span><span class="p">,</span>
                 <span class="n">save_history</span><span class="o">=</span><span class="n">save_history</span><span class="p">,</span>
                 <span class="n">copy_algorithm</span><span class="o">=</span><span class="n">copy_algorithm</span><span class="p">,</span>
                 <span class="n">copy_termination</span><span class="o">=</span><span class="n">copy_termination</span><span class="p">,</span>
@@ -568,6 +667,13 @@
                     <span class="p">}</span>
         <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pymoo&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;n_gen&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
+                    <span class="s2">&quot;pop_size&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
+                    <span class="s2">&quot;sampling&quot;</span><span class="p">:</span> <span class="s2">&quot;real_random&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;crossover&quot;</span><span class="p">:</span> <span class="s2">&quot;real_sbx&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;mutation&quot;</span><span class="p">:</span> <span class="s2">&quot;real_pm&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;eliminate_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="s2">&quot;termination&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
@@ -576,6 +682,15 @@
                     <span class="s2">&quot;save_history&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                     <span class="s2">&quot;copy_algorithm&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
                     <span class="s2">&quot;copy_termination&quot;</span><span class="p">:</span> <span class="kc">False</span>
+                    <span class="p">}</span>
+        <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bayesian_optimization&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;random_state&quot;</span><span class="p">:</span> <span class="mi">42</span><span class="p">,</span>
+                    <span class="s2">&quot;allow_dublicate_points&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                    <span class="s2">&quot;init_points&quot;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+                    <span class="s2">&quot;n_iter&quot;</span><span class="p">:</span> <span class="mi">25</span><span class="p">,</span>
+                    <span class="s2">&quot;kind_of_utility_function&quot;</span><span class="p">:</span> <span class="s2">&quot;ei&quot;</span><span class="p">,</span>
+                    <span class="s2">&quot;xi&quot;</span><span class="p">:</span> <span class="mf">0.1</span><span class="p">,</span>
+                    <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span>
                     <span class="p">}</span>
         <span class="k">return</span> <span class="p">{}</span></div></div>
 </pre></div>

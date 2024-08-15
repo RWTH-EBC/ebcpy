@@ -738,6 +738,17 @@
             "message-id": "W0012"
         },
         {
+            "type": "convention",
+            "module": "ebcpy",
+            "obj": "",
+            "line": 11,
+            "column": 0,
+            "path": "ebcpy/__init__.py",
+            "symbol": "missing-final-newline",
+            "message": "Final newline missing",
+            "message-id": "C0304"
+        },
+        {
             "type": "refactor",
             "module": "ebcpy.preprocessing",
             "obj": "clean_and_space_equally_time_series",
@@ -895,7 +906,7 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "",
-            "line": 115,
+            "line": 116,
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "line-too-long",
@@ -906,22 +917,11 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "",
-            "line": 120,
+            "line": 121,
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "line-too-long",
             "message": "Line too long (144/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "",
-            "line": 142,
-            "column": 0,
-            "path": "ebcpy/optimization.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (115/100)",
             "message-id": "C0301"
         },
         {
@@ -932,6 +932,17 @@
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "line-too-long",
+            "message": "Line too long (115/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 144,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "line-too-long",
             "message": "Line too long (143/100)",
             "message-id": "C0301"
         },
@@ -939,7 +950,106 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "",
-            "line": 356,
+            "line": 202,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 204,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 222,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 229,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 244,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 252,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 258,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 268,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 272,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (103/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 273,
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "line-too-long",
@@ -949,8 +1059,129 @@
         {
             "type": "convention",
             "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 277,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 431,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 449,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 452,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 453,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 469,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 471,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (107/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 473,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 508,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 513,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 515,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
             "obj": "Optimizer.cd",
-            "line": 114,
+            "line": 115,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "missing-function-docstring",
@@ -961,7 +1192,7 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "Optimizer.cd",
-            "line": 114,
+            "line": 115,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "invalid-name",
@@ -972,7 +1203,7 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "Optimizer.cd",
-            "line": 119,
+            "line": 120,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "invalid-name",
@@ -983,7 +1214,7 @@
             "type": "convention",
             "module": "ebcpy.optimization",
             "obj": "Optimizer.cd",
-            "line": 119,
+            "line": 120,
             "column": 17,
             "path": "ebcpy/optimization.py",
             "symbol": "invalid-name",
@@ -993,8 +1224,74 @@
         {
             "type": "refactor",
             "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 205,
+            "column": 4,
+            "path": "ebcpy/optimization.py",
+            "symbol": "too-many-locals",
+            "message": "Too many local variables (16/15)",
+            "message-id": "R0914"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 245,
+            "column": 12,
+            "path": "ebcpy/optimization.py",
+            "symbol": "invalid-name",
+            "message": "Variable name \"gp\" doesn't conform to snake_case naming style",
+            "message-id": "C0103"
+        },
+        {
+            "type": "warning",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 247,
+            "column": 16,
+            "path": "ebcpy/optimization.py",
+            "symbol": "protected-access",
+            "message": "Access to a protected member _gp of a client class",
+            "message-id": "W0212"
+        },
+        {
+            "type": "refactor",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 205,
+            "column": 4,
+            "path": "ebcpy/optimization.py",
+            "symbol": "inconsistent-return-statements",
+            "message": "Either all return statements in a function should return an expression, or none of them should.",
+            "message-id": "R1710"
+        },
+        {
+            "type": "warning",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 205,
+            "column": 37,
+            "path": "ebcpy/optimization.py",
+            "symbol": "unused-argument",
+            "message": "Unused argument 'method'",
+            "message-id": "W0613"
+        },
+        {
+            "type": "warning",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._bayesian_optimization",
+            "line": 205,
+            "column": 50,
+            "path": "ebcpy/optimization.py",
+            "symbol": "unused-argument",
+            "message": "Unused argument 'n_cpu'",
+            "message-id": "W0613"
+        },
+        {
+            "type": "refactor",
+            "module": "ebcpy.optimization",
             "obj": "Optimizer._scipy_minimize",
-            "line": 201,
+            "line": 279,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "inconsistent-return-statements",
@@ -1005,7 +1302,7 @@
             "type": "warning",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._scipy_minimize",
-            "line": 201,
+            "line": 279,
             "column": 38,
             "path": "ebcpy/optimization.py",
             "symbol": "unused-argument",
@@ -1016,7 +1313,7 @@
             "type": "refactor",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._dlib_minimize",
-            "line": 242,
+            "line": 320,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "too-many-locals",
@@ -1027,7 +1324,7 @@
             "type": "refactor",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._dlib_minimize",
-            "line": 242,
+            "line": 320,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "inconsistent-return-statements",
@@ -1038,7 +1335,7 @@
             "type": "warning",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._dlib_minimize",
-            "line": 242,
+            "line": 320,
             "column": 29,
             "path": "ebcpy/optimization.py",
             "symbol": "unused-argument",
@@ -1049,7 +1346,7 @@
             "type": "warning",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._dlib_minimize",
-            "line": 242,
+            "line": 320,
             "column": 42,
             "path": "ebcpy/optimization.py",
             "symbol": "unused-argument",
@@ -1060,7 +1357,7 @@
             "type": "refactor",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._scipy_differential_evolution",
-            "line": 291,
+            "line": 369,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "inconsistent-return-statements",
@@ -1071,7 +1368,7 @@
             "type": "warning",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._scipy_differential_evolution",
-            "line": 291,
+            "line": 369,
             "column": 63,
             "path": "ebcpy/optimization.py",
             "symbol": "unused-argument",
@@ -1082,23 +1379,67 @@
             "type": "refactor",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._pymoo",
-            "line": 337,
+            "line": 415,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "too-many-locals",
-            "message": "Too many local variables (31/15)",
+            "message": "Too many local variables (38/15)",
             "message-id": "R0914"
         },
         {
             "type": "refactor",
             "module": "ebcpy.optimization",
             "obj": "Optimizer._pymoo",
-            "line": 337,
+            "line": 415,
+            "column": 4,
+            "path": "ebcpy/optimization.py",
+            "symbol": "too-many-statements",
+            "message": "Too many statements (54/50)",
+            "message-id": "R0915"
+        },
+        {
+            "type": "refactor",
+            "module": "ebcpy.optimization",
+            "obj": "Optimizer._pymoo",
+            "line": 415,
             "column": 4,
             "path": "ebcpy/optimization.py",
             "symbol": "inconsistent-return-statements",
             "message": "Either all return statements in a function should return an expression, or none of them should.",
             "message-id": "R1710"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 189,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 203,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 206,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
         },
         {
             "type": "convention",
@@ -2285,7 +2626,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1026:1037]\n==ebcpy.simulationapi.fmu:[405:412]\n        ))\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1026:1037]\n==ebcpy.simulationapi.fmu:[405:412]\n                ))\n\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )\n\n    def _save_to_fmu(self, fail_on_error):\n        \"\"\"Save model as an FMU\"\"\"",
             "message-id": "R0801"
         },
         {
@@ -2307,7 +2648,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[288:297]\n==ebcpy.simulationapi.fmu:[194:200]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[288:297]\n==ebcpy.simulationapi.fmu:[194:200]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n    def _update_model(self):\n        # Translate the model and extract all variables,\n        # if the user wants to:",
             "message-id": "R0801"
         },
         {
@@ -2318,7 +2659,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.optimization:[102:114]\n==ebcpy.simulationapi.__init__:[496:507]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
+            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[496:507]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
             "message-id": "R0801"
         },
         {
@@ -2329,7 +2670,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy.data_types -> ebcpy.preprocessing)",
+            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.fmu)",
             "message-id": "R0401"
         },
         {
@@ -2340,7 +2681,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.fmu)",
+            "message": "Cyclic import (ebcpy.data_types -> ebcpy.preprocessing)",
             "message-id": "R0401"
         },
         {
@@ -2367,13 +2708,13 @@
             "function": 0,
             "method": 0,
             "module": 0,
-            "variable": 4,
+            "variable": 5,
             "typevar": 0,
             "typealias": 0
         },
         "by_module": {
             "ebcpy": {
-                "convention": 0,
+                "convention": 1,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
@@ -2400,21 +2741,21 @@
                 "warning": 2
             },
             "ebcpy.optimization": {
-                "convention": 11,
+                "convention": 32,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 6,
-                "statement": 176,
-                "warning": 4
+                "refactor": 9,
+                "statement": 221,
+                "warning": 7
             },
             "ebcpy.utils.statistics_analyzer": {
-                "convention": 0,
+                "convention": 3,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 37,
+                "statement": 44,
                 "warning": 0
             },
             "ebcpy.utils.reproduction": {
@@ -2500,19 +2841,23 @@
             }
         },
         "by_msg": {
-            "too-many-locals": 11,
+            "missing-final-newline": 1,
+            "too-many-locals": 12,
             "unbalanced-tuple-unpacking": 1,
             "too-many-branches": 10,
             "too-many-arguments": 6,
             "no-else-return": 2,
             "unspecified-encoding": 10,
-            "inconsistent-return-statements": 7,
+            "inconsistent-return-statements": 8,
             "undefined-all-variable": 1,
             "unused-import": 2,
-            "line-too-long": 19,
+            "line-too-long": 21,
+            "trailing-whitespace": 21,
             "missing-function-docstring": 3,
-            "invalid-name": 15,
-            "unused-argument": 4,
+            "invalid-name": 16,
+            "protected-access": 2,
+            "unused-argument": 6,
+            "too-many-statements": 4,
             "no-member": 1,
             "redefined-argument-from-local": 1,
             "import-outside-toplevel": 6,
@@ -2528,8 +2873,6 @@
             "use-dict-literal": 5,
             "too-few-public-methods": 1,
             "too-many-instance-attributes": 2,
-            "protected-access": 1,
-            "too-many-statements": 3,
             "wrong-import-order": 1,
             "too-many-lines": 1,
             "broad-exception-caught": 1,
@@ -2548,9 +2891,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy",
+                "ebcpy.preprocessing",
                 "ebcpy.utils.conversion",
-                "ebcpy.preprocessing"
+                "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -2571,23 +2914,23 @@
                 "ebcpy.preprocessing"
             ],
             "numpy": [
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.preprocessing",
+                "ebcpy.utils.conversion",
+                "ebcpy.optimization",
                 "ebcpy.utils.statistics_analyzer",
                 "ebcpy.simulationapi",
-                "ebcpy.data_types",
-                "ebcpy.utils.conversion",
                 "ebcpy.modelica.simres",
-                "ebcpy.preprocessing",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.optimization"
+                "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.data_types",
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.preprocessing",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.modelica.manipulate_ds",
+                "ebcpy.utils.conversion",
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.modelica.simres",
+                "ebcpy.data_types"
             ],
             "scipy.stats": [
                 "ebcpy.preprocessing"
@@ -2608,6 +2951,12 @@
                 "ebcpy.simulationapi",
                 "ebcpy.optimization"
             ],
+            "bayes_opt": [
+                "ebcpy.optimization"
+            ],
+            "bayes_opt.util": [
+                "ebcpy.optimization"
+            ],
             "scipy.optimize": [
                 "ebcpy.optimization"
             ],
@@ -2620,7 +2969,43 @@
             "pymoo.factory": [
                 "ebcpy.optimization"
             ],
+            "pymoo.algorithms.moo.ctaea": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.moead": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.nsga2": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.nsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.rnsga2": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.rnsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.de": [
+                "ebcpy.optimization"
+            ],
             "pymoo.algorithms.soo.nonconvex.ga": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.unsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.nelder_mead": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.brkga": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.pattern_search": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.pso": [
                 "ebcpy.optimization"
             ],
             "sklearn.metrics": [
@@ -2633,17 +3018,17 @@
                 "ebcpy.utils.reproduction"
             ],
             "scipy.io": [
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion"
+                "ebcpy.utils.conversion",
+                "ebcpy.modelica.simres"
             ],
             "pydantic": [
-                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy": [
@@ -2674,7 +3059,7 @@
         "node_count": {
             "function": 39,
             "klass": 16,
-            "method": 127,
+            "method": 130,
             "module": 14
         },
         "undocumented": {
@@ -2683,16 +3068,16 @@
             "method": 3,
             "module": 0
         },
-        "convention": 56,
+        "convention": 81,
         "error": 4,
         "fatal": 0,
         "info": 0,
-        "refactor": 58,
-        "statement": 2038,
-        "warning": 29,
+        "refactor": 61,
+        "statement": 2090,
+        "warning": 32,
         "global_note": 0,
         "nb_duplicated_lines": 24,
-        "percent_duplicated_lines": 0.4238036376478898
+        "percent_duplicated_lines": 0.4134366925064599
     },
     "previous": {
         "bad_names": {
@@ -2706,13 +3091,13 @@
             "function": 0,
             "method": 0,
             "module": 0,
-            "variable": 4,
+            "variable": 5,
             "typevar": 0,
             "typealias": 0
         },
         "by_module": {
             "ebcpy": {
-                "convention": 0,
+                "convention": 1,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
@@ -2739,21 +3124,21 @@
                 "warning": 2
             },
             "ebcpy.optimization": {
-                "convention": 11,
+                "convention": 32,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 6,
-                "statement": 176,
-                "warning": 4
+                "refactor": 9,
+                "statement": 221,
+                "warning": 7
             },
             "ebcpy.utils.statistics_analyzer": {
-                "convention": 0,
+                "convention": 3,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 37,
+                "statement": 44,
                 "warning": 0
             },
             "ebcpy.utils.reproduction": {
@@ -2839,19 +3224,23 @@
             }
         },
         "by_msg": {
-            "too-many-locals": 11,
+            "missing-final-newline": 1,
+            "too-many-locals": 12,
             "unbalanced-tuple-unpacking": 1,
             "too-many-branches": 10,
             "too-many-arguments": 6,
             "no-else-return": 2,
             "unspecified-encoding": 10,
-            "inconsistent-return-statements": 7,
+            "inconsistent-return-statements": 8,
             "undefined-all-variable": 1,
             "unused-import": 2,
-            "line-too-long": 19,
+            "line-too-long": 21,
+            "trailing-whitespace": 21,
             "missing-function-docstring": 3,
-            "invalid-name": 15,
-            "unused-argument": 4,
+            "invalid-name": 16,
+            "protected-access": 2,
+            "unused-argument": 6,
+            "too-many-statements": 4,
             "no-member": 1,
             "redefined-argument-from-local": 1,
             "import-outside-toplevel": 6,
@@ -2867,8 +3256,6 @@
             "use-dict-literal": 5,
             "too-few-public-methods": 1,
             "too-many-instance-attributes": 2,
-            "protected-access": 1,
-            "too-many-statements": 3,
             "wrong-import-order": 1,
             "too-many-lines": 1,
             "broad-exception-caught": 1,
@@ -2887,9 +3274,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy",
+                "ebcpy.preprocessing",
                 "ebcpy.utils.conversion",
-                "ebcpy.preprocessing"
+                "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -2910,23 +3297,23 @@
                 "ebcpy.preprocessing"
             ],
             "numpy": [
-                "ebcpy.simulationapi",
-                "ebcpy.utils.statistics_analyzer",
-                "ebcpy.data_types",
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
-                "ebcpy.preprocessing",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.optimization"
+                "ebcpy.preprocessing",
+                "ebcpy.optimization",
+                "ebcpy.utils.conversion",
+                "ebcpy.utils.statistics_analyzer",
+                "ebcpy.simulationapi",
+                "ebcpy.modelica.simres",
+                "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.data_types",
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.preprocessing",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.modelica.manipulate_ds",
+                "ebcpy.utils.conversion",
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.modelica.simres",
+                "ebcpy.data_types"
             ],
             "scipy.stats": [
                 "ebcpy.preprocessing"
@@ -2947,6 +3334,12 @@
                 "ebcpy.simulationapi",
                 "ebcpy.optimization"
             ],
+            "bayes_opt": [
+                "ebcpy.optimization"
+            ],
+            "bayes_opt.util": [
+                "ebcpy.optimization"
+            ],
             "scipy.optimize": [
                 "ebcpy.optimization"
             ],
@@ -2959,7 +3352,43 @@
             "pymoo.factory": [
                 "ebcpy.optimization"
             ],
+            "pymoo.algorithms.moo.ctaea": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.moead": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.nsga2": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.nsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.rnsga2": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.rnsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.de": [
+                "ebcpy.optimization"
+            ],
             "pymoo.algorithms.soo.nonconvex.ga": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.moo.unsga3": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.nelder_mead": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.brkga": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.pattern_search": [
+                "ebcpy.optimization"
+            ],
+            "pymoo.algorithms.soo.nonconvex.pso": [
                 "ebcpy.optimization"
             ],
             "sklearn.metrics": [
@@ -2972,18 +3401,18 @@
                 "ebcpy.utils.reproduction"
             ],
             "scipy.io": [
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion"
+                "ebcpy.utils.conversion",
+                "ebcpy.modelica.simres"
             ],
             "pydantic": [
-                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api"
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi"
             ],
             "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api"
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi"
             ],
             "ebcpy": [
                 "ebcpy.simulationapi.fmu",
@@ -3013,7 +3442,7 @@
         "node_count": {
             "function": 39,
             "klass": 16,
-            "method": 127,
+            "method": 130,
             "module": 14
         },
         "undocumented": {
@@ -3022,15 +3451,15 @@
             "method": 3,
             "module": 0
         },
-        "convention": 56,
+        "convention": 81,
         "error": 4,
         "fatal": 0,
         "info": 0,
-        "refactor": 58,
-        "statement": 2038,
-        "warning": 29,
-        "global_note": 9.200196270853779,
+        "refactor": 61,
+        "statement": 2090,
+        "warning": 32,
+        "global_note": 9.07177033492823,
         "nb_duplicated_lines": 24,
-        "percent_duplicated_lines": 0.4238036376478898
+        "percent_duplicated_lines": 0.4134366925064599
     }
 }

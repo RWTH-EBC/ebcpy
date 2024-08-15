@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Examples &mdash; ebcpy 0.4.3 documentation</title>
+  <title>Examples &mdash; ebcpy 0.5.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -38,7 +38,7 @@
             ebcpy
           </a>
               <div class="version">
-                0.4
+                0.5
               </div>
 <div role="search">
   <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
@@ -142,8 +142,11 @@ In order to execute everything, install the full version using <code class="docu
 <ol class="arabic simple">
 <li><p>Learn how to create a custom <code class="docutils literal notranslate"><span class="pre">Optimizer</span></code> class</p></li>
 <li><p>Learn the different optimizer frameworks</p></li>
-<li><p>Learn the usage of <code class="docutils literal notranslate"><span class="pre">StatisticsAnalyzer</span></code></p></li>
-<li><p>Understand the motivation behing <code class="docutils literal notranslate"><span class="pre">AixCaliBuHA</span></code></p></li>
+<li><p>See the difference in optimization when using newton-based methods and evolutionary algorithms.
+The difference is, that newton based methods (like L-BFGS-B) are vastly faster in both convex and
+concave problems, but they are not guaranteed to find the global minimum and can get stock in local optima.
+Evolutionary algorithms (like the genetic algorithm) are substantially slower,
+but they can overcome local optima, as shown in the concave examples.</p></li>
 </ol>
 </section>
 </section>
