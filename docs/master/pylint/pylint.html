@@ -1657,13 +1657,14 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
             </tr>
             
             <tr>
@@ -1673,7 +1674,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -1693,7 +1694,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
