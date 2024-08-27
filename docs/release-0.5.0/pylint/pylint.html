@@ -1588,17 +1588,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1026:1037]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1618,7 +1614,6 @@
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
 
-        # Handle multiprocessing
         if self.use_mp:</pre></td>
             </tr>
             
@@ -1637,10 +1632,7 @@
                 &#34;You passed the following kwargs which &#34;
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to:</pre></td>
+</pre></td>
             </tr>
             
             <tr>
@@ -1657,24 +1649,13 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -&gt; Path:</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+    def set_cd(self, cd: Union[Path, str]):</pre></td>
             </tr>
             
             <tr>
@@ -1685,6 +1666,16 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
