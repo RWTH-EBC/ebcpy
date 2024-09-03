@@ -197,7 +197,8 @@ class DymolaAPI(SimulationAPI):
 
         super().__init__(working_directory=working_directory,
                          model_name=model_name,
-                         n_cpu=kwargs.pop("n_cpu", 1))
+                         n_cpu=kwargs.pop("n_cpu", 1),
+                         save_logs=kwargs.pop("save_logs", True))
 
         # First import the dymola-interface
         dymola_path = kwargs.pop("dymola_path", None)
