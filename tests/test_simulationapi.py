@@ -160,11 +160,12 @@ class PartialTestSimAPI(unittest.TestCase):
         while len(logger.handlers) > 0:
             for handler in logger.handlers:
                 logger.removeHandler(handler)
-        log_name = f"{self.sim_api.__class__.__name__}.log"
-        os.remove(self.example_sim_dir.joinpath(log_name))
+        log_file = self.example_sim_dir.joinpath(f"{self.sim_api.__class__.__name__}.log")
+        if os.path.exists(log_file):
+            os.remove(self.example_sim_dir.joinpath(log_name))
         self.start_api(save_logs=False, mos_script=self.data_dir.joinpath("mos_script_test.mos"))
         self.sim_api.logger.error("This log should not be saved")
-        self.assertFalse(os.path.exists(self.example_sim_dir.joinpath(log_name)))
+        self.assertFalse(os.path.exists(log_file))
 
     def tearDown(self):
         """Delete all files created while testing"""
