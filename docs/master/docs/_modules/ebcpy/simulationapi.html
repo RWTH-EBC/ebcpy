@@ -236,7 +236,9 @@
 <span class="sd">        If None is given, single core will be used.</span>
 <span class="sd">        Maximum number equals the cpu count of the device.</span>
 <span class="sd">        **Warning**: Logging is not yet fully working on multiple processes.</span>
-<span class="sd">        Output will be written to the stream handler, but not to the created .log files.</span>
+<span class="sd">        Output will be written to the stream handler, but not to the created</span>
+<span class="sd">        .log files.</span>
+<span class="sd">    :keyword bool save_logs: If logs should be stored.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">_sim_setup_class</span><span class="p">:</span> <span class="n">SimulationSetupClass</span> <span class="o">=</span> <span class="n">SimulationSetup</span>
@@ -244,15 +246,17 @@
         <span class="s1">&#39;pool&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Private helper attrs for multiprocessing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_total</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_progress_int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># Handle deprecation warning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">working_directory</span>
+        <span class="n">save_logs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;save_logs&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span>
-            <span class="n">working_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="p">,</span>
+            <span class="n">working_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="k">if</span> <span class="n">save_logs</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span>
         <span class="p">)</span>
         <span class="c1"># Setup the logger</span>

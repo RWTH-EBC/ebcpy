@@ -279,7 +279,8 @@
 
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">working_directory</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span>
                          <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
-                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;n_cpu&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+                         <span class="n">n_cpu</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;n_cpu&quot;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+                         <span class="n">save_logs</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;save_logs&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">))</span>
 
         <span class="c1"># First import the dymola-interface</span>
         <span class="n">dymola_path</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_path&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
