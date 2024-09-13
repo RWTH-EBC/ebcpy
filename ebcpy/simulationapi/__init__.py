@@ -273,7 +273,8 @@ class SimulationAPI:
             in the given directory. For multiple parameter variations also a list
             of savepaths for each parameterset can be specified.
             The savepaths for each parameter set must be unique.
-            Only relevant if return_option equals 'savepath' .
+            Only relevant if return_option equals 'savepath'.
+            Default is the current working directory.
         :keyword str result_file_name:
             Name of the result file. Default is 'resultFile'.
             For multiple parameter variations a list of names
@@ -311,7 +312,7 @@ class SimulationAPI:
         n_simulations = len(parameters)
         # Handle special case for saving files:
         if return_option == "savepath" and n_simulations > 1:
-            savepath = kwargs.get("savepath", [])
+            savepath = kwargs.get("savepath", self.working_directory)
             if isinstance(savepath, (str, os.PathLike, Path)):
                 savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])
