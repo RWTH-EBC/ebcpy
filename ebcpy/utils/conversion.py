@@ -167,6 +167,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     n_rows = len(df_sub.index)
     # Comment header line
     _temp_str = ""
+    
     if kwargs.get("with_tag", True):
         # Convert ("variable", "tag") to "variable_tag"
         _temp_str = sep.join(["_".join(variable_tag) for variable_tag in headers])
@@ -223,4 +224,11 @@ def _convert_to_subset(df, columns, offset):
         raise ValueError("Selected columns contain NaN values. This would lead to errors"
                          "in the simulation environment.")
 
-    return df.loc[:, headers], headers
+    # Convert cases with no tag to tuple
+    def _to_tuple(s):
+        if isinstance(s, tuple):
+            return s
+        return (s, )
+    headers_as_tuple = [_to_tuple(header) for header in headers]
+
+    return df.loc[:, headers], headers_as_tuple
