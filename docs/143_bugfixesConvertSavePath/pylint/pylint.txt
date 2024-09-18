@@ -160,7 +160,7 @@ ebcpy/utils/reproduction.py:353:20: W0715: Exception arguments suggest string fo
 ebcpy/utils/reproduction.py:380:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
 ************* Module ebcpy.utils.conversion
 ebcpy/utils/conversion.py:170:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/utils/conversion.py:228:18: C0103: Argument name "s" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/utils/conversion.py:230:18: C0103: Argument name "s" doesn't conform to snake_case naming style (invalid-name)
 ebcpy/utils/conversion.py:8:0: W0611: Unused pandas imported as pd (unused-import)
 ************* Module ebcpy.modelica.manipulate_ds
 ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
@@ -256,17 +256,13 @@ ebcpy/simulationapi/fmu.py:378:4: R0913: Too many arguments (6/5) (too-many-argu
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1027:1038]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        """Save model as an FMU""" (duplicate-code)
+        ) (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[375:384]
 ==ebcpy.simulationapi.fmu:[193:201]
@@ -277,6 +273,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[289:298]
@@ -286,10 +283,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to: (duplicate-code)
+ (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
 ==ebcpy.simulationapi.__init__:[501:512]
@@ -306,9 +300,9 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
     @property
     def cd(self) -> Path: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
-ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.06/10
+Your code has been rated at 9.07/10
 
