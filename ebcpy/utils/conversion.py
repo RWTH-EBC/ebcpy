@@ -145,7 +145,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
     >>> cols = ["sine.freqHz / Hz"]
     >>> tsd = TimeSeriesData(example_file, sep=";")
-    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols)
+    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", save_path, columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -201,6 +201,8 @@ def _convert_to_subset(df, columns, offset):
     """
     df = df.copy()
     if columns:
+        if isinstance(columns, str):
+            columns = [columns]  # Must be a list
         headers = df[columns].columns.values.tolist()
     else:
         headers = df.columns.values.tolist()
