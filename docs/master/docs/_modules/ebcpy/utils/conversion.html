@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.utils.conversion &mdash; ebcpy 0.5.0 documentation</title>
+  <title>ebcpy.utils.conversion &mdash; ebcpy 0.5.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -227,7 +227,7 @@
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
 <span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
-<span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_txt(tsd, &quot;dummy_input_data&quot;, columns=cols)</span>
+<span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_txt(tsd, &quot;dummy_input_data&quot;, save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
@@ -249,6 +249,7 @@
     <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_sub</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="c1"># Comment header line</span>
     <span class="n">_temp_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
     <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;with_tag&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
         <span class="c1"># Convert (&quot;variable&quot;, &quot;tag&quot;) to &quot;variable_tag&quot;</span>
         <span class="n">_temp_str</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">variable_tag</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
@@ -282,6 +283,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Must be a list</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
@@ -305,7 +308,14 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected columns contain NaN values. This would lead to errors&quot;</span>
                          <span class="s2">&quot;in the simulation environment.&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">],</span> <span class="n">headers</span>
+    <span class="c1"># Convert cases with no tag to tuple</span>
+    <span class="k">def</span> <span class="nf">_to_tuple</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">headers_as_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">_to_tuple</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">],</span> <span class="n">headers_as_tuple</span>
 </pre></div>
 
            </div>

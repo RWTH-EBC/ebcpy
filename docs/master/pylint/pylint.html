@@ -937,7 +937,7 @@
             </tr>
             
             <tr>
-                <td>418</td>
+                <td>419</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1031,7 +1031,7 @@
             </tr>
             
             <tr>
-                <td>367</td>
+                <td>368</td>
                 <td>20</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1041,7 +1041,7 @@
             </tr>
             
             <tr>
-                <td>385</td>
+                <td>386</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1051,7 +1051,7 @@
             </tr>
             
             <tr>
-                <td>419</td>
+                <td>420</td>
                 <td>15</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -1061,7 +1061,7 @@
             </tr>
             
             <tr>
-                <td>511</td>
+                <td>512</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>missing-function-docstring</code></td>
@@ -1071,7 +1071,7 @@
             </tr>
             
             <tr>
-                <td>511</td>
+                <td>512</td>
                 <td>21</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1081,7 +1081,7 @@
             </tr>
             
             <tr>
-                <td>517</td>
+                <td>518</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>missing-function-docstring</code></td>
@@ -1091,7 +1091,7 @@
             </tr>
             
             <tr>
-                <td>517</td>
+                <td>518</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1101,7 +1101,7 @@
             </tr>
             
             <tr>
-                <td>523</td>
+                <td>524</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1111,7 +1111,7 @@
             </tr>
             
             <tr>
-                <td>523</td>
+                <td>524</td>
                 <td>17</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1648,18 +1648,19 @@
                 <td></td>
                 <td><pre>Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
-==ebcpy.simulationapi.__init__:[500:511]
+==ebcpy.simulationapi.__init__:[501:512]
         return self._working_directory
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
             </tr>
             
             <tr>
@@ -1679,7 +1680,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -1689,7 +1690,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -1774,6 +1775,26 @@
                 <td>W0611</td>
                 <td></td>
                 <td><pre>Unused pandas imported as pd</pre></td>
+            </tr>
+            
+            <tr>
+                <td>170</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>230</td>
+                <td>18</td>
+                <td>convention</td>
+                <td><code>invalid-name</code></td>
+                <td>C0103</td>
+                <td>_convert_to_subset._to_tuple</td>
+                <td><pre>Argument name &#34;s&#34; doesn&#39;t conform to snake_case naming style</pre></td>
             </tr>
             
         </table>
@@ -2768,7 +2789,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>81</td>
+                <td>83</td>
             </tr>
             
         </table>
@@ -2853,7 +2874,7 @@
             
             <tr>
                 <td>trailing-whitespace</td>
-                <td>21</td>
+                <td>22</td>
             </tr>
             
             <tr>
@@ -2863,7 +2884,7 @@
             
             <tr>
                 <td>invalid-name</td>
-                <td>16</td>
+                <td>17</td>
             </tr>
             
             <tr>
@@ -3043,7 +3064,7 @@
             
             <tr>
                 <td>ebcpy.utils.conversion</td>
-                <td>1</td>
+                <td>3</td>
             </tr>
             
             <tr>
@@ -3128,7 +3149,7 @@
             
             <tr>
                 <td>ebcpy/utils/conversion.py</td>
-                <td>1</td>
+                <td>3</td>
             </tr>
             
             <tr>
