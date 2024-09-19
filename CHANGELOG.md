@@ -110,3 +110,6 @@
   - Fix missing .egg for new Dymola release #138
 - v0.5.0
   - Added bayesian-optimization to the possible optimizers #129
+- v0.5.1
+  - Add save-logs option for SimulatioAPI #141
+  - Minor bug fixes #143
