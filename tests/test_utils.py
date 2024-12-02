@@ -68,6 +68,28 @@ class TestConversion(unittest.TestCase):
             self.assertTrue(filepath_txt.endswith(".txt"))
             # Remove converted file again
             os.remove(filepath_txt)
+        for with_tag in [True, False]:
+            # Test case for df with no tags
+            filepath_txt = conversion.convert_tsd_to_modelica_txt(
+                tsd=self.tsd.to_df(),
+                save_path_file=Path("some_text_data.txt"),
+                table_name="dummy",
+                columns=self.columns[0],
+                with_tag=with_tag
+            )
+            # Check if converted file exists
+            self.assertTrue(os.path.isfile(filepath_txt))
+            # Check if converted filepath is provided filepath
+            self.assertTrue(filepath_txt.endswith(".txt"))
+            # Check if header matches:
+            with open(filepath_txt, "r") as file:
+                header_line = file.readlines()[2]
+                self.assertEqual(header_line, "#time_in_s\tsine.freqHz / Hz\n")
+
+            # Remove converted file again
+            os.remove(filepath_txt)
+
+
         with self.assertRaises(ValueError):
             conversion.convert_tsd_to_modelica_txt(
                 tsd=self.tsd,
@@ -96,12 +118,13 @@ class TestConversion(unittest.TestCase):
     def test_convert_subset(self):
         """Test _convert_to_df_subset function"""
         df = pd.DataFrame({"val": np.random.rand(100)})
-        df, headers = conversion._convert_to_subset(
-            df=df,
-            columns=[],
-            offset=0)
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(len(headers), 2)
+        for columns in [[], "val"]:
+            df_out, headers = conversion._convert_to_subset(
+                df=df,
+                columns=[],
+                offset=0)
+            self.assertIsInstance(df_out, pd.DataFrame)
+            self.assertEqual(len(headers), 2)
         # Try with NaN
         df = pd.DataFrame({"val": np.random.rand(100)})
         df.loc[2, "val"] = np.nan

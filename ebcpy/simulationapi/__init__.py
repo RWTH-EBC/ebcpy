@@ -155,7 +155,9 @@ class SimulationAPI:
         If None is given, single core will be used.
         Maximum number equals the cpu count of the device.
         **Warning**: Logging is not yet fully working on multiple processes.
-        Output will be written to the stream handler, but not to the created .log files.
+        Output will be written to the stream handler, but not to the created
+        .log files.
+    :keyword bool save_logs: If logs should be stored.
 
     """
     _sim_setup_class: SimulationSetupClass = SimulationSetup
@@ -163,15 +165,17 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, working_directory: Union[Path, str], model_name: str, **kwargs):
+    def __init__(self, working_directory: Union[Path, str], model_name: str,
+                 **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprecation warning
         self.working_directory = working_directory
+        save_logs = kwargs.get("save_logs", True)
         self.logger = setup_logger(
-            working_directory=self.working_directory,
+            working_directory=self.working_directory if save_logs else None,
             name=self.__class__.__name__
         )
         # Setup the logger
@@ -269,7 +273,8 @@ class SimulationAPI:
             in the given directory. For multiple parameter variations also a list
             of savepaths for each parameterset can be specified.
             The savepaths for each parameter set must be unique.
-            Only relevant if return_option equals 'savepath' .
+            Only relevant if return_option equals 'savepath'.
+            Default is the current working directory.
         :keyword str result_file_name:
             Name of the result file. Default is 'resultFile'.
             For multiple parameter variations a list of names
@@ -307,7 +312,7 @@ class SimulationAPI:
         n_simulations = len(parameters)
         # Handle special case for saving files:
         if return_option == "savepath" and n_simulations > 1:
-            savepath = kwargs.get("savepath", [])
+            savepath = kwargs.get("savepath", self.working_directory)
             if isinstance(savepath, (str, os.PathLike, Path)):
                 savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])

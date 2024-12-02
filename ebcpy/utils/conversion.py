@@ -145,7 +145,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
     >>> cols = ["sine.freqHz / Hz"]
     >>> tsd = TimeSeriesData(example_file, sep=";")
-    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", columns=cols)
+    >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", save_path, columns=cols)
     >>> os.remove(filepath)
     """
     if isinstance(save_path_file, pathlib.Path):
@@ -167,6 +167,7 @@ def convert_tsd_to_modelica_txt(tsd, table_name, save_path_file, **kwargs):
     n_rows = len(df_sub.index)
     # Comment header line
     _temp_str = ""
+    
     if kwargs.get("with_tag", True):
         # Convert ("variable", "tag") to "variable_tag"
         _temp_str = sep.join(["_".join(variable_tag) for variable_tag in headers])
@@ -200,6 +201,8 @@ def _convert_to_subset(df, columns, offset):
     """
     df = df.copy()
     if columns:
+        if isinstance(columns, str):
+            columns = [columns]  # Must be a list
         headers = df[columns].columns.values.tolist()
     else:
         headers = df.columns.values.tolist()
@@ -223,4 +226,11 @@ def _convert_to_subset(df, columns, offset):
         raise ValueError("Selected columns contain NaN values. This would lead to errors"
                          "in the simulation environment.")
 
-    return df.loc[:, headers], headers
+    # Convert cases with no tag to tuple
+    def _to_tuple(s):
+        if isinstance(s, tuple):
+            return s
+        return (s, )
+    headers_as_tuple = [_to_tuple(header) for header in headers]
+
+    return df.loc[:, headers], headers_as_tuple
