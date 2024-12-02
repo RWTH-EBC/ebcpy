@@ -2659,7 +2659,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[375:384]\n==ebcpy.simulationapi.fmu:[193:201]\n        savepath = kwargs.pop(\"savepath\", None)\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        if self.use_mp:",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[375:384]\n==ebcpy.simulationapi.fmu:[193:201]\n        savepath = kwargs.pop(\"savepath\", None)\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        # Handle multiprocessing\n        if self.use_mp:",
             "message-id": "R0801"
         },
         {
@@ -2681,7 +2681,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[501:512]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    @property\n    def cd(self) -> Path:",
+            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[501:512]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
             "message-id": "R0801"
         },
         {
@@ -2692,7 +2692,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api)",
+            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.fmu)",
             "message-id": "R0401"
         },
         {
@@ -2714,7 +2714,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.fmu)",
+            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api)",
             "message-id": "R0401"
         }
     ],
@@ -2913,9 +2913,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy.utils.conversion",
+                "ebcpy",
                 "ebcpy.preprocessing",
-                "ebcpy"
+                "ebcpy.utils.conversion"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -2936,23 +2936,23 @@
                 "ebcpy.preprocessing"
             ],
             "numpy": [
-                "ebcpy.data_types",
-                "ebcpy.optimization",
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.statistics_analyzer",
-                "ebcpy.utils.conversion",
-                "ebcpy.simulationapi",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing"
+                "ebcpy.simulationapi",
+                "ebcpy.preprocessing",
+                "ebcpy.data_types",
+                "ebcpy.utils.statistics_analyzer",
+                "ebcpy.modelica.simres",
+                "ebcpy.utils.conversion",
+                "ebcpy.optimization"
             ],
             "pandas": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.manipulate_ds",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing"
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.preprocessing",
+                "ebcpy.modelica.simres",
+                "ebcpy.data_types",
+                "ebcpy.utils.conversion",
+                "ebcpy.modelica.manipulate_ds"
             ],
             "scipy.stats": [
                 "ebcpy.preprocessing"
@@ -3044,25 +3044,25 @@
                 "ebcpy.utils.conversion"
             ],
             "pydantic": [
-                "ebcpy.simulationapi.dymola_api",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi.dymola_api",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.modelica.manipulate_ds": [
                 "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.simulationapi": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.conversion": [
                 "ebcpy.simulationapi.dymola_api"
@@ -3296,9 +3296,9 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy.utils.conversion",
+                "ebcpy",
                 "ebcpy.preprocessing",
-                "ebcpy"
+                "ebcpy.utils.conversion"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -3319,23 +3319,23 @@
                 "ebcpy.preprocessing"
             ],
             "numpy": [
-                "ebcpy.optimization",
-                "ebcpy.modelica.simres",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi",
                 "ebcpy.preprocessing",
+                "ebcpy.modelica.simres",
                 "ebcpy.data_types",
                 "ebcpy.utils.statistics_analyzer",
                 "ebcpy.utils.conversion",
-                "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.optimization"
             ],
             "pandas": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion",
-                "ebcpy.modelica.manipulate_ds",
                 "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing"
+                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.preprocessing",
+                "ebcpy.modelica.simres",
+                "ebcpy.data_types",
+                "ebcpy.utils.conversion",
+                "ebcpy.modelica.manipulate_ds"
             ],
             "scipy.stats": [
                 "ebcpy.preprocessing"
@@ -3427,25 +3427,25 @@
                 "ebcpy.utils.conversion"
             ],
             "pydantic": [
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.modelica.manipulate_ds": [
                 "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.simulationapi": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.conversion": [
                 "ebcpy.simulationapi.dymola_api"
