@@ -1,4 +1,4 @@
-![E.ON EBC RWTH Aachen University](./docs/EBC_Logo.png)
+![E.ON EBC RWTH Aachen University](https://github.com/RWTH-EBC/ebcpy/blob/master/docs/EBC_Logo.png)
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.03861/status.svg)](https://doi.org/10.21105/joss.03861)
 [![pylint](https://rwth-ebc.github.io/ebcpy/master/pylint/pylint.svg )](https://rwth-ebc.github.io/ebcpy/master/pylint/pylint.html)
