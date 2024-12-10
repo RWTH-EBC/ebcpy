@@ -2,12 +2,11 @@
 ebcpy.preprocessing."""
 import unittest
 import os
-import random
 from pathlib import Path
 from datetime import datetime
 import numpy as np
 import pandas as pd
-from ebcpy import preprocessing
+from ebcpy import preprocessing, TimeSeriesData
 
 
 class TestPreProcessing(unittest.TestCase):
@@ -62,7 +61,7 @@ class TestPreProcessing(unittest.TestCase):
         df_temp = preprocessing.convert_index_to_datetime_index(df.copy())
         df_temp = preprocessing.convert_datetime_index_to_float_index(df_temp.copy(), offset=0.0)
         self.assertIsInstance(df_temp.index, type(pd.Index([], dtype="float64")))
-        self.assertTrue(all((df_temp-df) == 0))
+        self.assertTrue(all((df_temp - df) == 0))
 
     def test_time_based_weighted_mean(self):
         """Test function of preprocessing.time_based_weighted_mean().
@@ -78,30 +77,49 @@ class TestPreProcessing(unittest.TestCase):
         # Check correct return type
         self.assertIsInstance(res, np.ndarray)
         # Check correct values
-        self.assertEqual(0, np.mean(np.array([3.55, 13.55])-res))
+        self.assertEqual(0, np.mean(np.array([3.55, 13.55]) - res))
 
     def test_clean_and_space_equally_time_series(self):
         """Test function of preprocessing.clean_and_space_equally_time_series().
         For an example, see the doctest in the function."""
-        # Generate a random frequency
-        supported_frequencys = ["s", "min", "h", "ms"]
-        freq = f"{np.random.randint(1, 60)}{random.choice(supported_frequencys)}"
-        dim = np.random.randint(1, 10000)
+        np.random.seed(1)
+        dim = 100
         df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
-                          columns=list('ABCD')).set_index("A").sort_index()
+                          index=np.arange(0, dim), columns=list('ABCD'))
         # Check if wrong index input raises error:
         with self.assertRaises(TypeError):
-            preprocessing.clean_and_space_equally_time_series(df, freq)
+            preprocessing.clean_and_space_equally_time_series(df, "1s")
+        with self.assertRaises(TypeError):
+            preprocessing.clean_and_space_equally_time_series(TimeSeriesData(df), "1s")
         df = preprocessing.convert_index_to_datetime_index(df)
-        df_temp = preprocessing.clean_and_space_equally_time_series(df, freq)
+        df_temp = preprocessing.clean_and_space_equally_time_series(df, "1s")
         self.assertIsInstance(df_temp, pd.DataFrame)
+        # Trigger upsampling warning
+        with self.assertWarns(UserWarning):
+            preprocessing.clean_and_space_equally_time_series(df, "10s")
         # Test non-numeric input
         df.iloc[0, 0] = "not_a_number"
         with self.assertRaises(ValueError):
-            df_temp = preprocessing.clean_and_space_equally_time_series(df, freq)
+            preprocessing.clean_and_space_equally_time_series(df, "1s")
         # Trigger NaN-input print statement
         df.iloc[0, 0] = np.NaN
-        df_temp = preprocessing.clean_and_space_equally_time_series(df, freq)
+        preprocessing.clean_and_space_equally_time_series(df, "1s")
+        # Generate data with floating index and small frequency
+        df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
+                          index=np.arange(0, dim * 0.01, 0.01), columns=list('ABCD'))
+        df = preprocessing.convert_index_to_datetime_index(df)
+        df_temp = preprocessing.clean_and_space_equally_time_series(df, "10ms")
+        new_freq, new_freq_std = preprocessing.get_df_index_frequency_mean_and_std(df_temp.index)
+        self.assertAlmostEqual(new_freq, 0.01, 6)
+        self.assertAlmostEqual(new_freq_std, 0.0, 6)
+        # Generate data with no frequency
+        index = [i * 10 if i <= 50 else (i - 50) * 15 + 500 for i in range(100)]
+        df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
+                          index=index, columns=list('ABCD'))
+        df = preprocessing.convert_index_to_datetime_index(df, "min")
+        # Trigger warning when desired frequency is outside the confidence interval of a no frequency index
+        with self.assertWarns(UserWarning):
+            preprocessing.clean_and_space_equally_time_series(df, "10min")
 
     def test_low_pass_filter(self):
         """Test function of preprocessing.low_pass_filter().
@@ -110,7 +128,7 @@ class TestPreProcessing(unittest.TestCase):
         # inputs will always work.
         dim = np.random.randint(1, 10000)
         vals = np.random.rand(dim)
-        freq = np.random.randint(1, 100)/100
+        freq = np.random.randint(1, 100) / 100
         order = np.random.randint(1, 5)
         output = preprocessing.low_pass_filter(vals, freq, order)
         self.assertIsInstance(output, np.ndarray)
@@ -136,7 +154,7 @@ class TestPreProcessing(unittest.TestCase):
             preprocessing.create_on_off_signal(df, col_names=["Dummy"],
                                                threshold=[1, 2, 3, 4],
                                                col_names_new=["Dummy_signal"])
-        time_df = pd.DataFrame({"dummy_P_el": np.sin(np.linspace(-20, 20, 100))*100})
+        time_df = pd.DataFrame({"dummy_P_el": np.sin(np.linspace(-20, 20, 100)) * 100})
         df = preprocessing.create_on_off_signal(time_df,
                                                 col_names=["dummy_P_el"],
                                                 threshold=25,

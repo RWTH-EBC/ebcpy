@@ -4,6 +4,7 @@ import sys
 import unittest
 import os
 import shutil
+import pathlib
 import logging
 import numpy as np
 from ebcpy.optimization import Optimizer
@@ -34,18 +35,23 @@ class TestOptimizer(unittest.TestCase):
                 reference_function = opt._scipy_differential_evolution
             elif _framework == "pymoo":
                 reference_function = opt._pymoo
+            elif _framework == "bayesian_optimization":
+                reference_function = opt._bayesian_optimization
             _minimize_func, required_method = opt._choose_framework(_framework)
             self.assertEqual(_minimize_func, reference_function)
         with self.assertRaises(TypeError):
             opt._choose_framework("not_supported_framework")
 
-    def test_set_and_delete_cd(self):
-        """Test the cd and delete functions"""
+    def test_set_and_delete_working_directory(self):
+        """Test the working_directory and delete functions"""
+        example_dir_as_pathlib_path = pathlib.Path(self.example_opt_dir)
         opt = Optimizer()
-        self.assertIsNone(opt.cd)
-        opt = Optimizer(cd=self.example_opt_dir)
-        self.assertEqual(opt.cd, self.example_opt_dir)
-        shutil.rmtree(opt.cd)
+        self.assertIsNone(opt.working_directory)
+        opt = Optimizer(working_directory=self.example_opt_dir)
+        self.assertEqual(opt.working_directory, example_dir_as_pathlib_path)
+        opt = Optimizer(working_directory=example_dir_as_pathlib_path)
+        self.assertEqual(opt.working_directory, example_dir_as_pathlib_path)
+        shutil.rmtree(opt.working_directory)
 
     def test_custom_optimizer(self):
         """Test-case for the customization of the optimization-base-class."""
@@ -76,6 +82,7 @@ class TestOptimizer(unittest.TestCase):
         res_min = my_custom_optimizer.optimize(framework="scipy_minimize",
                                                method="L-BFGS-B",
                                                x0=np.array([0, 0, 0]))
+    
         delta_solution = np.sum(res_min.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
         # test wrong bounds in pymoo and sp_dif_evo
@@ -95,13 +102,15 @@ class TestOptimizer(unittest.TestCase):
                                               method="best2bin")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
-        # Skip dlib test as problems in ci occur.
-        if sys.version_info.minor >= 10:
-            self.skipTest("pymoo is not yet supported in python 3.10")
+        #Skip dlib test as problems in ci occur.
+        # if sys.version_info.minor >= 10:
+        #     self.skipTest("While pymoo is supported for python versions >= 3.10, the CI seems to have problems with it,"
+        #                   "not beeing able to import cma. Thefore skipping tests for those versions")
         res_de = my_custom_optimizer.optimize(framework="pymoo",
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+        
 
     def test_error_handler(self):
         """Test if error handling works for each framework"""

@@ -53,7 +53,6 @@ necessary functions from modelicares to still be able and use loadsim functions.
 from itertools import count
 from collections import namedtuple
 from scipy.io import loadmat
-from scipy.io.matlab.mio_utils import chars_to_strings
 import pandas as pd
 import numpy as np
 
@@ -229,8 +228,8 @@ def get_strings(str_arr):
 
     Strip the whitespace from the right and recode it as utf-8.
     """
-    return [line.rstrip(' \0').encode('latin-1').decode('utf-8')
-            for line in chars_to_strings(str_arr)]
+    return ["".join(word_arr).replace(" ", "")
+            for word_arr in str_arr]
 
 
 class Variable(namedtuple('VariableNamedTuple', ['samples', 'description', 'unit', 'displayUnit'])):
@@ -293,7 +292,12 @@ def mat_to_pandas(fname='dsres.mat',
     # Create the list of variable names.
     if names:
         if 'Time' not in names:
+            names = names.copy()
             names.append('Time')
+        non_existing_variables = list(set(names).difference(_variables.keys()))
+        if non_existing_variables:
+            raise KeyError(f"The following variable names are not in the given .mat file: "
+                           f"{', '.join(non_existing_variables)}")
     else:
         names = _variables.keys()
 
@@ -302,17 +306,19 @@ def mat_to_pandas(fname='dsres.mat',
     data = {}
     for name in names:
 
-        # Get the values.
+        # Get the values
+        array_values = _variables[name].values()
         if np.array_equal(_variables[name].times(), times):
-            values = _variables[name].values()  # Save computation.
+            values = array_values  # Save computation.
+        elif np.isinf(array_values).all():
+            values = array_values[0]  # Inf values can't be resampled
         # Check if all values are constant to save resampling time
-        elif np.count_nonzero(_variables[name].values() -
-                              np.max(_variables[name].values())) == 0:
+        elif np.count_nonzero(array_values -
+                              np.max(array_values)) == 0:
             # Passing a scalar converts automatically to an array.
-            values = np.max(_variables[name].values())
+            values = array_values[0]
         else:
             values = _variables[name].values(t=times)  # Resample.
-
         unit = _variables[name].unit
 
         # Apply an alias if available.

@@ -68,6 +68,28 @@ class TestConversion(unittest.TestCase):
             self.assertTrue(filepath_txt.endswith(".txt"))
             # Remove converted file again
             os.remove(filepath_txt)
+        for with_tag in [True, False]:
+            # Test case for df with no tags
+            filepath_txt = conversion.convert_tsd_to_modelica_txt(
+                tsd=self.tsd.to_df(),
+                save_path_file=Path("some_text_data.txt"),
+                table_name="dummy",
+                columns=self.columns[0],
+                with_tag=with_tag
+            )
+            # Check if converted file exists
+            self.assertTrue(os.path.isfile(filepath_txt))
+            # Check if converted filepath is provided filepath
+            self.assertTrue(filepath_txt.endswith(".txt"))
+            # Check if header matches:
+            with open(filepath_txt, "r") as file:
+                header_line = file.readlines()[2]
+                self.assertEqual(header_line, "#time_in_s\tsine.freqHz / Hz\n")
+
+            # Remove converted file again
+            os.remove(filepath_txt)
+
+
         with self.assertRaises(ValueError):
             conversion.convert_tsd_to_modelica_txt(
                 tsd=self.tsd,
@@ -96,15 +118,16 @@ class TestConversion(unittest.TestCase):
     def test_convert_subset(self):
         """Test _convert_to_df_subset function"""
         df = pd.DataFrame({"val": np.random.rand(100)})
-        df, headers = conversion._convert_to_subset(
-            df=df,
-            columns=[],
-            offset=0)
-        self.assertIsInstance(df, pd.DataFrame)
-        self.assertEqual(len(headers), 2)
+        for columns in [[], "val"]:
+            df_out, headers = conversion._convert_to_subset(
+                df=df,
+                columns=[],
+                offset=0)
+            self.assertIsInstance(df_out, pd.DataFrame)
+            self.assertEqual(len(headers), 2)
         # Try with NaN
         df = pd.DataFrame({"val": np.random.rand(100)})
-        df.loc[2, "val"] = np.NAN
+        df.loc[2, "val"] = np.nan
         with self.assertRaises(ValueError):
             conversion._convert_to_subset(
                 df=df,
@@ -205,7 +228,7 @@ class TestLogger(unittest.TestCase):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("test_logger")
-        self.logger = setup_logger(cd=self.example_dir,
+        self.logger = setup_logger(working_directory=self.example_dir,
                                    name="test_logger")
 
     def test_logging(self):
@@ -233,18 +256,18 @@ class TestReproduction(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.data_dir = Path(__file__).parent.joinpath("data")
         self.save_dir = self.data_dir.joinpath('testzone', 'reproduction_tests')
-        self.cd_files = []
+        self.working_directory_files = []
 
     def test_save_reproduction_archive(self):
         os.getlogin = lambda: "test_login"
         # test no input
         reproduction.input = lambda _: ""
         zip_file = reproduction.save_reproduction_archive()
-        # for tearDown of the files which will be saved in cd when no path is given
-        self.cd_files.append(zip_file)
+        # for tearDown of the files which will be saved in working_directory when no path is given
+        self.working_directory_files.append(zip_file)
         file = Path(sys.modules['__main__'].__file__).absolute().name.replace(".py", "")
         logger_name = f"Study_log_{file}.txt"
-        self.cd_files.append(logger_name)
+        self.working_directory_files.append(logger_name)
         self.assertTrue(zipfile.is_zipfile(zip_file))
         # create a file to remove with CopyFile but leave it open for executing except block
         f = open(self.data_dir.joinpath('remove.txt'), 'w')
@@ -294,7 +317,7 @@ class TestReproduction(unittest.TestCase):
         """Delete saved files"""
         try:
             shutil.rmtree(self.save_dir, ignore_errors=True)
-            for file in self.cd_files:
+            for file in self.working_directory_files:
                 os.remove(file)
         except Exception:
             pass

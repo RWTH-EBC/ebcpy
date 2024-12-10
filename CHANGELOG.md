@@ -75,4 +75,43 @@
   - Fix mp issue #95
   - fix tests for newer dependency versions
   - Remove warnings and update frequency if TimeSeriesData
+  - Add CI based pypi release
+- v0.3.7
+  - Fix setup.py pydantic version
+- v0.3.8
+  - Fix sampling error for non-numeric values #69 #102
+- v0.3.9
+  - Fix error in loading newer ds-data from Dymola #70
+- v0.3.10
+  - Fix fmpy version #109
+  - Fix data format for index frequency of tsd #107
+  - Fix bug in function clean_and_space_equally_time_series #111
+- v0.3.11
+  - Add dymola_exe_path to set of kwargs in DymolaAPI #115
+- v0.3.12
+  - Port handling Add dymola_exe_path to set of kwargs in DymolaAPI #118
+- v0.3.13
+  - Fixes in simulate options and add Dymola CI tests #28, #113, #117
+- v0.3.14
+  - Fix retranslation #121
+  - refactor cd to working_directory #61
+  - Propagate `names` of simres to TimeSeriesData to speed up mat-loading
+- v0.4.0
+  - Preprocessing functions now copy the input 
+  DataFrame by default with the new inplace argument (default False). #125
+  - Add inplace option to TimeSeriesData function (default True)
+- v0.4.1
+  - fix reproduction with modifiers #82
+  - enable model_name=None upon startup of DymolaAPI #130
+  - Only create logger handler if not already done by root-logger
+- v0.4.2
+  - Do not use chars_to_strings from scipy #132
+- v0.4.3
+  - Fix missing .egg for new Dymola release #138
+- v0.5.0
+  - Added bayesian-optimization to the possible optimizers #129
+- v0.5.1
+  - Add save-logs option for SimulatioAPI #141
+  - Minor bug fixes #143
+- v0.5.2
   - Add save options in Dymola #98

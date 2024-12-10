@@ -13,19 +13,20 @@ EXTRAS_REQUIRE = {
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
         'pymoo==0.5.0',
+        'bayesian-optimization==1.4.3',
         'GitPython>=3.1.27',
         'pyarrow>=11.0.0'
     ]
 }
 
 INSTALL_REQUIRES = [
-    'numpy>=1.19.5',
+    'numpy>=1.19.5,<2.0',
     'matplotlib>=3.3.4',
     'scipy>=1.5.4',
     'pandas>=1.1.5',
     'scikit-learn>=0.24.2',
-    'fmpy>=0.2.27',
-    'pydantic>=1.8.2',
+    'fmpy>=0.2.27,<0.3.17',
+    'pydantic>=2.0',
     'h5py>=3.1.0',
     'tables>=3.6.1'
 ]
@@ -36,7 +37,10 @@ if sys.version_info.minor >= 9 and sys.version_info.major == 3:
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
-VERSION = "0.3.6"
+with open(Path(__file__).parent.joinpath("ebcpy", "__init__.py"), "r") as file:
+    for line in file.readlines():
+        if line.startswith("__version__"):
+            VERSION = line.replace("__version__", "").split("=")[1].strip().replace("'", "").replace('"', '')
 
 setuptools.setup(
     name='ebcpy',

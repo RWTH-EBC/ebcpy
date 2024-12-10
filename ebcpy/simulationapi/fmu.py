@@ -74,7 +74,7 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, working_directory, model_name, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
         self._model_description = None
@@ -88,9 +88,9 @@ class FMU_API(simulationapi.SimulationAPI):
             model_name = str(model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError(f"{model_name} is not a valid fmu file!")
-        if cd is None:
-            cd = os.path.dirname(model_name)
-        super().__init__(cd, model_name, **kwargs)
+        if working_directory is None:
+            working_directory = os.path.dirname(model_name)
+        super().__init__(working_directory, model_name, **kwargs)
         # Register exit option
         atexit.register(self.close)
 
@@ -160,6 +160,7 @@ class FMU_API(simulationapi.SimulationAPI):
         See the docstring of simulate() for information on kwargs.
 
         Additional kwargs:
+
         :keyword str result_file_suffix:
             Suffix of the result file. Supported options can be extracted
             from the TimeSeriesData.save() function.
@@ -169,6 +170,7 @@ class FMU_API(simulationapi.SimulationAPI):
             Supported options can be extracted
             from the TimeSeriesData.save() function.
             Default is 'pyarrow'.
+
         """
         return super().simulate(parameters=parameters, return_option=return_option, **kwargs)
 
@@ -184,8 +186,17 @@ class FMU_API(simulationapi.SimulationAPI):
         # Unpack kwargs:
         parameters = kwargs.pop("parameters", None)
         return_option = kwargs.pop("return_option", "time_series")
-        inputs = kwargs.get("inputs", None)
-        fail_on_error = kwargs.get("fail_on_error", True)
+        inputs = kwargs.pop("inputs", None)
+        fail_on_error = kwargs.pop("fail_on_error", True)
+        result_file_name = kwargs.pop("result_file_name", "resultFile")
+        result_file_suffix = kwargs.pop("result_file_suffix", "csv")
+        parquet_engine = kwargs.pop('parquet_engine', 'pyarrow')
+        savepath = kwargs.pop("savepath", None)
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
         if self.use_mp:
             if self._fmu_instance is None:
@@ -253,13 +264,8 @@ class FMU_API(simulationapi.SimulationAPI):
                             str(self.sim_setup.output_interval)[::-1].find('.'))
 
         if return_option == "savepath":
-            result_file_name = kwargs.get("result_file_name", "resultFile")
-            result_file_suffix = kwargs.get("result_file_suffix", "csv")
-            parquet_engine = kwargs.get('parquet_engine', 'pyarrow')
-            savepath = kwargs.get("savepath", None)
-
             if savepath is None:
-                savepath = self.cd
+                savepath = self.working_directory
 
             os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
@@ -283,7 +289,7 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         self.logger.info("Extracting fmu and reading fmu model description")
         # First load model description and extract variables
-        self._single_unzip_dir = os.path.join(self.cd,
+        self._single_unzip_dir = os.path.join(self.working_directory,
                                               os.path.basename(self.model_name)[:-4] + "_extracted")
         os.makedirs(self._single_unzip_dir, exist_ok=True)
         self._single_unzip_dir = fmpy.extract(self.model_name,

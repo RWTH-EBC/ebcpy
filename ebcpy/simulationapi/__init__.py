@@ -10,11 +10,14 @@ import os
 import sys
 import itertools
 import time
+from pathlib import Path
 from datetime import timedelta
 from typing import Dict, Union, TypeVar, Any, List
 from abc import abstractmethod
 import multiprocessing as mp
-from pydantic import BaseModel, Field, validator
+
+import pydantic
+from pydantic import BaseModel, Field, field_validator
 import numpy as np
 from ebcpy.utils import setup_logger
 from ebcpy.utils.reproduction import save_reproduction_archive
@@ -47,10 +50,11 @@ class Variable(BaseModel):
                     'Only for ints and floats variables.'
     )
 
-    @validator("value")
-    def check_value_type(cls, value, values):
+    @field_validator("value")
+    @classmethod
+    def check_value_type(cls, value, info: pydantic.FieldValidationInfo):
         """Check if the given value has correct type"""
-        _type = values["type"]
+        _type = info.data["type"]
         if _type is None:
             return value   # No type -> no conversion
         if value is None:
@@ -59,11 +63,12 @@ class Variable(BaseModel):
             return _type(value)
         return value
 
-    @validator('max', 'min', always=True)
-    def check_value(cls, value, values, field):
+    @field_validator('max', 'min')
+    @classmethod
+    def check_value(cls, value, info: pydantic.FieldValidationInfo):
         """Check if the given bounds are correct."""
         # Check if the variable type even allows for min/max bounds
-        _type = values["type"]
+        _type = info.data["type"]
         if _type is None:
             return value   # No type -> no conversion
         if _type not in (float, int, bool):
@@ -75,7 +80,7 @@ class Variable(BaseModel):
             return None
         if value is not None:
             return _type(value)
-        if field.name == "min":
+        if info.field_name == "min":
             return -np.inf if _type != bool else False
         # else it is max
         return np.inf if _type != bool else True
@@ -109,13 +114,14 @@ class SimulationSetup(BaseModel):
     )
     solver: str = Field(
         title="solver",
-        default="",  # Is added in the validator
+        default="",  # Is added in the field_validator
         description="The solver to be used for numerical integration."
     )
     _default_solver: str = None
     _allowed_solvers: list = []
 
-    @validator("solver", always=True, allow_reuse=True)
+    @field_validator("solver")
+    @classmethod
     def check_valid_solver(cls, solver):
         """
         Check if the solver is in the list of valid solvers
@@ -131,7 +137,6 @@ class SimulationSetup(BaseModel):
     class Config:
         """Overwrite default pydantic Config"""
         extra = 'forbid'
-        underscore_attrs_are_private = True
 
 
 SimulationSetupClass = TypeVar("SimulationSetupClass", bound=SimulationSetup)
@@ -141,7 +146,7 @@ class SimulationAPI:
     """Base-class for simulation apis. Every simulation-api class
     must inherit from this class. It defines the structure of each class.
 
-    :param str,os.path.normpath cd:
+    :param str,Path working_directory:
         Working directory path
     :param str model_name:
         Name of the model being simulated.
@@ -150,7 +155,9 @@ class SimulationAPI:
         If None is given, single core will be used.
         Maximum number equals the cpu count of the device.
         **Warning**: Logging is not yet fully working on multiple processes.
-        Output will be written to the stream handler, but not to the created .log files.
+        Output will be written to the stream handler, but not to the created
+        .log files.
+    :keyword bool save_logs: If logs should be stored.
 
     """
     _sim_setup_class: SimulationSetupClass = SimulationSetup
@@ -158,13 +165,20 @@ class SimulationAPI:
         'pool',
     ]
 
-    def __init__(self, cd, model_name, **kwargs):
+    def __init__(self, working_directory: Union[Path, str], model_name: str,
+                 **kwargs):
         # Private helper attrs for multiprocessing
         self._n_sim_counter = 0
         self._n_sim_total = 0
         self._progress_int = 0
+        # Handle deprecation warning
+        self.working_directory = working_directory
+        save_logs = kwargs.get("save_logs", True)
+        self.logger = setup_logger(
+            working_directory=self.working_directory if save_logs else None,
+            name=self.__class__.__name__
+        )
         # Setup the logger
-        self.logger = setup_logger(cd=cd, name=self.__class__.__name__)
         self.logger.info(f'{"-" * 25}Initializing class {self.__class__.__name__}{"-" * 25}')
         # Check multiprocessing
         self.n_cpu = kwargs.get("n_cpu", 1)
@@ -181,12 +195,12 @@ class SimulationAPI:
             self.use_mp = False
         # Setup the model
         self._sim_setup = self._sim_setup_class()
-        self.cd = cd
         self.inputs: Dict[str, Variable] = {}       # Inputs of model
         self.outputs: Dict[str, Variable] = {}      # Outputs of model
         self.parameters: Dict[str, Variable] = {}   # Parameter of model
         self.states: Dict[str, Variable] = {}       # States of model
         self.result_names = []
+        self._model_name = None
         self.model_name = model_name
 
     # MP-Functions
@@ -254,12 +268,13 @@ class SimulationAPI:
             Only variables specified in result_names will be returned.
             - 'savepath': Returns the savepath where the results are stored.
             Depending on the API, different kwargs may be used to specify file type etc.
-        :keyword str,os.path.normpath savepath:
+        :keyword str,Path savepath:
             If path is provided, the relevant simulation results will be saved
             in the given directory. For multiple parameter variations also a list
             of savepaths for each parameterset can be specified.
             The savepaths for each parameter set must be unique.
-            Only relevant if return_option equals 'savepath' .
+            Only relevant if return_option equals 'savepath'.
+            Default is the current working directory.
         :keyword str result_file_name:
             Name of the result file. Default is 'resultFile'.
             For multiple parameter variations a list of names
@@ -288,32 +303,44 @@ class SimulationAPI:
             parameters = [{}]
         if isinstance(parameters, dict):
             parameters = [parameters]
+
+        if return_option not in ["time_series", "savepath", "last_point"]:
+            raise ValueError(f"Given return option '{return_option}' is not supported.")
+
         new_kwargs = {}
         kwargs["return_option"] = return_option  # Update with arg
+        n_simulations = len(parameters)
         # Handle special case for saving files:
-        if return_option == "savepath" and len(parameters) > 1:
-            savepath = kwargs.get("savepath", [])
-            if isinstance(savepath, (str, os.PathLike)):
-                savepath = [savepath] * len(parameters)
+        if return_option == "savepath" and n_simulations > 1:
+            savepath = kwargs.get("savepath", self.working_directory)
+            if isinstance(savepath, (str, os.PathLike, Path)):
+                savepath = [savepath] * n_simulations
             result_file_name = kwargs.get("result_file_name", [])
-            if (len(set(savepath)) != len(parameters) and
-                    len(set(result_file_name)) != len(parameters)):
-                raise TypeError(
+            if isinstance(result_file_name, str):
+                result_file_name = [result_file_name] * n_simulations
+            if len(savepath) != len(result_file_name):
+                raise ValueError("Given savepath and result_file_name "
+                                 "have not the same length.")
+            joined_save_paths = []
+            for _single_save_path, _single_result_name in zip(savepath, result_file_name):
+                joined_save_paths.append(os.path.join(_single_save_path, _single_result_name))
+            if len(set(joined_save_paths)) != n_simulations:
+                raise ValueError(
                     "Simulating multiple parameter set's on "
-                    "the same savepath will overwrite old "
-                    "results or even cause errors. "
-                    "Specify a result_file_name or savepath for each "
-                    "parameter combination"
+                    "the same combination of savepath and result_file_name "
+                    "will override results or even cause errors. "
+                    "Specify a unique result_file_name-savepath combination "
+                    "for each parameter combination"
                 )
         for key, value in kwargs.items():
             if isinstance(value, list):
-                if len(value) != len(parameters):
+                if len(value) != n_simulations:
                     raise ValueError(f"Mismatch in multiprocessing of "
-                                     f"given parameters ({len(parameters)}) "
+                                     f"given parameters ({n_simulations}) "
                                      f"and given {key} ({len(value)})")
                 new_kwargs[key] = value
             else:
-                new_kwargs[key] = [value] * len(parameters)
+                new_kwargs[key] = [value] * n_simulations
         kwargs = []
         for _idx, _parameters in enumerate(parameters):
             kwargs.append(
@@ -350,7 +377,7 @@ class SimulationAPI:
                 "return_option": _single_kwargs["return_option"],
                 **_single_kwargs
             }) for _single_kwargs in kwargs]
-        self.logger.info(f"Finished {len(parameters)} simulations on {self.n_cpu} processes in "
+        self.logger.info(f"Finished {n_simulations} simulations on {self.n_cpu} processes in "
                          f"{timedelta(seconds=int(time.time() - t_sim_start))}")
         if len(results) == 1:
             return results[0]
@@ -427,11 +454,14 @@ class SimulationAPI:
         return self._model_name
 
     @model_name.setter
-    def model_name(self, model_name):
+    def model_name(self, model_name: str):
         """
         Set new model_name and trigger further functions
         to load parameters etc.
         """
+        # Only update if the model_name actually changes
+        if self._model_name == model_name:
+            return
         self._model_name = model_name
         # Only update model if it's the first setup. On multiprocessing,
         # all objects are duplicated and thus this setter is triggered again.
@@ -462,20 +492,39 @@ class SimulationAPI:
         raise NotImplementedError(f'{self.__class__.__name__}._update_model '
                                   f'function is not defined')
 
-    def set_cd(self, cd):
+    def set_working_directory(self, working_directory: Union[Path, str]):
         """Base function for changing the current working directory."""
-        self.cd = cd
+        self.working_directory = working_directory
 
     @property
-    def cd(self) -> str:
+    def working_directory(self) -> Path:
         """Get the current working directory"""
-        return self._cd
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set the current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    def set_cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
+
+    @property
+    def cd(self) -> Path:
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
-        """Set the current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+    def cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def result_names(self) -> List[str]:

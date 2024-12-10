@@ -4,13 +4,19 @@ of Modelica-Models."""
 import sys
 import os
 import shutil
-import pathlib
+import uuid
 import warnings
 import atexit
 import json
+import time
+import socket
+from pathlib import Path
+from contextlib import closing
 from typing import Union, List
+
 from pydantic import Field, BaseModel
 import pandas as pd
+
 from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
@@ -61,10 +67,11 @@ class DymolaAPI(SimulationAPI):
     """
     API to a Dymola instance.
 
-    :param str,os.path.normpath cd:
+    :param str,Path working_directory:
         Dirpath for the current working directory of dymola
     :param str model_name:
-        Name of the model to be simulated
+        Name of the model to be simulated.
+        If None, it has to be provided prior to or when calling simulate().
     :param list packages:
         List with path's to the packages needed to simulate the model
     :keyword Boolean show_window:
@@ -85,12 +92,7 @@ class DymolaAPI(SimulationAPI):
             - derivatives=True
             - inputs=True
             - outputs=True
-            - auxiliaries=False
-    :keyword str dymola_path:
-         Path to the dymola installation on the device. Necessary
-         e.g. on linux, if we can't find the path automatically.
-         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
-    :keyword int n_restart:
+            - auxiliaries=False    :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
         below 1 Dymola does not restart.
@@ -116,7 +118,7 @@ class DymolaAPI(SimulationAPI):
         If given, the Version needs to be equal to the folder name
         of your installation.
 
-        **Example:** If you have two version installed at
+        **Example:** If you have two versions installed at
 
         - ``C://Program Files//Dymola 2021`` and
         - ``C://Program Files//Dymola 2020x``
@@ -125,9 +127,26 @@ class DymolaAPI(SimulationAPI):
         ``dymola_version='Dymola 2020x'``.
 
         This parameter is overwritten if ``dymola_path`` is specified.
+    :keyword str dymola_path:
+         Path to the dymola installation on the device. Necessary
+         e.g. on linux, if we can't find the path automatically.
+         Example: ``dymola_path="C://Program Files//Dymola 2020x"``
     :keyword str dymola_interface_path:
-        Only relevant for the case when the dymola-exe path
+        Direct path to the .egg-file of the dymola interface.
+        Only relevant when the dymola_path
         differs from the interface path.
+    :keyword str dymola_exe_path:
+        Direct path to the dymola executable.
+        Only relevant if the dymola installation do not follow
+        the official guideline.
+    :keyword float time_delay_between_starts:
+        If starting multiple Dymola instances on multiple
+        cores, a time delay between each start avoids weird
+        behaviour, such as requiring to set the C-Compiler again
+        as Dymola overrides the default .dymx setup file.
+        If you start e.g. 20 instances and specify `time_delay_between_starts=5`,
+        each 5 seconds one instance will start, taking in total
+        100 seconds. Default is no delay.
 
     Example:
 
@@ -135,7 +154,7 @@ class DymolaAPI(SimulationAPI):
     >>> from ebcpy import DymolaAPI
     >>> # Specify the model name
     >>> model_name = "Modelica.Thermal.FluidHeatFlow.Examples.PumpAndValve"
-    >>> dym_api = DymolaAPI(cd=os.getcwd(),
+    >>> dym_api = DymolaAPI(working_directory=os.getcwd(),
     >>>                     model_name=model_name,
     >>>                     packages=[],
     >>>                     show_window=True)
@@ -160,10 +179,18 @@ class DymolaAPI(SimulationAPI):
         "mos_script_pre",
         "mos_script_post",
         "dymola_version",
-        "dymola_interface_path"
+        "dymola_interface_path",
+        "dymola_exe_path",
+        "time_delay_between_starts"
     ]
 
-    def __init__(self, cd, model_name, packages=None, **kwargs):
+    def __init__(
+            self,
+            working_directory: Union[Path, str],
+            model_name: str = None,
+            packages: List[Union[Path, str]] = None,
+            **kwargs
+    ):
         """Instantiate class objects."""
         self.dymola = None  # Avoid key-error in get-state. Instance attribute needs to be there.
         # Update kwargs with regard to what kwargs are supported.
@@ -187,6 +214,8 @@ class DymolaAPI(SimulationAPI):
         self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
         self.dymola_interface_path = kwargs.pop("dymola_interface_path", None)
+        self.dymola_exe_path = kwargs.pop("dymola_exe_path", None)
+        _time_delay_between_starts = kwargs.pop("time_delay_between_starts", 0)
         for mos_script in [self.mos_script_pre, self.mos_script_post]:
             if mos_script is not None:
                 if not os.path.isfile(mos_script):
@@ -206,9 +235,10 @@ class DymolaAPI(SimulationAPI):
         if self.mos_script_post is not None:
             self.mos_script_post = self._make_modelica_normpath(self.mos_script_post)
 
-        super().__init__(cd=cd,
+        super().__init__(working_directory=working_directory,
                          model_name=model_name,
-                         n_cpu=kwargs.pop("n_cpu", 1))
+                         n_cpu=kwargs.pop("n_cpu", 1),
+                         save_logs=kwargs.pop("save_logs", True))
 
         # First import the dymola-interface
         dymola_path = kwargs.pop("dymola_path", None)
@@ -216,37 +246,37 @@ class DymolaAPI(SimulationAPI):
             if not os.path.exists(dymola_path):
                 raise FileNotFoundError(f"Given path '{dymola_path}' can not be found on "
                                         "your machine.")
-            _dym_install = dymola_path
         else:
             # Get the dymola-install-path:
             _dym_installations = self.get_dymola_install_paths()
             if _dym_installations:
                 if self.dymola_version:
-                    _found_version = False
-                    for _dym_install in _dym_installations:
-                        if _dym_install.endswith(self.dymola_version):
-                            _found_version = True
-                            break
-                    if not _found_version:
-                        raise ValueError(
-                            f"Given dymola_version '{self.dymola_version}' not found in "
-                            f"the list of dymola installations {_dym_installations}"
-                        )
+                    dymola_path = _get_dymola_path_of_version(
+                        dymola_installations=_dym_installations,
+                        dymola_version=self.dymola_version
+                    )
                 else:
-                    _dym_install = _dym_installations[0]  # 0 is the newest
-                self.logger.info("Using dymola installation at %s", _dym_install)
+                    dymola_path = _dym_installations[0]  # 0 is the newest
+                self.logger.info("Using dymola installation at %s", dymola_path)
             else:
-                raise FileNotFoundError("Could not find a dymola-interface on your machine.")
-        self.dymola_exe_path = self.get_dymola_path(_dym_install)
+                if self.dymola_exe_path is None or self.dymola_interface_path is None:
+                    raise FileNotFoundError(
+                        "Could not find dymola on your machine. "
+                        "Thus, not able to find the `dymola_exe_path` and `dymola_interface_path`. "
+                        "Either specify both or pass an existing `dymola_path`."
+                    )
+        self.dymola_path = dymola_path
+        if self.dymola_exe_path is None:
+            self.dymola_exe_path = self.get_dymola_exe_path(dymola_path)
         self.logger.info("Using dymola.exe: %s", self.dymola_exe_path)
         if self.dymola_interface_path is None:
-            self.dymola_interface_path = self.get_dymola_interface_path(_dym_install)
+            self.dymola_interface_path = self.get_dymola_interface_path(dymola_path)
         self.logger.info("Using dymola interface: %s", self.dymola_interface_path)
 
         self.packages = []
         if packages is not None:
             for package in packages:
-                if isinstance(package, pathlib.Path):
+                if isinstance(package, Path):
                     self.packages.append(str(package))
                 elif isinstance(package, str):
                     self.packages.append(package)
@@ -265,7 +295,8 @@ class DymolaAPI(SimulationAPI):
         if self.n_restart > 0:
             self.logger.info("Open blank placeholder Dymola instance to ensure"
                              " a licence during Dymola restarts")
-            self._dummy_dymola_instance = self._open_dymola_interface()
+            # Use standard port allocation, should always work
+            self._dummy_dymola_instance = self._open_dymola_interface(port=-1)
             atexit.register(self._close_dummy)
 
         # List storing structural parameters for later modifying the simulation-name.
@@ -275,13 +306,22 @@ class DymolaAPI(SimulationAPI):
         if not self.debug:
             atexit.register(self.close)
         if self.use_mp:
-            self.pool.map(self._setup_dymola_interface, [True for _ in range(self.n_cpu)])
+            ports = _get_n_available_ports(n_ports=self.n_cpu)
+            self.pool.map(
+                self._setup_dymola_interface,
+                [dict(use_mp=True, port=port, time_delay=i * _time_delay_between_starts)
+                 for i, port in enumerate(ports)]
+            )
         # For translation etc. always setup a default dymola instance
-        self.dymola = self._setup_dymola_interface(use_mp=False)
+        self.dymola = self._setup_dymola_interface(dict(use_mp=False))
+        if not self.license_is_available():
+            warnings.warn("You have no licence to use Dymola. "
+                          "Hence you can only simulate models with 8 or less equations.")
 
         self.fully_initialized = True
         # Trigger on init.
-        self._update_model()
+        if model_name is not None:
+            self._update_model()
         # Set result_names to output variables.
         self.result_names = list(self.outputs.keys())
 
@@ -362,21 +402,31 @@ class DymolaAPI(SimulationAPI):
 
     def _single_simulation(self, kwargs):
         # Unpack kwargs
-        show_eventlog = kwargs.get("show_eventlog", False)
-        squeeze = kwargs.get("squeeze", True)
-        result_file_name = kwargs.get("result_file_name", 'resultFile')
-        parameters = kwargs.get("parameters")
-        return_option = kwargs.get("return_option")
-        model_names = kwargs.get("model_names")
-        inputs = kwargs.get("inputs", None)
-        fail_on_error = kwargs.get("fail_on_error", True)
-        structural_parameters = kwargs.get("structural_parameters", [])
+        show_eventlog = kwargs.pop("show_eventlog", False)
+        squeeze = kwargs.pop("squeeze", True)
+        result_file_name = kwargs.pop("result_file_name", 'resultFile')
+        parameters = kwargs.pop("parameters")
+        return_option = kwargs.pop("return_option")
+        model_names = kwargs.pop("model_names", None)
+        inputs = kwargs.pop("inputs", None)
+        fail_on_error = kwargs.pop("fail_on_error", True)
+        structural_parameters = kwargs.pop("structural_parameters", [])
+        table_name = kwargs.pop("table_name", None)
+        file_name = kwargs.pop("file_name", None)
+        savepath = kwargs.pop("savepath", None)
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
         # Handle multiprocessing
         if self.use_mp:
             idx_worker = self.worker_idx
             if self.dymola is None:
-                self._setup_dymola_interface(use_mp=True)
+                # This should not affect #119, as this rarely happens. Thus, the
+                # method used in the DymolaInterface should work.
+                self._setup_dymola_interface(dict(use_mp=True))
 
         # Handle eventlog
         if show_eventlog:
@@ -405,6 +455,13 @@ class DymolaAPI(SimulationAPI):
                     "Difference: %s",
                     " ,".join(list(set(_res_names).difference(self.result_names)))
                 )
+
+        if self.model_name is None:
+            raise ValueError(
+                "You neither passed a model_name when "
+                "starting DymolaAPI, nor when calling simulate. "
+                "Can't simulate no model."
+            )
 
         # Handle parameters:
         if parameters is None:
@@ -459,10 +516,7 @@ class DymolaAPI(SimulationAPI):
         # Handle inputs
         if inputs is not None:
             # Unpack additional kwargs
-            try:
-                table_name = kwargs["table_name"]
-                file_name = kwargs["file_name"]
-            except KeyError as err:
+            if table_name is None or file_name is None:
                 raise KeyError("For inputs to be used by DymolaAPI.simulate, you "
                                "have to specify the 'table_name' and the 'file_name' "
                                "as keyword arguments of the function. These must match"
@@ -549,7 +603,7 @@ class DymolaAPI(SimulationAPI):
             log = self.dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
-            dslog_path = os.path.join(self.cd, 'dslog.txt')
+            dslog_path = self.working_directory.joinpath('dslog.txt')
             try:
                 with open(dslog_path, "r") as dslog_file:
                     dslog_content = dslog_file.read()
@@ -566,24 +620,26 @@ class DymolaAPI(SimulationAPI):
 
         if return_option == "savepath":
             _save_name_dsres = f"{result_file_name}.mat"
-            savepath = kwargs.pop("savepath", None)
-            # Get the cd of the current dymola instance
+            # Get the working_directory of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_cd = str(pathlib.Path(self.dymola.getLastErrorLog().replace("\n", "")))
-            if savepath is None or str(savepath) == dymola_cd:
-                return os.path.join(dymola_cd, _save_name_dsres)
+            dymola_working_directory = str(Path(self.dymola.getLastErrorLog().replace("\n", "")))
+            if savepath is None or str(savepath) == dymola_working_directory:
+                return os.path.join(dymola_working_directory, _save_name_dsres)
             os.makedirs(savepath, exist_ok=True)
-            for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
+            for filename in [_save_name_dsres]:
+                # Copying dslogs and dsfinals can lead to errors,
+                # as the names are not unique
+                # for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 try:
                     os.remove(os.path.join(savepath, filename))
                 except OSError:
                     pass
                 # Move files
-                shutil.copy(os.path.join(dymola_cd, filename),
+                shutil.copy(os.path.join(dymola_working_directory, filename),
                             os.path.join(savepath, filename))
-                os.remove(os.path.join(dymola_cd, filename))
+                os.remove(os.path.join(dymola_working_directory, filename))
             return os.path.join(savepath, _save_name_dsres)
 
         data = res[1]  # Get data
@@ -689,18 +745,25 @@ class DymolaAPI(SimulationAPI):
         else:
             raise Exception("Could not load dsfinal into Dymola.")
 
-    @SimulationAPI.cd.setter
-    def cd(self, cd):
+    @SimulationAPI.working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
         """Set the working directory to the given path"""
-        self._cd = cd
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        self._working_directory = working_directory
         if self.dymola is None:  # Not yet started
             return
-        # Also set the cd in the dymola api
+        # Also set the working_directory in the dymola api
         self.set_dymola_cd(dymola=self.dymola,
-                           cd=cd)
+                           cd=working_directory)
         if self.use_mp:
-            self.logger.warning("Won't set the cd for all workers, "
+            self.logger.warning("Won't set the working_directory for all workers, "
                                 "not yet implemented.")
+
+    @SimulationAPI.cd.setter
+    def cd(self, cd):
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     def set_dymola_cd(self, dymola, cd):
         """
@@ -783,9 +846,13 @@ class DymolaAPI(SimulationAPI):
             else:
                 self.states[idx] = _var_ebcpy
 
-    def _setup_dymola_interface(self, use_mp):
+    def _setup_dymola_interface(self, kwargs: dict):
         """Load all packages and change the current working directory"""
-        dymola = self._open_dymola_interface()
+        use_mp = kwargs["use_mp"]
+        port = kwargs.get("port", -1)
+        time_delay = kwargs.get("time_delay", 0)
+        time.sleep(time_delay)
+        dymola = self._open_dymola_interface(port=port)
         self._check_dymola_instances()
         if use_mp:
             cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
@@ -809,15 +876,19 @@ class DymolaAPI(SimulationAPI):
         self.logger.info("Loaded modules")
 
         dymola.experimentSetupOutput(**self.experiment_setup_output.dict())
-        if not dymola.RequestOption("Standard"):
-            warnings.warn("You have no licence to use Dymola. "
-                          "Hence you can only simulate models with 8 or less equations.")
         if use_mp:
             DymolaAPI.dymola = dymola
             return None
         return dymola
 
-    def _open_dymola_interface(self):
+    def license_is_available(self, option: str = "Standard"):
+        """Check if license is available"""
+        if self.dymola is None:
+            warnings.warn("You want to check the license before starting dymola, this is not supported.")
+            return False
+        return self.dymola.RequestOption(option)
+
+    def _open_dymola_interface(self, port):
         """Open an instance of dymola and return the API-Object"""
         if self.dymola_interface_path not in sys.path:
             sys.path.insert(0, self.dymola_interface_path)
@@ -825,7 +896,8 @@ class DymolaAPI(SimulationAPI):
             from dymola.dymola_interface import DymolaInterface
             from dymola.dymola_exception import DymolaConnectionException
             return DymolaInterface(showwindow=self.show_window,
-                                   dymolapath=self.dymola_exe_path)
+                                   dymolapath=self.dymola_exe_path,
+                                   port=port)
         except ImportError as error:
             raise ImportError("Given dymola-interface could not be "
                               "loaded:\n %s" % self.dymola_interface_path) from error
@@ -863,7 +935,7 @@ class DymolaAPI(SimulationAPI):
             self.logger.error("Could not load packages from Dymola, using self.packages")
             packages = []
             for pack in self.packages:
-                pack = pathlib.Path(pack)
+                pack = Path(pack)
                 if pack.name == "package.mo":
                     packages.append(pack.parent.name)
         valid_packages = []
@@ -875,13 +947,13 @@ class DymolaAPI(SimulationAPI):
             if not isinstance(pack_path, str):
                 self.logger.error("Could not load model resource for package %s", pack)
             if os.path.isfile(pack_path):
-                valid_packages.append(pathlib.Path(pack_path).parent)
+                valid_packages.append(Path(pack_path).parent)
         return valid_packages
 
     def save_for_reproduction(
             self,
             title: str,
-            path: pathlib.Path = None,
+            path: Path = None,
             files: list = None,
             save_total_model: bool = True,
             export_fmu: bool = True,
@@ -950,11 +1022,29 @@ class DymolaAPI(SimulationAPI):
         # Total model
         if save_total_model:
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
-            _total_model = pathlib.Path(self.cd).joinpath(_total_model_name)
+            _total_model = Path(self.cd).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
+            if "(" in self.model_name:
+                # Create temporary model:
+                temp_model_file = Path(self.cd).joinpath(f"temp_total_model_{uuid.uuid4()}.mo")
+                temp_mode_name = f"{self.model_name.split('(')[0].split('.')[-1]}WithModifier"
+                with open(temp_model_file, "w") as file:
+                    file.write(f"model {temp_mode_name}\n  extends {self.model_name};\nend {temp_mode_name};")
+                res = self.dymola.openModel(str(temp_model_file), changeDirectory=False)
+                if not res:
+                    self.logger.error(
+                        "Could not create separate model for model with modifiers: %s",
+                        self.model_name
+                    )
+                    model_name_to_save = self.model_name
+                else:
+                    model_name_to_save = temp_mode_name
+                os.remove(temp_model_file)
+            else:
+                model_name_to_save = self.model_name
             res = self.dymola.saveTotalModel(
                 fileName=str(_total_model),
-                modelName=self.model_name
+                modelName=model_name_to_save
             )
             if res:
                 files.append(ReproductionFile(
@@ -999,7 +1089,7 @@ class DymolaAPI(SimulationAPI):
             if fail_on_error:
                 raise Exception(msg)
         else:
-            path = pathlib.Path(self.cd).joinpath(res + ".fmu")
+            path = Path(self.cd).joinpath(res + ".fmu")
             return path
 
     @staticmethod
@@ -1014,7 +1104,7 @@ class DymolaAPI(SimulationAPI):
         :return: str
             Path readable in dymola
         """
-        if isinstance(path, pathlib.Path):
+        if isinstance(path, Path):
             path = str(path)
 
         path = path.replace("\\", "/")
@@ -1034,18 +1124,23 @@ class DymolaAPI(SimulationAPI):
             The dymola installation folder. Example:
             "C://Program Files//Dymola 2020"
         :return: str
-            Path to the dymola.egg-file
+            Path to the dymola.egg-file or .whl file (for 2024 refresh 1 or newer versions)
         """
-        path_to_egg_file = os.path.normpath("Modelica/Library/python_interface/dymola.egg")
-        egg_file = os.path.join(dymola_install_dir, path_to_egg_file)
-        if not os.path.isfile(egg_file):
-            raise FileNotFoundError(f"The given dymola installation directory "
-                                    f"'{dymola_install_dir}' has no "
-                                    f"dymola-interface egg-file.")
-        return egg_file
+        path_to_interface = os.path.join(dymola_install_dir, "Modelica", "Library", "python_interface")
+        path_to_egg_file = os.path.join(path_to_interface, "dymola.egg")
+        if os.path.isfile(path_to_egg_file):
+            return path_to_egg_file
+        # Try to find .whl file:
+        for file in os.listdir(path_to_interface):
+            if file.endswith(".whl"):
+                return os.path.join(path_to_interface, file)
+        # If still here, no .egg or .whl was found
+        raise FileNotFoundError(f"The given dymola installation directory "
+                                f"'{dymola_install_dir}' has no "
+                                f"dymola-interface .egg or .whl-file.")
 
     @staticmethod
-    def get_dymola_path(dymola_install_dir, dymola_name=None):
+    def get_dymola_exe_path(dymola_install_dir, dymola_name=None):
         """
         Function to get the path of the dymola exe-file
         on the current used machine.
@@ -1201,7 +1296,76 @@ class DymolaAPI(SimulationAPI):
         if self.sim_counter == self.n_restart:
             self.logger.info("Closing and restarting Dymola to free memory")
             self.close()
-            self._dummy_dymola_instance = self._setup_dymola_interface(use_mp=False)
+            self._dummy_dymola_instance = self._setup_dymola_interface(dict(use_mp=False))
             self.sim_counter = 1
         else:
             self.sim_counter += 1
+
+
+def _get_dymola_path_of_version(dymola_installations: list, dymola_version: str):
+    """
+    Helper function to get the path associated to the dymola_version
+    from the list of all installations
+    """
+    for dymola_path in dymola_installations:
+        if dymola_path.endswith(dymola_version):
+            return dymola_path
+    # If still here, version was not found
+    raise ValueError(
+        f"Given dymola_version '{dymola_version}' not found in "
+        f"the list of dymola installations {dymola_installations}"
+    )
+
+
+def _get_n_available_ports(n_ports: int, start_range: int = 44000, end_range: int = 44400):
+    """
+    Get a specified number of available network ports within a given range.
+
+    This function uses socket connections to check the availability of ports within the specified range.
+    If the required number of open ports is found, it returns a list of those ports. If not, it raises
+    a ConnectionError with a descriptive message indicating the failure to find the necessary ports.
+
+    Parameters:
+    - n_ports (int): The number of open ports to find.
+    - start_range (int, optional):
+        The starting port of the range to check (inclusive).
+        Default is 44000.
+    - end_range (int, optional):
+        The ending port of the range to check (exclusive).
+        Default is 44400.
+
+    Returns:
+    - list of int:
+        A list containing the available ports.
+        The length of the list is equal to 'n_ports'.
+
+    Raises:
+    - ConnectionError:
+        If the required number of open ports cannot
+        be found within the specified range.
+
+    Example:
+
+    ```
+    try:
+        open_ports = _get_n_available_ports(3, start_range=50000, end_range=50500)
+        print(f"Found open ports: {open_ports}")
+    except ConnectionError as e:
+        print(f"Error: {e}")
+    ```
+    """
+    ports = []
+    for port in range(start_range, end_range):
+        try:
+            with closing(socket.socket(socket.AF_INET, socket.SOCK_STREAM)) as sock:
+                sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                sock.bind(("127.0.0.1", port))
+            ports.append(port)
+        except OSError:
+            pass
+        if len(ports) == n_ports:
+            return ports
+    raise ConnectionError(
+        f"Could not find {n_ports} open ports in range {start_range}-{end_range}."
+        f"Can't open {n_ports} Dymola instances"
+    )

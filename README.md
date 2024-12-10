@@ -1,11 +1,11 @@
-![E.ON EBC RWTH Aachen University](./docs/EBC_Logo.png)
+![E.ON EBC RWTH Aachen University](https://raw.githubusercontent.com/RWTH-EBC/ebcpy/master/docs/EBC_Logo.png)
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.03861/status.svg)](https://doi.org/10.21105/joss.03861)
-[![pylint](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.svg )](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/pylint/pylint.html)
-[![documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/doc.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html)
-[![coverage](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage/badge.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/coverage)
+[![pylint](https://rwth-ebc.github.io/ebcpy/master/pylint/pylint.svg )](https://rwth-ebc.github.io/ebcpy/master/pylint/pylint.html)
+[![documentation](https://rwth-ebc.github.io/ebcpy/master/docs/doc.svg)](https://rwth-ebc.github.io/ebcpy/master/docs/index.html)
+[![coverage](https://rwth-ebc.github.io/ebcpy/master/coverage/badge.svg)](https://rwth-ebc.github.io/ebcpy/master/coverage)
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause)
-[![build](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/build/build.svg)
+[![build](https://rwth-ebc.github.io/ebcpy/master/build/build.svg)](https://rwth-ebc.github.io/ebcpy/master/build/build.svg)
 
 
 # ebcpy
@@ -21,7 +21,7 @@ Key features are:
 * Pre-/Postprocessing
 * Modelica utilities
 
-It was developed together with `AixCaliBuHA`, a framework for an automated calibration of dynamic building and HVAC models. During this development, we found several interfaces relevant to further reserach. We thus decoupled these interfaces into `ebcpy` and used the framework, for instance in the design optimization of heat pump systems ([link](https://www.sciencedirect.com/science/article/abs/pii/S0196890421010645?via%3Dihub)).
+It was developed together with `AixCaliBuHA`, a framework for an automated calibration of dynamic building and HVAC models. During this development, we found several interfaces relevant to further research. We thus decoupled these interfaces into `ebcpy` and used the framework, for instance in the design optimization of heat pump systems ([link](https://www.sciencedirect.com/science/article/abs/pii/S0196890421010645?via%3Dihub)).
 
 # Installation
 
@@ -128,7 +128,7 @@ tsd.clean_and_space_equally(desired_freq="1s")
 ```
 
 # Documentation
-Visit our official [Documentation](https://ebc.pages.rwth-aachen.de/EBC_all/github_ci/ebcpy/master/docs/index.html).
+Visit our official [Documentation](https://rwth-ebc.github.io/ebcpy/master/docs/index.html).
 
 # Problems?
 Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy/issues/new).

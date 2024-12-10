@@ -45,7 +45,7 @@ class TestVariable(unittest.TestCase):
                     Variable(value=_value, type=_type).value,
                     _type
                 )
-        with self.assertRaises(ValidationError):
+        with self.assertRaises(TypeError):
             Variable(value="10c", type="int")
         self.assertIsInstance(Variable(value="Some String", type=str).value, str)
 
@@ -57,11 +57,14 @@ class PartialTestSimAPI(unittest.TestCase):
         self.parameters = {}
         self.new_sim_setup = {}
         self.data_dir = Path(__file__).parent.joinpath("data")
-        self.example_sim_dir = os.path.join(self.data_dir, "testzone")
+        self.example_sim_dir = self.data_dir.joinpath("testzone")
         if not os.path.exists(self.example_sim_dir):
             os.mkdir(self.example_sim_dir)
         if self.__class__ == PartialTestSimAPI:
             self.skipTest("Just a partial class")
+
+    def start_api(self, save_logs: bool, **kwargs):
+        raise NotImplementedError
 
     def test_simulate(self):
         """Test simulate functionality of dymola api"""
@@ -80,7 +83,7 @@ class PartialTestSimAPI(unittest.TestCase):
         self.assertIsInstance(res, str)
         res = self.sim_api.simulate(parameters=self.parameters,
                                     return_option='savepath',
-                                    savepath=self.example_sim_dir,
+                                    savepath=os.path.join(self.example_sim_dir, "my_new_folder"),
                                     result_file_name="my_other_name")
         self.assertTrue(os.path.isfile(res))
         self.assertIsInstance(res, str)
@@ -94,10 +97,10 @@ class PartialTestSimAPI(unittest.TestCase):
         _some_par = list(self.sim_api.parameters.keys())[0]
         pars = {_some_par: self.sim_api.parameters[_some_par].value}
         parameters = [pars for i in range(2)]
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             res = self.sim_api.simulate(parameters=parameters,
                                         return_option='savepath')
-        with self.assertRaises(TypeError):
+        with self.assertRaises(ValueError):
             res = self.sim_api.simulate(parameters=parameters,
                                         return_option='savepath',
                                         result_file_name=["t", "t"],
@@ -106,7 +109,7 @@ class PartialTestSimAPI(unittest.TestCase):
         # Test multiple result_file_names
         _saves = [os.path.join(self.example_sim_dir, f"test_{i}") for i in range(len(parameters))]
         _save_tests = [
-            self.example_sim_dir,
+            os.path.join(self.example_sim_dir, "my_save_folder"),
             _saves,
             _saves
         ]
@@ -127,12 +130,14 @@ class PartialTestSimAPI(unittest.TestCase):
                 self.assertTrue(os.path.isfile(r))
                 self.assertIsInstance(r, str)
 
-
-    def test_set_cd(self):
-        """Test set_cd functionality of dymola api"""
+    def test_set_working_directory(self):
+        """Test set_working_directory functionality of dymola api"""
         # Test the setting of the function
-        self.sim_api.set_cd(self.data_dir)
-        self.assertEqual(self.data_dir, self.sim_api.cd)
+        self.sim_api.set_working_directory(self.data_dir)
+        self.assertEqual(self.data_dir, self.sim_api.working_directory)
+        # Test setting a str:
+        self.sim_api.set_working_directory(str(self.data_dir))
+        self.assertEqual(self.data_dir, self.sim_api.working_directory)
 
     def test_set_sim_setup(self):
         """Test set_sim_setup functionality of fmu api"""
@@ -144,6 +149,23 @@ class PartialTestSimAPI(unittest.TestCase):
             self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
         with self.assertRaises(ValidationError):
             self.sim_api.set_sim_setup(sim_setup={"stop_time": "not_a_float_or_int"})
+
+    def test_no_log(self):
+        self.sim_api.close()
+        import logging
+        for handler in self.sim_api.logger.handlers:
+            handler.flush()
+            handler.close()
+        logger = logging.getLogger(self.sim_api.__class__.__name__)
+        while len(logger.handlers) > 0:
+            for handler in logger.handlers:
+                logger.removeHandler(handler)
+        log_file = self.example_sim_dir.joinpath(f"{self.sim_api.__class__.__name__}.log")
+        if os.path.exists(log_file):
+            os.remove(self.example_sim_dir.joinpath(log_name))
+        self.start_api(save_logs=False, mos_script=self.data_dir.joinpath("mos_script_test.mos"))
+        self.sim_api.logger.error("This log should not be saved")
+        self.assertFalse(os.path.exists(log_file))
 
     def tearDown(self):
         """Delete all files created while testing"""
@@ -167,8 +189,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         if self.__class__ == PartialTestDymolaAPI:
             self.skipTest("Just a partial class")
         ebcpy_test_package_dir = self.data_dir.joinpath("TestModelVariables.mo")
-        packages = [ebcpy_test_package_dir]
-        model_name = "TestModelVariables"
+        self.packages = [ebcpy_test_package_dir]
         self.parameters = {"test_real": 10.0,
                            "test_int": 5,
                            "test_bool": 0,
@@ -178,30 +199,40 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             "solver": "Dassl",
             "tolerance": 0.001
         }
-        # Mos script
-        mos_script = self.data_dir.joinpath("mos_script_test.mos")
+        self.start_api()
 
+    def start_api(self, save_logs: bool = True, **kwargs):
         # Just for tests in the gitlab-ci:
         if "linux" in sys.platform:
-            dymola_path = "/usr/local"
-            dymola_interface_path = "/opt/dymola-2022-x86_64/Modelica/Library/python_interface/dymola.egg"
+            dymola_exe_path = "/usr/local/bin/dymola"
         else:
-            dymola_path = None
-            dymola_interface_path = None
+            dymola_exe_path = None
+        mos_script = kwargs.get("mos_script", self.data_dir.joinpath("mos_script_test.mos"))
+        model_name = kwargs.get("model_name", "TestModelVariables")
+
         try:
             self.sim_api = dymola_api.DymolaAPI(
-                cd=self.example_sim_dir,
+                working_directory=self.example_sim_dir,
                 model_name=model_name,
-                packages=packages,
-                dymola_path=dymola_path,
+                packages=self.packages,
+                dymola_exe_path=dymola_exe_path,
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
                 mos_script_post=mos_script,
-                dymola_interface_path=dymola_interface_path
+                save_logs=save_logs
             )
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
                           f"on this machine. Error message: {error}")
+
+    def test_no_model_none(self):
+        self.sim_api.close()
+        self.start_api(
+            mos_script=None, model_name=None,
+        )
+        with self.assertRaises(ValueError):
+            self.sim_api.simulate()
+        self.sim_api.simulate(model_names=["TestModelVariables"], parameters=self.parameters)
 
     def test_close(self):
         """Test close functionality of dymola api"""
@@ -281,13 +312,16 @@ class TestFMUAPI(PartialTestSimAPI):
         super().setUp()
         if self.__class__ == PartialTestDymolaAPI:
             self.skipTest("Just a partial class")
+        self.start_api()
+
+    def start_api(self, save_logs: bool = True, **kwargs):
         if "win" in sys.platform:
             model_name = self.data_dir.joinpath("PumpAndValve_windows.fmu")
         else:
             model_name = self.data_dir.joinpath("PumpAndValve_linux.fmu")
 
-        self.sim_api = fmu.FMU_API(cd=self.example_sim_dir,
-                                   model_name=model_name)
+        self.sim_api = fmu.FMU_API(working_directory=self.example_sim_dir,
+                                   model_name=model_name, save_logs=save_logs)
 
     def test_close(self):
         """Test close functionality of fmu api"""

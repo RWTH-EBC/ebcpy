@@ -2,6 +2,8 @@
 dsfinal.txt and dsin.txt files created by Modelica."""
 
 from io import StringIO
+import re
+
 import pandas as pd
 
 
@@ -37,17 +39,24 @@ def convert_ds_file_to_dataframe(filename):
     :return: pd.DataFrame
         Converted DataFrame
     """
-    # Define relevant parameters
-    number_line_initial_name = 104  # Line where the string char initialName(,) is always stored
-
     # Open file and get relevant content by splitting the lines.
     with open(filename, "r") as file:
         content = file.read().split("\n")
 
     # Gets the X out of 'char initialName(X,Y)'
-    size_initial_names = int(content[number_line_initial_name].split("(")[-1].split(",")[0])
+    pattern_size_initial_name = r'^char initialName\((\d+),(\d+)\)$'
+    for number_line_initial_name, line in enumerate(content):
+        match_size_initial_name = re.match(pattern_size_initial_name, line)
+        if match_size_initial_name:
+            size_initial_names = int(match_size_initial_name.string.split("(")[-1].split(",")[0])
+            break
+    else:
+        raise ValueError("Could not find initial names in file")
+
     # Number of line below line "double initialValue(X,Y)"
     number_line_initial_value = number_line_initial_name + size_initial_names + 3
+    if "double initialValue" in content[number_line_initial_value]:
+        number_line_initial_value += 1
 
     # Check if two or on-line dsfinal / dsin
     if "#" in content[number_line_initial_value]:

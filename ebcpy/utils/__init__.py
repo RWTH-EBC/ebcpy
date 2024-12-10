@@ -4,10 +4,12 @@ Contains a statistics analyzer and a visualizer.
 """
 import logging
 import os
+from pathlib import Path
+from typing import Union
 
 
 def setup_logger(name: str,
-                 cd: str = None,
+                 working_directory: Union[Path, str] = None,
                  level=logging.DEBUG):
     """
     Setup an class or module specific logger instance
@@ -15,7 +17,7 @@ def setup_logger(name: str,
 
     :param str name:
         The name of the logger instance
-    :param str cd:
+    :param str,Path working_directory:
         The path where to store the logfile.
         If None is given, logs are not stored.
     :param str level:
@@ -29,15 +31,16 @@ def setup_logger(name: str,
     # Check if logger was already instantiated. If so, return already.
     if logger.handlers:
         return logger
-    # Add handlers
+    # Add handlers if not set already by logging.basicConfig and if path is specified
     formatter = logging.Formatter(fmt='%(asctime)s %(levelname)s %(name)s: %(message)s',
                                   datefmt='%d.%m.%Y-%H:%M:%S')
-    console = logging.StreamHandler()
-    console.setFormatter(fmt=formatter)
-    logger.addHandler(hdlr=console)
-    if cd is not None:
-        os.makedirs(cd, exist_ok=True)
-        file_handler = logging.FileHandler(filename=os.path.join(cd, f"{name}.log"))
+    if not logging.getLogger().hasHandlers():
+        console = logging.StreamHandler()
+        console.setFormatter(fmt=formatter)
+        logger.addHandler(hdlr=console)
+    if working_directory is not None:
+        os.makedirs(working_directory, exist_ok=True)
+        file_handler = logging.FileHandler(filename=working_directory.joinpath(f"{name}.log"))
         file_handler.setFormatter(fmt=formatter)
         logger.addHandler(hdlr=file_handler)
     return logger

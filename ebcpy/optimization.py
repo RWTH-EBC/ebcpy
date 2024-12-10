@@ -3,6 +3,8 @@ Used to define Base-Classes such as Optimizer and
 Calibrator."""
 
 import os
+from pathlib import Path
+import warnings
 from typing import List, Tuple, Union
 from collections import namedtuple
 from abc import abstractmethod
@@ -24,7 +26,7 @@ class Optimizer:
     self.optimize().
 
 
-    :param str,os.path.normpath cd:
+    :param str,Path working_directory:
         Directory for storing all output of optimization via a logger.
     :keyword list bounds:
         The boundaries for the optimization variables.
@@ -40,14 +42,17 @@ class Optimizer:
     # Can be used, but will enlarge runtime
     _obj_his = []
 
-    def __init__(self, cd=None, **kwargs):
+    def __init__(self, working_directory: Union[Path, str] = None, **kwargs):
         """Instantiate class parameters"""
-        if cd is None:
-            self._cd = None
+        if working_directory is None and "cd" in kwargs:
+            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
+            self.working_directory = kwargs["cd"]
+        elif working_directory is None:
+            self._working_directory = None
         else:
-            self.cd = cd
+            self.working_directory = working_directory
 
-        self.logger = setup_logger(cd=self.cd, name=self.__class__.__name__)
+        self.logger = setup_logger(working_directory=self.working_directory, name=self.__class__.__name__)
         # Set kwargs
         self.bounds = kwargs.get("bounds", None)
 
@@ -90,18 +95,31 @@ class Optimizer:
         return ["scipy_minimize",
                 "scipy_differential_evolution",
                 "dlib_minimize",
-                "pymoo"]
+                "pymoo",
+                "bayesian_optimization"]
 
     @property
-    def cd(self) -> str:
+    def working_directory(self) -> Path:
         """The current working directory"""
-        return self._cd
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    @property
+    def cd(self) -> Path:
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        return self.working_directory
 
     @cd.setter
-    def cd(self, cd: str):
-        """Set current working directory"""
-        os.makedirs(cd, exist_ok=True)
-        self._cd = cd
+    def cd(self, cd: Union[Path, str]):
+        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        self.working_directory = cd
 
     @property
     def bounds(self) -> List[Union[Tuple, List]]:
@@ -179,7 +197,84 @@ class Optimizer:
             return self._scipy_differential_evolution, True
         if framework.lower() == "pymoo":
             return self._pymoo, True
+        if framework.lower() == "bayesian_optimization":
+            return self._bayesian_optimization, False
+        
         raise TypeError(f"Given framework {framework} is currently not supported.")
+    
+    def _bayesian_optimization(self, method=None, n_cpu=1, **kwargs):
+        """
+        Possible kwargs for the bayesian_optimization function with default values:
+        
+        random_state = 42
+        allow_dublicate_points = True
+        init_points = 100
+        n_iter = 100
+        kind_of_utility_function = "ei"
+        xi = 0.1
+        
+        For an explanation of what the parameters do, we refer to the documentation of
+        the bayesian optimization package:
+        https://bayesian-optimization.github.io/BayesianOptimization/index.html
+        """
+        default_kwargs = self.get_default_config(framework="bayesian_optimization")
+        default_kwargs.update(kwargs)
+        
+        try:
+            from bayes_opt import BayesianOptimization
+            from bayes_opt.util import UtilityFunction
+        except ImportError as error:
+            raise ImportError("Please install bayesian-optimization to use "
+                              "the bayesian_optimization function.") from error
+            
+        try:
+            if self.bounds is None:
+                raise ValueError("For the bayesian optimization approach, you need to specify "
+                                 "boundaries. Currently, no bounds are specified.")
+
+            pbounds = {f"x{n}": i for n, i in enumerate(self.bounds)}
+
+            optimizer = BayesianOptimization(
+                f=self._bayesian_opt_obj,
+                pbounds=pbounds,
+                random_state=default_kwargs["random_state"],
+                allow_duplicate_points=default_kwargs["allow_dublicate_points"],
+                verbose=default_kwargs["verbose"]
+            )
+            
+            gp = default_kwargs.get("gp", None)
+            if gp is not None:
+                optimizer._gp = gp
+
+            acq_function = UtilityFunction(
+                kind=default_kwargs["kind_of_utility_function"],
+                xi=default_kwargs["xi"])
+            
+            optimizer.maximize(
+                init_points=default_kwargs["init_points"],
+                n_iter=default_kwargs["n_iter"],
+                acquisition_function=acq_function
+            )
+            
+            res = optimizer.max
+            x_res = np.array(list(res["params"].values()))
+            f_res = -res["target"]
+            res_tuple = namedtuple("res_tuple", "x fun")
+            res = res_tuple(x=x_res, fun=f_res)
+            return res
+        except (KeyboardInterrupt, Exception) as error:
+            # pylint: disable=inconsistent-return-statements
+            self._handle_error(error)
+            
+    def _bayesian_opt_obj(self, **kwargs):
+        """
+        This function is needed as the signature for the Bayesian-optimization
+        is different than the standard signature. The Bayesian-optimization gives keyword arguments for
+        every parameter and only maximizes, therefore we will maximize the negative objective function value.
+        """
+        xk = np.array(list(kwargs.values()))
+        return -self.obj(xk)
+            
 
     def _scipy_minimize(self, method, n_cpu=1, **kwargs):
         """
@@ -317,7 +412,7 @@ class Optimizer:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
 
-    def _pymoo(self, method="NSGA2", n_cpu=1, **kwargs):
+    def _pymoo(self, method="GA", n_cpu=1, **kwargs):
         """
         Possible kwargs for the dlib minimize function with default values:
 
@@ -332,14 +427,50 @@ class Optimizer:
         copy_termination=False
         """
         default_kwargs = self.get_default_config(framework="pymoo")
-
+        default_kwargs.update(kwargs)
+        
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_algorithm, get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.algorithms.moo.ctaea import CTAEA
+            from pymoo.algorithms.moo.moead import MOEAD
+            from pymoo.algorithms.moo.nsga2 import NSGA2
+            from pymoo.algorithms.moo.nsga3 import NSGA3
+            from pymoo.algorithms.moo.rnsga2 import RNSGA2
+            from pymoo.algorithms.moo.rnsga3 import RNSGA3
+            from pymoo.algorithms.soo.nonconvex.de import DE
+            from pymoo.algorithms.soo.nonconvex.ga import GA
+            from pymoo.algorithms.moo.unsga3 import UNSGA3
+            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
+            from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
+            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
+            from pymoo.algorithms.soo.nonconvex.pso import PSO
+        
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
-
+        
+        
+        pymoo_algorithms = {
+            "ga": GA,
+            "brkga": BRKGA,
+            "de": DE,
+            "nelder-mead": NelderMead,
+            "pattern-search": PatternSearch,
+            "pso": PSO,
+            "nsga2": NSGA2,
+            "rnsga2": RNSGA2,
+            "nsga3": NSGA3,
+            "unsga3": UNSGA3,
+            "rnsga3": RNSGA3,
+            "moead": MOEAD,
+            "ctaea": CTAEA,
+        }
+        
+        if method.lower() not in pymoo_algorithms:
+            raise ValueError(f"Given method {method} is currently not supported. Please choose one of the "
+                             "following: " + ", ".join(pymoo_algorithms.keys()))
+        
         class EBCPYProblem(Problem):
             """Construct wrapper problem class."""
             def __init__(self,
@@ -372,39 +503,24 @@ class Optimizer:
             save_history = default_kwargs.pop("save_history")
             copy_algorithm = default_kwargs.pop("copy_algorithm")
             copy_termination = default_kwargs.pop("copy_termination")
-
-            # Init algorithm
-            if method.lower() == "ga":
-                from pymoo.algorithms.soo.nonconvex.ga import GA
-                # GA:
-                pop_size = kwargs["pop_size"]
-                sampling = get_sampling(name=kwargs["sampling"])
-                selection = get_selection(name=kwargs["selection"])
-                crossover = get_crossover(name=kwargs["crossover"])
-                mutation = get_mutation(name=kwargs["mutation"])
-                eliminate_duplicates = kwargs["eliminate_duplicates"]
-                n_offsprings = kwargs["n_offsprings"]
-                algorithm = GA(pop_size=pop_size,
-                               sampling=sampling,
-                               selection=selection,
-                               crossover=crossover,
-                               mutation=mutation,
-                               eliminate_duplicates=eliminate_duplicates,
-                               n_offsprings=n_offsprings
-                               )
-            else:
-                default_kwargs.update(kwargs)
-                algorithm = get_algorithm(name=method.lower(),
-                                          **default_kwargs)
-
+            callback = default_kwargs.pop("callback")
+            display = default_kwargs.pop("display")
+            
+            default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+            default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+            default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+            default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
+        
+            algorithm = pymoo_algorithms[method.lower()](**default_kwargs)
+            
             res = minimize(
                 problem=EBCPYProblem(ebcpy_class=self),
                 algorithm=algorithm,
                 termination=termination,
                 seed=seed,
                 verbose=verbose,
-                display=None,
-                callback=None,
+                display=display,
+                callback=callback,
                 save_history=save_history,
                 copy_algorithm=copy_algorithm,
                 copy_termination=copy_termination,
@@ -470,6 +586,13 @@ class Optimizer:
                     }
         if framework.lower() == "pymoo":
             return {"n_gen": 1000,
+                    "pop_size": 50,
+                    "sampling": "real_random",
+                    "selection": "random",
+                    "crossover": "real_sbx",
+                    "mutation": "real_pm",
+                    "eliminate_duplicates": True,
+                    "n_offsprings": None,
                     "termination": None,
                     "seed": 1,
                     "verbose": False,
@@ -478,5 +601,14 @@ class Optimizer:
                     "save_history": False,
                     "copy_algorithm": False,
                     "copy_termination": False
+                    }
+        if framework.lower() == "bayesian_optimization":
+            return {"random_state": 42,
+                    "allow_dublicate_points": True,
+                    "init_points": 5,
+                    "n_iter": 25,
+                    "kind_of_utility_function": "ei",
+                    "xi": 0.1,
+                    "verbose": False
                     }
         return {}

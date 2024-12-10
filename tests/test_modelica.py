@@ -71,24 +71,31 @@ class TestManipulateDS(unittest.TestCase):
     def setUp(self):
         """Called before every test.
             Used to setup relevant paths and APIs etc."""
-        self.ds_path = Path(__file__).parent.joinpath("data",
-                                                      "example_dsfinal.txt")
+        self.ds_paths = []
+        for file in ["dsfinal_old.txt", "dsin_2023.txt", "dsfinal_2023.txt"]:
+            self.ds_paths.append(Path(__file__).parent.joinpath("data", "ds_files", file))
 
     def test_convert_ds_file_to_dataframe(self):
         """Test function for the function convert_ds_file_to_dataframe"""
-        df = manipulate_ds.convert_ds_file_to_dataframe(self.ds_path)
-        self.assertIsInstance(df, pd.DataFrame)
+        for ds_path in self.ds_paths:
+            df = manipulate_ds.convert_ds_file_to_dataframe(ds_path)
+            self.assertIsInstance(df, pd.DataFrame)
 
     def test_eliminate_parameters_from_ds_file(self):
         """Test function for the function eliminate_parameters_from_ds_file."""
-        manipulate_ds.eliminate_parameters_from_ds_file(self.ds_path,
+        for ds_path in self.ds_paths:
+            self._single_file_eliminate_parameters_from_ds_file(ds_path)
+
+    def _single_file_eliminate_parameters_from_ds_file(self, ds_path):
+        """Test function for the function eliminate_parameters_from_ds_file."""
+        manipulate_ds.eliminate_parameters_from_ds_file(ds_path,
                                                         "dummy_dsout.txt",
                                                         [],
                                                         del_aux_paras=True)
         self.assertTrue(os.path.isfile("dummy_dsout.txt"))
         os.remove("dummy_dsout.txt")
         # Test dont remove aux
-        manipulate_ds.eliminate_parameters_from_ds_file(self.ds_path,
+        manipulate_ds.eliminate_parameters_from_ds_file(ds_path,
                                                         "dummy_dsout.txt",
                                                         [],
                                                         del_aux_paras=False)
@@ -97,13 +104,13 @@ class TestManipulateDS(unittest.TestCase):
         # Test wring input:
         with self.assertRaises(TypeError):
             manipulate_ds.eliminate_parameters_from_ds_file(
-                filename=self.ds_path,
+                filename=ds_path,
                 savepath="dummy_dsout.kdk",
                 exclude_paras=[]
             )
         with self.assertRaises(TypeError):
             manipulate_ds.eliminate_parameters_from_ds_file(
-                filename=self.ds_path,
+                filename=ds_path,
                 savepath="dummy_dsout.txt",
                 exclude_paras={"Not a": "list"}
             )
