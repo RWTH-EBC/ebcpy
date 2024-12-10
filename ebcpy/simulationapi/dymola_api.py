@@ -92,7 +92,8 @@ class DymolaAPI(SimulationAPI):
             - derivatives=True
             - inputs=True
             - outputs=True
-            - auxiliaries=False    :keyword int n_restart:
+            - auxiliaries=False
+    :keyword int n_restart:
         Number of iterations after which Dymola should restart.
         This is done to free memory. Default value -1. For values
         below 1 Dymola does not restart.
@@ -1253,7 +1254,7 @@ class DymolaAPI(SimulationAPI):
             try:
                 if "Dymola" in proc.name():
                     counter += 1
-            except psutil.AccessDenied:
+            except (psutil.AccessDenied, psutil.NoSuchProcess):
                 continue
         if counter >= self._critical_number_instances:
             warnings.warn("There are currently %s Dymola-Instances "
