@@ -113,3 +113,5 @@
 - v0.5.1
   - Add save-logs option for SimulatioAPI #141
   - Minor bug fixes #143
+- v0.5.2
+  - Add save options in Dymola #98
