@@ -201,7 +201,7 @@ class DymolaAPI(SimulationAPI):
         self.show_window = kwargs.pop("show_window", False)
         self.modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
-        _variables_to_save = kwargs.get("variables_to_save", {})
+        _variables_to_save = kwargs.pop("variables_to_save", {})
         self.experiment_setup_output = ExperimentSetupOutput(**_variables_to_save)
 
         if self.equidistant_output:
@@ -415,6 +415,10 @@ class DymolaAPI(SimulationAPI):
         table_name = kwargs.pop("table_name", None)
         file_name = kwargs.pop("file_name", None)
         savepath = kwargs.pop("savepath", None)
+        def empty_postprocessing(mat_result, **_kwargs):
+            return mat_result
+        postprocess_mat_result = kwargs.pop("postprocess_mat_result", empty_postprocessing)
+        kwargs_postprocessing = kwargs.pop("kwargs_postprocessing", {})
         if kwargs:
             self.logger.error(
                 "You passed the following kwargs which "
@@ -641,7 +645,9 @@ class DymolaAPI(SimulationAPI):
                 shutil.copy(os.path.join(dymola_working_directory, filename),
                             os.path.join(savepath, filename))
                 os.remove(os.path.join(dymola_working_directory, filename))
-            return os.path.join(savepath, _save_name_dsres)
+            mat_result_file = os.path.join(savepath, _save_name_dsres)
+            result_file = postprocess_mat_result(mat_result_file, **kwargs_postprocessing)
+            return result_file
 
         data = res[1]  # Get data
         if return_option == "last_point":
