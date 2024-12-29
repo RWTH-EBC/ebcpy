@@ -9,10 +9,11 @@ import sys
 import platform
 import os
 import logging
-from typing import List, Union
+from typing import List, Tuple, Union
 import zipfile
 from datetime import datetime
 from dataclasses import dataclass
+from importlib.metadata import distributions
 
 logger = logging.getLogger(__name__)
 
@@ -322,44 +323,58 @@ For future use, be sure to commit and push your changes before running any resea
     return "\n".join(_content_lines)
 
 
+def get_installed_packages() -> List[dict]:
+    """
+    Returns a list of tuples containing (package_name, version, location)
+    for all installed Python packages.
+    """
+    packages = []
+    for dist in distributions():
+        packages.append(dict(
+            name=dist.metadata['Name'],
+            version=dist.version,
+            location=os.path.normpath(dist.locate_file(''))
+        ))
+    return packages
+
+
 def _get_python_package_information(search_on_pypi: bool):
     """
     Function to get the content of python packages installed
     as a requirement.txt format content.
     """
-    import pkg_resources
-    installed_packages = [pack for pack in pkg_resources.working_set]
+    installed_packages = get_installed_packages()
     diff_paths = []
     requirement_txt_content = []
     pip_version = ""
     for package in installed_packages:
         repo_info = get_git_information(
-            path=package.location,
-            name=package.key,
+            path=package["location"],
+            name=package["name"],
             zip_folder_path="python"
         )
         if repo_info is None:
             # Check if in python path:
-            if package.key == "pip":  # exclude pip in requirements and give info to _get_python_reproduction
-                pip_version = f"=={package.version}"
+            if package["name"] == "pip":  # exclude pip in requirements and give info to _get_python_reproduction
+                pip_version = f'=={package["version"]}'
             else:
                 requirement_txt_content.append(
-                    f"{package.key}=={package.version}"
+                    f'{package["name"]}=={package["version"]}'
                 )
             if search_on_pypi:
                 from pypisearch.search import Search
-                res = Search(package.key).result
+                res = Search(package["name"]).result
                 if not res:
                     raise ModuleNotFoundError(
                         "Package '%s' is neither a git "
                         "repo nor a package on pypi. "
                         "Won't be able to reproduce it!",
-                        package.key
+                        package["name"]
                     )
         else:
             cmt_sha = repo_info["commit"]
             requirement_txt_content.append(
-                f"git+{repo_info['url']}.git@{cmt_sha}#egg={package.key}"
+                f"git+{repo_info['url']}.git@{cmt_sha}#egg={package['name']}"
             )
             diff_paths.extend(repo_info["difference_files"])
     return "\n".join(requirement_txt_content), diff_paths, pip_version
