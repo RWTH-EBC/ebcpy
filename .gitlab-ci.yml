@@ -12,6 +12,7 @@ variables:
   PYTHON_VERSION: "registry.git.rwth-aachen.de/ebc/ebc_all/gitlab_ci/templates:python_3.9"
   TEST_ENGINE: "unittest"
   GIT_REPO: "RWTH-EBC/ebcpy"
+  EXCLUDE_PYTHON: 37
 
 include:
   - project: 'EBC/EBC_all/gitlab_ci/templates'
