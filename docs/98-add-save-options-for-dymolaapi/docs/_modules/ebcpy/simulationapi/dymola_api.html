@@ -281,13 +281,6 @@
         <span class="n">_variables_to_save</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;variables_to_save&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">ExperimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="n">_variables_to_save</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span><span class="p">:</span>
-            <span class="c1"># Change the Simulation Output, to ensure all</span>
-            <span class="c1"># simulation results have the same array shape.</span>
-            <span class="c1"># Events can also cause errors in the shape.</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">equidistant</span> <span class="o">=</span> <span class="kc">True</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="kc">False</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">mos_script_pre</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mos_script_pre&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mos_script_post</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mos_script_post&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola_version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -395,7 +388,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_is_available</span><span class="p">():</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;You have no licence to use Dymola. &quot;</span>
                           <span class="s2">&quot;Hence you can only simulate models with 8 or less equations.&quot;</span><span class="p">)</span>
-
+        <span class="c1"># Update experiment setup output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_experiment_setup_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Trigger on init.</span>
         <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -443,6 +437,15 @@
 <span class="sd">            If inputs are given, you have to specify the file_name of the table</span>
 <span class="sd">            in the instance of CombiTimeTable. In order for the inputs to</span>
 <span class="sd">            work the value should be equal to the value of &#39;fileName&#39; in Modelica.</span>
+<span class="sd">        :keyword callable postprocess_mat_result:</span>
+<span class="sd">            When choosing return_option savepath and no equidistant output, the mat files may take up</span>
+<span class="sd">            a lot of disk space while you are only interested in some variables or parts</span>
+<span class="sd">            of the simulation results. This features enables you to pass any function which</span>
+<span class="sd">            gets the mat-path as an input and returns some result you are interested in.</span>
+<span class="sd">            The function signature is `foo(mat_result_file, **kwargs_postprocessing) -&gt; Any`.</span>
+<span class="sd">            Be sure to define the function in a global scope to allow multiprocessing.</span>
+<span class="sd">        :keyword dict kwargs_postprocessing:</span>
+<span class="sd">            Keyword arguments used in the function `postprocess_mat_result`.</span>
 <span class="sd">        :keyword List[str] structural_parameters:</span>
 <span class="sd">            A list containing all parameter names which are structural in Modelica.</span>
 <span class="sd">            This means a modifier has to be created in order to change</span>
@@ -492,8 +495,10 @@
         <span class="n">table_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;file_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
         <span class="k">def</span> <span class="nf">empty_postprocessing</span><span class="p">(</span><span class="n">mat_result</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">mat_result</span>
+
         <span class="n">postprocess_mat_result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;postprocess_mat_result&quot;</span><span class="p">,</span> <span class="n">empty_postprocessing</span><span class="p">)</span>
         <span class="n">kwargs_postprocessing</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kwargs_postprocessing&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
@@ -706,23 +711,24 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">cd</span><span class="p">()</span>
             <span class="c1"># Get the value and convert it to a 100 % fitting str-path</span>
             <span class="n">dymola_working_directory</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">getLastErrorLog</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+            <span class="n">mat_working_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">savepath</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">savepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">dymola_working_directory</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_save_name_dsres</span><span class="p">]:</span>
+                <span class="n">mat_result_file</span> <span class="o">=</span> <span class="n">mat_working_directory</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mat_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="c1"># Copying dslogs and dsfinals can lead to errors,</span>
                 <span class="c1"># as the names are not unique</span>
                 <span class="c1"># for filename in [_save_name_dsres, &quot;dslog.txt&quot;, &quot;dsfinal.txt&quot;]:</span>
                 <span class="c1"># Delete existing files</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mat_save_path</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                     <span class="k">pass</span>
                 <span class="c1"># Move files</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-            <span class="n">mat_result_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mat_working_directory</span><span class="p">,</span> <span class="n">mat_save_path</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mat_working_directory</span><span class="p">)</span>
+                <span class="n">mat_result_file</span> <span class="o">=</span> <span class="n">mat_save_path</span>
             <span class="n">result_file</span> <span class="o">=</span> <span class="n">postprocess_mat_result</span><span class="p">(</span><span class="n">mat_result_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_postprocessing</span><span class="p">)</span>
             <span class="k">return</span> <span class="n">result_file</span>
 
@@ -964,6 +970,29 @@
             <span class="n">DymolaAPI</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="n">dymola</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">dymola</span>
+
+<div class="viewcode-block" id="DymolaAPI.update_experiment_setup_output"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output">[docs]</a>    <span class="k">def</span> <span class="nf">update_experiment_setup_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_setup_output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExperimentSetupOutput</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update the ExperimentSetupOutput in Dymola for selection</span>
+<span class="sd">        of which variables are going to be saved. The options</span>
+<span class="sd">        `events` and `equidistant` are overridden if equidistant output is required.</span>
+
+<span class="sd">        :param (ExperimentSetupOutput, dict) experiment_setup_output:</span>
+<span class="sd">            An instance of ExperimentSetupOutput or a dict with valid keys for it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">experiment_setup_output</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">ExperimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="n">experiment_setup_output</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">experiment_setup_output</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span><span class="p">:</span>
+            <span class="c1"># Change the Simulation Output, to ensure all</span>
+            <span class="c1"># simulation results have the same array shape.</span>
+            <span class="c1"># Events can also cause errors in the shape.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">equidistant</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DymolaAPI.license_is_available"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available">[docs]</a>    <span class="k">def</span> <span class="nf">license_is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Standard&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if license is available&quot;&quot;&quot;</span>

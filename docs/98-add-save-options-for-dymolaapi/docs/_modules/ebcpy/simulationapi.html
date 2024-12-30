@@ -520,7 +520,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaced in v0.1.7 by property function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">new_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">new_setup</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sim_setup</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup_class</span><span class="p">(</span><span class="o">**</span><span class="n">new_setup</span><span class="p">)</span></div>
 

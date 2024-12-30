@@ -743,6 +743,13 @@ work the value should be equal to the value of ‘tableName’ in Modelica.</p><
 <li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – If inputs are given, you have to specify the file_name of the table
 in the instance of CombiTimeTable. In order for the inputs to
 work the value should be equal to the value of ‘fileName’ in Modelica.</p></li>
+<li><p><strong>postprocess_mat_result</strong> (<em>callable</em>) – When choosing return_option savepath and no equidistant output, the mat files may take up
+a lot of disk space while you are only interested in some variables or parts
+of the simulation results. This features enables you to pass any function which
+gets the mat-path as an input and returns some result you are interested in.
+The function signature is <cite>foo(mat_result_file, **kwargs_postprocessing) -&gt; Any</cite>.
+Be sure to define the function in a global scope to allow multiprocessing.</p></li>
+<li><p><strong>kwargs_postprocessing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Keyword arguments used in the function <cite>postprocess_mat_result</cite>.</p></li>
 <li><p><strong>structural_parameters</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – <p>A list containing all parameter names which are structural in Modelica.
 This means a modifier has to be created in order to change
 the value of this parameter. Internally, the given list
@@ -780,6 +787,19 @@ Dictionary with keys to re-init this class.</p>
 <span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.translate" title="Permalink to this definition"></a></dt>
 <dd><p>Translates the current model using dymola.translateModel()
 and checks if erros occur.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output">
+<span class="sig-name descname"><span class="pre">update_experiment_setup_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_setup_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput"><span class="pre">ExperimentSetupOutput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.update_experiment_setup_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output" title="Permalink to this definition"></a></dt>
+<dd><p>Function to update the ExperimentSetupOutput in Dymola for selection
+of which variables are going to be saved. The options
+<cite>events</cite> and <cite>equidistant</cite> are overridden if equidistant output is required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_setup_output</strong> (<em>(</em><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput"><em>ExperimentSetupOutput</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>)</em>) – An instance of ExperimentSetupOutput or a dict with valid keys for it.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
