@@ -444,7 +444,7 @@ class SimulationAPI:
         """
         Replaced in v0.1.7 by property function
         """
-        new_setup = self._sim_setup.dict()
+        new_setup = self._sim_setup.model_dump()
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
 

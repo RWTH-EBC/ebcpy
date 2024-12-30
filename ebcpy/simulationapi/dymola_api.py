@@ -204,13 +204,6 @@ class DymolaAPI(SimulationAPI):
         _variables_to_save = kwargs.pop("variables_to_save", {})
         self.experiment_setup_output = ExperimentSetupOutput(**_variables_to_save)
 
-        if self.equidistant_output:
-            # Change the Simulation Output, to ensure all
-            # simulation results have the same array shape.
-            # Events can also cause errors in the shape.
-            self.experiment_setup_output.equidistant = True
-            self.experiment_setup_output.events = False
-
         self.mos_script_pre = kwargs.pop("mos_script_pre", None)
         self.mos_script_post = kwargs.pop("mos_script_post", None)
         self.dymola_version = kwargs.pop("dymola_version", None)
@@ -318,7 +311,8 @@ class DymolaAPI(SimulationAPI):
         if not self.license_is_available():
             warnings.warn("You have no licence to use Dymola. "
                           "Hence you can only simulate models with 8 or less equations.")
-
+        # Update experiment setup output
+        self.update_experiment_setup_output(self.experiment_setup_output)
         self.fully_initialized = True
         # Trigger on init.
         if model_name is not None:
@@ -366,6 +360,15 @@ class DymolaAPI(SimulationAPI):
             If inputs are given, you have to specify the file_name of the table
             in the instance of CombiTimeTable. In order for the inputs to
             work the value should be equal to the value of 'fileName' in Modelica.
+        :keyword callable postprocess_mat_result:
+            When choosing return_option savepath and no equidistant output, the mat files may take up
+            a lot of disk space while you are only interested in some variables or parts
+            of the simulation results. This features enables you to pass any function which
+            gets the mat-path as an input and returns some result you are interested in.
+            The function signature is `foo(mat_result_file, **kwargs_postprocessing) -> Any`.
+            Be sure to define the function in a global scope to allow multiprocessing.
+        :keyword dict kwargs_postprocessing:
+            Keyword arguments used in the function `postprocess_mat_result`.
         :keyword List[str] structural_parameters:
             A list containing all parameter names which are structural in Modelica.
             This means a modifier has to be created in order to change
@@ -415,8 +418,10 @@ class DymolaAPI(SimulationAPI):
         table_name = kwargs.pop("table_name", None)
         file_name = kwargs.pop("file_name", None)
         savepath = kwargs.pop("savepath", None)
+
         def empty_postprocessing(mat_result, **_kwargs):
             return mat_result
+
         postprocess_mat_result = kwargs.pop("postprocess_mat_result", empty_postprocessing)
         kwargs_postprocessing = kwargs.pop("kwargs_postprocessing", {})
         if kwargs:
@@ -629,23 +634,24 @@ class DymolaAPI(SimulationAPI):
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
             dymola_working_directory = str(Path(self.dymola.getLastErrorLog().replace("\n", "")))
+            mat_working_directory = os.path.join(dymola_working_directory, _save_name_dsres)
             if savepath is None or str(savepath) == dymola_working_directory:
-                return os.path.join(dymola_working_directory, _save_name_dsres)
-            os.makedirs(savepath, exist_ok=True)
-            for filename in [_save_name_dsres]:
+                mat_result_file = mat_working_directory
+            else:
+                mat_save_path = os.path.join(savepath, _save_name_dsres)
+                os.makedirs(savepath, exist_ok=True)
                 # Copying dslogs and dsfinals can lead to errors,
                 # as the names are not unique
                 # for filename in [_save_name_dsres, "dslog.txt", "dsfinal.txt"]:
                 # Delete existing files
                 try:
-                    os.remove(os.path.join(savepath, filename))
+                    os.remove(mat_save_path)
                 except OSError:
                     pass
                 # Move files
-                shutil.copy(os.path.join(dymola_working_directory, filename),
-                            os.path.join(savepath, filename))
-                os.remove(os.path.join(dymola_working_directory, filename))
-            mat_result_file = os.path.join(savepath, _save_name_dsres)
+                shutil.copy(mat_working_directory, mat_save_path)
+                os.remove(mat_working_directory)
+                mat_result_file = mat_save_path
             result_file = postprocess_mat_result(mat_result_file, **kwargs_postprocessing)
             return result_file
 
@@ -887,6 +893,29 @@ class DymolaAPI(SimulationAPI):
             DymolaAPI.dymola = dymola
             return None
         return dymola
+
+    def update_experiment_setup_output(self, experiment_setup_output: Union[ExperimentSetupOutput, dict]):
+        """
+        Function to update the ExperimentSetupOutput in Dymola for selection
+        of which variables are going to be saved. The options
+        `events` and `equidistant` are overridden if equidistant output is required.
+
+        :param (ExperimentSetupOutput, dict) experiment_setup_output:
+            An instance of ExperimentSetupOutput or a dict with valid keys for it.
+        """
+        if isinstance(experiment_setup_output, dict):
+            self.experiment_setup_output = ExperimentSetupOutput(**experiment_setup_output)
+        else:
+            self.experiment_setup_output = experiment_setup_output
+        if self.equidistant_output:
+            # Change the Simulation Output, to ensure all
+            # simulation results have the same array shape.
+            # Events can also cause errors in the shape.
+            self.experiment_setup_output.equidistant = True
+            self.experiment_setup_output.events = False
+        if self.dymola is None:
+            return
+        self.dymola.experimentSetupOutput(**self.experiment_setup_output.model_dump())
 
     def license_is_available(self, option: str = "Standard"):
         """Check if license is available"""
