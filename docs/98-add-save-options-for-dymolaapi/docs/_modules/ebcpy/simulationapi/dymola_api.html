@@ -515,6 +515,9 @@
                 <span class="c1"># method used in the DymolaInterface should work.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
+            <span class="c1"># Re-set the dymola experiment output if API is newly started</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+
         <span class="c1"># Handle eventlog</span>
         <span class="k">if</span> <span class="n">show_eventlog</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>

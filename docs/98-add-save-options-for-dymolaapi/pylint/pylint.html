@@ -1117,7 +1117,7 @@
                 <td><code>too-many-lines</code></td>
                 <td>C0302</td>
                 <td></td>
-                <td><pre>Too many lines in module (1407/1000)</pre></td>
+                <td><pre>Too many lines in module (1410/1000)</pre></td>
             </tr>
             
             <tr>
@@ -1128,19 +1128,15 @@
                 <td>R0801</td>
                 <td></td>
                 <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[1101:1112]
+==ebcpy.simulationapi.dymola_api:[1104:1115]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1197,13 +1193,24 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -1224,16 +1231,6 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -1333,7 +1330,7 @@
                 <td><code>too-many-statements</code></td>
                 <td>R0915</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many statements (127/50)</pre></td>
+                <td><pre>Too many statements (128/50)</pre></td>
             </tr>
             
             <tr>
@@ -1357,7 +1354,7 @@
             </tr>
             
             <tr>
-                <td>618</td>
+                <td>621</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1367,7 +1364,7 @@
             </tr>
             
             <tr>
-                <td>621</td>
+                <td>624</td>
                 <td>19</td>
                 <td>warning</td>
                 <td><code>broad-exception-caught</code></td>
@@ -1377,7 +1374,7 @@
             </tr>
             
             <tr>
-                <td>626</td>
+                <td>629</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1387,7 +1384,7 @@
             </tr>
             
             <tr>
-                <td>692</td>
+                <td>695</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1397,7 +1394,7 @@
             </tr>
             
             <tr>
-                <td>694</td>
+                <td>697</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1407,7 +1404,7 @@
             </tr>
             
             <tr>
-                <td>759</td>
+                <td>762</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1417,7 +1414,7 @@
             </tr>
             
             <tr>
-                <td>778</td>
+                <td>781</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1427,7 +1424,7 @@
             </tr>
             
             <tr>
-                <td>781</td>
+                <td>784</td>
                 <td>36</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1437,7 +1434,7 @@
             </tr>
             
             <tr>
-                <td>871</td>
+                <td>874</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1447,7 +1444,7 @@
             </tr>
             
             <tr>
-                <td>873</td>
+                <td>876</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1457,7 +1454,7 @@
             </tr>
             
             <tr>
-                <td>897</td>
+                <td>900</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1467,7 +1464,7 @@
             </tr>
             
             <tr>
-                <td>923</td>
+                <td>926</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1477,7 +1474,7 @@
             </tr>
             
             <tr>
-                <td>932</td>
+                <td>935</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1487,7 +1484,7 @@
             </tr>
             
             <tr>
-                <td>933</td>
+                <td>936</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1497,7 +1494,7 @@
             </tr>
             
             <tr>
-                <td>938</td>
+                <td>941</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1507,7 +1504,7 @@
             </tr>
             
             <tr>
-                <td>989</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1517,7 +1514,7 @@
             </tr>
             
             <tr>
-                <td>989</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -1527,7 +1524,7 @@
             </tr>
             
             <tr>
-                <td>989</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -1537,7 +1534,7 @@
             </tr>
             
             <tr>
-                <td>1015</td>
+                <td>1018</td>
                 <td>8</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1547,7 +1544,7 @@
             </tr>
             
             <tr>
-                <td>1051</td>
+                <td>1054</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1557,7 +1554,7 @@
             </tr>
             
             <tr>
-                <td>1067</td>
+                <td>1070</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1567,7 +1564,7 @@
             </tr>
             
             <tr>
-                <td>1068</td>
+                <td>1071</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1577,7 +1574,7 @@
             </tr>
             
             <tr>
-                <td>1088</td>
+                <td>1091</td>
                 <td>28</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1587,7 +1584,7 @@
             </tr>
             
             <tr>
-                <td>1111</td>
+                <td>1114</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -1597,7 +1594,7 @@
             </tr>
             
             <tr>
-                <td>1123</td>
+                <td>1126</td>
                 <td>18</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1607,7 +1604,7 @@
             </tr>
             
             <tr>
-                <td>1126</td>
+                <td>1129</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1617,7 +1614,7 @@
             </tr>
             
             <tr>
-                <td>1165</td>
+                <td>1168</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1627,7 +1624,7 @@
             </tr>
             
             <tr>
-                <td>1295</td>
+                <td>1298</td>
                 <td>26</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1637,7 +1634,7 @@
             </tr>
             
             <tr>
-                <td>1335</td>
+                <td>1338</td>
                 <td>71</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1647,7 +1644,7 @@
             </tr>
             
             <tr>
-                <td>1360</td>
+                <td>1363</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1657,7 +1654,7 @@
             </tr>
             
             <tr>
-                <td>1361</td>
+                <td>1364</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
