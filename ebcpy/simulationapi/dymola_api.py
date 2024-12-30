@@ -438,6 +438,9 @@ class DymolaAPI(SimulationAPI):
                 # method used in the DymolaInterface should work.
                 self._setup_dymola_interface(dict(use_mp=True))
 
+            # Re-set the dymola experiment output if API is newly started
+            self.dymola.experimentSetupOutput(**self.experiment_setup_output.model_dump())
+
         # Handle eventlog
         if show_eventlog:
             if not self.experiment_setup_output.events:
