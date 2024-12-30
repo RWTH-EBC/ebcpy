@@ -333,7 +333,7 @@ def get_installed_packages() -> List[dict]:
         packages.append(dict(
             name=dist.metadata['Name'],
             version=dist.version,
-            location=os.path.normpath(dist.locate_file(''))
+            location=os.path.normpath(str(dist.locate_file('')))
         ))
     return packages
 
