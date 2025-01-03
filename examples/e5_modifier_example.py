@@ -23,7 +23,7 @@ def main(
         This example was tested for BESMod version 0.4.0.
         This example was tested for IBSPA version 3.0.0.
         This example was tested for AixLib version 1.3.2.
-    :param list ext_model_name:
+    :param str ext_model_name:
         Executable model name with redeclared subsystems and modifiers.
     :param str working_directory:
         Path in which to store the output.
