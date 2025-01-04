@@ -7,9 +7,20 @@ import os
 from pathlib import Path
 import shutil
 import numpy as np
+import pandas as pd
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu, Variable
 from ebcpy import TimeSeriesData
+
+
+def postprocess_mat_result(mat_result_file, variable_names, n):
+    """
+    Dummy function to test postprocessing of mat results.
+    Loads only given variable names and returns the last n values.
+
+    Must be defined globally to allow multiprocessing.
+    """
+    return TimeSeriesData(mat_result_file, variable_names=variable_names).to_df().iloc[-n:]
 
 
 class TestVariable(unittest.TestCase):
@@ -125,7 +136,7 @@ class PartialTestSimAPI(unittest.TestCase):
                 return_option="savepath",
                 savepath=_save,
                 result_file_name=_name
-                )
+            )
             for r in res:
                 self.assertTrue(os.path.isfile(r))
                 self.assertIsInstance(r, str)
@@ -143,7 +154,7 @@ class PartialTestSimAPI(unittest.TestCase):
         """Test set_sim_setup functionality of fmu api"""
         self.sim_api.set_sim_setup(sim_setup=self.new_sim_setup)
         for key, value in self.new_sim_setup.items():
-            self.assertEqual(self.sim_api.sim_setup.dict()[key],
+            self.assertEqual(self.sim_api.sim_setup.model_dump()[key],
                              value)
         with self.assertRaises(ValidationError):
             self.sim_api.set_sim_setup(sim_setup={"NotAValidKey": None})
@@ -162,7 +173,7 @@ class PartialTestSimAPI(unittest.TestCase):
                 logger.removeHandler(handler)
         log_file = self.example_sim_dir.joinpath(f"{self.sim_api.__class__.__name__}.log")
         if os.path.exists(log_file):
-            os.remove(self.example_sim_dir.joinpath(log_name))
+            os.remove(log_file)
         self.start_api(save_logs=False, mos_script=self.data_dir.joinpath("mos_script_test.mos"))
         self.sim_api.logger.error("This log should not be saved")
         self.assertFalse(os.path.exists(log_file))
@@ -181,7 +192,6 @@ class PartialTestSimAPI(unittest.TestCase):
 
 
 class PartialTestDymolaAPI(PartialTestSimAPI):
-
     n_cpu = None
 
     def setUp(self) -> None:
@@ -287,6 +297,64 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             return_option="last_point"
         )
         self.assertEqual(res["test_local"], some_val)
+
+    def test_variables_to_save(self):
+        all_false = dymola_api.ExperimentSetupOutput(
+            states=False,
+            derivatives=False,
+            inputs=False,
+            outputs=False,
+            auxiliaries=False,
+        )
+        parameters = list(self.sim_api.parameters.keys())
+        cases_to_test = [
+            {
+                "experiment_setup": all_false.model_copy(update={"outputs": True}),
+                "variables": list(self.sim_api.outputs.keys()) + parameters
+            },
+            {
+                "experiment_setup": all_false.model_copy(update={"inputs": True}),
+                "variables": list(self.sim_api.inputs.keys()) + parameters
+            },
+            {
+                "experiment_setup": all_false.model_copy(
+                    update={"states": True, "derivatives": True, "auxiliaries": True}
+                ),
+                "variables": list(self.sim_api.states.keys()) + parameters
+            },
+        ]
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        for case in cases_to_test:
+            variables = case["variables"]
+            self.sim_api.update_experiment_setup_output(case["experiment_setup"])
+            res = self.sim_api.simulate(
+                parameters=self.parameters,
+                return_option='savepath'
+            )
+            df = TimeSeriesData(res, variables_names=variables).to_df()
+            self.assertEqual(sorted(variables), sorted(df.columns))
+
+    def test_postprocessing_injection(self):
+        """Test injection of postprocessing function for mats"""
+        self.sim_api.set_sim_setup({"start_time": 0.0,
+                                    "stop_time": 10.0})
+        result_names = list(self.sim_api.states.keys())[:5]
+        self.sim_api.result_names = result_names
+        n_values_to_return = np.random.randint(1, 4)
+        kwargs_postprocessing = {
+            "variable_names": result_names[:2],
+            "n": n_values_to_return
+        }
+        res = self.sim_api.simulate(
+            parameters=self.parameters,
+            return_option='savepath',
+            postprocess_mat_result=postprocess_mat_result,
+            kwargs_postprocessing=kwargs_postprocessing
+        )
+        self.assertIsInstance(res, pd.DataFrame)
+        self.assertEqual(len(res.index), n_values_to_return)
+        self.assertEqual(len(res.columns), 2)
 
 
 class TestDymolaAPIMultiCore(PartialTestDymolaAPI):

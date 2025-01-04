@@ -113,3 +113,6 @@
 - v0.5.1
   - Add save-logs option for SimulatioAPI #141
   - Minor bug fixes #143
+- v0.5.2
+  - Add save options in Dymola #98
+  - Add feature to postprocess mat results within the simulate function to avoid memory errors in large studies

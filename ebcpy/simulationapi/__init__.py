@@ -393,7 +393,7 @@ class SimulationAPI:
             Start time after n_cpu simulations.
         """
         t_remaining = (time.time() - t1) / (self._n_sim_counter - self.n_cpu) * (
-                    self._n_sim_total - self._n_sim_counter)
+                self._n_sim_total - self._n_sim_counter)
         p_finished = self._n_sim_counter / self._n_sim_total * 100
         sys.stderr.write(f"\rFinished {np.round(p_finished, 1)} %. "
                          f"Approximately remaining time: {timedelta(seconds=int(t_remaining))} ")
@@ -413,6 +413,13 @@ class SimulationAPI:
                 suffix_idx += 1
                 size = size / 1024.0
             return f'{str(np.round(size, 2))} {suffixes[suffix_idx]}'
+
+        if not isinstance(filepath, (Path, str)) or not os.path.exists(filepath):
+            self.logger.info(
+                "Can't check disk usage as you probably used postprocessing on simulation "
+                "results but did not return a file-path in the post-processing function"
+            )
+            return
 
         sim_file_size = os.stat(filepath).st_size
         sim_files_size = sim_file_size * self._n_sim_total
@@ -444,7 +451,7 @@ class SimulationAPI:
         """
         Replaced in v0.1.7 by property function
         """
-        new_setup = self._sim_setup.dict()
+        new_setup = self._sim_setup.model_dump()
         new_setup.update(sim_setup)
         self._sim_setup = self._sim_setup_class(**new_setup)
 
