@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.5.1 documentation</title>
+  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -91,7 +91,7 @@
 <span class="kn">from</span> <span class="nn">contextlib</span> <span class="kn">import</span> <span class="n">closing</span>
 <span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">TimeSeriesData</span>
@@ -119,6 +119,27 @@
                         <span class="s2">&quot;Radau&quot;</span><span class="p">,</span> <span class="s2">&quot;Dopri45&quot;</span><span class="p">,</span> <span class="s2">&quot;Dopri853&quot;</span><span class="p">,</span> <span class="s2">&quot;Sdirk34hw&quot;</span><span class="p">]</span></div>
 
 
+<div class="viewcode-block" id="ExperimentSetupOutput"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput">[docs]</a><span class="k">class</span> <span class="nc">ExperimentSetupOutput</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Experiment setup output data model with</span>
+<span class="sd">    defaults equal to those in Dymola</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">states</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">derivatives</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">inputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">outputs</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">auxiliaries</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">equidistant</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">events</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
+
+<div class="viewcode-block" id="ExperimentSetupOutput.Config"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Pydantic internal model settings</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=too-few-public-methods</span>
+        <span class="n">extra</span> <span class="o">=</span> <span class="s2">&quot;forbid&quot;</span></div></div>
+
+
 <div class="viewcode-block" id="DymolaAPI"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI">[docs]</a><span class="k">class</span> <span class="nc">DymolaAPI</span><span class="p">(</span><span class="n">SimulationAPI</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    API to a Dymola instance.</span>
@@ -140,6 +161,15 @@
 <span class="sd">    :keyword Boolean equidistant_output:</span>
 <span class="sd">        If True (Default), Dymola stores variables in an</span>
 <span class="sd">        equisdistant output and does not store variables at events.</span>
+<span class="sd">    :keyword dict[str,bool] variables_to_save:</span>
+<span class="sd">        A dictionary to select which variables are going</span>
+<span class="sd">        to be stored if the simulation creates .mat files.</span>
+<span class="sd">        Options (with the default being all True):</span>
+<span class="sd">            - states=True</span>
+<span class="sd">            - derivatives=True</span>
+<span class="sd">            - inputs=True</span>
+<span class="sd">            - outputs=True</span>
+<span class="sd">            - auxiliaries=False</span>
 <span class="sd">    :keyword int n_restart:</span>
 <span class="sd">        Number of iterations after which Dymola should restart.</span>
 <span class="sd">        This is done to free memory. Default value -1. For values</span>
@@ -221,6 +251,7 @@
         <span class="s2">&quot;modify_structural_parameters&quot;</span><span class="p">,</span>
         <span class="s2">&quot;dymola_path&quot;</span><span class="p">,</span>
         <span class="s2">&quot;equidistant_output&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;variables_to_save&quot;</span><span class="p">,</span>
         <span class="s2">&quot;n_restart&quot;</span><span class="p">,</span>
         <span class="s2">&quot;debug&quot;</span><span class="p">,</span>
         <span class="s2">&quot;mos_script_pre&quot;</span><span class="p">,</span>
@@ -247,6 +278,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">show_window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_window&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modify_structural_parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;modify_structural_parameters&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;equidistant_output&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">_variables_to_save</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;variables_to_save&quot;</span><span class="p">,</span> <span class="p">{})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">ExperimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="n">_variables_to_save</span><span class="p">)</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">mos_script_pre</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mos_script_pre&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mos_script_post</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;mos_script_post&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dymola_version</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;dymola_version&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
@@ -354,7 +388,8 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">license_is_available</span><span class="p">():</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;You have no licence to use Dymola. &quot;</span>
                           <span class="s2">&quot;Hence you can only simulate models with 8 or less equations.&quot;</span><span class="p">)</span>
-
+        <span class="c1"># Update experiment setup output</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">update_experiment_setup_output</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Trigger on init.</span>
         <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -402,6 +437,15 @@
 <span class="sd">            If inputs are given, you have to specify the file_name of the table</span>
 <span class="sd">            in the instance of CombiTimeTable. In order for the inputs to</span>
 <span class="sd">            work the value should be equal to the value of &#39;fileName&#39; in Modelica.</span>
+<span class="sd">        :keyword callable postprocess_mat_result:</span>
+<span class="sd">            When choosing return_option savepath and no equidistant output, the mat files may take up</span>
+<span class="sd">            a lot of disk space while you are only interested in some variables or parts</span>
+<span class="sd">            of the simulation results. This features enables you to pass any function which</span>
+<span class="sd">            gets the mat-path as an input and returns some result you are interested in.</span>
+<span class="sd">            The function signature is `foo(mat_result_file, **kwargs_postprocessing) -&gt; Any`.</span>
+<span class="sd">            Be sure to define the function in a global scope to allow multiprocessing.</span>
+<span class="sd">        :keyword dict kwargs_postprocessing:</span>
+<span class="sd">            Keyword arguments used in the function `postprocess_mat_result`.</span>
 <span class="sd">        :keyword List[str] structural_parameters:</span>
 <span class="sd">            A list containing all parameter names which are structural in Modelica.</span>
 <span class="sd">            This means a modifier has to be created in order to change</span>
@@ -451,6 +495,12 @@
         <span class="n">table_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;table_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;file_name&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
         <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">empty_postprocessing</span><span class="p">(</span><span class="n">mat_result</span><span class="p">,</span> <span class="o">**</span><span class="n">_kwargs</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">mat_result</span>
+
+        <span class="n">postprocess_mat_result</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;postprocess_mat_result&quot;</span><span class="p">,</span> <span class="n">empty_postprocessing</span><span class="p">)</span>
+        <span class="n">kwargs_postprocessing</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;kwargs_postprocessing&quot;</span><span class="p">,</span> <span class="p">{})</span>
         <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
                 <span class="s2">&quot;You passed the following kwargs which &quot;</span>
@@ -465,9 +515,14 @@
                 <span class="c1"># method used in the DymolaInterface should work.</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">_setup_dymola_interface</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
 
+            <span class="c1"># Re-set the dymola experiment output if API is newly started</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span>
+
         <span class="c1"># Handle eventlog</span>
         <span class="k">if</span> <span class="n">show_eventlog</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="n">events</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">events</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;You can&#39;t log events and have an &quot;</span>
+                                 <span class="s2">&quot;equidistant output, set equidistant output=False&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">ExecuteCommand</span><span class="p">(</span><span class="s2">&quot;Advanced.Debug.LogEvents = true&quot;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">ExecuteCommand</span><span class="p">(</span><span class="s2">&quot;Advanced.Debug.LogEventsInitialization = true&quot;</span><span class="p">)</span>
 
@@ -659,23 +714,26 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">cd</span><span class="p">()</span>
             <span class="c1"># Get the value and convert it to a 100 % fitting str-path</span>
             <span class="n">dymola_working_directory</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">getLastErrorLog</span><span class="p">()</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)))</span>
+            <span class="n">mat_working_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">savepath</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="nb">str</span><span class="p">(</span><span class="n">savepath</span><span class="p">)</span> <span class="o">==</span> <span class="n">dymola_working_directory</span><span class="p">:</span>
-                <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
-            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-            <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="p">[</span><span class="n">_save_name_dsres</span><span class="p">]:</span>
+                <span class="n">mat_result_file</span> <span class="o">=</span> <span class="n">mat_working_directory</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">mat_save_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
                 <span class="c1"># Copying dslogs and dsfinals can lead to errors,</span>
                 <span class="c1"># as the names are not unique</span>
                 <span class="c1"># for filename in [_save_name_dsres, &quot;dslog.txt&quot;, &quot;dsfinal.txt&quot;]:</span>
                 <span class="c1"># Delete existing files</span>
                 <span class="k">try</span><span class="p">:</span>
-                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+                    <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mat_save_path</span><span class="p">)</span>
                 <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
                     <span class="k">pass</span>
                 <span class="c1"># Move files</span>
-                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">),</span>
-                            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dymola_working_directory</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
-            <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">_save_name_dsres</span><span class="p">)</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mat_working_directory</span><span class="p">,</span> <span class="n">mat_save_path</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">mat_working_directory</span><span class="p">)</span>
+                <span class="n">mat_result_file</span> <span class="o">=</span> <span class="n">mat_save_path</span>
+            <span class="n">result_file</span> <span class="o">=</span> <span class="n">postprocess_mat_result</span><span class="p">(</span><span class="n">mat_result_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs_postprocessing</span><span class="p">)</span>
+            <span class="k">return</span> <span class="n">result_file</span>
 
         <span class="n">data</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c1"># Get data</span>
         <span class="k">if</span> <span class="n">return_option</span> <span class="o">==</span> <span class="s2">&quot;last_point&quot;</span><span class="p">:</span>
@@ -909,16 +967,35 @@
             <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="n">dymola</span><span class="o">.</span><span class="n">getLastErrorLog</span><span class="p">())</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loaded modules&quot;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span><span class="p">:</span>
-            <span class="c1"># Change the Simulation Output, to ensure all</span>
-            <span class="c1"># simulation results have the same array shape.</span>
-            <span class="c1"># Events can also cause errors in the shape.</span>
-            <span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="n">equidistant</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                         <span class="n">events</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">dict</span><span class="p">())</span>
         <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
             <span class="n">DymolaAPI</span><span class="o">.</span><span class="n">dymola</span> <span class="o">=</span> <span class="n">dymola</span>
             <span class="k">return</span> <span class="kc">None</span>
         <span class="k">return</span> <span class="n">dymola</span>
+
+<div class="viewcode-block" id="DymolaAPI.update_experiment_setup_output"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output">[docs]</a>    <span class="k">def</span> <span class="nf">update_experiment_setup_output</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">experiment_setup_output</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">ExperimentSetupOutput</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function to update the ExperimentSetupOutput in Dymola for selection</span>
+<span class="sd">        of which variables are going to be saved. The options</span>
+<span class="sd">        `events` and `equidistant` are overridden if equidistant output is required.</span>
+
+<span class="sd">        :param (ExperimentSetupOutput, dict) experiment_setup_output:</span>
+<span class="sd">            An instance of ExperimentSetupOutput or a dict with valid keys for it.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">experiment_setup_output</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">ExperimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="n">experiment_setup_output</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span> <span class="o">=</span> <span class="n">experiment_setup_output</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span><span class="p">:</span>
+            <span class="c1"># Change the Simulation Output, to ensure all</span>
+            <span class="c1"># simulation results have the same array shape.</span>
+            <span class="c1"># Events can also cause errors in the shape.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">equidistant</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dymola</span><span class="o">.</span><span class="n">experimentSetupOutput</span><span class="p">(</span><span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">experiment_setup_output</span><span class="o">.</span><span class="n">model_dump</span><span class="p">())</span></div>
 
 <div class="viewcode-block" id="DymolaAPI.license_is_available"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.license_is_available">[docs]</a>    <span class="k">def</span> <span class="nf">license_is_available</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Standard&quot;</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if license is available&quot;&quot;&quot;</span>
@@ -1292,7 +1369,7 @@
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">if</span> <span class="s2">&quot;Dymola&quot;</span> <span class="ow">in</span> <span class="n">proc</span><span class="o">.</span><span class="n">name</span><span class="p">():</span>
                     <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
-            <span class="k">except</span> <span class="n">psutil</span><span class="o">.</span><span class="n">AccessDenied</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="n">psutil</span><span class="o">.</span><span class="n">AccessDenied</span><span class="p">,</span> <span class="n">psutil</span><span class="o">.</span><span class="n">NoSuchProcess</span><span class="p">):</span>
                 <span class="k">continue</span>
         <span class="k">if</span> <span class="n">counter</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_critical_number_instances</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;There are currently </span><span class="si">%s</span><span class="s2"> Dymola-Instances &quot;</span>

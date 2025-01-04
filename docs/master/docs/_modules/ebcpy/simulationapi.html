@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi &mdash; ebcpy 0.5.1 documentation</title>
+  <title>ebcpy.simulationapi &mdash; ebcpy 0.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -469,7 +469,7 @@
 <span class="sd">            Start time after n_cpu simulations.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">t_remaining</span> <span class="o">=</span> <span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time</span><span class="p">()</span> <span class="o">-</span> <span class="n">t1</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_total</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span><span class="p">)</span>
         <span class="n">p_finished</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_total</span> <span class="o">*</span> <span class="mi">100</span>
         <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">Finished </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">p_finished</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %. &quot;</span>
                          <span class="sa">f</span><span class="s2">&quot;Approximately remaining time: </span><span class="si">{</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">t_remaining</span><span class="p">))</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
@@ -489,6 +489,13 @@
                 <span class="n">suffix_idx</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="n">size</span> <span class="o">=</span> <span class="n">size</span> <span class="o">/</span> <span class="mf">1024.0</span>
             <span class="k">return</span> <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">))</span><span class="si">}</span><span class="s1"> </span><span class="si">{</span><span class="n">suffixes</span><span class="p">[</span><span class="n">suffix_idx</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="p">(</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">))</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">filepath</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                <span class="s2">&quot;Can&#39;t check disk usage as you probably used postprocessing on simulation &quot;</span>
+                <span class="s2">&quot;results but did not return a file-path in the post-processing function&quot;</span>
+            <span class="p">)</span>
+            <span class="k">return</span>
 
         <span class="n">sim_file_size</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filepath</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span>
         <span class="n">sim_files_size</span> <span class="o">=</span> <span class="n">sim_file_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_total</span>
@@ -520,7 +527,7 @@
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaced in v0.1.7 by property function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">new_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span><span class="o">.</span><span class="n">dict</span><span class="p">()</span>
+        <span class="n">new_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span><span class="o">.</span><span class="n">model_dump</span><span class="p">()</span>
         <span class="n">new_setup</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">sim_setup</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup_class</span><span class="p">(</span><span class="o">**</span><span class="n">new_setup</span><span class="p">)</span></div>
 

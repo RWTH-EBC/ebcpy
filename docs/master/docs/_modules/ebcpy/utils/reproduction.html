@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.utils.reproduction &mdash; ebcpy 0.5.1 documentation</title>
+  <title>ebcpy.utils.reproduction &mdash; ebcpy 0.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -86,10 +86,11 @@
 <span class="kn">import</span> <span class="nn">platform</span>
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
 <span class="kn">import</span> <span class="nn">zipfile</span>
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
 <span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">distributions</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
@@ -399,44 +400,58 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_content_lines</span><span class="p">)</span>
 
 
+<div class="viewcode-block" id="get_installed_packages"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_installed_packages">[docs]</a><span class="k">def</span> <span class="nf">get_installed_packages</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of tuples containing (package_name, version, location)</span>
+<span class="sd">    for all installed Python packages.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">packages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">dist</span> <span class="ow">in</span> <span class="n">distributions</span><span class="p">():</span>
+        <span class="n">packages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s1">&#39;Name&#39;</span><span class="p">],</span>
+            <span class="n">version</span><span class="o">=</span><span class="n">dist</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+            <span class="n">location</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">normpath</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">dist</span><span class="o">.</span><span class="n">locate_file</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)))</span>
+        <span class="p">))</span>
+    <span class="k">return</span> <span class="n">packages</span></div>
+
+
 <span class="k">def</span> <span class="nf">_get_python_package_information</span><span class="p">(</span><span class="n">search_on_pypi</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to get the content of python packages installed</span>
 <span class="sd">    as a requirement.txt format content.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">pkg_resources</span>
-    <span class="n">installed_packages</span> <span class="o">=</span> <span class="p">[</span><span class="n">pack</span> <span class="k">for</span> <span class="n">pack</span> <span class="ow">in</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">working_set</span><span class="p">]</span>
+    <span class="n">installed_packages</span> <span class="o">=</span> <span class="n">get_installed_packages</span><span class="p">()</span>
     <span class="n">diff_paths</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">requirement_txt_content</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">pip_version</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
     <span class="k">for</span> <span class="n">package</span> <span class="ow">in</span> <span class="n">installed_packages</span><span class="p">:</span>
         <span class="n">repo_info</span> <span class="o">=</span> <span class="n">get_git_information</span><span class="p">(</span>
-            <span class="n">path</span><span class="o">=</span><span class="n">package</span><span class="o">.</span><span class="n">location</span><span class="p">,</span>
-            <span class="n">name</span><span class="o">=</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;location&quot;</span><span class="p">],</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">],</span>
             <span class="n">zip_folder_path</span><span class="o">=</span><span class="s2">&quot;python&quot;</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">repo_info</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># Check if in python path:</span>
-            <span class="k">if</span> <span class="n">package</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="s2">&quot;pip&quot;</span><span class="p">:</span>  <span class="c1"># exclude pip in requirements and give info to _get_python_reproduction</span>
-                <span class="n">pip_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;==</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="k">if</span> <span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;pip&quot;</span><span class="p">:</span>  <span class="c1"># exclude pip in requirements and give info to _get_python_reproduction</span>
+                <span class="n">pip_version</span> <span class="o">=</span> <span class="sa">f</span><span class="s1">&#39;==</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">requirement_txt_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">==</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">version</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">==</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">search_on_pypi</span><span class="p">:</span>
                 <span class="kn">from</span> <span class="nn">pypisearch.search</span> <span class="kn">import</span> <span class="n">Search</span>
-                <span class="n">res</span> <span class="o">=</span> <span class="n">Search</span><span class="p">(</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">result</span>
+                <span class="n">res</span> <span class="o">=</span> <span class="n">Search</span><span class="p">(</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">result</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
                         <span class="s2">&quot;Package &#39;</span><span class="si">%s</span><span class="s2">&#39; is neither a git &quot;</span>
                         <span class="s2">&quot;repo nor a package on pypi. &quot;</span>
                         <span class="s2">&quot;Won&#39;t be able to reproduce it!&quot;</span><span class="p">,</span>
-                        <span class="n">package</span><span class="o">.</span><span class="n">key</span>
+                        <span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
                     <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">cmt_sha</span> <span class="o">=</span> <span class="n">repo_info</span><span class="p">[</span><span class="s2">&quot;commit&quot;</span><span class="p">]</span>
             <span class="n">requirement_txt_content</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
-                <span class="sa">f</span><span class="s2">&quot;git+</span><span class="si">{</span><span class="n">repo_info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.git@</span><span class="si">{</span><span class="n">cmt_sha</span><span class="si">}</span><span class="s2">#egg=</span><span class="si">{</span><span class="n">package</span><span class="o">.</span><span class="n">key</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="sa">f</span><span class="s2">&quot;git+</span><span class="si">{</span><span class="n">repo_info</span><span class="p">[</span><span class="s1">&#39;url&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">.git@</span><span class="si">{</span><span class="n">cmt_sha</span><span class="si">}</span><span class="s2">#egg=</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
             <span class="p">)</span>
             <span class="n">diff_paths</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">repo_info</span><span class="p">[</span><span class="s2">&quot;difference_files&quot;</span><span class="p">])</span>
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requirement_txt_content</span><span class="p">),</span> <span class="n">diff_paths</span><span class="p">,</span> <span class="n">pip_version</span>

@@ -28,37 +28,13 @@
 
         
         <h2>Score</h2>
-        9.07 / 10
+        9.11 / 10
             
-            (previous score: 9.07 / 10)
+            (previous score: 9.11 / 10)
             
         
 
         <h2>Messages</h2>
-        
-        <h3>Module <code>ebcpy</code> (<code>ebcpy/__init__.py</code>)</h3>
-        <table>
-            <tr>
-                <th>Line</th>
-                <th>Col.</th>
-                <th>Type</th>
-                <th>Symbol</th>
-                <th>ID</th>
-                <th>Obj</th>
-                <th>Message</th>
-            </tr>
-            
-            <tr>
-                <td>11</td>
-                <td>0</td>
-                <td>convention</td>
-                <td><code>missing-final-newline</code></td>
-                <td>C0304</td>
-                <td></td>
-                <td><pre>Final newline missing</pre></td>
-            </tr>
-            
-        </table>
         
         <h3>Module <code>ebcpy.data_types</code> (<code>ebcpy/data_types.py</code>)</h3>
         <table>
@@ -937,7 +913,7 @@
             </tr>
             
             <tr>
-                <td>419</td>
+                <td>426</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1051,7 +1027,7 @@
             </tr>
             
             <tr>
-                <td>420</td>
+                <td>427</td>
                 <td>15</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -1061,7 +1037,7 @@
             </tr>
             
             <tr>
-                <td>512</td>
+                <td>519</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>missing-function-docstring</code></td>
@@ -1071,7 +1047,7 @@
             </tr>
             
             <tr>
-                <td>512</td>
+                <td>519</td>
                 <td>21</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1081,7 +1057,7 @@
             </tr>
             
             <tr>
-                <td>518</td>
+                <td>525</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>missing-function-docstring</code></td>
@@ -1091,7 +1067,7 @@
             </tr>
             
             <tr>
-                <td>518</td>
+                <td>525</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1101,7 +1077,7 @@
             </tr>
             
             <tr>
-                <td>524</td>
+                <td>531</td>
                 <td>4</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1111,7 +1087,7 @@
             </tr>
             
             <tr>
-                <td>524</td>
+                <td>531</td>
                 <td>17</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1141,21 +1117,131 @@
                 <td><code>too-many-lines</code></td>
                 <td>C0302</td>
                 <td></td>
-                <td><pre>Too many lines in module (1333/1000)</pre></td>
+                <td><pre>Too many lines in module (1410/1000)</pre></td>
             </tr>
             
             <tr>
-                <td>45</td>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[1104:1115]
+==ebcpy.simulationapi.fmu:[405:412]
+        ))
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[426:434]
+==ebcpy.simulationapi.fmu:[194:201]
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+
+        if self.use_mp:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[324:333]
+==ebcpy.simulationapi.fmu:[194:200]
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.optimization:[103:115]
+==ebcpy.simulationapi.__init__:[508:519]
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    @property
+    def cd(self) -&gt; Path:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>66</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-instance-attributes</code></td>
                 <td>R0902</td>
                 <td>DymolaAPI</td>
-                <td><pre>Too many instance attributes (23/7)</pre></td>
+                <td><pre>Too many instance attributes (24/7)</pre></td>
             </tr>
             
             <tr>
-                <td>157</td>
+                <td>188</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -1165,17 +1251,17 @@
             </tr>
             
             <tr>
-                <td>157</td>
+                <td>188</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-statements</code></td>
                 <td>R0915</td>
                 <td>DymolaAPI.__init__</td>
-                <td><pre>Too many statements (77/50)</pre></td>
+                <td><pre>Too many statements (80/50)</pre></td>
             </tr>
             
             <tr>
-                <td>272</td>
+                <td>306</td>
                 <td>17</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1185,7 +1271,7 @@
             </tr>
             
             <tr>
-                <td>276</td>
+                <td>310</td>
                 <td>51</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1195,7 +1281,17 @@
             </tr>
             
             <tr>
-                <td>340</td>
+                <td>364</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (101/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>384</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1205,47 +1301,37 @@
             </tr>
             
             <tr>
-                <td>363</td>
+                <td>407</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
                 <td>R0914</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many local variables (41/15)</pre></td>
+                <td><pre>Too many local variables (47/15)</pre></td>
             </tr>
             
             <tr>
-                <td>363</td>
-                <td>4</td>
-                <td>refactor</td>
-                <td><code>too-many-return-statements</code></td>
-                <td>R0911</td>
-                <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many return statements (7/6)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>363</td>
+                <td>407</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
                 <td>R0912</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many branches (34/12)</pre></td>
+                <td><pre>Too many branches (35/12)</pre></td>
             </tr>
             
             <tr>
-                <td>363</td>
+                <td>407</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-statements</code></td>
                 <td>R0915</td>
                 <td>DymolaAPI._single_simulation</td>
-                <td><pre>Too many statements (118/50)</pre></td>
+                <td><pre>Too many statements (128/50)</pre></td>
             </tr>
             
             <tr>
-                <td>385</td>
+                <td>435</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -1255,7 +1341,7 @@
             </tr>
             
             <tr>
-                <td>389</td>
+                <td>439</td>
                 <td>45</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1265,7 +1351,7 @@
             </tr>
             
             <tr>
-                <td>566</td>
+                <td>621</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1275,7 +1361,7 @@
             </tr>
             
             <tr>
-                <td>569</td>
+                <td>624</td>
                 <td>19</td>
                 <td>warning</td>
                 <td><code>broad-exception-caught</code></td>
@@ -1285,7 +1371,7 @@
             </tr>
             
             <tr>
-                <td>574</td>
+                <td>629</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1295,7 +1381,7 @@
             </tr>
             
             <tr>
-                <td>637</td>
+                <td>695</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1305,7 +1391,7 @@
             </tr>
             
             <tr>
-                <td>639</td>
+                <td>697</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1315,7 +1401,7 @@
             </tr>
             
             <tr>
-                <td>704</td>
+                <td>762</td>
                 <td>12</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1325,7 +1411,7 @@
             </tr>
             
             <tr>
-                <td>723</td>
+                <td>781</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1335,7 +1421,7 @@
             </tr>
             
             <tr>
-                <td>726</td>
+                <td>784</td>
                 <td>36</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1345,7 +1431,7 @@
             </tr>
             
             <tr>
-                <td>816</td>
+                <td>874</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1355,7 +1441,7 @@
             </tr>
             
             <tr>
-                <td>818</td>
+                <td>876</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1365,7 +1451,17 @@
             </tr>
             
             <tr>
-                <td>849</td>
+                <td>900</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (106/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>926</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1375,7 +1471,7 @@
             </tr>
             
             <tr>
-                <td>858</td>
+                <td>935</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1385,7 +1481,7 @@
             </tr>
             
             <tr>
-                <td>859</td>
+                <td>936</td>
                 <td>12</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1395,7 +1491,7 @@
             </tr>
             
             <tr>
-                <td>864</td>
+                <td>941</td>
                 <td>30</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1405,7 +1501,7 @@
             </tr>
             
             <tr>
-                <td>915</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1415,7 +1511,7 @@
             </tr>
             
             <tr>
-                <td>915</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -1425,7 +1521,7 @@
             </tr>
             
             <tr>
-                <td>915</td>
+                <td>992</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -1435,7 +1531,7 @@
             </tr>
             
             <tr>
-                <td>941</td>
+                <td>1018</td>
                 <td>8</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1445,7 +1541,7 @@
             </tr>
             
             <tr>
-                <td>977</td>
+                <td>1054</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1455,7 +1551,7 @@
             </tr>
             
             <tr>
-                <td>993</td>
+                <td>1070</td>
                 <td>21</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1465,7 +1561,7 @@
             </tr>
             
             <tr>
-                <td>994</td>
+                <td>1071</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1475,7 +1571,7 @@
             </tr>
             
             <tr>
-                <td>1014</td>
+                <td>1091</td>
                 <td>28</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1485,7 +1581,7 @@
             </tr>
             
             <tr>
-                <td>1037</td>
+                <td>1114</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -1495,7 +1591,7 @@
             </tr>
             
             <tr>
-                <td>1049</td>
+                <td>1126</td>
                 <td>18</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1505,7 +1601,7 @@
             </tr>
             
             <tr>
-                <td>1052</td>
+                <td>1129</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>broad-exception-raised</code></td>
@@ -1515,7 +1611,7 @@
             </tr>
             
             <tr>
-                <td>1091</td>
+                <td>1168</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1525,7 +1621,7 @@
             </tr>
             
             <tr>
-                <td>1221</td>
+                <td>1298</td>
                 <td>26</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -1535,7 +1631,7 @@
             </tr>
             
             <tr>
-                <td>1261</td>
+                <td>1338</td>
                 <td>71</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
@@ -1545,7 +1641,7 @@
             </tr>
             
             <tr>
-                <td>1286</td>
+                <td>1363</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1555,7 +1651,7 @@
             </tr>
             
             <tr>
-                <td>1287</td>
+                <td>1364</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1576,120 +1672,6 @@
                 <th>ID</th>
                 <th>Obj</th>
                 <th>Message</th>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>duplicate-code</code></td>
-                <td>R0801</td>
-                <td></td>
-                <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[1027:1038]
-==ebcpy.simulationapi.fmu:[405:412]
-        ))
-        return super().save_for_reproduction(
-            title=title,
-            path=path,
-            files=files,
-            **kwargs
-        )</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>duplicate-code</code></td>
-                <td>R0801</td>
-                <td></td>
-                <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[375:384]
-==ebcpy.simulationapi.fmu:[193:201]
-        savepath = kwargs.pop(&#34;savepath&#34;, None)
-        if kwargs:
-            self.logger.error(
-                &#34;You passed the following kwargs which &#34;
-                &#34;are not part of the supported kwargs and &#34;
-                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
-
-        # Handle multiprocessing
-        if self.use_mp:</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>duplicate-code</code></td>
-                <td>R0801</td>
-                <td></td>
-                <td><pre>Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[289:298]
-==ebcpy.simulationapi.fmu:[194:200]
-        if kwargs:
-            self.logger.error(
-                &#34;You passed the following kwargs which &#34;
-                &#34;are not part of the supported kwargs and &#34;
-                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to:</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>duplicate-code</code></td>
-                <td>R0801</td>
-                <td></td>
-                <td><pre>Similar lines in 2 files
-==ebcpy.optimization:[103:115]
-==ebcpy.simulationapi.__init__:[501:512]
-        return self._working_directory
-
-    @working_directory.setter
-    def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
-        if isinstance(working_directory, str):
-            working_directory = Path(working_directory)
-        os.makedirs(working_directory, exist_ok=True)
-        self._working_directory = working_directory
-
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -1811,7 +1793,17 @@
             </tr>
             
             <tr>
-                <td>54</td>
+                <td>12</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unused-import</code></td>
+                <td>W0611</td>
+                <td></td>
+                <td><pre>Unused Tuple imported from typing</pre></td>
+            </tr>
+            
+            <tr>
+                <td>55</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -1821,7 +1813,7 @@
             </tr>
             
             <tr>
-                <td>54</td>
+                <td>55</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -1831,7 +1823,7 @@
             </tr>
             
             <tr>
-                <td>54</td>
+                <td>55</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -1841,7 +1833,7 @@
             </tr>
             
             <tr>
-                <td>90</td>
+                <td>91</td>
                 <td>28</td>
                 <td>error</td>
                 <td><code>no-member</code></td>
@@ -1851,7 +1843,7 @@
             </tr>
             
             <tr>
-                <td>103</td>
+                <td>104</td>
                 <td>16</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1861,7 +1853,7 @@
             </tr>
             
             <tr>
-                <td>125</td>
+                <td>126</td>
                 <td>9</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -1871,7 +1863,7 @@
             </tr>
             
             <tr>
-                <td>125</td>
+                <td>126</td>
                 <td>64</td>
                 <td>convention</td>
                 <td><code>invalid-name</code></td>
@@ -1881,7 +1873,7 @@
             </tr>
             
             <tr>
-                <td>162</td>
+                <td>163</td>
                 <td>12</td>
                 <td>refactor</td>
                 <td><code>redefined-argument-from-local</code></td>
@@ -1891,7 +1883,7 @@
             </tr>
             
             <tr>
-                <td>185</td>
+                <td>186</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -1901,7 +1893,7 @@
             </tr>
             
             <tr>
-                <td>207</td>
+                <td>208</td>
                 <td>8</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -1911,7 +1903,7 @@
             </tr>
             
             <tr>
-                <td>209</td>
+                <td>210</td>
                 <td>8</td>
                 <td>warning</td>
                 <td><code>raise-missing-from</code></td>
@@ -1921,7 +1913,7 @@
             </tr>
             
             <tr>
-                <td>277</td>
+                <td>278</td>
                 <td>17</td>
                 <td>warning</td>
                 <td><code>unused-variable</code></td>
@@ -1931,7 +1923,7 @@
             </tr>
             
             <tr>
-                <td>279</td>
+                <td>280</td>
                 <td>36</td>
                 <td>convention</td>
                 <td><code>unnecessary-dunder-call</code></td>
@@ -1941,7 +1933,7 @@
             </tr>
             
             <tr>
-                <td>295</td>
+                <td>296</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
@@ -1951,47 +1943,27 @@
             </tr>
             
             <tr>
-                <td>330</td>
-                <td>4</td>
-                <td>convention</td>
-                <td><code>import-outside-toplevel</code></td>
-                <td>C0415</td>
-                <td>_get_python_package_information</td>
-                <td><pre>Import outside toplevel (pkg_resources)</pre></td>
-            </tr>
-            
-            <tr>
-                <td>331</td>
-                <td>43</td>
-                <td>error</td>
-                <td><code>not-an-iterable</code></td>
-                <td>E1133</td>
-                <td>_get_python_package_information</td>
-                <td><pre>Non-iterable value pkg_resources.working_set is used in an iterating context</pre></td>
-            </tr>
-            
-            <tr>
-                <td>331</td>
-                <td>25</td>
+                <td>333</td>
+                <td>24</td>
                 <td>refactor</td>
-                <td><code>unnecessary-comprehension</code></td>
-                <td>R1721</td>
-                <td>_get_python_package_information</td>
-                <td><pre>Unnecessary use of a comprehension, use list(pkg_resources.working_set) instead.</pre></td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>get_installed_packages</td>
+                <td><pre>Consider using &#39;{&#34;name&#34;: dist.metadata[&#39;Name&#39;], &#34;version&#34;: dist.version, &#34;location&#34;: os.path.normpath(str(dist.locate_file(&#39;&#39;))), ... }&#39; instead of a call to &#39;dict&#39;.</pre></td>
             </tr>
             
             <tr>
-                <td>343</td>
+                <td>358</td>
                 <td>0</td>
                 <td>convention</td>
                 <td><code>line-too-long</code></td>
                 <td>C0301</td>
                 <td></td>
-                <td><pre>Line too long (109/100)</pre></td>
+                <td><pre>Line too long (113/100)</pre></td>
             </tr>
             
             <tr>
-                <td>350</td>
+                <td>365</td>
                 <td>16</td>
                 <td>error</td>
                 <td><code>import-error</code></td>
@@ -2001,7 +1973,7 @@
             </tr>
             
             <tr>
-                <td>350</td>
+                <td>365</td>
                 <td>16</td>
                 <td>convention</td>
                 <td><code>import-outside-toplevel</code></td>
@@ -2011,7 +1983,7 @@
             </tr>
             
             <tr>
-                <td>353</td>
+                <td>368</td>
                 <td>20</td>
                 <td>warning</td>
                 <td><code>raising-format-tuple</code></td>
@@ -2021,7 +1993,7 @@
             </tr>
             
             <tr>
-                <td>380</td>
+                <td>395</td>
                 <td>8</td>
                 <td>warning</td>
                 <td><code>f-string-without-interpolation</code></td>
@@ -2773,17 +2745,17 @@
             
             <tr>
                 <td>error</td>
-                <td>5</td>
+                <td>4</td>
             </tr>
             
             <tr>
                 <td>refactor</td>
-                <td>121</td>
+                <td>120</td>
             </tr>
             
             <tr>
                 <td>warning</td>
-                <td>38</td>
+                <td>39</td>
             </tr>
             
             <tr>
@@ -2817,58 +2789,8 @@
             </tr>
             
             <tr>
-                <td>missing-final-newline</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>too-many-locals</td>
-                <td>12</td>
-            </tr>
-            
-            <tr>
-                <td>unbalanced-tuple-unpacking</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>too-many-branches</td>
-                <td>10</td>
-            </tr>
-            
-            <tr>
-                <td>too-many-arguments</td>
-                <td>6</td>
-            </tr>
-            
-            <tr>
-                <td>no-else-return</td>
-                <td>2</td>
-            </tr>
-            
-            <tr>
-                <td>unspecified-encoding</td>
-                <td>10</td>
-            </tr>
-            
-            <tr>
-                <td>inconsistent-return-statements</td>
-                <td>8</td>
-            </tr>
-            
-            <tr>
-                <td>undefined-all-variable</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>unused-import</td>
-                <td>2</td>
-            </tr>
-            
-            <tr>
                 <td>line-too-long</td>
-                <td>21</td>
+                <td>23</td>
             </tr>
             
             <tr>
@@ -2887,8 +2809,18 @@
             </tr>
             
             <tr>
+                <td>too-many-locals</td>
+                <td>12</td>
+            </tr>
+            
+            <tr>
                 <td>protected-access</td>
                 <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>inconsistent-return-statements</td>
+                <td>8</td>
             </tr>
             
             <tr>
@@ -2899,6 +2831,51 @@
             <tr>
                 <td>too-many-statements</td>
                 <td>4</td>
+            </tr>
+            
+            <tr>
+                <td>unspecified-encoding</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-branches</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>no-else-return</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-arguments</td>
+                <td>6</td>
+            </tr>
+            
+            <tr>
+                <td>undefined-all-variable</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>unused-import</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>unbalanced-tuple-unpacking</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>consider-using-f-string</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>use-dict-literal</td>
+                <td>6</td>
             </tr>
             
             <tr>
@@ -2913,7 +2890,7 @@
             
             <tr>
                 <td>import-outside-toplevel</td>
-                <td>6</td>
+                <td>5</td>
             </tr>
             
             <tr>
@@ -2932,16 +2909,6 @@
             </tr>
             
             <tr>
-                <td>not-an-iterable</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>unnecessary-comprehension</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
                 <td>import-error</td>
                 <td>1</td>
             </tr>
@@ -2957,13 +2924,8 @@
             </tr>
             
             <tr>
-                <td>consider-using-f-string</td>
-                <td>10</td>
-            </tr>
-            
-            <tr>
-                <td>use-dict-literal</td>
-                <td>5</td>
+                <td>consider-using-in</td>
+                <td>1</td>
             </tr>
             
             <tr>
@@ -2997,16 +2959,6 @@
             </tr>
             
             <tr>
-                <td>too-many-return-statements</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>consider-using-in</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
                 <td>duplicate-code</td>
                 <td>4</td>
             </tr>
@@ -3032,13 +2984,8 @@
             </tr>
             
             <tr>
-                <td>ebcpy</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.preprocessing</td>
-                <td>5</td>
+                <td>ebcpy.optimization</td>
+                <td>48</td>
             </tr>
             
             <tr>
@@ -3047,28 +2994,8 @@
             </tr>
             
             <tr>
-                <td>ebcpy.optimization</td>
-                <td>48</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.utils.statistics_analyzer</td>
-                <td>3</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.utils.reproduction</td>
-                <td>22</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.utils.conversion</td>
-                <td>3</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.modelica.manipulate_ds</td>
-                <td>7</td>
+                <td>ebcpy.preprocessing</td>
+                <td>5</td>
             </tr>
             
             <tr>
@@ -3077,8 +3004,33 @@
             </tr>
             
             <tr>
+                <td>ebcpy.modelica.manipulate_ds</td>
+                <td>7</td>
+            </tr>
+            
+            <tr>
                 <td>ebcpy.modelica.simres</td>
                 <td>7</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.reproduction</td>
+                <td>21</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.conversion</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.statistics_analyzer</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.simulationapi.fmu</td>
+                <td>6</td>
             </tr>
             
             <tr>
@@ -3093,12 +3045,7 @@
             
             <tr>
                 <td>ebcpy.simulationapi.dymola_api</td>
-                <td>43</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy.simulationapi.fmu</td>
-                <td>13</td>
+                <td>51</td>
             </tr>
             
         </table>
@@ -3117,13 +3064,8 @@
             </tr>
             
             <tr>
-                <td>ebcpy/__init__.py</td>
-                <td>1</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/preprocessing.py</td>
-                <td>5</td>
+                <td>ebcpy/optimization.py</td>
+                <td>48</td>
             </tr>
             
             <tr>
@@ -3132,28 +3074,8 @@
             </tr>
             
             <tr>
-                <td>ebcpy/optimization.py</td>
-                <td>48</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/utils/statistics_analyzer.py</td>
-                <td>3</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/utils/reproduction.py</td>
-                <td>22</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/utils/conversion.py</td>
-                <td>3</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/modelica/manipulate_ds.py</td>
-                <td>7</td>
+                <td>ebcpy/preprocessing.py</td>
+                <td>5</td>
             </tr>
             
             <tr>
@@ -3162,8 +3084,33 @@
             </tr>
             
             <tr>
+                <td>ebcpy/modelica/manipulate_ds.py</td>
+                <td>7</td>
+            </tr>
+            
+            <tr>
                 <td>ebcpy/modelica/simres.py</td>
                 <td>7</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/reproduction.py</td>
+                <td>21</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/conversion.py</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/statistics_analyzer.py</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/simulationapi/fmu.py</td>
+                <td>6</td>
             </tr>
             
             <tr>
@@ -3173,12 +3120,7 @@
             
             <tr>
                 <td>ebcpy/simulationapi/dymola_api.py</td>
-                <td>43</td>
-            </tr>
-            
-            <tr>
-                <td>ebcpy/simulationapi/fmu.py</td>
-                <td>13</td>
+                <td>51</td>
             </tr>
             
         </table>

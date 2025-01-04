@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi package &mdash; ebcpy 0.5.1 documentation</title>
+  <title>ebcpy.simulationapi package &mdash; ebcpy 0.5.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -446,7 +446,7 @@ simulation variable (input, parameter, output or local/state).</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the given bounds are correct.</p>
 </dd></dl>
 
@@ -484,6 +484,19 @@ See also the keyword <code class="docutils literal notranslate"><span class="pre
 of the <code class="docutils literal notranslate"><span class="pre">simulate</span></code> function.</p></li>
 <li><p><strong>equidistant_output</strong> (<em>Boolean</em>) – If True (Default), Dymola stores variables in an
 equisdistant output and does not store variables at events.</p></li>
+<li><p><strong>variables_to_save</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a><em>]</em>) – <p>A dictionary to select which variables are going
+to be stored if the simulation creates .mat files.
+Options (with the default being all True):</p>
+<blockquote>
+<div><ul>
+<li><p>states=True</p></li>
+<li><p>derivatives=True</p></li>
+<li><p>inputs=True</p></li>
+<li><p>outputs=True</p></li>
+<li><p>auxiliaries=False</p></li>
+</ul>
+</div></blockquote>
+</p></li>
 <li><p><strong>n_restart</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><em>int</em></a>) – Number of iterations after which Dymola should restart.
 This is done to free memory. Default value -1. For values
 below 1 Dymola does not restart.</p></li>
@@ -730,6 +743,13 @@ work the value should be equal to the value of ‘tableName’ in Modelica.</p><
 <li><p><strong>file_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – If inputs are given, you have to specify the file_name of the table
 in the instance of CombiTimeTable. In order for the inputs to
 work the value should be equal to the value of ‘fileName’ in Modelica.</p></li>
+<li><p><strong>postprocess_mat_result</strong> (<em>callable</em>) – When choosing return_option savepath and no equidistant output, the mat files may take up
+a lot of disk space while you are only interested in some variables or parts
+of the simulation results. This features enables you to pass any function which
+gets the mat-path as an input and returns some result you are interested in.
+The function signature is <cite>foo(mat_result_file, **kwargs_postprocessing) -&gt; Any</cite>.
+Be sure to define the function in a global scope to allow multiprocessing.</p></li>
+<li><p><strong>kwargs_postprocessing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – Keyword arguments used in the function <cite>postprocess_mat_result</cite>.</p></li>
 <li><p><strong>structural_parameters</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – <p>A list containing all parameter names which are structural in Modelica.
 This means a modifier has to be created in order to change
 the value of this parameter. Internally, the given list
@@ -767,6 +787,19 @@ Dictionary with keys to re-init this class.</p>
 <span class="sig-name descname"><span class="pre">translate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.translate"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.translate" title="Permalink to this definition"></a></dt>
 <dd><p>Translates the current model using dymola.translateModel()
 and checks if erros occur.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output">
+<span class="sig-name descname"><span class="pre">update_experiment_setup_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">experiment_setup_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput"><span class="pre">ExperimentSetupOutput</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#DymolaAPI.update_experiment_setup_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaAPI.update_experiment_setup_output" title="Permalink to this definition"></a></dt>
+<dd><p>Function to update the ExperimentSetupOutput in Dymola for selection
+of which variables are going to be saved. The options
+<cite>events</cite> and <cite>equidistant</cite> are overridden if equidistant output is required.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>experiment_setup_output</strong> (<em>(</em><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput"><em>ExperimentSetupOutput</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a><em>)</em>) – An instance of ExperimentSetupOutput or a dict with valid keys for it.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">
@@ -808,6 +841,79 @@ setup fields.</p>
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init" title="Permalink to this definition"></a></dt>
 <dd><p>We need to both initialize private attributes and call the user-defined model_post_init
 method.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class pydantic_model">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput">
+<em class="property"><span class="pre">pydantic</span> <span class="pre">model</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.simulationapi.dymola_api.</span></span><span class="sig-name descname"><span class="pre">ExperimentSetupOutput</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#ExperimentSetupOutput"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Experiment setup output data model with
+defaults equal to those in Dymola</p>
+<dl class="field-list simple">
+<dt class="field-odd">Config<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>extra</strong>: <em>str = forbid</em></p></li>
+</ul>
+</dd>
+<dt class="field-even">Fields<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.auxiliaries" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.auxiliaries"><code class="xref py py-obj docutils literal notranslate"><span class="pre">auxiliaries</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.derivatives" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.derivatives"><code class="xref py py-obj docutils literal notranslate"><span class="pre">derivatives</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.equidistant" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.equidistant"><code class="xref py py-obj docutils literal notranslate"><span class="pre">equidistant</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.events" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.events"><code class="xref py py-obj docutils literal notranslate"><span class="pre">events</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.inputs" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.inputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">inputs</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.outputs" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.outputs"><code class="xref py py-obj docutils literal notranslate"><span class="pre">outputs</span> <span class="pre">(bool)</span></code></a></p></li>
+<li><p><a class="reference internal" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.states" title="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.states"><code class="xref py py-obj docutils literal notranslate"><span class="pre">states</span> <span class="pre">(bool)</span></code></a></p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.auxiliaries">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">auxiliaries</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.auxiliaries" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.derivatives">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">derivatives</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.derivatives" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.equidistant">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">equidistant</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.equidistant" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.events">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">events</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.events" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.inputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.inputs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.outputs">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">outputs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.outputs" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute pydantic_field">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.states">
+<em class="property"><span class="pre">field</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">states</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.states" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.Config">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">Config</span></span><a class="reference internal" href="../_modules/ebcpy/simulationapi/dymola_api.html#ExperimentSetupOutput.Config"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.Config" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Pydantic internal model settings</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.Config.extra">
+<span class="sig-name descname"><span class="pre">extra</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'forbid'</span></em><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.ExperimentSetupOutput.Config.extra" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
 </dd></dl>
 
 </dd></dl>
