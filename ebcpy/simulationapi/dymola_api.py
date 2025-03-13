@@ -409,6 +409,8 @@ class DymolaAPI(SimulationAPI):
         show_eventlog = kwargs.pop("show_eventlog", False)
         squeeze = kwargs.pop("squeeze", True)
         result_file_name = kwargs.pop("result_file_name", 'resultFile')
+        if not isinstance(result_file_name, str):
+            raise TypeError(f"result_file_name has to be type str but is of type {type(result_file_name)}") 
         parameters = kwargs.pop("parameters")
         return_option = kwargs.pop("return_option")
         model_names = kwargs.pop("model_names", None)
