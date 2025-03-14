@@ -80,27 +80,27 @@
 <span class="sd">Parameters can easily be updated, and the initialization-process is</span>
 <span class="sd">much more user-friendly than the provided APIs by Dymola or fmpy.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">import</span> <span class="nn">time</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
-<span class="kn">from</span> <span class="nn">abc</span> <span class="kn">import</span> <span class="n">abstractmethod</span>
-<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">itertools</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">time</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">TypeVar</span><span class="p">,</span> <span class="n">Any</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">multiprocessing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">mp</span>
 
-<span class="kn">import</span> <span class="nn">pydantic</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">ebcpy.utils</span> <span class="kn">import</span> <span class="n">setup_logger</span>
-<span class="kn">from</span> <span class="nn">ebcpy.utils.reproduction</span> <span class="kn">import</span> <span class="n">save_reproduction_archive</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">disk_usage</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pydantic</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseModel</span><span class="p">,</span> <span class="n">Field</span><span class="p">,</span> <span class="n">field_validator</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils.reproduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_reproduction_archive</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">shutil</span><span class="w"> </span><span class="kn">import</span> <span class="n">disk_usage</span>
 
 
-<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.Variable">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Data-Class to store relevant information for a</span>
 <span class="sd">    simulation variable (input, parameter, output or local/state).</span>
@@ -128,7 +128,7 @@
 
 <div class="viewcode-block" id="Variable.check_value_type"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value_type">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;value&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_value_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_value_type</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the given value has correct type&quot;&quot;&quot;</span>
         <span class="n">_type</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
         <span class="k">if</span> <span class="n">_type</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -141,7 +141,7 @@
 
 <div class="viewcode-block" id="Variable.check_value"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.Variable.check_value">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="s1">&#39;min&#39;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_value</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">FieldValidationInfo</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_value</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">info</span><span class="p">:</span> <span class="n">pydantic</span><span class="o">.</span><span class="n">FieldValidationInfo</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Check if the given bounds are correct.&quot;&quot;&quot;</span>
         <span class="c1"># Check if the variable type even allows for min/max bounds</span>
         <span class="n">_type</span> <span class="o">=</span> <span class="n">info</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;type&quot;</span><span class="p">]</span>
@@ -162,7 +162,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">inf</span> <span class="k">if</span> <span class="n">_type</span> <span class="o">!=</span> <span class="nb">bool</span> <span class="k">else</span> <span class="kc">True</span></div></div>
 
 
-<div class="viewcode-block" id="SimulationSetup"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup">[docs]</a><span class="k">class</span> <span class="nc">SimulationSetup</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationSetup"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimulationSetup</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    pydantic BaseModel child to define relevant</span>
 <span class="sd">    parameters to setup the simulation.</span>
@@ -198,7 +198,7 @@
 
 <div class="viewcode-block" id="SimulationSetup.check_valid_solver"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.check_valid_solver">[docs]</a>    <span class="nd">@field_validator</span><span class="p">(</span><span class="s2">&quot;solver&quot;</span><span class="p">)</span>
     <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">check_valid_solver</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_valid_solver</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">solver</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Check if the solver is in the list of valid solvers</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -210,7 +210,7 @@
                              <span class="sa">f</span><span class="s2">&quot;Supported are &#39;</span><span class="si">{</span><span class="n">allowed_solvers</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">solver</span></div>
 
-<div class="viewcode-block" id="SimulationSetup.Config"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.Config">[docs]</a>    <span class="k">class</span> <span class="nc">Config</span><span class="p">:</span>
+<div class="viewcode-block" id="SimulationSetup.Config"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationSetup.Config">[docs]</a>    <span class="k">class</span><span class="w"> </span><span class="nc">Config</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overwrite default pydantic Config&quot;&quot;&quot;</span>
         <span class="n">extra</span> <span class="o">=</span> <span class="s1">&#39;forbid&#39;</span></div></div>
 
@@ -218,7 +218,7 @@
 <span class="n">SimulationSetupClass</span> <span class="o">=</span> <span class="n">TypeVar</span><span class="p">(</span><span class="s2">&quot;SimulationSetupClass&quot;</span><span class="p">,</span> <span class="n">bound</span><span class="o">=</span><span class="n">SimulationSetup</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="SimulationAPI"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI">[docs]</a><span class="k">class</span> <span class="nc">SimulationAPI</span><span class="p">:</span>
+<div class="viewcode-block" id="SimulationAPI"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">SimulationAPI</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Base-class for simulation apis. Every simulation-api class</span>
 <span class="sd">    must inherit from this class. It defines the structure of each class.</span>
 
@@ -241,7 +241,7 @@
         <span class="s1">&#39;pool&#39;</span><span class="p">,</span>
     <span class="p">]</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">],</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># Private helper attrs for multiprocessing</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_n_sim_counter</span> <span class="o">=</span> <span class="mi">0</span>
@@ -281,25 +281,25 @@
 
     <span class="c1"># MP-Functions</span>
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">worker_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">worker_idx</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Index of the current worker&quot;&quot;&quot;</span>
         <span class="n">_id</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">current_process</span><span class="p">()</span><span class="o">.</span><span class="n">_identity</span>
         <span class="k">if</span> <span class="n">_id</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span>
 
-    <span class="k">def</span> <span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overwrite magic method to allow pickling the api object&quot;&quot;&quot;</span>
         <span class="n">self_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_items_to_drop</span><span class="p">:</span>
             <span class="k">del</span> <span class="n">self_dict</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">self_dict</span>
 
-    <span class="k">def</span> <span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__setstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overwrite magic method to allow pickling the api object&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimulationAPI.close"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationAPI.close"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Base function for closing the simulation-program.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
@@ -311,18 +311,18 @@
                 <span class="k">pass</span>  <span class="c1"># Already closed prior to atexit</span></div>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_close_multiprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_multiprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">.close &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;function is not defined&#39;</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_single_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Base function for closing the simulation-program of a single core&quot;&quot;&quot;</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">._single_close &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;function is not defined&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="SimulationAPI.simulate"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.simulate">[docs]</a>    <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">return_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time_series&quot;</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -459,7 +459,7 @@
             <span class="k">return</span> <span class="n">results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="n">results</span></div>
 
-    <span class="k">def</span> <span class="nf">_remaining_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_remaining_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">t1</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Helper function to calculate the remaining simulation time and log the finished simulations.</span>
 <span class="sd">        The function can first be used when a simulation has finished on each used cpu, so that the</span>
@@ -474,7 +474,7 @@
         <span class="n">sys</span><span class="o">.</span><span class="n">stderr</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\r</span><span class="s2">Finished </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">p_finished</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">)</span><span class="si">}</span><span class="s2"> %. &quot;</span>
                          <span class="sa">f</span><span class="s2">&quot;Approximately remaining time: </span><span class="si">{</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">t_remaining</span><span class="p">))</span><span class="si">}</span><span class="s2"> &quot;</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_check_disk_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_check_disk_space</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filepath</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Checks how much disk space all simulations will need on a hard drive</span>
 <span class="sd">        and throws a warning when less than 5 % would be free on the hard drive</span>
@@ -482,7 +482,7 @@
 <span class="sd">        Works only for multiprocessing.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="k">def</span> <span class="nf">convert_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
+        <span class="k">def</span><span class="w"> </span><span class="nf">convert_bytes</span><span class="p">(</span><span class="n">size</span><span class="p">):</span>
             <span class="n">suffixes</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;B&#39;</span><span class="p">,</span> <span class="s1">&#39;KB&#39;</span><span class="p">,</span> <span class="s1">&#39;MB&#39;</span><span class="p">,</span> <span class="s1">&#39;GB&#39;</span><span class="p">,</span> <span class="s1">&#39;TB&#39;</span><span class="p">]</span>
             <span class="n">suffix_idx</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="k">while</span> <span class="n">size</span> <span class="o">&gt;=</span> <span class="mi">1024</span> <span class="ow">and</span> <span class="n">suffix_idx</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">suffixes</span><span class="p">):</span>
@@ -506,7 +506,7 @@
                           <span class="sa">f</span><span class="s2">&quot;is not enough for all simulation files.&quot;</span><span class="p">)</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Same arguments and function as simulate().</span>
 <span class="sd">        Used to differ between single- and multi-processing simulation&quot;&quot;&quot;</span>
@@ -514,16 +514,16 @@
                                   <span class="sa">f</span><span class="s1">&#39;function is not defined&#39;</span><span class="p">)</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationSetupClass</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SimulationSetupClass</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return current sim_setup&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span>
 
     <span class="nd">@sim_setup</span><span class="o">.</span><span class="n">deleter</span>
-    <span class="k">def</span> <span class="nf">sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;In case user deletes the object, reset it to the default one.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup_class</span><span class="p">()</span>
 
-<div class="viewcode-block" id="SimulationAPI.set_sim_setup"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_sim_setup">[docs]</a>    <span class="k">def</span> <span class="nf">set_sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_setup</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationAPI.set_sim_setup"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_sim_setup">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_sim_setup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sim_setup</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Replaced in v0.1.7 by property function</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -532,12 +532,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_sim_setup_class</span><span class="p">(</span><span class="o">**</span><span class="n">new_setup</span><span class="p">)</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Name of the model being simulated&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_name</span>
 
     <span class="nd">@model_name</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set new model_name and trigger further functions</span>
 <span class="sd">        to load parameters etc.</span>
@@ -554,7 +554,7 @@
         <span class="c1"># Empty all variables again.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_update_model_variables</span><span class="p">()</span>
 
-    <span class="k">def</span> <span class="nf">_update_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function to empty all variables and update them again</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -567,7 +567,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">result_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
     <span class="nd">@abstractmethod</span>
-    <span class="k">def</span> <span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Reimplement this to change variables etc.</span>
 <span class="sd">        based on the new model.</span>
@@ -575,42 +575,42 @@
         <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="si">}</span><span class="s1">._update_model &#39;</span>
                                   <span class="sa">f</span><span class="s1">&#39;function is not defined&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="SimulationAPI.set_working_directory"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_working_directory">[docs]</a>    <span class="k">def</span> <span class="nf">set_working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="SimulationAPI.set_working_directory"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_working_directory">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Base function for changing the current working directory.&quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">working_directory</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Get the current working directory&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_working_directory</span>
 
     <span class="nd">@working_directory</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">working_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Set the current working directory&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">working_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">working_directory</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_working_directory</span> <span class="o">=</span> <span class="n">working_directory</span>
 
-<div class="viewcode-block" id="SimulationAPI.set_cd"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_cd">[docs]</a>    <span class="k">def</span> <span class="nf">set_cd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+<div class="viewcode-block" id="SimulationAPI.set_cd"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.set_cd">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">set_cd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. &quot;</span>
                       <span class="s2">&quot;Use working_directory instead instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">cd</span></div>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. &quot;</span>
                       <span class="s2">&quot;Use working_directory instead instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>
 
     <span class="nd">@cd</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. &quot;</span>
                       <span class="s2">&quot;Use working_directory instead instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">cd</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">result_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        The variables names which to store in results.</span>
 
@@ -621,7 +621,7 @@
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_result_names</span>
 
     <span class="nd">@result_names</span><span class="o">.</span><span class="n">setter</span>
-    <span class="k">def</span> <span class="nf">result_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_names</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">result_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">result_names</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Set the result names. If the name is not supported,</span>
 <span class="sd">        an error is logged.</span>
@@ -631,7 +631,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_result_names</span> <span class="o">=</span> <span class="n">result_names</span>
 
     <span class="nd">@property</span>
-    <span class="k">def</span> <span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        All variables of the simulation model</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -640,7 +640,7 @@
                                     <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">keys</span><span class="p">(),</span>
                                     <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
 
-<div class="viewcode-block" id="SimulationAPI.check_unsupported_variables"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.check_unsupported_variables">[docs]</a>    <span class="k">def</span> <span class="nf">check_unsupported_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">type_of_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="SimulationAPI.check_unsupported_variables"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.check_unsupported_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_unsupported_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">type_of_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log warnings if variables are not supported.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">type_of_var</span> <span class="o">==</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
@@ -664,11 +664,11 @@
         <span class="k">return</span> <span class="kc">False</span></div>
 
 <div class="viewcode-block" id="SimulationAPI.get_simulation_setup_fields"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.get_simulation_setup_fields">[docs]</a>    <span class="nd">@classmethod</span>
-    <span class="k">def</span> <span class="nf">get_simulation_setup_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_simulation_setup_fields</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return all fields in the chosen SimulationSetup class.&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">_sim_setup_class</span><span class="o">.</span><span class="n">__fields__</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span></div>
 
-<div class="viewcode-block" id="SimulationAPI.save_for_reproduction"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.save_for_reproduction">[docs]</a>    <span class="k">def</span> <span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="SimulationAPI.save_for_reproduction"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.save_for_reproduction">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                               <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                               <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                               <span class="n">files</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>

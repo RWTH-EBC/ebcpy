@@ -78,11 +78,11 @@
 <span></span><span class="sd">&quot;&quot;&quot;Module for calculating statistical</span>
 <span class="sd">measures based on given methods.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">sklearn.metrics</span> <span class="k">as</span> <span class="nn">skmetrics</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">skmetrics</span>
 
 
-<div class="viewcode-block" id="StatisticsAnalyzer"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer">[docs]</a><span class="k">class</span> <span class="nc">StatisticsAnalyzer</span><span class="p">:</span>
+<div class="viewcode-block" id="StatisticsAnalyzer"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">StatisticsAnalyzer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Class for calculation of the statistical measure based on the</span>
 <span class="sd">    given method. Either instantiate the class and run</span>
 <span class="sd">    StatisticsAnalyzer.calc(meas, sim), or go for direct calculation with</span>
@@ -114,7 +114,7 @@
 <span class="sd">        Example: R2 has to be maximized to minimize the error in data.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">for_minimization</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">for_minimization</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class parameters&quot;&quot;&quot;</span>
         <span class="n">_supported_methods</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;mae&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_mae</span><span class="p">,</span>
                               <span class="s2">&quot;r2&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">calc_r2</span><span class="p">,</span>
@@ -153,14 +153,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">for_minimization</span> <span class="o">=</span> <span class="n">for_minimization</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_min_fac</span> <span class="o">=</span> <span class="n">_minimization_factors</span><span class="p">[</span><span class="n">_method_internal</span><span class="p">]</span>
 
-<div class="viewcode-block" id="StatisticsAnalyzer.calc"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc">[docs]</a>    <span class="k">def</span> <span class="nf">calc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+<div class="viewcode-block" id="StatisticsAnalyzer.calc"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">calc</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Placeholder class before instantiating the class correctly.&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">for_minimization</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_internal</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_min_fac</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calc_internal</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_mae"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_mae">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_mae</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_mae</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the MAE (mean absolute error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>
@@ -175,7 +175,7 @@
         <span class="k">return</span> <span class="n">skmetrics</span><span class="o">.</span><span class="n">mean_absolute_error</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_r2"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_r2">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_r2</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_r2</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the MAE (mean absolute error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>
@@ -190,7 +190,7 @@
         <span class="k">return</span> <span class="n">skmetrics</span><span class="o">.</span><span class="n">r2_score</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_mse"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_mse">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_mse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_mse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the MSE (mean square error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>
@@ -205,7 +205,7 @@
         <span class="k">return</span> <span class="n">skmetrics</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_rmse"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_rmse">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_rmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_rmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the RMSE (root mean square error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>
@@ -220,7 +220,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">skmetrics</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_nrmse"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_nrmse">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_nrmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_nrmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the NRMSE (normalized root mean square error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>
@@ -242,7 +242,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">skmetrics</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">meas</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">meas</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_cvrmse"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_cvrmse">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_cvrmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_cvrmse</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the CVRMSE (variance of root mean square error)</span>
 <span class="sd">        THIS IS A TEST</span>
@@ -265,7 +265,7 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">skmetrics</span><span class="o">.</span><span class="n">mean_squared_error</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">meas</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="StatisticsAnalyzer.calc_nmbe"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.statistics_analyzer.StatisticsAnalyzer.calc_nmbe">[docs]</a>    <span class="nd">@staticmethod</span>
-    <span class="k">def</span> <span class="nf">calc_nmbe</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">calc_nmbe</span><span class="p">(</span><span class="n">meas</span><span class="p">,</span> <span class="n">sim</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculates the NMBE (normalized mean bias error)</span>
 <span class="sd">        for the given numpy array of measured and simulated data.</span>

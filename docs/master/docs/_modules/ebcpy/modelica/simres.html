@@ -127,18 +127,18 @@
 
 <span class="sd">.. versionadded:: 0.1.7</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">itertools</span> <span class="kn">import</span> <span class="n">count</span>
-<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
-<span class="kn">from</span> <span class="nn">scipy.io</span> <span class="kn">import</span> <span class="n">loadmat</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">itertools</span><span class="w"> </span><span class="kn">import</span> <span class="n">count</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections</span><span class="w"> </span><span class="kn">import</span> <span class="n">namedtuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="kn">import</span> <span class="n">loadmat</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
 
 <span class="c1"># Namedtuple to store the time and value information of each variable</span>
 <span class="n">Samples</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;Samples&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;times&#39;</span><span class="p">,</span> <span class="s1">&#39;values&#39;</span><span class="p">,</span> <span class="s1">&#39;negated&#39;</span><span class="p">])</span>
 
 
-<div class="viewcode-block" id="loadsim"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.loadsim">[docs]</a><span class="k">def</span> <span class="nf">loadsim</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">constants_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="loadsim"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.loadsim">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">loadsim</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">constants_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Load Dymola\ :sup:`®` or OpenModelica simulation results.</span>
 
 <span class="sd">    **Arguments:**</span>
@@ -158,7 +158,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># This does the task of mfiles/traj/tload.m from the Dymola installation.</span>
 
-    <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parse</span><span class="p">(</span><span class="n">description</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Parse the variable description string into description, unit, and</span>
 <span class="sd">        displayUnit.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -256,7 +256,7 @@
     <span class="k">return</span> <span class="n">variables</span></div>
 
 
-<div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.read">[docs]</a><span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">constants_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="read"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.read">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">read</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">constants_only</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Read variables from a MATLAB\ :sup:`®` file with Dymola\ :sup:`®` or</span>
 <span class="sd">    OpenModelica results.</span>
 
@@ -287,7 +287,7 @@
             <span class="n">mat</span> <span class="o">=</span> <span class="n">loadmat</span><span class="p">(</span><span class="n">fname</span><span class="p">,</span> <span class="n">chars_as_strings</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">appendmat</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">IOError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">IOError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; could not be opened.&#39;</span>
-                      <span class="s1">&#39;  Check that it exists.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+                      <span class="s1">&#39;  Check that it exists.&#39;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
 
     <span class="c1"># Check if the file contains the Aclass variable.</span>
     <span class="k">try</span><span class="p">:</span>
@@ -295,12 +295,12 @@
     <span class="k">except</span> <span class="ne">KeyError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;&quot;</span><span class="si">{</span><span class="n">fname</span><span class="si">}</span><span class="s1">&quot; does not appear to be a Dymola or OpenModelica &#39;</span>
                         <span class="s1">&#39;result file.  The &quot;Aclass&quot; variable is &#39;</span>
-                        <span class="s1">&#39;missing.&#39;</span><span class="p">)</span> <span class="kn">from</span> <span class="nn">error</span>
+                        <span class="s1">&#39;missing.&#39;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
 
     <span class="k">return</span> <span class="n">mat</span><span class="p">,</span> <span class="n">get_strings</span><span class="p">(</span><span class="n">aclass</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_strings"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.get_strings">[docs]</a><span class="k">def</span> <span class="nf">get_strings</span><span class="p">(</span><span class="n">str_arr</span><span class="p">):</span>
+<div class="viewcode-block" id="get_strings"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.get_strings">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_strings</span><span class="p">(</span><span class="n">str_arr</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a list of strings from a character array.</span>
 
 <span class="sd">    Strip the whitespace from the right and recode it as utf-8.</span>
@@ -309,7 +309,7 @@
             <span class="k">for</span> <span class="n">word_arr</span> <span class="ow">in</span> <span class="n">str_arr</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable">[docs]</a><span class="k">class</span> <span class="nc">Variable</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;VariableNamedTuple&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;samples&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="s1">&#39;displayUnit&#39;</span><span class="p">])):</span>
+<div class="viewcode-block" id="Variable"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">Variable</span><span class="p">(</span><span class="n">namedtuple</span><span class="p">(</span><span class="s1">&#39;VariableNamedTuple&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;samples&#39;</span><span class="p">,</span> <span class="s1">&#39;description&#39;</span><span class="p">,</span> <span class="s1">&#39;unit&#39;</span><span class="p">,</span> <span class="s1">&#39;displayUnit&#39;</span><span class="p">])):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Special namedtuple to represent a variable in a simulation, with</span>
 <span class="sd">    methods to retrieve and perform calculations on its values</span>
 
@@ -318,16 +318,16 @@
 <span class="sd">    (:class:`SimRes` instance).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="Variable.times"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable.times">[docs]</a>    <span class="k">def</span> <span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Variable.times"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable.times">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">times</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return sample times&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">times</span></div>
 
-<div class="viewcode-block" id="Variable.values"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable.values">[docs]</a>    <span class="k">def</span> <span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="Variable.values"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.Variable.values">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">values</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return sample values&quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">values</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">negated</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">samples</span><span class="o">.</span><span class="n">values</span></div></div>
 
 
-<div class="viewcode-block" id="mat_to_pandas"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.mat_to_pandas">[docs]</a><span class="k">def</span> <span class="nf">mat_to_pandas</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;dsres.mat&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="mat_to_pandas"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.simres.mat_to_pandas">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">mat_to_pandas</span><span class="p">(</span><span class="n">fname</span><span class="o">=</span><span class="s1">&#39;dsres.mat&#39;</span><span class="p">,</span>
                   <span class="n">names</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">aliases</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                   <span class="n">with_unit</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>

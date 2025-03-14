@@ -79,15 +79,15 @@
 <span class="sd">Module with functions to convert</span>
 <span class="sd">certain format into other formats.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">scipy.io</span> <span class="k">as</span> <span class="nn">spio</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span> <span class="nn">ebcpy.data_types</span> <span class="kn">import</span> <span class="n">index_is_numeric</span><span class="p">,</span> <span class="n">datetime_indexes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">index_is_numeric</span><span class="p">,</span> <span class="n">datetime_indexes</span>
 
 
-<div class="viewcode-block" id="convert_tsd_to_modelica_mat"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_mat">[docs]</a><span class="k">def</span> <span class="nf">convert_tsd_to_modelica_mat</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_modelica_mat"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_mat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_mat</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a tsd to a mat-file readable within Dymola.</span>
 
@@ -142,7 +142,7 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<div class="viewcode-block" id="convert_tsd_to_clustering_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_clustering_txt">[docs]</a><span class="k">def</span> <span class="nf">convert_tsd_to_clustering_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_clustering_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_clustering_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_clustering_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a TimeSeriesData object</span>
 <span class="sd">    to a txt-file readable within the TICC-module.</span>
@@ -185,7 +185,7 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<div class="viewcode-block" id="convert_tsd_to_modelica_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_txt">[docs]</a><span class="k">def</span> <span class="nf">convert_tsd_to_modelica_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_modelica_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a TimeSeriesData object to modelica readable text. This is especially useful</span>
 <span class="sd">    for generating input data for a modelica simulation.</span>
@@ -272,7 +272,7 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<span class="k">def</span> <span class="nf">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Private function to ensure lean conversion to either mat or txt.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -304,7 +304,7 @@
                          <span class="s2">&quot;in the simulation environment.&quot;</span><span class="p">)</span>
 
     <span class="c1"># Convert cases with no tag to tuple</span>
-    <span class="k">def</span> <span class="nf">_to_tuple</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_tuple</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
             <span class="k">return</span> <span class="n">s</span>
         <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">)</span>

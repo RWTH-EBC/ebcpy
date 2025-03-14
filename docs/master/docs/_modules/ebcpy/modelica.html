@@ -78,11 +78,11 @@
 <span class="sd">This package aims to help manipulate simulation files (dsfinal.txt or dsin.txt)</span>
 <span class="sd">or to load simulation result files (.mat) efficiently into a pandas.DataFrame</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">re</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
 
-<div class="viewcode-block" id="get_expressions"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_expressions">[docs]</a><span class="k">def</span> <span class="nf">get_expressions</span><span class="p">(</span><span class="n">filepath_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="get_expressions"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_expressions">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_expressions</span><span class="p">(</span><span class="n">filepath_model</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                     <span class="n">get_protected</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                     <span class="n">modelica_type</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;parameters&quot;</span><span class="p">,</span>
                     <span class="n">excludes</span><span class="p">:</span> <span class="n">List</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
@@ -172,7 +172,7 @@
     <span class="k">return</span> <span class="n">expr_unprotected</span><span class="p">,</span> <span class="n">expr_protected</span></div>
 
 
-<div class="viewcode-block" id="get_names_and_values_of_lines"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_names_and_values_of_lines">[docs]</a><span class="k">def</span> <span class="nf">get_names_and_values_of_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<div class="viewcode-block" id="get_names_and_values_of_lines"><a class="viewcode-back" href="../../code/ebcpy.modelica.html#ebcpy.modelica.get_names_and_values_of_lines">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_names_and_values_of_lines</span><span class="p">(</span><span class="n">lines</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    All unnecessary code is deleted (annotations, doc).</span>
 <span class="sd">    Only the name of the variable and the value is extracted.</span>

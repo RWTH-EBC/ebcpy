@@ -96,21 +96,21 @@
 <span class="sd">in this doctest for a better understanding of the functions. If you don&#39;t understand</span>
 <span class="sd">the behaviour of a function or the meaning, please raise an issue.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">signal</span>
-<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">model_selection</span>
-<span class="kn">from</span> <span class="nn">pandas.tseries.frequencies</span> <span class="kn">import</span> <span class="n">to_offset</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="k">as</span> <span class="nn">st</span>
-<span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">data_types</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy</span><span class="w"> </span><span class="kn">import</span> <span class="n">signal</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn</span><span class="w"> </span><span class="kn">import</span> <span class="n">model_selection</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pandas.tseries.frequencies</span><span class="w"> </span><span class="kn">import</span> <span class="n">to_offset</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">st</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">data_types</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="build_average_on_duplicate_rows"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.build_average_on_duplicate_rows">[docs]</a><span class="k">def</span> <span class="nf">build_average_on_duplicate_rows</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<div class="viewcode-block" id="build_average_on_duplicate_rows"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.build_average_on_duplicate_rows">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">build_average_on_duplicate_rows</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    If the dataframe has duplicate-indexes, the average</span>
 <span class="sd">    value of all those indexes is calculated and given to</span>
@@ -156,7 +156,7 @@
     <span class="k">return</span> <span class="n">df_dropped</span></div>
 
 
-<div class="viewcode-block" id="convert_index_to_datetime_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_index_to_datetime_index">[docs]</a><span class="k">def</span> <span class="nf">convert_index_to_datetime_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">unit_of_index</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
+<div class="viewcode-block" id="convert_index_to_datetime_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_index_to_datetime_index">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_index_to_datetime_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">unit_of_index</span><span class="o">=</span><span class="s2">&quot;s&quot;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(),</span>
                                     <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Converts the index of the given DataFrame to a</span>
@@ -224,7 +224,7 @@
     <span class="k">return</span> <span class="n">df_copy</span></div>
 
 
-<div class="viewcode-block" id="convert_datetime_index_to_float_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_datetime_index_to_float_index">[docs]</a><span class="k">def</span> <span class="nf">convert_datetime_index_to_float_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_datetime_index_to_float_index"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.convert_datetime_index_to_float_index">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_datetime_index_to_float_index</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">inplace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a datetime-based index to FloatIndex (in seconds).</span>
 <span class="sd">    Seconds are used as a standard unit as simulation software</span>
@@ -267,7 +267,7 @@
     <span class="k">return</span> <span class="n">df_copy</span></div>
 
 
-<div class="viewcode-block" id="time_based_weighted_mean"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.time_based_weighted_mean">[docs]</a><span class="k">def</span> <span class="nf">time_based_weighted_mean</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<div class="viewcode-block" id="time_based_weighted_mean"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.time_based_weighted_mean">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">time_based_weighted_mean</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates the weighted mean according to time index that does not need to be equidistant.</span>
 <span class="sd">    Further info:</span>
@@ -306,7 +306,7 @@
     <span class="k">return</span> <span class="n">res</span></div>
 
 
-<div class="viewcode-block" id="clean_and_space_equally_time_series"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.clean_and_space_equally_time_series">[docs]</a><span class="k">def</span> <span class="nf">clean_and_space_equally_time_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">desired_freq</span><span class="p">,</span> <span class="n">confidence_warning</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
+<div class="viewcode-block" id="clean_and_space_equally_time_series"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.clean_and_space_equally_time_series">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">clean_and_space_equally_time_series</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">desired_freq</span><span class="p">,</span> <span class="n">confidence_warning</span><span class="o">=</span><span class="mf">0.95</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function for cleaning of the given dataFrame and interpolating</span>
 <span class="sd">    based on the given desired frequency. Linear interpolation</span>
@@ -446,7 +446,7 @@
     <span class="k">return</span> <span class="n">df_temp</span></div>
 
 
-<div class="viewcode-block" id="low_pass_filter"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.low_pass_filter">[docs]</a><span class="k">def</span> <span class="nf">low_pass_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">crit_freq</span><span class="p">,</span> <span class="n">filter_order</span><span class="p">):</span>
+<div class="viewcode-block" id="low_pass_filter"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.low_pass_filter">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">low_pass_filter</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">crit_freq</span><span class="p">,</span> <span class="n">filter_order</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a low pass filter with given order and frequency.</span>
 
@@ -482,7 +482,7 @@
     <span class="k">return</span> <span class="n">output</span></div>
 
 
-<div class="viewcode-block" id="moving_average"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.moving_average">[docs]</a><span class="k">def</span> <span class="nf">moving_average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
+<div class="viewcode-block" id="moving_average"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.moving_average">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">moving_average</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">window</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Creates a pandas Series as moving average of the input series.</span>
 
@@ -525,7 +525,7 @@
     <span class="k">return</span> <span class="n">sma</span></div>
 
 
-<div class="viewcode-block" id="create_on_off_signal"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.create_on_off_signal">[docs]</a><span class="k">def</span> <span class="nf">create_on_off_signal</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_names</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">col_names_new</span><span class="p">,</span>
+<div class="viewcode-block" id="create_on_off_signal"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.create_on_off_signal">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">create_on_off_signal</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">col_names</span><span class="p">,</span> <span class="n">threshold</span><span class="p">,</span> <span class="n">col_names_new</span><span class="p">,</span>
                          <span class="n">tags</span><span class="o">=</span><span class="s2">&quot;raw&quot;</span><span class="p">,</span> <span class="n">new_tag</span><span class="o">=</span><span class="s2">&quot;converted_signal&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create on and off signals based on the given threshold for all column names.</span>
@@ -592,7 +592,7 @@
     <span class="k">return</span> <span class="n">df_copy</span></div>
 
 
-<div class="viewcode-block" id="number_lines_totally_na"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.number_lines_totally_na">[docs]</a><span class="k">def</span> <span class="nf">number_lines_totally_na</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+<div class="viewcode-block" id="number_lines_totally_na"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.number_lines_totally_na">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">number_lines_totally_na</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns the number of rows in the given dataframe</span>
 <span class="sd">    that are filled with NaN-values.</span>
@@ -626,7 +626,7 @@
     <span class="k">return</span> <span class="n">counter</span></div>
 
 
-<div class="viewcode-block" id="z_score"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.z_score">[docs]</a><span class="k">def</span> <span class="nf">z_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+<div class="viewcode-block" id="z_score"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.z_score">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">z_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the z-score using the mea</span>
 <span class="sd">    and standard deviation of the given data.</span>
@@ -652,7 +652,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z_score_value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="modified_z_score"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.modified_z_score">[docs]</a><span class="k">def</span> <span class="nf">modified_z_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">3.5</span><span class="p">):</span>
+<div class="viewcode-block" id="modified_z_score"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.modified_z_score">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">modified_z_score</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">limit</span><span class="o">=</span><span class="mf">3.5</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate the modified z-score using the median</span>
 <span class="sd">    and median average deviation of the given data.</span>
@@ -678,7 +678,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">z_score_mod</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">limit</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="interquartile_range"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.interquartile_range">[docs]</a><span class="k">def</span> <span class="nf">interquartile_range</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<div class="viewcode-block" id="interquartile_range"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.interquartile_range">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">interquartile_range</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculate interquartile range of given array.</span>
 <span class="sd">    Returns the indices of values outside of the interquartile range.</span>
@@ -703,7 +703,7 @@
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">upper</span><span class="p">)</span> <span class="o">|</span> <span class="p">(</span><span class="n">x</span> <span class="o">&lt;</span> <span class="n">lower</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="cross_validation"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.cross_validation">[docs]</a><span class="k">def</span> <span class="nf">cross_validation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
+<div class="viewcode-block" id="cross_validation"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.cross_validation">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">cross_validation</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.3</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Split data set randomly with test_size</span>
 <span class="sd">    (if test_size = 0.30 --&gt; 70 % are training data).</span>
@@ -738,7 +738,7 @@
     <span class="k">return</span> <span class="n">model_selection</span><span class="o">.</span><span class="n">train_test_split</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="n">test_size</span><span class="p">)</span></div>
 
 
-<div class="viewcode-block" id="get_df_index_frequency_mean_and_std"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.get_df_index_frequency_mean_and_std">[docs]</a><span class="k">def</span> <span class="nf">get_df_index_frequency_mean_and_std</span><span class="p">(</span><span class="n">df_index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="get_df_index_frequency_mean_and_std"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.preprocessing.get_df_index_frequency_mean_and_std">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_df_index_frequency_mean_and_std</span><span class="p">(</span><span class="n">df_index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span> <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to get the mean and std of the index-frequency.</span>
 <span class="sd">    If the index is a DatetimeIndex, the seconds are converted from nanoseconds</span>

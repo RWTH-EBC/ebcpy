@@ -80,23 +80,23 @@
 <span class="sd">out of simulation / programming based research and</span>
 <span class="sd">enable a reproduction of the results at a later stage.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">sys</span>
-<span class="kn">import</span> <span class="nn">platform</span>
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span> <span class="nn">zipfile</span>
-<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
-<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
-<span class="kn">from</span> <span class="nn">importlib.metadata</span> <span class="kn">import</span> <span class="n">distributions</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">json</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">platform</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">zipfile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">dataclasses</span><span class="w"> </span><span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">importlib.metadata</span><span class="w"> </span><span class="kn">import</span> <span class="n">distributions</span>
 
 <span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
 
 
 <div class="viewcode-block" id="ReproductionFile"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.ReproductionFile">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">ReproductionFile</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ReproductionFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Data-class for a text-file which will be written to te zip.</span>
 
@@ -111,7 +111,7 @@
 
 
 <div class="viewcode-block" id="CopyFile"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.CopyFile">[docs]</a><span class="nd">@dataclass</span>
-<span class="k">class</span> <span class="nc">CopyFile</span><span class="p">:</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CopyFile</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Data-class for information on a file</span>
 <span class="sd">    which will be copied to the zip</span>
@@ -129,7 +129,7 @@
     <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span></div>
 
 
-<div class="viewcode-block" id="save_reproduction_archive"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.save_reproduction_archive">[docs]</a><span class="k">def</span> <span class="nf">save_reproduction_archive</span><span class="p">(</span>
+<div class="viewcode-block" id="save_reproduction_archive"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.save_reproduction_archive">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">save_reproduction_archive</span><span class="p">(</span>
         <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">log_message</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -260,7 +260,7 @@
     <span class="k">return</span> <span class="n">zip_file_name</span></div>
 
 
-<div class="viewcode-block" id="get_git_information"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_git_information">[docs]</a><span class="k">def</span> <span class="nf">get_git_information</span><span class="p">(</span>
+<div class="viewcode-block" id="get_git_information"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_git_information">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_git_information</span><span class="p">(</span>
         <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
         <span class="n">name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">zip_folder_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
@@ -282,7 +282,7 @@
 <span class="sd">        Else, a dictionary with the keys &#39;url&#39;, &#39;commit&#39; and &#39;difference_files&#39;.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">git</span> <span class="kn">import</span> <span class="n">Repo</span><span class="p">,</span> <span class="n">InvalidGitRepositoryError</span><span class="p">,</span> <span class="n">RemoteReference</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">git</span><span class="w"> </span><span class="kn">import</span> <span class="n">Repo</span><span class="p">,</span> <span class="n">InvalidGitRepositoryError</span><span class="p">,</span> <span class="n">RemoteReference</span>
     <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span>
             <span class="s2">&quot;Could not save data for reproduction, install GitPython using &quot;</span>
@@ -331,7 +331,7 @@
     <span class="k">return</span> <span class="n">data</span></div>
 
 
-<div class="viewcode-block" id="creat_copy_files_from_dir"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.creat_copy_files_from_dir">[docs]</a><span class="k">def</span> <span class="nf">creat_copy_files_from_dir</span><span class="p">(</span><span class="n">foldername</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+<div class="viewcode-block" id="creat_copy_files_from_dir"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.creat_copy_files_from_dir">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">creat_copy_files_from_dir</span><span class="p">(</span><span class="n">foldername</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                               <span class="n">sourcepath</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">,</span>
                               <span class="n">remove</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -363,7 +363,7 @@
     <span class="k">return</span> <span class="n">files</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_general_information</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_general_information</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">log_message</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">current_time</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to save the general information of the study.</span>
 <span class="sd">    Time, machine information, and an intro on how to reproduce</span>
@@ -400,7 +400,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">_content_lines</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="get_installed_packages"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_installed_packages">[docs]</a><span class="k">def</span> <span class="nf">get_installed_packages</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_installed_packages"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.get_installed_packages">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_installed_packages</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns a list of tuples containing (package_name, version, location)</span>
 <span class="sd">    for all installed Python packages.</span>
@@ -415,7 +415,7 @@
     <span class="k">return</span> <span class="n">packages</span></div>
 
 
-<span class="k">def</span> <span class="nf">_get_python_package_information</span><span class="p">(</span><span class="n">search_on_pypi</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_python_package_information</span><span class="p">(</span><span class="n">search_on_pypi</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to get the content of python packages installed</span>
 <span class="sd">    as a requirement.txt format content.</span>
@@ -439,7 +439,7 @@
                     <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">==</span><span class="si">{</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;version&quot;</span><span class="p">]</span><span class="si">}</span><span class="s1">&#39;</span>
                 <span class="p">)</span>
             <span class="k">if</span> <span class="n">search_on_pypi</span><span class="p">:</span>
-                <span class="kn">from</span> <span class="nn">pypisearch.search</span> <span class="kn">import</span> <span class="n">Search</span>
+                <span class="kn">from</span><span class="w"> </span><span class="nn">pypisearch.search</span><span class="w"> </span><span class="kn">import</span> <span class="n">Search</span>
                 <span class="n">res</span> <span class="o">=</span> <span class="n">Search</span><span class="p">(</span><span class="n">package</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">result</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">res</span><span class="p">:</span>
                     <span class="k">raise</span> <span class="ne">ModuleNotFoundError</span><span class="p">(</span>
@@ -457,7 +457,7 @@
     <span class="k">return</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">requirement_txt_content</span><span class="p">),</span> <span class="n">diff_paths</span><span class="p">,</span> <span class="n">pip_version</span>
 
 
-<span class="k">def</span> <span class="nf">_get_python_reproduction</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pip_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_python_reproduction</span><span class="p">(</span><span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">pip_version</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the content of a script to reproduce the python</span>
 <span class="sd">    environment used for the study.</span>

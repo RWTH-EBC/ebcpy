@@ -78,13 +78,13 @@
 <span></span><span class="sd">&quot;&quot;&quot;Functions to manipulate (or extract information of) the</span>
 <span class="sd">dsfinal.txt and dsin.txt files created by Modelica.&quot;&quot;&quot;</span>
 
-<span class="kn">from</span> <span class="nn">io</span> <span class="kn">import</span> <span class="n">StringIO</span>
-<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">io</span><span class="w"> </span><span class="kn">import</span> <span class="n">StringIO</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">re</span>
 
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
 
-<div class="viewcode-block" id="convert_ds_file_to_dataframe"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.manipulate_ds.convert_ds_file_to_dataframe">[docs]</a><span class="k">def</span> <span class="nf">convert_ds_file_to_dataframe</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_ds_file_to_dataframe"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.manipulate_ds.convert_ds_file_to_dataframe">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_ds_file_to_dataframe</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a given dsfinal or dsfin file to a DataFrame.</span>
 <span class="sd">    The index is the name of the variable. Further,</span>
@@ -170,7 +170,7 @@
     <span class="k">return</span> <span class="n">df</span></div>
 
 
-<div class="viewcode-block" id="eliminate_parameters_from_ds_file"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.manipulate_ds.eliminate_parameters_from_ds_file">[docs]</a><span class="k">def</span> <span class="nf">eliminate_parameters_from_ds_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">savepath</span><span class="p">,</span> <span class="n">exclude_paras</span><span class="p">,</span> <span class="n">del_aux_paras</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="eliminate_parameters_from_ds_file"><a class="viewcode-back" href="../../../code/ebcpy.modelica.html#ebcpy.modelica.manipulate_ds.eliminate_parameters_from_ds_file">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">eliminate_parameters_from_ds_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">savepath</span><span class="p">,</span> <span class="n">exclude_paras</span><span class="p">,</span> <span class="n">del_aux_paras</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create a new dsfinal file out of the given dsfinal.txt</span>
 <span class="sd">    All parameters except those listed in exclude_paras</span>

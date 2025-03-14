@@ -78,27 +78,27 @@
 <span></span><span class="sd">&quot;&quot;&quot;Module for classes using a fmu to</span>
 <span class="sd">simulate models.&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">logging</span>
-<span class="kn">import</span> <span class="nn">pathlib</span>
-<span class="kn">import</span> <span class="nn">atexit</span>
-<span class="kn">import</span> <span class="nn">shutil</span>
-<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
-<span class="kn">import</span> <span class="nn">fmpy</span>
-<span class="kn">from</span> <span class="nn">fmpy.model_description</span> <span class="kn">import</span> <span class="n">read_model_description</span>
-<span class="kn">from</span> <span class="nn">pydantic</span> <span class="kn">import</span> <span class="n">Field</span>
-<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">fmpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fmpy.model_description</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_model_description</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">ebcpy</span> <span class="kn">import</span> <span class="n">simulationapi</span><span class="p">,</span> <span class="n">TimeSeriesData</span>
-<span class="kn">from</span> <span class="nn">ebcpy.simulationapi</span> <span class="kn">import</span> <span class="n">SimulationSetup</span><span class="p">,</span> <span class="n">SimulationSetupClass</span><span class="p">,</span> <span class="n">Variable</span>
-<span class="kn">from</span> <span class="nn">ebcpy.utils.reproduction</span> <span class="kn">import</span> <span class="n">CopyFile</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">simulationapi</span><span class="p">,</span> <span class="n">TimeSeriesData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.simulationapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSetup</span><span class="p">,</span> <span class="n">SimulationSetupClass</span><span class="p">,</span> <span class="n">Variable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils.reproduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CopyFile</span>
 
 <span class="c1"># pylint: disable=broad-except</span>
 
 
-<div class="viewcode-block" id="FMU_Setup"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup">[docs]</a><span class="k">class</span> <span class="nc">FMU_Setup</span><span class="p">(</span><span class="n">SimulationSetup</span><span class="p">):</span>
+<div class="viewcode-block" id="FMU_Setup"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FMU_Setup</span><span class="p">(</span><span class="n">SimulationSetup</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Add&#39;s custom setup parameters for simulating FMU&#39;s</span>
 <span class="sd">    to the basic `SimulationSetup`</span>
@@ -114,7 +114,7 @@
     <span class="n">_allowed_solvers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CVode&quot;</span><span class="p">,</span> <span class="s2">&quot;Euler&quot;</span><span class="p">]</span></div>
 
 
-<div class="viewcode-block" id="FMU_API"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API">[docs]</a><span class="k">class</span> <span class="nc">FMU_API</span><span class="p">(</span><span class="n">simulationapi</span><span class="o">.</span><span class="n">SimulationAPI</span><span class="p">):</span>
+<div class="viewcode-block" id="FMU_API"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FMU_API</span><span class="p">(</span><span class="n">simulationapi</span><span class="o">.</span><span class="n">SimulationAPI</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for simulation using the fmpy library and</span>
 <span class="sd">    a functional mockup interface as a model input.</span>
@@ -151,7 +151,7 @@
         <span class="nb">int</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class parameters&quot;&quot;&quot;</span>
         <span class="c1"># Init instance attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span> <span class="o">=</span> <span class="kc">None</span>
@@ -171,11 +171,11 @@
         <span class="c1"># Register exit option</span>
         <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="c1"># Setup the fmu instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">setup_fmu_instance</span><span class="p">()</span>
 
-<div class="viewcode-block" id="FMU_API.close"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FMU_API.close"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Closes the fmu.</span>
 
@@ -193,7 +193,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span></div>
 
-    <span class="k">def</span> <span class="nf">_single_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="n">fmu_instance</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;fmu_instance&quot;</span><span class="p">]</span>
         <span class="n">unzip_dir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;unzip_dir&quot;</span><span class="p">]</span>
         <span class="k">try</span><span class="p">:</span>
@@ -214,7 +214,7 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not delete unzipped fmu &quot;</span>
                                   <span class="s2">&quot;in location </span><span class="si">%s</span><span class="s2">. Delete it yourself.&quot;</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
 
-    <span class="k">def</span> <span class="nf">_close_multiprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_multiprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Small helper function&quot;&quot;&quot;</span>
         <span class="n">idx_worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
@@ -227,7 +227,7 @@
         <span class="n">FMU_API</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="n">FMU_API</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="FMU_API.simulate"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.simulate">[docs]</a>    <span class="k">def</span> <span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="FMU_API.simulate"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.simulate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                  <span class="n">return_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time_series&quot;</span><span class="p">,</span>
                  <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -251,7 +251,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">return_option</span><span class="o">=</span><span class="n">return_option</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform the single simulation for the given</span>
 <span class="sd">        unzip directory and fmu_instance.</span>
@@ -359,7 +359,7 @@
         <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">default_tag</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">tsd</span>
 
-<div class="viewcode-block" id="FMU_API.setup_fmu_instance"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.setup_fmu_instance">[docs]</a>    <span class="k">def</span> <span class="nf">setup_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="FMU_API.setup_fmu_instance"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.setup_fmu_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Manually set up and extract the data to</span>
 <span class="sd">        avoid this step in the simulate function.</span>
@@ -423,7 +423,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_setup_single_fmu_instance</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
 
-    <span class="k">def</span> <span class="nf">_setup_single_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_mp</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_single_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_mp</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
             <span class="n">wrk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -452,7 +452,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="n">unzip_dir</span>
         <span class="k">return</span> <span class="kc">True</span>
 
-    <span class="k">def</span> <span class="nf">_custom_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">instanceName</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">instanceName</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot; Print the FMU&#39;s log messages to the command line (works for both FMI 1.0 and 2.0) &quot;&quot;&quot;</span>
         <span class="c1"># pylint: disable=unused-argument, invalid-name</span>
         <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;DISCARD&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;FATAL&#39;</span><span class="p">,</span> <span class="s1">&#39;PENDING&#39;</span><span class="p">][</span><span class="n">status</span><span class="p">]</span>
@@ -465,7 +465,7 @@
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_fmu</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">_level_map</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
 
-<div class="viewcode-block" id="FMU_API.save_for_reproduction"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction">[docs]</a>    <span class="k">def</span> <span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="FMU_API.save_for_reproduction"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                               <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
                               <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                               <span class="n">files</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
