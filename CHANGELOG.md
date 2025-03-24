@@ -116,3 +116,5 @@
 - v0.5.2
   - Add save options in Dymola #98
   - Add feature to postprocess mat results within the simulate function to avoid memory errors in large studies
+- v0.5.3
+  - Improve loading of mat files #150
