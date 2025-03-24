@@ -337,4 +337,11 @@ def mat_to_pandas(fname='dsres.mat',
         time_key = 'Time / s'
     else:
         time_key = 'Time'
-    return pd.DataFrame(data).set_index(time_key)
+    try:
+        time_values = data.pop(time_key)
+    except KeyError:
+        raise KeyError(f"Time column {time_key} not found in the data dictionary.")
+    t = time.time()
+    df = pd.DataFrame(data, index=time_values)
+    df.index.name = time_key
+    return df
