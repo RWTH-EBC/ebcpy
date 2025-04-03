@@ -614,15 +614,15 @@ class DymolaAPI(SimulationAPI):
         if not res[0]:
             self.logger.error("Simulation failed!")
             self.logger.error("The last error log from Dymola:")
-            log = self.dymola.getLastErrorLog()
-            # Only print first part as output is sometimes to verbose.
-            self.logger.error(log[:10000])
             dslog_path = self._get_worker_directory(use_mp=self.use_mp).joinpath('dslog.txt')
             try:
                 with open(dslog_path, "r") as dslog_file:
                     dslog_content = dslog_file.read()
                     self.logger.error(dslog_content)
             except Exception:
+                log = self.dymola.getLastErrorLog()
+                # Only print last part as output is sometimes to verbose and the error is at the bottom
+                self.logger.error(log[-10000:])
                 dslog_content = "Not retreivable. Open it yourself."
             msg = f"Simulation failed: Reason according " \
                   f"to dslog, located at '{dslog_path}': {dslog_content}"
@@ -843,9 +843,8 @@ class DymolaAPI(SimulationAPI):
         self.logger.info("Translating model '%s' to extract model variables ",
                          self.model_name)
         self.translate()
-        # Get path to dsin:
-        dsin_path = os.path.join(self.working_directory, "dsin.txt")
-        df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
+        # Get dsin:
+        df = manipulate_ds.convert_ds_file_to_dataframe(self.working_directory.joinpath("dsin.txt"))
         # Convert and return all parameters of dsin to initial values and names
         for idx, row in df.iterrows():
             _max = float(row["4"])
@@ -906,7 +905,7 @@ class DymolaAPI(SimulationAPI):
         :param bool use_mp: Indicates if the central working directory is needed or the worker one.
         """
         if use_mp:
-            return os.path.join(self.working_directory, f"worker_{self.worker_idx}")
+            return self.working_directory.joinpath(f"worker_{self.worker_idx}")
         return self.working_directory
 
     def update_experiment_setup_output(self, experiment_setup_output: Union[ExperimentSetupOutput, dict]):
