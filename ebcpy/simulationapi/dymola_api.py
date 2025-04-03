@@ -410,7 +410,7 @@ class DymolaAPI(SimulationAPI):
         squeeze = kwargs.pop("squeeze", True)
         result_file_name = kwargs.pop("result_file_name", 'resultFile')
         if not isinstance(result_file_name, str):
-            raise TypeError(f"result_file_name has to be type str but is of type {type(result_file_name)}") 
+            raise TypeError(f"result_file_name has to be type str but is of type {type(result_file_name)}")
         parameters = kwargs.pop("parameters")
         return_option = kwargs.pop("return_option")
         model_names = kwargs.pop("model_names", None)
@@ -434,7 +434,6 @@ class DymolaAPI(SimulationAPI):
 
         # Handle multiprocessing
         if self.use_mp:
-            idx_worker = self.worker_idx
             if self.dymola is None:
                 # This should not affect #119, as this rarely happens. Thus, the
                 # method used in the DymolaInterface should work.
@@ -618,7 +617,7 @@ class DymolaAPI(SimulationAPI):
             log = self.dymola.getLastErrorLog()
             # Only print first part as output is sometimes to verbose.
             self.logger.error(log[:10000])
-            dslog_path = self.working_directory.joinpath('dslog.txt')
+            dslog_path = self._get_worker_directory(use_mp=self.use_mp).joinpath('dslog.txt')
             try:
                 with open(dslog_path, "r") as dslog_file:
                     dslog_content = dslog_file.read()
@@ -638,9 +637,18 @@ class DymolaAPI(SimulationAPI):
             # Get the working_directory of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_working_directory = str(Path(self.dymola.getLastErrorLog().replace("\n", "")))
-            mat_working_directory = os.path.join(dymola_working_directory, _save_name_dsres)
-            if savepath is None or str(savepath) == dymola_working_directory:
+            dymola_working_directory = Path(self.dymola.getLastErrorLog().replace("\n", ""))
+            if dymola_working_directory != self._get_worker_directory(use_mp=self.use_mp):
+                self.logger.warning(
+                    "The working directory set by ebcpy and the one with the result does not match: "
+                    "%s (dymola) vs. %s (ebcpy). This will inhibit correct error "
+                    "messages upon failed simulations.",
+                    dymola_working_directory,
+                    self._get_worker_directory(use_mp=self.use_mp)
+                )
+
+            mat_working_directory = dymola_working_directory.joinpath(_save_name_dsres).as_posix()
+            if savepath is None or str(savepath) == str(dymola_working_directory):
                 mat_result_file = mat_working_directory
             else:
                 mat_save_path = os.path.join(savepath, _save_name_dsres)
@@ -772,28 +780,23 @@ class DymolaAPI(SimulationAPI):
         if self.dymola is None:  # Not yet started
             return
         # Also set the working_directory in the dymola api
-        self.set_dymola_cd(dymola=self.dymola,
-                           cd=working_directory)
+        self.set_dymola_working_directory(dymola=self.dymola,
+                                          working_directory=working_directory)
         if self.use_mp:
             self.logger.warning("Won't set the working_directory for all workers, "
                                 "not yet implemented.")
 
-    @SimulationAPI.cd.setter
-    def cd(self, cd):
-        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
-        self.working_directory = cd
-
-    def set_dymola_cd(self, dymola, cd):
+    def set_dymola_working_directory(self, dymola, working_directory):
         """
-        Set the cd of the Dymola Instance.
+        Set the working directory of the Dymola Instance.
         Before calling the Function, create the path and
         convert to a modelica-normpath.
         """
-        os.makedirs(cd, exist_ok=True)
-        cd_modelica = self._make_modelica_normpath(path=cd)
-        res = dymola.cd(cd_modelica)
+        os.makedirs(working_directory, exist_ok=True)
+        modelica_working_directory = self._make_modelica_normpath(path=working_directory)
+        res = dymola.cd(modelica_working_directory)
         if not res:
-            raise OSError(f"Could not change working directory to {cd}")
+            raise OSError(f"Could not change working directory to {working_directory}")
 
     def close(self):
         """Closes dymola."""
@@ -841,7 +844,7 @@ class DymolaAPI(SimulationAPI):
                          self.model_name)
         self.translate()
         # Get path to dsin:
-        dsin_path = os.path.join(self.cd, "dsin.txt")
+        dsin_path = os.path.join(self.working_directory, "dsin.txt")
         df = manipulate_ds.convert_ds_file_to_dataframe(dsin_path)
         # Convert and return all parameters of dsin to initial values and names
         for idx, row in df.iterrows():
@@ -872,10 +875,7 @@ class DymolaAPI(SimulationAPI):
         time.sleep(time_delay)
         dymola = self._open_dymola_interface(port=port)
         self._check_dymola_instances()
-        if use_mp:
-            cd = os.path.join(self.cd, f"worker_{self.worker_idx}")
-        else:
-            cd = self.cd
+
         # Execute the mos-script if given:
         if self.mos_script_pre is not None:
             self.logger.info("Executing given mos_script_pre "
@@ -884,7 +884,7 @@ class DymolaAPI(SimulationAPI):
             self.logger.info("Output of mos_script_pre: %s", dymola.getLastErrorLog())
 
         # Set the cd in the dymola api
-        self.set_dymola_cd(dymola=dymola, cd=cd)
+        self.set_dymola_working_directory(dymola=dymola, working_directory=self._get_worker_directory(use_mp))
 
         for package in self.packages:
             self.logger.info("Loading Model %s", os.path.dirname(package).split("\\")[-1])
@@ -898,6 +898,16 @@ class DymolaAPI(SimulationAPI):
             DymolaAPI.dymola = dymola
             return None
         return dymola
+
+    def _get_worker_directory(self, use_mp: bool):
+        """
+        Returns the current working directory for the process / worker.
+
+        :param bool use_mp: Indicates if the central working directory is needed or the worker one.
+        """
+        if use_mp:
+            return os.path.join(self.working_directory, f"worker_{self.worker_idx}")
+        return self.working_directory
 
     def update_experiment_setup_output(self, experiment_setup_output: Union[ExperimentSetupOutput, dict]):
         """
@@ -954,7 +964,7 @@ class DymolaAPI(SimulationAPI):
             Dictionary with keys to re-init this class.
         """
         # Convert Path to str to enable json-dumping
-        config = {"cd": str(self.cd),
+        config = {"working_directory": str(self.working_directory),
                   "packages": [str(pack) for pack in self.packages],
                   "model_name": self.model_name,
                   "type": "DymolaAPI",
@@ -1063,11 +1073,11 @@ class DymolaAPI(SimulationAPI):
         # Total model
         if save_total_model:
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
-            _total_model = Path(self.cd).joinpath(_total_model_name)
+            _total_model = Path(self.working_directory).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
             if "(" in self.model_name:
                 # Create temporary model:
-                temp_model_file = Path(self.cd).joinpath(f"temp_total_model_{uuid.uuid4()}.mo")
+                temp_model_file = Path(self.working_directory).joinpath(f"temp_total_model_{uuid.uuid4()}.mo")
                 temp_mode_name = f"{self.model_name.split('(')[0].split('.')[-1]}WithModifier"
                 with open(temp_model_file, "w") as file:
                     file.write(f"model {temp_mode_name}\n  extends {self.model_name};\nend {temp_mode_name};")
@@ -1130,7 +1140,7 @@ class DymolaAPI(SimulationAPI):
             if fail_on_error:
                 raise Exception(msg)
         else:
-            path = Path(self.cd).joinpath(res + ".fmu")
+            path = Path(self.working_directory).joinpath(res + ".fmu")
             return path
 
     @staticmethod
