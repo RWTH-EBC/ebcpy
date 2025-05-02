@@ -130,5 +130,7 @@ tsd.clean_and_space_equally(desired_freq="1s")
 # Documentation
 Visit our official [Documentation](https://rwth-ebc.github.io/ebcpy/master/docs/index.html).
 
-# Problems?
+# Problems or questions?
 Please [raise an issue here](https://github.com/RWTH-EBC/ebcpy/issues/new).
+
+For other inquires, please contact [ebc-tools@eonerc.rwth-aachen.de](mailto:ebc-tools@eonerc.rwth-aachen.de).
