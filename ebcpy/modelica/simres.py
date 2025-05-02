@@ -55,7 +55,7 @@ from collections import namedtuple
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
-import fnmatch
+import re
 
 
 # Namedtuple to store the time and value information of each variable
@@ -305,7 +305,8 @@ def mat_to_pandas(fname='dsres.mat',
             if pat == 'Time':
                 matched.add('Time')
             elif '*' in pat:
-                hits = fnmatch.filter(_variables.keys(), pat)
+                regex = '^' + re.escape(pat).replace(r'\*', '.*') + '$'
+                hits = [k for k in _variables.keys() if re.match(regex, k)]
                 if hits:
                     matched.update(hits)
                 else:
