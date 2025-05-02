@@ -118,3 +118,5 @@
   - Add feature to postprocess mat results within the simulate function to avoid memory errors in large studies
 - v0.5.3
   - Improve loading of mat files #150
+- v0.5.4
+  - Add support for wildcard patterns in variable names #154
