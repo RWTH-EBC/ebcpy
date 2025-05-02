@@ -86,6 +86,8 @@ class TimeSeriesData(pd.DataFrame):
         List of variable names to load from .mat file. If you
         know which variables you want to plot, this may speed up
         loading significantly, and reduce memory size drastically.
+        You can also supply wildcard patterns (e.g. "*wall.layer[*].T", etc.)
+        to match multiple variables at once.
 
     Examples:
 
