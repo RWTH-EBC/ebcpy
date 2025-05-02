@@ -446,7 +446,7 @@ simulation variable (input, parameter, output or local/state).</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the given bounds are correct.</p>
 </dd></dl>
 
@@ -839,8 +839,13 @@ setup fields.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.dymola_api.DymolaSimulationSetup.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>self: The BaseModel instance.
+context: The context.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
@@ -1033,8 +1038,13 @@ to the basic <cite>SimulationSetup</cite></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.fmu.FMU_Setup.model_post_init">
 <span class="sig-name descname"><span class="pre">model_post_init</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">context</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Any</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">/</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#ebcpy.simulationapi.fmu.FMU_Setup.model_post_init" title="Permalink to this definition"></a></dt>
-<dd><p>We need to both initialize private attributes and call the user-defined model_post_init
-method.</p>
+<dd><p>This function is meant to behave like a BaseModel method to initialise private attributes.</p>
+<p>It takes context as an argument since that’s what pydantic-core passes when calling it.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>self: The BaseModel instance.
+context: The context.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
