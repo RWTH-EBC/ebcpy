@@ -1269,7 +1269,7 @@
             "type": "warning",
             "module": "ebcpy.data_types",
             "obj": "TimeSeriesData._load_df_from_file",
-            "line": 309,
+            "line": 311,
             "column": 17,
             "path": "ebcpy/data_types.py",
             "symbol": "unspecified-encoding",
@@ -1280,7 +1280,7 @@
             "type": "refactor",
             "module": "ebcpy.data_types",
             "obj": "TimeSeriesData._load_df_from_file",
-            "line": 285,
+            "line": 287,
             "column": 4,
             "path": "ebcpy/data_types.py",
             "symbol": "too-many-branches",
@@ -1291,7 +1291,7 @@
             "type": "refactor",
             "module": "ebcpy.data_types",
             "obj": "TimeSeriesData.to_float_index",
-            "line": 449,
+            "line": 451,
             "column": 4,
             "path": "ebcpy/data_types.py",
             "symbol": "inconsistent-return-statements",
@@ -1302,7 +1302,7 @@
             "type": "refactor",
             "module": "ebcpy.data_types",
             "obj": "TimeSeriesData.clean_and_space_equally",
-            "line": 488,
+            "line": 490,
             "column": 8,
             "path": "ebcpy/data_types.py",
             "symbol": "no-else-return",
@@ -1313,7 +1313,7 @@
             "type": "refactor",
             "module": "ebcpy.data_types",
             "obj": "TimeSeriesData.low_pass_filter",
-            "line": 494,
+            "line": 496,
             "column": 4,
             "path": "ebcpy/data_types.py",
             "symbol": "too-many-arguments",
@@ -1533,7 +1533,7 @@
             "type": "refactor",
             "module": "ebcpy.modelica.simres",
             "obj": "loadsim",
-            "line": 64,
+            "line": 65,
             "column": 0,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "too-many-locals",
@@ -1544,7 +1544,7 @@
             "type": "convention",
             "module": "ebcpy.modelica.simres",
             "obj": "loadsim",
-            "line": 122,
+            "line": 123,
             "column": 17,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "consider-using-f-string",
@@ -1555,23 +1555,12 @@
             "type": "refactor",
             "module": "ebcpy.modelica.simres",
             "obj": "loadsim",
-            "line": 153,
+            "line": 154,
             "column": 20,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "use-dict-literal",
             "message": "Consider using '{}' instead of a call to 'dict'.",
             "message-id": "R1735"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.modelica.simres",
-            "obj": "loadsim",
-            "line": 156,
-            "column": 28,
-            "path": "ebcpy/modelica/simres.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
         },
         {
             "type": "convention",
@@ -1585,21 +1574,32 @@
             "message-id": "C0209"
         },
         {
+            "type": "convention",
+            "module": "ebcpy.modelica.simres",
+            "obj": "loadsim",
+            "line": 158,
+            "column": 28,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "consider-using-f-string",
+            "message": "Formatting a regular string which could be a f-string",
+            "message-id": "C0209"
+        },
+        {
             "type": "refactor",
             "module": "ebcpy.modelica.simres",
             "obj": "mat_to_pandas",
-            "line": 253,
+            "line": 254,
             "column": 0,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "too-many-locals",
-            "message": "Too many local variables (16/15)",
+            "message": "Too many local variables (20/15)",
             "message-id": "R0914"
         },
         {
             "type": "warning",
             "module": "ebcpy.modelica.simres",
             "obj": "mat_to_pandas",
-            "line": 343,
+            "line": 369,
             "column": 8,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "raise-missing-from",
@@ -1610,12 +1610,34 @@
             "type": "refactor",
             "module": "ebcpy.modelica.simres",
             "obj": "mat_to_pandas",
-            "line": 253,
+            "line": 254,
             "column": 0,
             "path": "ebcpy/modelica/simres.py",
             "symbol": "too-many-branches",
-            "message": "Too many branches (16/12)",
+            "message": "Too many branches (23/12)",
             "message-id": "R0912"
+        },
+        {
+            "type": "refactor",
+            "module": "ebcpy.modelica.simres",
+            "obj": "mat_to_pandas",
+            "line": 254,
+            "column": 0,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "too-many-statements",
+            "message": "Too many statements (57/50)",
+            "message-id": "R0915"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.modelica.simres",
+            "obj": "",
+            "line": 58,
+            "column": 0,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "wrong-import-order",
+            "message": "standard import \"import fnmatch\" should be placed before \"from scipy.io import loadmat\"",
+            "message-id": "C0411"
         },
         {
             "type": "convention",
@@ -2692,7 +2714,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[428:436]\n==ebcpy.simulationapi.fmu:[194:201]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        # Handle multiprocessing\n        if self.use_mp:",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[428:436]\n==ebcpy.simulationapi.fmu:[194:201]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        if self.use_mp:",
             "message-id": "R0801"
         },
         {
@@ -2714,7 +2736,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[508:519]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
+            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[508:519]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    @property\n    def cd(self) -> Path:",
             "message-id": "R0801"
         },
         {
@@ -2725,7 +2747,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy.data_types -> ebcpy.preprocessing)",
+            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api)",
             "message-id": "R0401"
         },
         {
@@ -2736,7 +2758,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api)",
+            "message": "Cyclic import (ebcpy.data_types -> ebcpy.preprocessing)",
             "message-id": "R0401"
         },
         {
@@ -2823,12 +2845,12 @@
                 "warning": 3
             },
             "ebcpy.modelica.simres": {
-                "convention": 4,
+                "convention": 5,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 4,
-                "statement": 115,
+                "refactor": 5,
+                "statement": 129,
                 "warning": 1
             },
             "ebcpy.utils.__init__": {
@@ -2904,7 +2926,7 @@
             "protected-access": 2,
             "inconsistent-return-statements": 8,
             "unused-argument": 6,
-            "too-many-statements": 4,
+            "too-many-statements": 5,
             "unspecified-encoding": 10,
             "too-many-branches": 10,
             "no-else-return": 2,
@@ -2915,6 +2937,7 @@
             "consider-using-f-string": 10,
             "use-dict-literal": 6,
             "raise-missing-from": 2,
+            "wrong-import-order": 2,
             "no-member": 1,
             "redefined-argument-from-local": 1,
             "import-outside-toplevel": 5,
@@ -2926,7 +2949,6 @@
             "consider-using-in": 1,
             "too-few-public-methods": 1,
             "too-many-instance-attributes": 2,
-            "wrong-import-order": 1,
             "too-many-lines": 1,
             "broad-exception-caught": 1,
             "broad-exception-raised": 4,
@@ -2942,8 +2964,8 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy.preprocessing",
                 "ebcpy.utils.conversion",
+                "ebcpy.preprocessing",
                 "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
@@ -2956,14 +2978,14 @@
                 "ebcpy"
             ],
             "numpy": [
-                "ebcpy.data_types",
-                "ebcpy.simulationapi",
-                "ebcpy.utils.statistics_analyzer",
                 "ebcpy.preprocessing",
-                "ebcpy.utils.conversion",
                 "ebcpy.modelica.simres",
-                "ebcpy.optimization",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.data_types",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.utils.statistics_analyzer",
+                "ebcpy.simulationapi",
+                "ebcpy.utils.conversion",
+                "ebcpy.optimization"
             ],
             "ebcpy.utils": [
                 "ebcpy.simulationapi",
@@ -3030,13 +3052,13 @@
                 "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.data_types",
                 "ebcpy.simulationapi.dymola_api",
+                "ebcpy.modelica.manipulate_ds",
                 "ebcpy.preprocessing",
-                "ebcpy.utils.conversion",
                 "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.data_types",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.utils.conversion"
             ],
             "ebcpy.modelica.simres": [
                 "ebcpy.data_types"
@@ -3116,16 +3138,16 @@
             "method": 3,
             "module": 0
         },
-        "convention": 85,
+        "convention": 86,
         "error": 3,
         "fatal": 0,
         "info": 0,
-        "refactor": 61,
-        "statement": 2145,
+        "refactor": 62,
+        "statement": 2159,
         "warning": 34,
         "global_note": 0,
         "nb_duplicated_lines": 23,
-        "percent_duplicated_lines": 0.38798920377867746
+        "percent_duplicated_lines": 0.3861652115513768
     },
     "previous": {
         "bad_names": {
@@ -3199,12 +3221,12 @@
                 "warning": 3
             },
             "ebcpy.modelica.simres": {
-                "convention": 4,
+                "convention": 5,
                 "error": 0,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 4,
-                "statement": 115,
+                "refactor": 5,
+                "statement": 129,
                 "warning": 1
             },
             "ebcpy.utils.__init__": {
@@ -3280,7 +3302,7 @@
             "protected-access": 2,
             "inconsistent-return-statements": 8,
             "unused-argument": 6,
-            "too-many-statements": 4,
+            "too-many-statements": 5,
             "unspecified-encoding": 10,
             "too-many-branches": 10,
             "no-else-return": 2,
@@ -3291,6 +3313,7 @@
             "consider-using-f-string": 10,
             "use-dict-literal": 6,
             "raise-missing-from": 2,
+            "wrong-import-order": 2,
             "no-member": 1,
             "redefined-argument-from-local": 1,
             "import-outside-toplevel": 5,
@@ -3302,7 +3325,6 @@
             "consider-using-in": 1,
             "too-few-public-methods": 1,
             "too-many-instance-attributes": 2,
-            "wrong-import-order": 1,
             "too-many-lines": 1,
             "broad-exception-caught": 1,
             "broad-exception-raised": 4,
@@ -3332,14 +3354,14 @@
                 "ebcpy"
             ],
             "numpy": [
-                "ebcpy.data_types",
-                "ebcpy.optimization",
-                "ebcpy.simulationapi",
-                "ebcpy.utils.statistics_analyzer",
-                "ebcpy.utils.conversion",
                 "ebcpy.preprocessing",
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.data_types",
+                "ebcpy.utils.statistics_analyzer",
+                "ebcpy.simulationapi",
+                "ebcpy.utils.conversion",
                 "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.optimization"
             ],
             "ebcpy.utils": [
                 "ebcpy.simulationapi",
@@ -3406,13 +3428,13 @@
                 "ebcpy.data_types"
             ],
             "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.data_types",
                 "ebcpy.simulationapi.dymola_api",
-                "ebcpy.utils.conversion",
+                "ebcpy.modelica.manipulate_ds",
                 "ebcpy.preprocessing",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.data_types",
+                "ebcpy.utils.conversion",
+                "ebcpy.modelica.simres"
             ],
             "ebcpy.modelica.simres": [
                 "ebcpy.data_types"
@@ -3452,22 +3474,22 @@
                 "ebcpy.simulationapi.fmu"
             ],
             "pydantic": [
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.simulationapi": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy": [
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.fmu",
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi.dymola_api",
+                "ebcpy.simulationapi.fmu",
                 "ebcpy.simulationapi",
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.simulationapi.dymola_api"
             ],
             "ebcpy.modelica.manipulate_ds": [
                 "ebcpy.simulationapi.dymola_api"
@@ -3492,15 +3514,15 @@
             "method": 3,
             "module": 0
         },
-        "convention": 85,
+        "convention": 86,
         "error": 3,
         "fatal": 0,
         "info": 0,
-        "refactor": 61,
-        "statement": 2145,
+        "refactor": 62,
+        "statement": 2159,
         "warning": 34,
-        "global_note": 9.09090909090909,
+        "global_note": 9.087540528022233,
         "nb_duplicated_lines": 23,
-        "percent_duplicated_lines": 0.38798920377867746
+        "percent_duplicated_lines": 0.3861652115513768
     }
 }

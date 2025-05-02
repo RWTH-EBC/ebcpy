@@ -116,11 +116,11 @@ ebcpy/optimization.py:415:4: R0914: Too many local variables (38/15) (too-many-l
 ebcpy/optimization.py:415:4: R0915: Too many statements (54/50) (too-many-statements)
 ebcpy/optimization.py:415:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ************* Module ebcpy.data_types
-ebcpy/data_types.py:309:17: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/data_types.py:285:4: R0912: Too many branches (14/12) (too-many-branches)
-ebcpy/data_types.py:449:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/data_types.py:488:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
-ebcpy/data_types.py:494:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/data_types.py:311:17: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/data_types.py:287:4: R0912: Too many branches (14/12) (too-many-branches)
+ebcpy/data_types.py:451:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/data_types.py:490:8: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
+ebcpy/data_types.py:496:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/data_types.py:25:11: E0603: Undefined variable name 'numeric_indexes' in __all__ (undefined-all-variable)
 ebcpy/data_types.py:16:0: W0611: Unused numpy imported as np (unused-import)
 ************* Module ebcpy.preprocessing
@@ -144,14 +144,16 @@ ebcpy/modelica/manipulate_ds.py:143:9: W1514: Using open without explicitly spec
 ebcpy/modelica/manipulate_ds.py:149:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ************* Module ebcpy.modelica.simres
 ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
-ebcpy/modelica/simres.py:64:0: R0914: Too many local variables (16/15) (too-many-locals)
-ebcpy/modelica/simres.py:122:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:153:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/modelica/simres.py:156:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
 ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:253:0: R0914: Too many local variables (16/15) (too-many-locals)
-ebcpy/modelica/simres.py:343:8: W0707: Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f'Time column {time_key} not found in the data dictionary.') from exc' (raise-missing-from)
-ebcpy/modelica/simres.py:253:0: R0912: Too many branches (16/12) (too-many-branches)
+ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:254:0: R0914: Too many local variables (20/15) (too-many-locals)
+ebcpy/modelica/simres.py:369:8: W0707: Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f'Time column {time_key} not found in the data dictionary.') from exc' (raise-missing-from)
+ebcpy/modelica/simres.py:254:0: R0912: Too many branches (23/12) (too-many-branches)
+ebcpy/modelica/simres.py:254:0: R0915: Too many statements (57/50) (too-many-statements)
+ebcpy/modelica/simres.py:58:0: C0411: standard import "import fnmatch" should be placed before "from scipy.io import loadmat" (wrong-import-order)
 ************* Module ebcpy.utils.reproduction
 ebcpy/utils/reproduction.py:296:0: C0301: Line too long (126/100) (line-too-long)
 ebcpy/utils/reproduction.py:358:0: C0301: Line too long (113/100) (line-too-long)
@@ -278,6 +280,7 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[324:333]
@@ -287,7 +290,10 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
- (duplicate-code)
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to: (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
 ==ebcpy.simulationapi.__init__:[508:519]
@@ -295,17 +301,16 @@ ebcpy/simulationapi/dymola_api.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
-ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
+ebcpy/simulationapi/dymola_api.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
 Your code has been rated at 9.09/10

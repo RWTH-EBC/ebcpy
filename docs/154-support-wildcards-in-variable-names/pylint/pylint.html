@@ -69,7 +69,7 @@
             </tr>
             
             <tr>
-                <td>285</td>
+                <td>287</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
@@ -79,7 +79,7 @@
             </tr>
             
             <tr>
-                <td>309</td>
+                <td>311</td>
                 <td>17</td>
                 <td>warning</td>
                 <td><code>unspecified-encoding</code></td>
@@ -89,7 +89,7 @@
             </tr>
             
             <tr>
-                <td>449</td>
+                <td>451</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>inconsistent-return-statements</code></td>
@@ -99,7 +99,7 @@
             </tr>
             
             <tr>
-                <td>488</td>
+                <td>490</td>
                 <td>8</td>
                 <td>refactor</td>
                 <td><code>no-else-return</code></td>
@@ -109,7 +109,7 @@
             </tr>
             
             <tr>
-                <td>494</td>
+                <td>496</td>
                 <td>4</td>
                 <td>refactor</td>
                 <td><code>too-many-arguments</code></td>
@@ -281,7 +281,17 @@
             </tr>
             
             <tr>
-                <td>64</td>
+                <td>58</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>wrong-import-order</code></td>
+                <td>C0411</td>
+                <td></td>
+                <td><pre>standard import &#34;import fnmatch&#34; should be placed before &#34;from scipy.io import loadmat&#34;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>65</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
@@ -291,7 +301,7 @@
             </tr>
             
             <tr>
-                <td>122</td>
+                <td>123</td>
                 <td>17</td>
                 <td>convention</td>
                 <td><code>consider-using-f-string</code></td>
@@ -301,23 +311,13 @@
             </tr>
             
             <tr>
-                <td>153</td>
+                <td>154</td>
                 <td>20</td>
                 <td>refactor</td>
                 <td><code>use-dict-literal</code></td>
                 <td>R1735</td>
                 <td>loadsim</td>
                 <td><pre>Consider using &#39;{}&#39; instead of a call to &#39;dict&#39;.</pre></td>
-            </tr>
-            
-            <tr>
-                <td>156</td>
-                <td>28</td>
-                <td>convention</td>
-                <td><code>consider-using-f-string</code></td>
-                <td>C0209</td>
-                <td>loadsim</td>
-                <td><pre>Formatting a regular string which could be a f-string</pre></td>
             </tr>
             
             <tr>
@@ -331,27 +331,47 @@
             </tr>
             
             <tr>
-                <td>253</td>
+                <td>158</td>
+                <td>28</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>loadsim</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>254</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-locals</code></td>
                 <td>R0914</td>
                 <td>mat_to_pandas</td>
-                <td><pre>Too many local variables (16/15)</pre></td>
+                <td><pre>Too many local variables (20/15)</pre></td>
             </tr>
             
             <tr>
-                <td>253</td>
+                <td>254</td>
                 <td>0</td>
                 <td>refactor</td>
                 <td><code>too-many-branches</code></td>
                 <td>R0912</td>
                 <td>mat_to_pandas</td>
-                <td><pre>Too many branches (16/12)</pre></td>
+                <td><pre>Too many branches (23/12)</pre></td>
             </tr>
             
             <tr>
-                <td>343</td>
+                <td>254</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>too-many-statements</code></td>
+                <td>R0915</td>
+                <td>mat_to_pandas</td>
+                <td><pre>Too many statements (57/50)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>369</td>
                 <td>8</td>
                 <td>warning</td>
                 <td><code>raise-missing-from</code></td>
@@ -1179,7 +1199,6 @@
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
 
-        # Handle multiprocessing
         if self.use_mp:</pre></td>
             </tr>
             
@@ -1218,23 +1237,14 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]):</pre></td>
-            </tr>
-            
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>refactor</td>
-                <td><code>cyclic-import</code></td>
-                <td>R0401</td>
-                <td></td>
-                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+    @property
+    def cd(self) -&gt; Path:</pre></td>
             </tr>
             
             <tr>
@@ -1245,6 +1255,16 @@
                 <td>R0401</td>
                 <td></td>
                 <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>cyclic-import</code></td>
+                <td>R0401</td>
+                <td></td>
+                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
             </tr>
             
             <tr>
@@ -2797,7 +2817,7 @@
             
             <tr>
                 <td>refactor</td>
-                <td>121</td>
+                <td>122</td>
             </tr>
             
             <tr>
@@ -2807,7 +2827,7 @@
             
             <tr>
                 <td>convention</td>
-                <td>85</td>
+                <td>86</td>
             </tr>
             
         </table>
@@ -2877,7 +2897,7 @@
             
             <tr>
                 <td>too-many-statements</td>
-                <td>4</td>
+                <td>5</td>
             </tr>
             
             <tr>
@@ -2927,6 +2947,11 @@
             
             <tr>
                 <td>raise-missing-from</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>wrong-import-order</td>
                 <td>2</td>
             </tr>
             
@@ -2983,11 +3008,6 @@
             <tr>
                 <td>too-many-instance-attributes</td>
                 <td>2</td>
-            </tr>
-            
-            <tr>
-                <td>wrong-import-order</td>
-                <td>1</td>
             </tr>
             
             <tr>
@@ -3057,7 +3077,7 @@
             
             <tr>
                 <td>ebcpy.modelica.simres</td>
-                <td>9</td>
+                <td>11</td>
             </tr>
             
             <tr>
@@ -3137,7 +3157,7 @@
             
             <tr>
                 <td>ebcpy/modelica/simres.py</td>
-                <td>9</td>
+                <td>11</td>
             </tr>
             
             <tr>
