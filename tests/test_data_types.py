@@ -233,6 +233,7 @@ class TestDataTypes(unittest.TestCase):
         """Test the utils for time series"""
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
+        self.assertEqual(len(tsd.get_variable_names("*.y[*]")), 6)
         self.assertIsNotNone(tsd.get_tags())
         self.assertLessEqual(len(tsd.get_variable_names()), tsd.shape[1])
 

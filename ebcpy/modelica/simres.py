@@ -55,7 +55,7 @@ from collections import namedtuple
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
-import re
+from ebcpy.utils import get_names
 
 
 # Namedtuple to store the time and value information of each variable
@@ -299,32 +299,7 @@ def mat_to_pandas(fname='dsres.mat',
         if 'Time' not in patterns:
             patterns.append('Time')
 
-        matched = set()
-        unmatched = []
-        for pat in patterns:
-            if pat == 'Time':
-                matched.add('Time')
-            elif '*' in pat:
-                regex = '^' + re.escape(pat).replace(r'\*', '.*') + '$'
-                hits = [k for k in _variables.keys() if re.match(regex, k)]
-                if hits:
-                    matched.update(hits)
-                else:
-                    unmatched.append(pat)
-            else:
-                if pat in _variables:
-                    matched.add(pat)
-                else:
-                    unmatched.append(pat)
-
-        if unmatched:
-            raise KeyError(
-                "The following variable names/patterns are not in the given .mat file: "
-                + ", ".join(unmatched)
-            )
-
-        # preserve original order
-        names = [var for var in _variables.keys() if var in matched]
+        names = get_names(list(_variables.keys()), patterns)
     else:
         names = list(_variables.keys())
 
