@@ -4,8 +4,9 @@ Contains a statistics analyzer and a visualizer.
 """
 import logging
 import os
+import re
 from pathlib import Path
-from typing import Union
+from typing import Union, List
 
 
 def setup_logger(name: str,
@@ -44,3 +45,53 @@ def setup_logger(name: str,
         file_handler.setFormatter(fmt=formatter)
         logger.addHandler(hdlr=file_handler)
     return logger
+
+
+def get_names(all_names: list, patterns: Union[str, List[str]]) -> List[str]:
+    """
+    Filter a list of candidate names by literal values or glob-style patterns.
+
+    This function returns all names from `all_names` that match the provided
+    `patterns`.  Patterns may be a single string or a list of strings, and may
+    contain the wildcard `*` to match any sequence of characters.  Literal names
+    without `*` must match exactly.  The matching is performed in two steps:
+      1. Each pattern is translated to a regular expression if it contains `*`,
+         otherwise used as a literal match.
+      2. Any pattern that matches no names in `all_names` raises a `KeyError`.
+
+    The returned list preserves the order of `all_names`.
+
+    :param all_names: List of available names to filter.
+    :param patterns: A pattern or list of patterns (with optional `*` wildcards)
+                     to match against `all_names`.
+    :return: A list of names from `all_names` that match any of the given patterns,
+             in original order.
+    :raises KeyError: If any pattern does not match at least one name.
+    """
+    if isinstance(patterns, str):
+        patterns = [patterns]
+
+    matched = set()
+    unmatched = []
+    for pat in patterns:
+        if '*' in pat:
+            regex = '^' + re.escape(pat).replace(r'\*', '.*') + '$'
+            hits = [k for k in all_names if re.match(regex, k)]
+            if hits:
+                matched.update(hits)
+            else:
+                unmatched.append(pat)
+        else:
+            if pat in all_names:
+                matched.add(pat)
+            else:
+                unmatched.append(pat)
+
+    if unmatched:
+        raise KeyError(
+            "The following variable names/patterns are not in the given .mat file: "
+            + ", ".join(unmatched)
+        )
+    # preserve original order
+    names = [var for var in all_names if var in matched]
+    return names

@@ -158,15 +158,16 @@ class TestDataTypes(unittest.TestCase):
             time_series_data,
             type(pd.DataFrame()))
         # Load with variable names:
-        variable_names = ["combiTimeTable.y[6]"]
+        variable_names = ["combiTimeTable.timeScale", "*.y[*]"]
         time_series_data = data_types.TimeSeriesData(
             self.example_data_mat_path, variable_names=variable_names
         )
         self.assertIsInstance(
             time_series_data,
             type(pd.DataFrame()))
-        self.assertEqual(len(time_series_data.columns), 1)
-        self.assertEqual(time_series_data.to_df().columns[0], variable_names[0])
+        self.assertEqual(len(time_series_data.columns), 7)
+        self.assertTrue(variable_names[0] in list(time_series_data.to_df().columns))
+        self.assertTrue("combiTimeTable.y[5]" in list(time_series_data.to_df().columns))
         # Test load and set df functions:
         df = time_series_data
         self.assertIsInstance(
@@ -232,6 +233,7 @@ class TestDataTypes(unittest.TestCase):
         """Test the utils for time series"""
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
+        self.assertEqual(len(tsd.get_variable_names("*.y[*]")), 6)
         self.assertIsNotNone(tsd.get_tags())
         self.assertLessEqual(len(tsd.get_variable_names()), tsd.shape[1])
 
