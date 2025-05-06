@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy package &mdash; ebcpy 0.5.3 documentation</title>
+  <title>ebcpy package &mdash; ebcpy 0.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
@@ -252,6 +252,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="ebcpy.utils.html">ebcpy.utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="ebcpy.utils.html#ebcpy.utils.get_names"><code class="docutils literal notranslate"><span class="pre">get_names()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.utils.html#ebcpy.utils.setup_logger"><code class="docutils literal notranslate"><span class="pre">setup_logger()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.utils.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ebcpy.utils.html#module-ebcpy.utils.conversion">ebcpy.utils.conversion module</a><ul>
@@ -356,7 +357,9 @@ argument when loading a xlsx-file.</p></li>
 Other option is ‘fastparquet’ (python&gt;=3.9).</p></li>
 <li><p><strong>variable_names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of variable names to load from .mat file. If you
 know which variables you want to plot, this may speed up
-loading significantly, and reduce memory size drastically.</p></li>
+loading significantly, and reduce memory size drastically.
+You can also supply wildcard patterns (e.g. “<em>wall.layer[</em>].T”, etc.)
+to match multiple variables at once.</p></li>
 </ul>
 </dd>
 </dl>
@@ -469,11 +472,32 @@ Default is True.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.get_variable_names">
-<span class="sig-name descname"><span class="pre">get_variable_names</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.get_variable_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.get_variable_names" title="Permalink to this definition"></a></dt>
-<dd><p>Return an alphabetically sorted list of all variables</p>
+<span class="sig-name descname"><span class="pre">get_variable_names</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.get_variable_names"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.get_variable_names" title="Permalink to this definition"></a></dt>
+<dd><p>Return an alphabetically sorted list of variable names, optionally filtered by patterns.</p>
+<p>By default, returns all variable names found in the first level of the DataFrame’s
+column MultiIndex, sorted alphabetically. If <cite>patterns</cite> is provided, only names
+matching one or more of the given literal strings or glob-style patterns
+(where <cite>*</cite> matches any sequence of characters) will be returned.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns<span class="colon">:</span></dt>
-<dd class="field-odd"><p>List[str]</p>
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>patterns</strong> – <ul class="simple">
+<li><p>A single string or list of strings.</p></li>
+<li><p>Each entry may be an exact variable name, or a pattern containing <cite>*</cite> as a wildcard.</p></li>
+<li><p>If None, all variable names are returned.</p></li>
+</ul>
+</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of matching variable names, in alphabetical order.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.13)"><strong>KeyError</strong></a> – If any literal name or pattern does not match at least one variable in the DataFrame.</p>
+</dd>
+</dl>
+<dl class="simple">
+<dt>Example:</dt><dd><p># return all wall temperatures at any layer
+tsd.get_variable_names(”<em>wall.layer[</em>].T”)
+[“wall.layer[1].T”, “wall.layer[2].T”, “wall.layer[3].T”]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -567,7 +591,7 @@ Other option is ‘fastparquet’ (python&gt;=3.9).</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="ebcpy.data_types.TimeSeriesData.to_datetime_index">
-<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2025,</span> <span class="pre">5,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">16,</span> <span class="pre">50,</span> <span class="pre">704772)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2025,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">9,</span> <span class="pre">34,</span> <span class="pre">54,</span> <span class="pre">338941)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/data_types.html#TimeSeriesData.to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.data_types.TimeSeriesData.to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Convert the current index to a float based index using
 ebcpy.preprocessing.convert_index_to_datetime_index()</p>
 <dl class="field-list simple">
@@ -908,7 +932,7 @@ DataFrame with correct index</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="ebcpy.preprocessing.convert_index_to_datetime_index">
-<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2025,</span> <span class="pre">5,</span> <span class="pre">2,</span> <span class="pre">10,</span> <span class="pre">16,</span> <span class="pre">50,</span> <span class="pre">703325)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">ebcpy.preprocessing.</span></span><span class="sig-name descname"><span class="pre">convert_index_to_datetime_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">df</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_of_index</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'s'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">origin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">datetime.datetime(2025,</span> <span class="pre">5,</span> <span class="pre">6,</span> <span class="pre">9,</span> <span class="pre">34,</span> <span class="pre">54,</span> <span class="pre">337722)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inplace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/preprocessing.html#convert_index_to_datetime_index"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.preprocessing.convert_index_to_datetime_index" title="Permalink to this definition"></a></dt>
 <dd><p>Converts the index of the given DataFrame to a
 pandas.core.indexes.datetimes.DatetimeIndex.</p>
 <dl class="field-list simple">

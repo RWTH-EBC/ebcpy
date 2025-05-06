@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.data_types &mdash; ebcpy 0.5.3 documentation</title>
+  <title>ebcpy.data_types &mdash; ebcpy 0.5.4 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -92,6 +92,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">ebcpy.modelica.simres</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sr</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">preprocessing</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_names</span>
 
 <span class="c1"># pylint: disable=I1101</span>
 <span class="c1"># pylint: disable=too-many-ancestors</span>
@@ -162,6 +163,8 @@
 <span class="sd">        List of variable names to load from .mat file. If you</span>
 <span class="sd">        know which variables you want to plot, this may speed up</span>
 <span class="sd">        loading significantly, and reduce memory size drastically.</span>
+<span class="sd">        You can also supply wildcard patterns (e.g. &quot;*wall.layer[*].T&quot;, etc.)</span>
+<span class="sd">        to match multiple variables at once.</span>
 
 <span class="sd">    Examples:</span>
 
@@ -426,13 +429,33 @@
                 <span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">err</span>
         <span class="k">return</span> <span class="n">df</span>
 
-<div class="viewcode-block" id="TimeSeriesData.get_variable_names"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.data_types.TimeSeriesData.get_variable_names">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="TimeSeriesData.get_variable_names"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.data_types.TimeSeriesData.get_variable_names">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_variable_names</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Return an alphabetically sorted list of all variables</span>
+<span class="sd">    Return an alphabetically sorted list of variable names, optionally filtered by patterns.</span>
 
-<span class="sd">        :return: List[str]</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span></div>
+<span class="sd">    By default, returns all variable names found in the first level of the DataFrame&#39;s</span>
+<span class="sd">    column MultiIndex, sorted alphabetically. If `patterns` is provided, only names</span>
+<span class="sd">    matching one or more of the given literal strings or glob-style patterns</span>
+<span class="sd">    (where `*` matches any sequence of characters) will be returned.</span>
+
+<span class="sd">    :param patterns:</span>
+<span class="sd">        - A single string or list of strings.</span>
+<span class="sd">        - Each entry may be an exact variable name, or a pattern containing `*` as a wildcard.</span>
+<span class="sd">        - If None, all variable names are returned.</span>
+<span class="sd">    :return:</span>
+<span class="sd">        A list of matching variable names, in alphabetical order.</span>
+<span class="sd">    :raises KeyError:</span>
+<span class="sd">        If any literal name or pattern does not match at least one variable in the DataFrame.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        # return all wall temperatures at any layer</span>
+<span class="sd">        tsd.get_variable_names(&quot;*wall.layer[*].T&quot;)</span>
+<span class="sd">        [&quot;wall.layer[1].T&quot;, &quot;wall.layer[2].T&quot;, &quot;wall.layer[3].T&quot;]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        <span class="n">all_names</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">unique</span><span class="p">())</span>
+        <span class="k">if</span> <span class="n">patterns</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">all_names</span>
+        <span class="k">return</span> <span class="n">get_names</span><span class="p">(</span><span class="n">all_names</span><span class="p">,</span> <span class="n">patterns</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="TimeSeriesData.get_variables_with_multiple_tags"><a class="viewcode-back" href="../../code/ebcpy.html#ebcpy.data_types.TimeSeriesData.get_variables_with_multiple_tags">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">get_variables_with_multiple_tags</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
