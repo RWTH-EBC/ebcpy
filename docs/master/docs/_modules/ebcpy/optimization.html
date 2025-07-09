@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.optimization &mdash; ebcpy 0.5.4 documentation</title>
+  <title>ebcpy.optimization &mdash; ebcpy 0.5.5 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -581,12 +581,15 @@
             <span class="n">copy_termination</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;copy_termination&quot;</span><span class="p">)</span>
             <span class="n">callback</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;callback&quot;</span><span class="p">)</span>
             <span class="n">display</span> <span class="o">=</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;display&quot;</span><span class="p">)</span>
-            
-            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_sampling</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">])</span>
-            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_selection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">])</span>
-            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_crossover</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">])</span>
-            <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_mutation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">])</span>
-        
+
+            <span class="k">if</span> <span class="s2">&quot;selection&quot;</span> <span class="ow">in</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_selection</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;selection&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;crossover&quot;</span> <span class="ow">in</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_crossover</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;crossover&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;sampling&quot;</span> <span class="ow">in</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_sampling</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;sampling&quot;</span><span class="p">])</span>
+            <span class="k">if</span> <span class="s2">&quot;mutation&quot;</span> <span class="ow">in</span> <span class="n">default_kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_mutation</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">default_kwargs</span><span class="p">[</span><span class="s2">&quot;mutation&quot;</span><span class="p">])</span>
             <span class="n">algorithm</span> <span class="o">=</span> <span class="n">pymoo_algorithms</span><span class="p">[</span><span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()](</span><span class="o">**</span><span class="n">default_kwargs</span><span class="p">)</span>
             
             <span class="n">res</span> <span class="o">=</span> <span class="n">minimize</span><span class="p">(</span>
@@ -662,13 +665,6 @@
                     <span class="p">}</span>
         <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;pymoo&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;n_gen&quot;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span>
-                    <span class="s2">&quot;pop_size&quot;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span>
-                    <span class="s2">&quot;sampling&quot;</span><span class="p">:</span> <span class="s2">&quot;real_random&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;selection&quot;</span><span class="p">:</span> <span class="s2">&quot;random&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;crossover&quot;</span><span class="p">:</span> <span class="s2">&quot;real_sbx&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;mutation&quot;</span><span class="p">:</span> <span class="s2">&quot;real_pm&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;eliminate_duplicates&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
-                    <span class="s2">&quot;n_offsprings&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="s2">&quot;termination&quot;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="s2">&quot;seed&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
                     <span class="s2">&quot;verbose&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
