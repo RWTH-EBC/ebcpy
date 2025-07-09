@@ -7,6 +7,7 @@ import os
 import re
 from pathlib import Path
 from typing import Union, List
+import warnings
 
 
 def setup_logger(name: str,
@@ -57,7 +58,7 @@ def get_names(all_names: list, patterns: Union[str, List[str]]) -> List[str]:
     without `*` must match exactly.  The matching is performed in two steps:
       1. Each pattern is translated to a regular expression if it contains `*`,
          otherwise used as a literal match.
-      2. Any pattern that matches no names in `all_names` raises a `KeyError`.
+      2. Any pattern that matches no names in `all_names` raises a warning.
 
     The returned list preserves the order of `all_names`.
 
@@ -88,7 +89,7 @@ def get_names(all_names: list, patterns: Union[str, List[str]]) -> List[str]:
                 unmatched.append(pat)
 
     if unmatched:
-        raise KeyError(
+        warnings.warn(
             "The following variable names/patterns are not in the given .mat file: "
             + ", ".join(unmatched)
         )

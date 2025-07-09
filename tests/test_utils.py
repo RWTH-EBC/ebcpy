@@ -351,11 +351,11 @@ class TestGetNames(unittest.TestCase):
 
     def test_errors(self):
         """
-        Patterns or literals that match nothing should raise KeyError.
+        Patterns or literals that match nothing should raise a warning.
         """
-        with self.assertRaises(KeyError):
+        with self.assertWarns(UserWarning):
             get_names(['alpha', 'beta'], 'unknown')
-        with self.assertRaises(KeyError):
+        with self.assertWarns(UserWarning):
             get_names(['x1', 'x2'], 'y*')
 
 

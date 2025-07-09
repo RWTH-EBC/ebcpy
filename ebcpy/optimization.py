@@ -505,12 +505,15 @@ class Optimizer:
             copy_termination = default_kwargs.pop("copy_termination")
             callback = default_kwargs.pop("callback")
             display = default_kwargs.pop("display")
-            
-            default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
-            default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
-            default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
-            default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
-        
+
+            if "selection" in default_kwargs.keys():
+                default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+            if "crossover" in default_kwargs.keys():
+                default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+            if "sampling" in default_kwargs.keys():
+                default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+            if "mutation" in default_kwargs.keys():
+                default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
             algorithm = pymoo_algorithms[method.lower()](**default_kwargs)
             
             res = minimize(
@@ -586,13 +589,6 @@ class Optimizer:
                     }
         if framework.lower() == "pymoo":
             return {"n_gen": 1000,
-                    "pop_size": 50,
-                    "sampling": "real_random",
-                    "selection": "random",
-                    "crossover": "real_sbx",
-                    "mutation": "real_pm",
-                    "eliminate_duplicates": True,
-                    "n_offsprings": None,
                     "termination": None,
                     "seed": 1,
                     "verbose": False,
