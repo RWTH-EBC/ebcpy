@@ -120,3 +120,6 @@
   - Improve loading of mat files #150
 - v0.5.4
   - Add support for wildcard patterns in variable names #154
+- v0.5.5
+  - Fix bug in pymoo optimization methods #156
+  - Change error for wrong variable names to a warning
