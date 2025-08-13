@@ -123,3 +123,5 @@
 - v0.5.5
   - Fix bug in pymoo optimization methods #156
   - Change error for wrong variable names to a warning
+- v0.5.6
+  - Fix bug to handle paths as absolute and improve doc #158

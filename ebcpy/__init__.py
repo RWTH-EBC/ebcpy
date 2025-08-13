@@ -8,4 +8,4 @@ from .simulationapi.fmu import FMU_API
 from .optimization import Optimizer
 
 
-__version__ = '0.5.5'
+__version__ = '0.5.6'
