@@ -377,7 +377,7 @@ class TestFMUAPI(PartialTestSimAPI):
         """Called before every test.
         Used to setup relevant paths and APIs etc."""
         super().setUp()
-        if self.__class__ == PartialTestDymolaAPI:
+        if self.__class__ == TestFMUAPI:
             self.skipTest("Just a partial class")
         self.start_api()
 
@@ -387,15 +387,23 @@ class TestFMUAPI(PartialTestSimAPI):
         return self.data_dir.joinpath("PumpAndValve_linux.fmu")
 
     def start_api(self, save_logs: bool = True, **kwargs):
-        self.sim_api = fmu.FMU_API(working_directory=self.example_sim_dir,
-                                   model_name=self._get_model_name())
+        self.sim_api = fmu.FMU_API(
+            working_directory=self.example_sim_dir,
+            model_name=self._get_model_name(),
+            save_logs=save_logs
+        )
 
     def test_relative_working_directory(self):
-        self.sim_api = fmu.FMU_API(working_directory="data/testzone",
-                                   model_name=self._get_model_name())
+        self.sim_api.close()
+        self.sim_api = fmu.FMU_API(
+            # Complex solution to enable tests from any cwd
+            working_directory=Path(__file__).parent.relative_to(Path().absolute()).joinpath("data", "testzone"),
+            model_name=self._get_model_name()
+        )
         self.assertEqual(self.sim_api.working_directory, self.example_sim_dir)
 
     def test_no_working_directory(self):
+        self.sim_api.close()
         self.sim_api = fmu.FMU_API(model_name=self._get_model_name())
         self.assertEqual(self.sim_api.working_directory, self.data_dir)
 
