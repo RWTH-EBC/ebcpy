@@ -80,9 +80,9 @@
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">fmpy</span>
@@ -119,6 +119,11 @@
 <span class="sd">    Class for simulation using the fmpy library and</span>
 <span class="sd">    a functional mockup interface as a model input.</span>
 
+<span class="sd">    :param str,Path model_name:</span>
+<span class="sd">        Path to the .fmu model to be simulated.</span>
+<span class="sd">    :param str,Path working_directory:</span>
+<span class="sd">        Dirpath for the current working directory of simulation</span>
+<span class="sd">        results. If None (default), the path of the fmu is used.</span>
 <span class="sd">    :keyword bool log_fmu:</span>
 <span class="sd">        Whether to print fmu messages or not.</span>
 
@@ -151,7 +156,7 @@
         <span class="nb">int</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span>
     <span class="p">}</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class parameters&quot;&quot;&quot;</span>
         <span class="c1"># Init instance attributes</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span> <span class="o">=</span> <span class="kc">None</span>
@@ -161,7 +166,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">log_fmu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_fmu&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
             <span class="n">model_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">model_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fmu&quot;</span><span class="p">):</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> is not a valid fmu file!&quot;</span><span class="p">)</span>
@@ -366,9 +371,8 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Extracting fmu and reading fmu model description&quot;</span><span class="p">)</span>
         <span class="c1"># First load model description and extract variables</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="p">,</span>
-                                              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_extracted&quot;</span><span class="p">)</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_extracted&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">=</span> <span class="n">fmpy</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
                                               <span class="n">unzipdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span> <span class="o">=</span> <span class="n">read_model_description</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">,</span>
@@ -428,7 +432,7 @@
             <span class="n">wrk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="k">return</span> <span class="kc">True</span>
-            <span class="n">unzip_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_worker_</span><span class="si">{</span><span class="n">wrk_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">unzip_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="o">.</span><span class="n">with_stem</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_worker_</span><span class="si">{</span><span class="n">wrk_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
             <span class="n">fmpy</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
                          <span class="n">unzipdir</span><span class="o">=</span><span class="n">unzip_dir</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
@@ -467,7 +471,7 @@
 
 <div class="viewcode-block" id="FMU_API.save_for_reproduction"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                               <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-                              <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                               <span class="n">files</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                               <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -477,8 +481,8 @@
         <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CopyFile</span><span class="p">(</span>
-            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;FMU/&quot;</span> <span class="o">+</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="n">sourcepath</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;FMU/&quot;</span> <span class="o">+</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">sourcepath</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span>
             <span class="n">remove</span><span class="o">=</span><span class="kc">False</span>
         <span class="p">))</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save_for_reproduction</span><span class="p">(</span>

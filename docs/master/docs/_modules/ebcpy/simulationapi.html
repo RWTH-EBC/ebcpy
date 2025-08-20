@@ -249,7 +249,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_progress_int</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="c1"># Handle deprecation warning</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_working_directory</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># Define instance attribute</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">working_directory</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">working_directory</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span>
         <span class="n">save_logs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;save_logs&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">setup_logger</span><span class="p">(</span>
             <span class="n">working_directory</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="k">if</span> <span class="n">save_logs</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
@@ -684,7 +684,7 @@
 <span class="sd">        :param str title:</span>
 <span class="sd">            Title of the study</span>
 <span class="sd">        :param pathlib.Path path:</span>
-<span class="sd">            Where to store the .zip file. If not given, self.working_directory is used.</span>
+<span class="sd">            Where to store the .zip file. If not given, self.cd is used.</span>
 <span class="sd">        :param list files:</span>
 <span class="sd">            List of files to save along the standard ones.</span>
 <span class="sd">            Examples would be plots, tables etc.</span>
@@ -694,7 +694,7 @@
 <span class="sd">            specified to avoid input during execution.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">cd</span>
         <span class="k">return</span> <span class="n">save_reproduction_archive</span><span class="p">(</span>
             <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
             <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
