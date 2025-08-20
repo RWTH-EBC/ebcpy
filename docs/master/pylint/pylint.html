@@ -1634,17 +1634,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1106:1117]
 ==ebcpy.simulationapi.fmu:[405:412]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1718,7 +1714,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>
@@ -1728,7 +1724,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy.data_types -&gt; ebcpy.preprocessing)</pre></td>
             </tr>
             
             <tr>
