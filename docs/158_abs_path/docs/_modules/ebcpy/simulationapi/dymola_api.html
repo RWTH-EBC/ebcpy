@@ -921,7 +921,9 @@
                          <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">()</span>
         <span class="c1"># Get dsin:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">manipulate_ds</span><span class="o">.</span><span class="n">convert_ds_file_to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;dsin.txt&quot;</span><span class="p">))</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">manipulate_ds</span><span class="o">.</span><span class="n">convert_ds_file_to_dataframe</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_directory</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;dsin.txt&quot;</span><span class="p">)</span>
+        <span class="p">)</span>
         <span class="c1"># Convert and return all parameters of dsin to initial values and names</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;4&quot;</span><span class="p">])</span>
