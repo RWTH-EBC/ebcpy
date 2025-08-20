@@ -172,6 +172,7 @@ class SimulationAPI:
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprecation warning
+        self._working_directory = None  # Define instance attribute
         self.working_directory = working_directory
         save_logs = kwargs.get("save_logs", True)
         self.logger = setup_logger(
@@ -607,7 +608,7 @@ class SimulationAPI:
         :param str title:
             Title of the study
         :param pathlib.Path path:
-            Where to store the .zip file. If not given, self.cd is used.
+            Where to store the .zip file. If not given, self.working_directory is used.
         :param list files:
             List of files to save along the standard ones.
             Examples would be plots, tables etc.
@@ -617,7 +618,7 @@ class SimulationAPI:
             specified to avoid input during execution.
         """
         if path is None:
-            path = self.cd
+            path = self.working_directory
         return save_reproduction_archive(
             title=title,
             path=path,
