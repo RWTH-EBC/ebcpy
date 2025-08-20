@@ -1,0 +1,398 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.modelica package &mdash; ebcpy 0.5.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../_static/jquery.js"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+      <script src="../_static/doctools.js"></script>
+      <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ebcpy.simulationapi package" href="ebcpy.simulationapi.html" />
+    <link rel="prev" title="ebcpy package" href="ebcpy.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../examples.html">Examples</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">ebcpy</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="ebcpy.html">ebcpy package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="ebcpy.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">ebcpy.modelica package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.simulationapi.html">ebcpy.simulationapi package</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ebcpy.utils.html">ebcpy.utils package</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.data_types">ebcpy.data_types module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.optimization">ebcpy.optimization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="ebcpy.html#module-ebcpy.preprocessing">ebcpy.preprocessing module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">ebcpy</a></li>
+          <li class="breadcrumb-item"><a href="ebcpy.html">ebcpy package</a></li>
+      <li class="breadcrumb-item active">ebcpy.modelica package</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/code/ebcpy.modelica.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-ebcpy.modelica">
+<span id="ebcpy-modelica-package"></span><h1>ebcpy.modelica package<a class="headerlink" href="#module-ebcpy.modelica" title="Permalink to this heading"></a></h1>
+<p>This package aims to help manipulate simulation files (dsfinal.txt or dsin.txt)
+or to load simulation result files (.mat) efficiently into a pandas.DataFrame</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.get_expressions">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.</span></span><span class="sig-name descname"><span class="pre">get_expressions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filepath_model</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">get_protected</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">modelica_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'parameters'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">excludes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.13)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica.html#get_expressions"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.get_expressions" title="Permalink to this definition"></a></dt>
+<dd><p>This function extracts specific expressions out of modelica models.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filepath_model</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Full path of modelica model on the given os
+e.g. path_model = “C://MyLibrary//TestModel.mo”</p></li>
+<li><p><strong>modelica_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – Type you want to have matched. “parameters” and “variables”
+have a special regex pattern.
+For other models, you can parse a string like:
+“replaceable package Medium” and it will yield all
+afflicted lines. You can also give a list of strings if
+multiple strings are relevant to you.
+Special cases:
+parameters:
+- include: [“parameter”]
+- excludes: [“final”, “in”, “of”, “replaceable”]
+variables: Note: The case for already imported SIUnits is not considered here.
+- include: [“Modelica.SIunits”, “Real”, “Boolean”, “Integer”]
+- excludes: [“parameter”, “import”, “constant”]</p></li>
+<li><p><strong>excludes</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of strings to exclude from expression. Default is None.</p></li>
+<li><p><strong>get_protected</strong> (<em>Boolean</em>) – Whether to extract protected parameters or not. Default is false</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list matches
+List with all lines matching the given expression.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.get_names_and_values_of_lines">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.</span></span><span class="sig-name descname"><span class="pre">get_names_and_values_of_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lines</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.13)"><span class="pre">List</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><span class="pre">dict</span></a></span></span><a class="reference internal" href="../_modules/ebcpy/modelica.html#get_names_and_values_of_lines"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.get_names_and_values_of_lines" title="Permalink to this definition"></a></dt>
+<dd><p>All unnecessary code is deleted (annotations, doc).
+Only the name of the variable and the value is extracted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lines</strong> (<em>List</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>]</em>) – List of strings with lines from a modelica file.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict: Containing the names as key and values as value.</p>
+</dd>
+</dl>
+<p>Example:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">lines</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;parameter Boolean my_boolean=true &quot;Some description&quot;&#39;</span><span class="p">,</span>
+<span class="gp">&gt;&gt;&gt; </span>         <span class="s1">&#39;parameter Real my_real=12.0 &quot;Some description&quot; annotation(&quot;Some annotation&quot;)&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span> <span class="o">=</span> <span class="n">get_names_and_values_of_lines</span><span class="p">(</span><span class="n">lines</span><span class="o">=</span><span class="n">lines</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="go">{&#39;my_boolean&#39;: True, &#39;my_real&#39;: 12.0}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading"></a></h2>
+</section>
+<section id="module-ebcpy.modelica.manipulate_ds">
+<span id="ebcpy-modelica-manipulate-ds-module"></span><h2>ebcpy.modelica.manipulate_ds module<a class="headerlink" href="#module-ebcpy.modelica.manipulate_ds" title="Permalink to this heading"></a></h2>
+<p>Functions to manipulate (or extract information of) the
+dsfinal.txt and dsin.txt files created by Modelica.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.manipulate_ds.convert_ds_file_to_dataframe">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.manipulate_ds.</span></span><span class="sig-name descname"><span class="pre">convert_ds_file_to_dataframe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/manipulate_ds.html#convert_ds_file_to_dataframe"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.manipulate_ds.convert_ds_file_to_dataframe" title="Permalink to this definition"></a></dt>
+<dd><p>Function to convert a given dsfinal or dsfin file to a DataFrame.
+The index is the name of the variable. Further,
+the following columns are used analog to the dsfinal:
+column 1: Type of initial value:
+= -2: special case: for continuing simulation (column 2 = value)
+= -1: fixed value (column 2 = fixed value)
+=  0: free value, i.e., no restriction (column 2 = initial value)
+&gt;  0: desired value (column 1 = weight for optimization,
+column 2 = desired value)
+use weight=1, since automatic scaling usually
+leads to equally weighted terms
+column 2: fixed, free or desired value according to column 1.
+column 3: Minimum value (ignored, if Minimum &gt;= Maximum).
+column 4: Maximum value (ignored, if Minimum &gt;= Maximum).
+Minimum and maximum restrict the search range in initial
+value calculation. They might also be used for scaling.
+column 5: Category of variable:
+= 1: parameter.
+= 2: state.
+= 3: state derivative.
+= 4: output.
+= 5: input.
+= 6: auxiliary variable.
+column 6: Data type of variable and flags according to dsBaseType</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Filepath to the dsfinal or dsinto be loaded.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>pd.DataFrame
+Converted DataFrame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.manipulate_ds.eliminate_parameters_from_ds_file">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.manipulate_ds.</span></span><span class="sig-name descname"><span class="pre">eliminate_parameters_from_ds_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">savepath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exclude_paras</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">del_aux_paras</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/manipulate_ds.html#eliminate_parameters_from_ds_file"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.manipulate_ds.eliminate_parameters_from_ds_file" title="Permalink to this definition"></a></dt>
+<dd><p>Create a new dsfinal file out of the given dsfinal.txt
+All parameters except those listed in exclude_paras
+will be eliminated from the dsfinal file.
+Used for continuing of simulation in calibration problems.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – Filepath to the dsfinal or dsin file</p></li>
+<li><p><strong>savepath</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a><em>,</em><em>os.path.normpath</em>) – .txt-file for storing output of this function</p></li>
+<li><p><strong>exclude_paras</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – List of parameters to exclude.</p></li>
+<li><p><strong>del_aux_paras</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – Whether to delete auxiliary parameters or not.
+Default value is True.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-ebcpy.modelica.simres">
+<span id="ebcpy-modelica-simres-module"></span><h2>ebcpy.modelica.simres module<a class="headerlink" href="#module-ebcpy.modelica.simres" title="Permalink to this heading"></a></h2>
+<p>Module based on the simres module of modelicares. As no new content is going to be
+merged upstream, this “fork” of the to_pandas() function is used.</p>
+<p>Update 18.01.2021:
+As modelicares is no longer compatible with matplotlib &gt; 3.3.2, we integrated all
+necessary functions from modelicares to still be able and use loadsim functions.</p>
+<div class="versionadded">
+<p><span class="versionmodified added">New in version 0.1.7.</span></p>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Samples">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">Samples</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">times</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negated</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#ebcpy.modelica.simres.Samples" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></a></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Samples.negated">
+<span class="sig-name descname"><span class="pre">negated</span></span><a class="headerlink" href="#ebcpy.modelica.simres.Samples.negated" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Samples.times">
+<span class="sig-name descname"><span class="pre">times</span></span><a class="headerlink" href="#ebcpy.modelica.simres.Samples.times" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Samples.values">
+<span class="sig-name descname"><span class="pre">values</span></span><a class="headerlink" href="#ebcpy.modelica.simres.Samples.values" title="Permalink to this definition"></a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Variable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">samples</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">displayUnit</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#Variable"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.Variable" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">VariableNamedTuple</span></code></p>
+<p>Special namedtuple to represent a variable in a simulation, with
+methods to retrieve and perform calculations on its values</p>
+<p>This class is usually not instantiated directly by the user, but instances
+are returned when indexing a variable name from a simulation result
+(<code class="xref py py-class docutils literal notranslate"><span class="pre">SimRes</span></code> instance).</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Variable.times">
+<span class="sig-name descname"><span class="pre">times</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#Variable.times"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.Variable.times" title="Permalink to this definition"></a></dt>
+<dd><p>Return sample times</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.Variable.values">
+<span class="sig-name descname"><span class="pre">values</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#Variable.values"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.Variable.values" title="Permalink to this definition"></a></dt>
+<dd><p>Return sample values</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.get_strings">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">get_strings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">str_arr</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#get_strings"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.get_strings" title="Permalink to this definition"></a></dt>
+<dd><p>Return a list of strings from a character array.</p>
+<p>Strip the whitespace from the right and recode it as utf-8.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.loadsim">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">loadsim</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constants_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#loadsim"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.loadsim" title="Permalink to this definition"></a></dt>
+<dd><p>Load Dymola<sup>®</sup> or OpenModelica simulation results.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><p><em>fname</em>: Name of the results file, including the path</p>
+<blockquote>
+<div><p>The file extension (‘.mat’) is optional.</p>
+</div></blockquote>
+</li>
+<li><p><em>constants_only</em>: <em>True</em> to load only the variables from the first data
+matrix</p>
+<blockquote>
+<div><p>The first data matrix usually contains all of the constants,
+parameters, and variables that don’t vary.  If only that information is
+needed, it may save resources to set <em>constants_only</em> to <em>True</em>.</p>
+</div></blockquote>
+</li>
+</ul>
+<p><strong>Returns:</strong> An instance of dict</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.mat_to_pandas">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">mat_to_pandas</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'dsres.mat'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">aliases</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_unit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constants_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#mat_to_pandas"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.mat_to_pandas" title="Permalink to this definition"></a></dt>
+<dd><p>Return a <cite>pandas.DataFrame</cite> with values from selected variables
+for the given .mat file.</p>
+<p>The index is time. The column headings indicate the variable names and
+units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fname</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The mat file to load.</p></li>
+<li><p><strong>names</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><em>list</em></a>) – If None (default), then all variables are included. You can also
+supply wildcard patterns (e.g. “<em>wall.layer[</em>].T”, etc.) to match
+multiple variables at once.</p></li>
+<li><p><strong>aliases</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.13)"><em>dict</em></a>) – <p>Dictionary of aliases for the variable names</p>
+<p>The keys are the “official” variable names from the Modelica model
+and the values are the names as they should be included in the
+column headings. Any variables not in this list will not be
+aliased. Any unmatched aliases will not be used.</p>
+</p></li>
+<li><p><strong>with_unit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – <p>Boolean to determine format of keys. Default value is True.</p>
+<p>If set to True, the unit will be added to the key. As not all modelica-
+result files export the unit information, using with_unit=True can lead
+to errors.</p>
+</p></li>
+<li><p><strong>constants_only</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><em>bool</em></a>) – The first data matrix usually contains all of the constants,
+parameters, and variables that don’t vary.  If only that information is
+needed, it may save resources to set <em>constants_only</em> to <em>True</em>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="ebcpy.modelica.simres.read">
+<span class="sig-prename descclassname"><span class="pre">ebcpy.modelica.simres.</span></span><span class="sig-name descname"><span class="pre">read</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">fname</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">constants_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/ebcpy/modelica/simres.html#read"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.modelica.simres.read" title="Permalink to this definition"></a></dt>
+<dd><p>Read variables from a MATLAB<sup>®</sup> file with Dymola<sup>®</sup> or
+OpenModelica results.</p>
+<p><strong>Arguments:</strong></p>
+<ul>
+<li><p><em>fname</em>: Name of the results file, including the path</p>
+<blockquote>
+<div><p>This may be from a simulation or linearization.</p>
+</div></blockquote>
+</li>
+<li><p><em>constants_only</em>: <em>True</em> to load only the variables from the first data
+matrix, if the result is from a simulation</p></li>
+</ul>
+<p><strong>Returns:</strong></p>
+<ol class="arabic simple">
+<li><p>A dictionary of variables</p></li>
+<li><p>A list of strings from the lines of the ‘Aclass’ matrix</p></li>
+</ol>
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="ebcpy.html" class="btn btn-neutral float-left" title="ebcpy package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ebcpy.simulationapi.html" class="btn btn-neutral float-right" title="ebcpy.simulationapi package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

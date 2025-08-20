@@ -1,0 +1,519 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.simulationapi.fmu &mdash; ebcpy 0.5.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/modules.html">ebcpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../simulationapi.html">ebcpy.simulationapi</a></li>
+      <li class="breadcrumb-item active">ebcpy.simulationapi.fmu</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ebcpy.simulationapi.fmu</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;Module for classes using a fmu to</span>
+<span class="sd">simulate models.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">atexit</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">fmpy</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">fmpy.model_description</span><span class="w"> </span><span class="kn">import</span> <span class="n">read_model_description</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">simulationapi</span><span class="p">,</span> <span class="n">TimeSeriesData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.simulationapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSetup</span><span class="p">,</span> <span class="n">SimulationSetupClass</span><span class="p">,</span> <span class="n">Variable</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils.reproduction</span><span class="w"> </span><span class="kn">import</span> <span class="n">CopyFile</span>
+
+<span class="c1"># pylint: disable=broad-except</span>
+
+
+<div class="viewcode-block" id="FMU_Setup"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_Setup">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FMU_Setup</span><span class="p">(</span><span class="n">SimulationSetup</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Add&#39;s custom setup parameters for simulating FMU&#39;s</span>
+<span class="sd">    to the basic `SimulationSetup`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">timeout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">&quot;timeout&quot;</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">inf</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Timeout after which the simulation stops.&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">_default_solver</span> <span class="o">=</span> <span class="s2">&quot;CVode&quot;</span>
+    <span class="n">_allowed_solvers</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CVode&quot;</span><span class="p">,</span> <span class="s2">&quot;Euler&quot;</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="FMU_API"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API">[docs]</a><span class="k">class</span><span class="w"> </span><span class="nc">FMU_API</span><span class="p">(</span><span class="n">simulationapi</span><span class="o">.</span><span class="n">SimulationAPI</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class for simulation using the fmpy library and</span>
+<span class="sd">    a functional mockup interface as a model input.</span>
+
+<span class="sd">    :keyword bool log_fmu:</span>
+<span class="sd">        Whether to print fmu messages or not.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; import matplotlib.pyplot as plt</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import FMU_API</span>
+<span class="sd">    &gt;&gt;&gt; # Select any valid fmu. Replace the line below if</span>
+<span class="sd">    &gt;&gt;&gt; # you don&#39;t have this file on your device.</span>
+<span class="sd">    &gt;&gt;&gt; model_name = &quot;Path to your fmu&quot;</span>
+<span class="sd">    &gt;&gt;&gt; fmu_api = FMU_API(model_name)</span>
+<span class="sd">    &gt;&gt;&gt; fmu_api.sim_setup = {&quot;stop_time&quot;: 3600}</span>
+<span class="sd">    &gt;&gt;&gt; result_df = fmu_api.simulate()</span>
+<span class="sd">    &gt;&gt;&gt; fmu_api.close()</span>
+<span class="sd">    &gt;&gt;&gt; # Select an exemplary column</span>
+<span class="sd">    &gt;&gt;&gt; col = result_df.columns[0]</span>
+<span class="sd">    &gt;&gt;&gt; plt.plot(result_df[col], label=col)</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.legend()</span>
+<span class="sd">    &gt;&gt;&gt; _ = plt.show()</span>
+
+<span class="sd">    .. versionadded:: 0.1.7</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_items_to_drop</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;pool&quot;</span><span class="p">,</span> <span class="s2">&quot;_fmu_instance&quot;</span><span class="p">,</span> <span class="s2">&quot;_unzip_dir&quot;</span><span class="p">]</span>
+    <span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_sim_setup_class</span><span class="p">:</span> <span class="n">SimulationSetupClass</span> <span class="o">=</span> <span class="n">FMU_Setup</span>
+    <span class="n">_type_map</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="nb">float</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">,</span>
+        <span class="nb">bool</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">bool_</span><span class="p">,</span>
+        <span class="nb">int</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">int_</span>
+    <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class parameters&quot;&quot;&quot;</span>
+        <span class="c1"># Init instance attributes</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmi_type</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">log_fmu</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;log_fmu&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">model_name</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.fmu&quot;</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2"> is not a valid fmu file!&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">working_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">working_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">working_directory</span><span class="p">,</span> <span class="n">model_name</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Register exit option</span>
+        <span class="n">atexit</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Setup the fmu instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setup_fmu_instance</span><span class="p">()</span>
+
+<div class="viewcode-block" id="FMU_API.close"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.close">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Closes the fmu.</span>
+
+<span class="sd">        :return: bool</span>
+<span class="sd">            True on success</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Close MP of super class</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+        <span class="c1"># Close if single process</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span><span class="p">:</span>
+                <span class="k">return</span>  <span class="c1"># Already closed</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_single_close</span><span class="p">(</span><span class="n">fmu_instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span><span class="p">,</span>
+                               <span class="n">unzip_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_close</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">fmu_instance</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;fmu_instance&quot;</span><span class="p">]</span>
+        <span class="n">unzip_dir</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;unzip_dir&quot;</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fmu_instance</span><span class="o">.</span><span class="n">terminate</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>  <span class="c1"># This is due to fmpy which does not yield a narrow error</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not terminate fmu instance: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">fmu_instance</span><span class="o">.</span><span class="n">freeInstance</span><span class="p">()</span>
+        <span class="k">except</span> <span class="ne">OSError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not free fmu instance: </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="c1"># Remove the extracted files</span>
+        <span class="k">if</span> <span class="n">unzip_dir</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">unzip_dir</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+                <span class="k">pass</span>  <span class="c1"># Nothing to delete</span>
+            <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Could not delete unzipped fmu &quot;</span>
+                                  <span class="s2">&quot;in location </span><span class="si">%s</span><span class="s2">. Delete it yourself.&quot;</span><span class="p">,</span> <span class="n">unzip_dir</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_close_multiprocessing</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Small helper function&quot;&quot;&quot;</span>
+        <span class="n">idx_worker</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span>  <span class="c1"># Already closed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Closing fmu for worker </span><span class="si">{</span><span class="n">idx_worker</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_close</span><span class="p">(</span><span class="n">fmu_instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span><span class="p">,</span>
+                           <span class="n">unzip_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">FMU_API</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">FMU_API</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="kc">None</span>
+
+<div class="viewcode-block" id="FMU_API.simulate"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.simulate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                 <span class="n">return_option</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;time_series&quot;</span><span class="p">,</span>
+                 <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the single simulation for the given</span>
+<span class="sd">        unzip directory and fmu_instance.</span>
+<span class="sd">        See the docstring of simulate() for information on kwargs.</span>
+
+<span class="sd">        Additional kwargs:</span>
+
+<span class="sd">        :keyword str result_file_suffix:</span>
+<span class="sd">            Suffix of the result file. Supported options can be extracted</span>
+<span class="sd">            from the TimeSeriesData.save() function.</span>
+<span class="sd">            Default is &#39;csv&#39;.</span>
+<span class="sd">        :keyword str parquet_engine:</span>
+<span class="sd">            The engine to use for the data format parquet.</span>
+<span class="sd">            Supported options can be extracted</span>
+<span class="sd">            from the TimeSeriesData.save() function.</span>
+<span class="sd">            Default is &#39;pyarrow&#39;.</span>
+
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span><span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span> <span class="n">return_option</span><span class="o">=</span><span class="n">return_option</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_single_simulation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the single simulation for the given</span>
+<span class="sd">        unzip directory and fmu_instance.</span>
+<span class="sd">        See the docstring of simulate() for information on kwargs.</span>
+
+<span class="sd">        The single argument kwarg is to make this</span>
+<span class="sd">        function accessible by multiprocessing pool.map.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Unpack kwargs:</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;parameters&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">return_option</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;return_option&quot;</span><span class="p">,</span> <span class="s2">&quot;time_series&quot;</span><span class="p">)</span>
+        <span class="n">inputs</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">fail_on_error</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">result_file_name</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;result_file_name&quot;</span><span class="p">,</span> <span class="s2">&quot;resultFile&quot;</span><span class="p">)</span>
+        <span class="n">result_file_suffix</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;result_file_suffix&quot;</span><span class="p">,</span> <span class="s2">&quot;csv&quot;</span><span class="p">)</span>
+        <span class="n">parquet_engine</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">&#39;parquet_engine&#39;</span><span class="p">,</span> <span class="s1">&#39;pyarrow&#39;</span><span class="p">)</span>
+        <span class="n">savepath</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span>
+                <span class="s2">&quot;You passed the following kwargs which &quot;</span>
+                <span class="s2">&quot;are not part of the supported kwargs and &quot;</span>
+                <span class="s2">&quot;have thus no effect: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_single_fmu_instance</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">inputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="p">(</span><span class="n">TimeSeriesData</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)):</span>
+                <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">&quot;DataFrame or TimeSeriesData object expected for inputs.&quot;</span><span class="p">)</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>  <span class="c1"># Create save copy</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">):</span>
+                <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to_df</span><span class="p">(</span><span class="n">force_single_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">if</span> <span class="s2">&quot;time&quot;</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span>
+                    <span class="s2">&quot;Given inputs contain a column named &#39;time&#39;. &quot;</span>
+                    <span class="s2">&quot;The index is assumed to contain the time-information.&quot;</span>
+                <span class="p">)</span>
+            <span class="c1"># Convert df to structured numpy array for fmpy: simulate_fmu</span>
+            <span class="n">inputs</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">column</span><span class="o">=</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">inputs</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">inputs_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="nb">tuple</span><span class="p">(</span><span class="n">columns</span><span class="p">)</span> <span class="k">for</span> <span class="n">columns</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()]</span>
+            <span class="c1"># Try to match the type, default is np.double.</span>
+            <span class="c1"># &#39;time&#39; is not in inputs and thus handled separately.</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="p">[(</span><span class="n">inputs</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)]</span> <span class="o">+</span> \
+                    <span class="p">[(</span><span class="n">col</span><span class="p">,</span>
+                      <span class="bp">self</span><span class="o">.</span><span class="n">_type_map</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">double</span><span class="p">)</span>
+                      <span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">inputs</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">inputs_tuple</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">parameters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">parameters</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">check_unsupported_variables</span><span class="p">(</span><span class="n">variables</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()),</span>
+                                             <span class="n">type_of_var</span><span class="o">=</span><span class="s2">&quot;parameters&quot;</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># reset the FMU instance instead of creating a new one</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span><span class="o">.</span><span class="n">reset</span><span class="p">()</span>
+            <span class="c1"># Simulate</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">fmpy</span><span class="o">.</span><span class="n">simulate_fmu</span><span class="p">(</span>
+                <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span><span class="p">,</span>
+                <span class="n">start_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">start_time</span><span class="p">,</span>
+                <span class="n">stop_time</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">stop_time</span><span class="p">,</span>
+                <span class="n">solver</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">solver</span><span class="p">,</span>
+                <span class="n">step_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">fixedstepsize</span><span class="p">,</span>
+                <span class="n">relative_tolerance</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">output_interval</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">output_interval</span><span class="p">,</span>
+                <span class="n">record_events</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># Used for an equidistant output</span>
+                <span class="n">start_values</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                <span class="n">apply_default_start_values</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>  <span class="c1"># As we pass start_values already</span>
+                <span class="nb">input</span><span class="o">=</span><span class="n">inputs</span><span class="p">,</span>
+                <span class="n">output</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">result_names</span><span class="p">,</span>
+                <span class="n">timeout</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">timeout</span><span class="p">,</span>
+                <span class="n">step_finished</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                <span class="n">model_description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span><span class="p">,</span>
+                <span class="n">fmu_instance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span><span class="p">,</span>
+                <span class="n">fmi_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmi_type</span><span class="p">,</span>
+            <span class="p">)</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[SIMULATION ERROR] Error occurred while running FMU: </span><span class="se">\n</span><span class="s2"> </span><span class="si">{</span><span class="n">error</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">fail_on_error</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="n">error</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="c1"># Reshape result:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">res</span><span class="p">)</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s2">&quot;time&quot;</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float64&quot;</span><span class="p">),</span>
+                            <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sim_setup</span><span class="o">.</span><span class="n">output_interval</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">return_option</span> <span class="o">==</span> <span class="s2">&quot;savepath&quot;</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">savepath</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">savepath</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>
+
+            <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">savepath</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result_file_name</span><span class="si">}</span><span class="s2">.</span><span class="si">{</span><span class="n">result_file_suffix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df</span><span class="p">)</span><span class="o">.</span><span class="n">droplevel</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+                <span class="n">filepath</span><span class="o">=</span><span class="n">filepath</span><span class="p">,</span>
+                <span class="n">key</span><span class="o">=</span><span class="s2">&quot;simulation&quot;</span><span class="p">,</span>
+                <span class="n">engine</span><span class="o">=</span><span class="n">parquet_engine</span>
+            <span class="p">)</span>
+
+            <span class="k">return</span> <span class="n">filepath</span>
+        <span class="k">if</span> <span class="n">return_option</span> <span class="o">==</span> <span class="s2">&quot;last_point&quot;</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="c1"># Else return time series data</span>
+        <span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">default_tag</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">tsd</span>
+
+<div class="viewcode-block" id="FMU_API.setup_fmu_instance"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.setup_fmu_instance">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">setup_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Manually set up and extract the data to</span>
+<span class="sd">        avoid this step in the simulate function.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Extracting fmu and reading fmu model description&quot;</span><span class="p">)</span>
+        <span class="c1"># First load model description and extract variables</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="p">,</span>
+                                              <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)[:</span><span class="o">-</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="s2">&quot;_extracted&quot;</span><span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">=</span> <span class="n">fmpy</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
+                                              <span class="n">unzipdir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span> <span class="o">=</span> <span class="n">read_model_description</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span><span class="p">,</span>
+                                                         <span class="n">validate</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span><span class="o">.</span><span class="n">coSimulation</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fmi_type</span> <span class="o">=</span> <span class="s1">&#39;ModelExchange&#39;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fmi_type</span> <span class="o">=</span> <span class="s1">&#39;CoSimulation&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Reading model variables&quot;</span><span class="p">)</span>
+
+        <span class="n">_types</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;Enumeration&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="s2">&quot;Integer&quot;</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+            <span class="s2">&quot;Real&quot;</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+            <span class="s2">&quot;Boolean&quot;</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="s2">&quot;String&quot;</span><span class="p">:</span> <span class="nb">str</span>
+        <span class="p">}</span>
+        <span class="c1"># Extract inputs, outputs &amp; tuner (lists from parent classes will be appended)</span>
+        <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span><span class="o">.</span><span class="n">modelVariables</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">var</span><span class="o">.</span><span class="n">start</span> <span class="o">=</span> <span class="n">_types</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">type</span><span class="p">](</span><span class="n">var</span><span class="o">.</span><span class="n">start</span><span class="p">)</span>
+
+            <span class="n">_var_ebcpy</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span>
+                <span class="nb">min</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">min</span><span class="p">,</span>
+                <span class="nb">max</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">max</span><span class="p">,</span>
+                <span class="n">value</span><span class="o">=</span><span class="n">var</span><span class="o">.</span><span class="n">start</span><span class="p">,</span>
+                <span class="nb">type</span><span class="o">=</span><span class="n">_types</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">type</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="k">if</span> <span class="n">var</span><span class="o">.</span><span class="n">causality</span> <span class="o">==</span> <span class="s1">&#39;input&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">inputs</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_var_ebcpy</span>
+            <span class="k">elif</span> <span class="n">var</span><span class="o">.</span><span class="n">causality</span> <span class="o">==</span> <span class="s1">&#39;output&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_var_ebcpy</span>
+            <span class="k">elif</span> <span class="n">var</span><span class="o">.</span><span class="n">causality</span> <span class="o">==</span> <span class="s1">&#39;parameter&#39;</span> <span class="ow">or</span> <span class="n">var</span><span class="o">.</span><span class="n">causality</span> <span class="o">==</span> <span class="s1">&#39;calculatedParameter&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_var_ebcpy</span>
+            <span class="k">elif</span> <span class="n">var</span><span class="o">.</span><span class="n">causality</span> <span class="o">==</span> <span class="s1">&#39;local&#39;</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">states</span><span class="p">[</span><span class="n">var</span><span class="o">.</span><span class="n">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">_var_ebcpy</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Could not map causality </span><span class="si">{</span><span class="n">var</span><span class="o">.</span><span class="n">causality</span><span class="si">}</span><span class="s2">&quot;</span>
+                                  <span class="sa">f</span><span class="s2">&quot; to any variable type.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Extracting fmu </span><span class="si">%s</span><span class="s2"> times for &quot;</span>
+                             <span class="s2">&quot;multiprocessing on </span><span class="si">%s</span><span class="s2"> processes&quot;</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_setup_single_fmu_instance</span><span class="p">,</span>
+                <span class="p">[</span><span class="kc">True</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_cpu</span><span class="p">)]</span>
+            <span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Instantiated fmu&#39;s on all processes.&quot;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_setup_single_fmu_instance</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_setup_single_fmu_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_mp</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
+            <span class="n">wrk_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">True</span>
+            <span class="n">unzip_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;_worker_</span><span class="si">{</span><span class="n">wrk_idx</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="n">fmpy</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">,</span>
+                         <span class="n">unzipdir</span><span class="o">=</span><span class="n">unzip_dir</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">wrk_idx</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">unzip_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_single_unzip_dir</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Instantiating fmu for worker </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">wrk_idx</span><span class="p">)</span>
+        <span class="n">fmu_instance</span> <span class="o">=</span> <span class="n">fmpy</span><span class="o">.</span><span class="n">instantiate_fmu</span><span class="p">(</span>
+            <span class="n">unzipdir</span><span class="o">=</span><span class="n">unzip_dir</span><span class="p">,</span>
+            <span class="n">model_description</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_model_description</span><span class="p">,</span>
+            <span class="n">fmi_type</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_fmi_type</span><span class="p">,</span>
+            <span class="n">visible</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">debug_logging</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">logger</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_custom_logger</span><span class="p">,</span>
+            <span class="n">fmi_call_logger</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
+            <span class="n">FMU_API</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="n">fmu_instance</span>
+            <span class="n">FMU_API</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="n">unzip_dir</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fmu_instance</span> <span class="o">=</span> <span class="n">fmu_instance</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_unzip_dir</span> <span class="o">=</span> <span class="n">unzip_dir</span>
+        <span class="k">return</span> <span class="kc">True</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_custom_logger</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">component</span><span class="p">,</span> <span class="n">instanceName</span><span class="p">,</span> <span class="n">status</span><span class="p">,</span> <span class="n">category</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Print the FMU&#39;s log messages to the command line (works for both FMI 1.0 and 2.0) &quot;&quot;&quot;</span>
+        <span class="c1"># pylint: disable=unused-argument, invalid-name</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;OK&#39;</span><span class="p">,</span> <span class="s1">&#39;WARNING&#39;</span><span class="p">,</span> <span class="s1">&#39;DISCARD&#39;</span><span class="p">,</span> <span class="s1">&#39;ERROR&#39;</span><span class="p">,</span> <span class="s1">&#39;FATAL&#39;</span><span class="p">,</span> <span class="s1">&#39;PENDING&#39;</span><span class="p">][</span><span class="n">status</span><span class="p">]</span>
+        <span class="n">_level_map</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;OK&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span>
+                      <span class="s1">&#39;WARNING&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+                      <span class="s1">&#39;DISCARD&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">,</span>
+                      <span class="s1">&#39;ERROR&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">ERROR</span><span class="p">,</span>
+                      <span class="s1">&#39;FATAL&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">FATAL</span><span class="p">,</span>
+                      <span class="s1">&#39;PENDING&#39;</span><span class="p">:</span> <span class="n">logging</span><span class="o">.</span><span class="n">FATAL</span><span class="p">}</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">log_fmu</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">_level_map</span><span class="p">[</span><span class="n">label</span><span class="p">],</span> <span class="n">msg</span><span class="o">=</span><span class="n">message</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">))</span>
+
+<div class="viewcode-block" id="FMU_API.save_for_reproduction"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.fmu.FMU_API.save_for_reproduction">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">save_for_reproduction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                              <span class="n">title</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+                              <span class="n">path</span><span class="p">:</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="n">files</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+                              <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Additionally to the basic reproduction, add info</span>
+<span class="sd">        for FMU files.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">files</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">files</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">files</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CopyFile</span><span class="p">(</span>
+            <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;FMU/&quot;</span> <span class="o">+</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">sourcepath</span><span class="o">=</span><span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">),</span>
+            <span class="n">remove</span><span class="o">=</span><span class="kc">False</span>
+        <span class="p">))</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">save_for_reproduction</span><span class="p">(</span>
+            <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span>
+            <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span>
+            <span class="n">files</span><span class="o">=</span><span class="n">files</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
