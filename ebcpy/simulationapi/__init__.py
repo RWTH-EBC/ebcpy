@@ -172,6 +172,7 @@ class SimulationAPI:
         self._n_sim_total = 0
         self._progress_int = 0
         # Handle deprecation warning
+        self._working_directory = None  # Define instance attribute
         self.working_directory = Path(working_directory).absolute()
         save_logs = kwargs.get("save_logs", True)
         self.logger = setup_logger(

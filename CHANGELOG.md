@@ -124,4 +124,6 @@
   - Fix bug in pymoo optimization methods #156
   - Change error for wrong variable names to a warning
 - v0.5.6
+  - Improve dslog reading on multiple processes #151
+  - Remove cd usage in DymolaAPI
   - Fix bug to handle paths as absolute and improve doc #158
