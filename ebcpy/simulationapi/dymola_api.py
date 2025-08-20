@@ -1072,7 +1072,7 @@ class DymolaAPI(SimulationAPI):
             content="\n".join(package_infos)
         ))
         # Total model
-        if save_total_model:
+        if save_total_model and self.model_name is not None:
             _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
             _total_model = Path(self.working_directory).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
