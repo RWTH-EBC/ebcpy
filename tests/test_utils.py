@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 import scipy.io as spio
 from ebcpy import TimeSeriesData
-from ebcpy.utils import setup_logger, conversion, statistics_analyzer, reproduction
+from ebcpy.utils import setup_logger, conversion, statistics_analyzer, reproduction, get_names
 
 
 class TestConversion(unittest.TestCase):
@@ -321,6 +321,42 @@ class TestReproduction(unittest.TestCase):
                 os.remove(file)
         except Exception:
             pass
+
+
+class TestGetNames(unittest.TestCase):
+    def test_matches(self):
+        """
+        Test various literal and wildcard patterns, including brackets and multiple '*' usage.
+        """
+        test_cases = [
+            # literal single match
+            (['alpha', 'beta', 'gamma'], 'beta', ['beta']),
+            # literal list of matches
+            (['alpha', 'beta', 'gamma', 'delta'], ['alpha', 'delta'], ['alpha', 'delta']),
+            # single '*' wildcard
+            (['wall1.T', 'wall2.T', 'floor.T'], 'wall*.T', ['wall1.T', 'wall2.T']),
+            # wildcard inside brackets
+            (['wall[1].T', 'wall[2].T', 'wallX.T'], 'wall[*].T', ['wall[1].T', 'wall[2].T']),
+            # two '*' wildcards
+            (['a1b2', 'axby', 'ab'], 'a*b*', ['a1b2', 'axby', 'ab']),
+            # mix of wildcard and literal in list
+            (['a1', 'a2', 'b1', 'b2'], ['a*', 'b1'], ['a1', 'a2', 'b1']),
+            # order preservation test
+            (['first', 'second', 'third'], ['third', 'first'], ['first', 'third']),
+        ]
+        for all_names, patterns, expected in test_cases:
+            with self.subTest(patterns=patterns):
+                result = get_names(all_names, patterns)
+                self.assertEqual(result, expected)
+
+    def test_errors(self):
+        """
+        Patterns or literals that match nothing should raise a warning.
+        """
+        with self.assertWarns(UserWarning):
+            get_names(['alpha', 'beta'], 'unknown')
+        with self.assertWarns(UserWarning):
+            get_names(['x1', 'x2'], 'y*')
 
 
 if __name__ == "__main__":

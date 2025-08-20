@@ -16,6 +16,7 @@ import pandas as pd
 import numpy as np
 import ebcpy.modelica.simres as sr
 from ebcpy import preprocessing
+from ebcpy.utils import get_names
 
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
@@ -86,6 +87,8 @@ class TimeSeriesData(pd.DataFrame):
         List of variable names to load from .mat file. If you
         know which variables you want to plot, this may speed up
         loading significantly, and reduce memory size drastically.
+        You can also supply wildcard patterns (e.g. "*wall.layer[*].T", etc.)
+        to match multiple variables at once.
 
     Examples:
 
@@ -350,13 +353,33 @@ class TimeSeriesData(pd.DataFrame):
                 ) from err
         return df
 
-    def get_variable_names(self) -> List[str]:
+    def get_variable_names(self, patterns: Union[str, List[str]] = None) -> List[str]:
         """
-        Return an alphabetically sorted list of all variables
+    Return an alphabetically sorted list of variable names, optionally filtered by patterns.
 
-        :return: List[str]
-        """
-        return sorted(self.columns.get_level_values(0).unique())
+    By default, returns all variable names found in the first level of the DataFrame's
+    column MultiIndex, sorted alphabetically. If `patterns` is provided, only names
+    matching one or more of the given literal strings or glob-style patterns
+    (where `*` matches any sequence of characters) will be returned.
+
+    :param patterns:
+        - A single string or list of strings.
+        - Each entry may be an exact variable name, or a pattern containing `*` as a wildcard.
+        - If None, all variable names are returned.
+    :return:
+        A list of matching variable names, in alphabetical order.
+    :raises KeyError:
+        If any literal name or pattern does not match at least one variable in the DataFrame.
+
+    Example:
+        # return all wall temperatures at any layer
+        tsd.get_variable_names("*wall.layer[*].T")
+        ["wall.layer[1].T", "wall.layer[2].T", "wall.layer[3].T"]
+    """
+        all_names = sorted(self.columns.get_level_values(0).unique())
+        if patterns is None:
+            return all_names
+        return get_names(all_names, patterns)
 
     def get_variables_with_multiple_tags(self) -> List[str]:
         """

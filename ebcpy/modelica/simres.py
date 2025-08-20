@@ -55,6 +55,7 @@ from collections import namedtuple
 from scipy.io import loadmat
 import pandas as pd
 import numpy as np
+from ebcpy.utils import get_names
 
 
 # Namedtuple to store the time and value information of each variable
@@ -265,7 +266,9 @@ def mat_to_pandas(fname='dsres.mat',
     :param str fname:
         The mat file to load.
     :param list names:
-        If None (default), then all variables are included.
+        If None (default), then all variables are included. You can also
+        supply wildcard patterns (e.g. "*wall.layer[*].T", etc.) to match
+        multiple variables at once.
     :param dict aliases:
         Dictionary of aliases for the variable names
 
@@ -291,15 +294,14 @@ def mat_to_pandas(fname='dsres.mat',
 
     # Create the list of variable names.
     if names:
-        if 'Time' not in names:
-            names = names.copy()
-            names.append('Time')
-        non_existing_variables = list(set(names).difference(_variables.keys()))
-        if non_existing_variables:
-            raise KeyError(f"The following variable names are not in the given .mat file: "
-                           f"{', '.join(non_existing_variables)}")
+        # ensure Time is always included
+        patterns = list(names)
+        if 'Time' not in patterns:
+            patterns.append('Time')
+
+        names = get_names(list(_variables.keys()), patterns)
     else:
-        names = _variables.keys()
+        names = list(_variables.keys())
 
     # Create a dictionary of names and values.
     times = _variables['Time'].values()
