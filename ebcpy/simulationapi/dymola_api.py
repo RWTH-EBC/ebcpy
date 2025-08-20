@@ -844,7 +844,9 @@ class DymolaAPI(SimulationAPI):
                          self.model_name)
         self.translate()
         # Get dsin:
-        df = manipulate_ds.convert_ds_file_to_dataframe(self.working_directory.joinpath("dsin.txt"))
+        df = manipulate_ds.convert_ds_file_to_dataframe(
+            self._get_worker_directory(use_mp=self.use_mp).joinpath("dsin.txt")
+        )
         # Convert and return all parameters of dsin to initial values and names
         for idx, row in df.iterrows():
             _max = float(row["4"])

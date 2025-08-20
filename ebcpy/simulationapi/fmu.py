@@ -3,9 +3,9 @@ simulate models."""
 
 import os
 import logging
-import pathlib
 import atexit
 import shutil
+from pathlib import Path
 from typing import List, Union
 
 import fmpy
@@ -42,6 +42,11 @@ class FMU_API(simulationapi.SimulationAPI):
     Class for simulation using the fmpy library and
     a functional mockup interface as a model input.
 
+    :param str,Path model_name:
+        Path to the .fmu model to be simulated.
+    :param str,Path working_directory:
+        Dirpath for the current working directory of simulation
+        results. If None (default), the path of the fmu is used.
     :keyword bool log_fmu:
         Whether to print fmu messages or not.
 
@@ -74,7 +79,7 @@ class FMU_API(simulationapi.SimulationAPI):
         int: np.int_
     }
 
-    def __init__(self, working_directory, model_name, **kwargs):
+    def __init__(self, model_name: Union[str, Path], working_directory: Union[str, Path] = None, **kwargs):
         """Instantiate class parameters"""
         # Init instance attributes
         self._model_description = None
@@ -84,7 +89,7 @@ class FMU_API(simulationapi.SimulationAPI):
         self.log_fmu = kwargs.get("log_fmu", True)
         self._single_unzip_dir: str = None
 
-        if isinstance(model_name, pathlib.Path):
+        if isinstance(model_name, Path):
             model_name = str(model_name)
         if not model_name.lower().endswith(".fmu"):
             raise ValueError(f"{model_name} is not a valid fmu file!")
@@ -289,9 +294,8 @@ class FMU_API(simulationapi.SimulationAPI):
         """
         self.logger.info("Extracting fmu and reading fmu model description")
         # First load model description and extract variables
-        self._single_unzip_dir = os.path.join(self.working_directory,
-                                              os.path.basename(self.model_name)[:-4] + "_extracted")
-        os.makedirs(self._single_unzip_dir, exist_ok=True)
+        self._single_unzip_dir = self.working_directory.joinpath(os.path.basename(self.model_name)[:-4] + "_extracted")
+        self._single_unzip_dir.mkdir(exist_ok=True)
         self._single_unzip_dir = fmpy.extract(self.model_name,
                                               unzipdir=self._single_unzip_dir)
         self._model_description = read_model_description(self._single_unzip_dir,
@@ -351,7 +355,7 @@ class FMU_API(simulationapi.SimulationAPI):
             wrk_idx = self.worker_idx
             if self._fmu_instance is not None:
                 return True
-            unzip_dir = self._single_unzip_dir + f"_worker_{wrk_idx}"
+            unzip_dir = self._single_unzip_dir.with_stem(self._single_unzip_dir + f"_worker_{wrk_idx}")
             fmpy.extract(self.model_name,
                          unzipdir=unzip_dir)
         else:
@@ -390,7 +394,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
     def save_for_reproduction(self,
                               title: str,
-                              path: pathlib.Path = None,
+                              path: Path = None,
                               files: list = None,
                               **kwargs):
         """
@@ -400,8 +404,8 @@ class FMU_API(simulationapi.SimulationAPI):
         if files is None:
             files = []
         files.append(CopyFile(
-            filename="FMU/" + pathlib.Path(self.model_name).name,
-            sourcepath=pathlib.Path(self.model_name),
+            filename="FMU/" + Path(self.model_name).name,
+            sourcepath=Path(self.model_name),
             remove=False
         ))
         return super().save_for_reproduction(

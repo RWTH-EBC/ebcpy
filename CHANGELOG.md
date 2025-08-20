@@ -126,3 +126,4 @@
 - v0.5.6
   - Improve dslog reading on multiple processes #151
   - Remove cd usage in DymolaAPI
+  - Fix bug to handle paths as absolute and improve doc #158
