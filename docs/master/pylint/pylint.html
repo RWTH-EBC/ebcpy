@@ -1614,17 +1614,13 @@
                 <td><pre>Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1117:1128]
 ==ebcpy.simulationapi.fmu:[409:416]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+        )</pre></td>
             </tr>
             
             <tr>
@@ -1643,6 +1639,7 @@
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp:</pre></td>
             </tr>
             
@@ -1661,7 +1658,10 @@
                 &#34;You passed the following kwargs which &#34;
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
-</pre></td>
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to:</pre></td>
             </tr>
             
             <tr>
@@ -1694,7 +1694,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
             </tr>
             
             <tr>
@@ -1714,7 +1714,7 @@
                 <td><code>cyclic-import</code></td>
                 <td>R0401</td>
                 <td></td>
-                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.fmu)</pre></td>
+                <td><pre>Cyclic import (ebcpy -&gt; ebcpy.simulationapi.dymola_api)</pre></td>
             </tr>
             
             <tr>

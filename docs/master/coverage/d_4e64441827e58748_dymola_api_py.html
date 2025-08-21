@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_4e64441827e58748_fmu_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-20 12:54 +0000
+            created at 2025-08-21 06:13 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -1154,7 +1154,7 @@
     <p class="pln"><span class="n"><a id="t1072" href="#t1072">1072</a></span><span class="t">            <span class="nam">content</span><span class="op">=</span><span class="str">"\n"</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">package_infos</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1073" href="#t1073">1073</a></span><span class="t">        <span class="op">)</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t1074" href="#t1074">1074</a></span><span class="t">        <span class="com"># Total model</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t1075" href="#t1075">1075</a></span><span class="t">        <span class="key">if</span> <span class="nam">save_total_model</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t1075" href="#t1075">1075</a></span><span class="t">        <span class="key">if</span> <span class="nam">save_total_model</span> <span class="key">and</span> <span class="nam">self</span><span class="op">.</span><span class="nam">model_name</span> <span class="key">is</span> <span class="key">not</span> <span class="key">None</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t1076" href="#t1076">1076</a></span><span class="t">            <span class="nam">_total_model_name</span> <span class="op">=</span> <span class="str">f"Dymola/{self.model_name.replace('.', '_')}_total.mo"</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t1077" href="#t1077">1077</a></span><span class="t">            <span class="nam">_total_model</span> <span class="op">=</span> <span class="nam">Path</span><span class="op">(</span><span class="nam">self</span><span class="op">.</span><span class="nam">working_directory</span><span class="op">)</span><span class="op">.</span><span class="nam">joinpath</span><span class="op">(</span><span class="nam">_total_model_name</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="mis show_mis"><span class="n"><a id="t1078" href="#t1078">1078</a></span><span class="t">            <span class="nam">os</span><span class="op">.</span><span class="nam">makedirs</span><span class="op">(</span><span class="nam">_total_model</span><span class="op">.</span><span class="nam">parent</span><span class="op">,</span> <span class="nam">exist_ok</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>  <span class="com"># Create to ensure model can be saved.</span>&nbsp;</span><span class="r"></span></p>
@@ -1512,7 +1512,7 @@
             <a id="nextFileLink" class="nav" href="d_4e64441827e58748_fmu_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-20 12:54 +0000
+            created at 2025-08-21 06:13 +0000
         </p>
     </div>
 </footer>

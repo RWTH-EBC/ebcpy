@@ -261,17 +261,13 @@ ebcpy/simulationapi/fmu.py:382:4: R0913: Too many arguments (6/5) (too-many-argu
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1117:1128]
 ==ebcpy.simulationapi.fmu:[409:416]
-                ))
-
+        ))
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        )
-
-    def _save_to_fmu(self, fail_on_error):
-        """Save model as an FMU""" (duplicate-code)
+        ) (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[428:436]
 ==ebcpy.simulationapi.fmu:[199:206]
@@ -281,6 +277,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[324:333]
@@ -290,10 +287,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
-
-    def _update_model(self):
-        # Translate the model and extract all variables,
-        # if the user wants to: (duplicate-code)
+ (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
 ==ebcpy.simulationapi.__init__:[509:520]
@@ -301,17 +295,16 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy.data_types -> ebcpy.preprocessing) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
-ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
 Your code has been rated at 9.09/10
