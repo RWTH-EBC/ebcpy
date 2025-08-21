@@ -1,0 +1,343 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.utils.conversion &mdash; ebcpy 0.5.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/modules.html">ebcpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../utils.html">ebcpy.utils</a></li>
+      <li class="breadcrumb-item active">ebcpy.utils.conversion</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ebcpy.utils.conversion</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Module with functions to convert</span>
+<span class="sd">certain format into other formats.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spio</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">index_is_numeric</span><span class="p">,</span> <span class="n">datetime_indexes</span>
+
+
+<div class="viewcode-block" id="convert_tsd_to_modelica_mat"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_mat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_mat</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to convert a tsd to a mat-file readable within Dymola.</span>
+
+<span class="sd">    :param TimeSeriesData tsd:</span>
+<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param str,os.path.normpath save_path_file:</span>
+<span class="sd">        File path and name where to store the output .mat file.</span>
+<span class="sd">    :keyword list columns:</span>
+<span class="sd">        A list with names of columns that should be saved to .mat file.</span>
+<span class="sd">        If no list is provided, all columns are converted.</span>
+<span class="sd">    :keyword float offset:</span>
+<span class="sd">        Offset for time in seconds, default 0</span>
+<span class="sd">    :returns mat_file:</span>
+<span class="sd">        Returns the version 4 mat-file</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        str,os.path.normpath:</span>
+<span class="sd">            Path where the data is saved.</span>
+<span class="sd">            Equal to save_path_file</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
+<span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.mat&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_mat(tsd,</span>
+<span class="sd">    &gt;&gt;&gt;                                        save_path, columns=cols)</span>
+<span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">save_path_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mat&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given savepath for txt-file is not a .mat file!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Load the relevant part of the df</span>
+    <span class="n">df_sub</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">tsd</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Convert np.array into a list and create a dict with &#39;table&#39; as matrix name</span>
+    <span class="n">new_mat</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;table&#39;</span><span class="p">:</span> <span class="n">df_sub</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()}</span>
+    <span class="c1"># Save matrix as a MATLAB *.mat file, which is readable by Modelica.</span>
+    <span class="n">spio</span><span class="o">.</span><span class="n">savemat</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">new_mat</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s2">&quot;4&quot;</span><span class="p">)</span>
+    <span class="c1"># Provide user feedback whether the conversion was successful.</span>
+    <span class="k">return</span> <span class="n">save_path_file</span></div>
+
+
+<div class="viewcode-block" id="convert_tsd_to_clustering_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_clustering_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_clustering_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Function to convert a TimeSeriesData object</span>
+<span class="sd">    to a txt-file readable within the TICC-module.</span>
+
+<span class="sd">    :param TimeSeriesData tsd:</span>
+<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param str,os.path.normpath save_path_file:</span>
+<span class="sd">        File path and name where to store the output .mat file.</span>
+<span class="sd">    :param list columns:</span>
+<span class="sd">        A list with names of columns that should be saved to .mat file.</span>
+<span class="sd">        If no list is provided, all columns are converted.</span>
+<span class="sd">    :returns True on Success, savepath of txt-file:</span>
+<span class="sd">        Returns the version 4 mat-file</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        str,os.path.normpath:</span>
+<span class="sd">            Path where the data is saved.</span>
+<span class="sd">            Equal to save_path_file</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
+<span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_clustering_txt(tsd,</span>
+<span class="sd">    &gt;&gt;&gt;                                          save_path, columns=cols)</span>
+<span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Get the subset of the dataFrame</span>
+    <span class="n">df_sub</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">tsd</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="c1"># Convert np.array into a list and create a list as matrix name</span>
+    <span class="n">df_sub</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="c1"># Save matrix as a *.txt file, which is readable by TICC.</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">df_sub</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;,&#39;</span><span class="p">,</span> <span class="n">fmt</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.4f</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="c1"># Provide user feedback whether the conversion was successful.</span>
+    <span class="k">return</span> <span class="n">save_path_file</span></div>
+
+
+<div class="viewcode-block" id="convert_tsd_to_modelica_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Convert a TimeSeriesData object to modelica readable text. This is especially useful</span>
+<span class="sd">    for generating input data for a modelica simulation.</span>
+
+<span class="sd">    :param TimeSeriesData tsd:</span>
+<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param str table_name:</span>
+<span class="sd">        Name of the table for modelica.</span>
+<span class="sd">        Needed in Modelica to correctly load the file.</span>
+<span class="sd">    :param str,os.path.normpath save_path_file:</span>
+<span class="sd">        File path and name where to store the output .txt file.</span>
+<span class="sd">    :keyword list columns:</span>
+<span class="sd">        A list with names of columns that should be saved to .mat file.</span>
+<span class="sd">        If no list is provided, all columns are converted.</span>
+<span class="sd">    :keyword float offset:</span>
+<span class="sd">        Offset for time in seconds, default 0</span>
+<span class="sd">    :keyword str sep:</span>
+<span class="sd">        Separator used to separate values between columns</span>
+<span class="sd">    :keyword Boolean with_tag:</span>
+<span class="sd">        Use True each variable and tag is written to the file</span>
+<span class="sd">        If False, only the variable name is written to the file.</span>
+
+<span class="sd">    :return:</span>
+<span class="sd">        str,os.path.normpath:</span>
+<span class="sd">            Path where the data is saved.</span>
+<span class="sd">            Equal to save_path_file</span>
+
+<span class="sd">    Examples:</span>
+
+<span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
+<span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_txt(tsd, &quot;dummy_input_data&quot;, save_path, columns=cols)</span>
+<span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
+        <span class="n">save_path_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given savepath for txt-file is not a .txt file!&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Load the relavant part of the df</span>
+    <span class="n">df_sub</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">tsd</span><span class="p">,</span>
+        <span class="n">columns</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
+        <span class="n">offset</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Unpack kwargs</span>
+    <span class="n">sep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sep&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_sub</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+    <span class="c1"># Comment header line</span>
+    <span class="n">_temp_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    
+    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;with_tag&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Convert (&quot;variable&quot;, &quot;tag&quot;) to &quot;variable_tag&quot;</span>
+        <span class="n">_temp_str</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">variable_tag</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># Convert time with tag to one string as unit is important</span>
+                <span class="n">_temp_str</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># Convert (&quot;variable&quot;, &quot;tag&quot;) to &quot;variable&quot;</span>
+                <span class="n">_temp_str</span> <span class="o">+=</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">content_as_lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">_temp_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">content_as_lines</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;double </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n_cols</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">content_as_lines</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;#1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Print Modelica table no</span>
+
+    <span class="c1"># Open file and write the header</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file</span><span class="o">=</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a+&quot;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s2">&quot;utf-8&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">seek</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">truncate</span><span class="p">()</span>  <span class="c1"># Delete possible old content</span>
+        <span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">content_as_lines</span><span class="p">)</span>
+
+    <span class="c1"># Append the data directly using to_csv from pandas</span>
+    <span class="n">df_sub</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">sep</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">save_path_file</span></div>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Private function to ensure lean conversion to either mat or txt.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Must be a list</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">columns</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">headers</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+
+    <span class="n">_time_header</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;in_s&#39;</span><span class="p">)</span>
+    <span class="n">headers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_time_header</span><span class="p">)</span>  <span class="c1"># Ensure time will be at first place</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">datetime_indexes</span><span class="p">)):</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">to_datetime64</span><span class="p">()</span>  <span class="c1"># Make index zero based</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">_time_header</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span> <span class="o">+</span> <span class="n">offset</span>
+    <span class="k">elif</span> <span class="n">index_is_numeric</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">):</span>
+        <span class="n">df</span><span class="p">[</span><span class="n">_time_header</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="n">offset</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># Should not happen as error is raised in data_types. But just to be sure:</span>
+        <span class="k">raise</span> <span class="ne">IndexError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given index of type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not supported.&quot;</span><span class="p">)</span>
+    <span class="c1"># Avoid 1e-8 errors in timedelta calculation.</span>
+    <span class="n">df</span><span class="p">[</span><span class="n">_time_header</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">_time_header</span><span class="p">]</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+
+    <span class="c1"># Check if nan values occur</span>
+    <span class="k">if</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected columns contain NaN values. This would lead to errors&quot;</span>
+                         <span class="s2">&quot;in the simulation environment.&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Convert cases with no tag to tuple</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_to_tuple</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+            <span class="k">return</span> <span class="n">s</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">headers_as_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">_to_tuple</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">],</span> <span class="n">headers_as_tuple</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
