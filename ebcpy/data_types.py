@@ -9,21 +9,23 @@ optimization etc.
 
 import os
 from pathlib import Path
-from typing import List, Union, Any
+from typing import List, Union, Any, TYPE_CHECKING
 from datetime import datetime
 from pandas.core.internals import BlockManager
 import pandas as pd
 import numpy as np
 import ebcpy.modelica.simres as sr
-from ebcpy import preprocessing
+
 from ebcpy.utils import get_names
+from ebcpy import preprocessing
 
 # pylint: disable=I1101
 # pylint: disable=too-many-ancestors
 
 __all__ = ['TimeSeries',
            'TimeSeriesData',
-           'numeric_indexes',
+           'numeric_index_dtypes',
+           'index_is_numeric',
            'datetime_indexes']
 
 numeric_index_dtypes = [
@@ -95,18 +97,14 @@ class TimeSeriesData(pd.DataFrame):
     First let's see the usage for a common dataframe.
 
     >>> import numpy as np
-    >>> import pandas as pd
     >>> from ebcpy import TimeSeriesData
-    >>> df = pd.DataFrame({"my_variable": np.random.rand(5)})
-    >>> tsd = TimeSeriesData(df)
+    >>> tsd = TimeSeriesData({"my_variable": np.random.rand(5)})
     >>> tsd.to_datetime_index()
     >>> tsd.save("my_new_data.csv")
 
     Now, let's load the recently created file.
-    As we just created the data, we specify the tag
-    'sim' to indicate it is some sort of simulated value.
 
-    >>> tsd = TimeSeriesData("my_new_data.csv", tag='sim')
+    >>> tsd = TimeSeriesData("my_new_data.csv")
     """
 
     # normal properties
@@ -117,7 +115,7 @@ class TimeSeriesData(pd.DataFrame):
         "_multi_col_names"
     ]
 
-    def __init__(self, data: Union[str, Any], **kwargs):
+    def __init__(self, data: Union[str, Any], use_multicolumn: bool = False, **kwargs):
         """Initialize class-objects and check correct input."""
         # Initialize as default
         self._filepath = None
@@ -150,7 +148,7 @@ class TimeSeriesData(pd.DataFrame):
         if _df_loaded.columns.nlevels == 1:
             # Check if first level is named Tags.
             # If so, don't create MultiIndex-DF as the method is called by the pd constructor
-            if _df_loaded.columns.name != self._multi_col_names[1]:
+            if _df_loaded.columns.name != self._multi_col_names[1] and use_multicolumn:
                 multi_col = pd.MultiIndex.from_product(
                     [_df_loaded.columns, [self._default_tag]],
                     names=self._multi_col_names
@@ -158,7 +156,7 @@ class TimeSeriesData(pd.DataFrame):
                 _df_loaded.columns = multi_col
 
         elif _df_loaded.columns.nlevels == 2:
-            if _df_loaded.columns.names != self._multi_col_names:
+            if _df_loaded.columns.names != self._multi_col_names and use_multicolumn:
                 raise TypeError("Loaded dataframe has a different 2-Level "
                                 "header format than it is supported by this "
                                 "class. The names have to match.")
@@ -258,7 +256,8 @@ class TimeSeriesData(pd.DataFrame):
             pd.DataFrame(self).to_parquet(
                 filepath, engine=kwargs.get('engine', 'pyarrow'),
                 compression=parquet_split[-1][1:] if parquet_split[-1] else None,
-                index=True)
+                index=True
+            )
         else:
             raise TypeError("Given file-format is not supported."
                             "You can only store TimeSeriesData as .hdf, .csv, .parquet, "
@@ -276,7 +275,9 @@ class TimeSeriesData(pd.DataFrame):
             is only done if no variable contains multiple tags.
         """
         if len(self.get_variables_with_multiple_tags()) == 0:
-            return pd.DataFrame(self.droplevel(1, axis=1))
+            if self._is_old_multicolumn_format:
+                return pd.DataFrame(self.droplevel(1, axis=1))
+            return pd.DataFrame(self)
         if force_single_index:
             raise IndexError(
                 "Can't automatically drop all tags "
@@ -355,27 +356,27 @@ class TimeSeriesData(pd.DataFrame):
 
     def get_variable_names(self, patterns: Union[str, List[str]] = None) -> List[str]:
         """
-    Return an alphabetically sorted list of variable names, optionally filtered by patterns.
+        Return an alphabetically sorted list of variable names, optionally filtered by patterns.
 
-    By default, returns all variable names found in the first level of the DataFrame's
-    column MultiIndex, sorted alphabetically. If `patterns` is provided, only names
-    matching one or more of the given literal strings or glob-style patterns
-    (where `*` matches any sequence of characters) will be returned.
+        By default, returns all variable names found in the first level of the DataFrame's
+        column MultiIndex, sorted alphabetically. If `patterns` is provided, only names
+        matching one or more of the given literal strings or glob-style patterns
+        (where `*` matches any sequence of characters) will be returned.
 
-    :param patterns:
-        - A single string or list of strings.
-        - Each entry may be an exact variable name, or a pattern containing `*` as a wildcard.
-        - If None, all variable names are returned.
-    :return:
-        A list of matching variable names, in alphabetical order.
-    :raises KeyError:
-        If any literal name or pattern does not match at least one variable in the DataFrame.
+        :param patterns:
+            - A single string or list of strings.
+            - Each entry may be an exact variable name, or a pattern containing `*` as a wildcard.
+            - If None, all variable names are returned.
+        :return:
+            A list of matching variable names, in alphabetical order.
+        :raises KeyError:
+            If any literal name or pattern does not match at least one variable in the DataFrame.
 
-    Example:
-        # return all wall temperatures at any layer
-        tsd.get_variable_names("*wall.layer[*].T")
-        ["wall.layer[1].T", "wall.layer[2].T", "wall.layer[3].T"]
-    """
+        Example:
+            # return all wall temperatures at any layer
+            tsd.get_variable_names("*wall.layer[*].T")
+            ["wall.layer[1].T", "wall.layer[2].T", "wall.layer[3].T"]
+        """
         all_names = sorted(self.columns.get_level_values(0).unique())
         if patterns is None:
             return all_names
@@ -400,10 +401,19 @@ class TimeSeriesData(pd.DataFrame):
 
         :return: List[str]
         """
+        if self._is_old_multicolumn_format:
+            raise KeyError("You can't get tags for a TimeSeriesData object created with use_multicolumn=False!")
         if variable:
             tags = self.loc[:, variable].columns
             return sorted(tags)
         return sorted(self.columns.get_level_values(1).unique())
+
+    @property
+    def _is_old_multicolumn_format(self):
+        """
+        Helper function to check if the old multicolumn format is used.
+        """
+        return isinstance(self.columns, pd.MultiIndex)
 
     def get_columns_by_tag(self,
                            tag: str,
@@ -429,6 +439,9 @@ class TimeSeriesData(pd.DataFrame):
             - control (transposed np.array)
         :return: ndarray of input signals
         """
+        if self._is_old_multicolumn_format:
+            raise KeyError("You can't get tags for a TimeSeriesData object created with use_multicolumn=False!")
+
         # Extract columns
         if variables:
             _ret = self.loc[:, variables]
@@ -520,6 +533,8 @@ class TimeSeriesData(pd.DataFrame):
         Call to the preprocessing function
         ebcpy.preprocessing.low_pass_filter()
         See the docstring of this function to know what is happening.
+        If the old multicolumn format is used, the result is stored in the
+        multicolumn header with the `new_tag`.
 
         :param float crit_freq:
             The critical frequency or frequencies.
@@ -533,17 +548,15 @@ class TimeSeriesData(pd.DataFrame):
             The new tag to pass to the variable.
             Default is 'low_pass_filter'
         """
-        if tag is None:
-            data = self.loc[:, variable].to_numpy()
-        else:
-            data = self.loc[:, (variable, tag)].to_numpy()
-
         result = preprocessing.low_pass_filter(
-            data=data,
+            data=self._get_variable_and_tag_as_array(variable=variable, tag=tag),
             filter_order=filter_order,
             crit_freq=crit_freq
         )
-        self.loc[:, (variable, new_tag)] = result
+        if self._is_old_multicolumn_format:
+            self.loc[:, (variable, new_tag)] = result
+        else:
+            return result
 
     def moving_average(self, window, variable,
                        tag=None, new_tag="moving_average"):
@@ -551,6 +564,8 @@ class TimeSeriesData(pd.DataFrame):
         Call to the preprocessing function
         ebcpy.preprocessing.moving_average()
         See the docstring of this function to know what is happening.
+        If the old multicolumn format is used, the result is stored in the
+        multicolumn header with the `new_tag`.
 
         :param int window:
             sample rate of input
@@ -562,16 +577,31 @@ class TimeSeriesData(pd.DataFrame):
             The new tag to pass to the variable.
             Default is 'low_pass_filter'
         """
-        if tag is None:
-            data = self.loc[:, variable].to_numpy()
-        else:
-            data = self.loc[:, (variable, tag)].to_numpy()
-
         result = preprocessing.moving_average(
-            data=data,
+            data=self._get_variable_and_tag_as_array(variable=variable, tag=tag),
             window=window,
         )
-        self.loc[:, (variable, new_tag)] = result
+        if self._is_old_multicolumn_format:
+            self.loc[:, (variable, new_tag)] = result
+        else:
+            return result
+
+    def _get_variable_and_tag_as_array(self, variable: str, tag: str = None) -> np.ndarray:
+        """
+        Helper function to get numpy array based on variable and possible tag name,
+        depending on whether multicolumn is used or not.
+
+        :param str variable:
+            The variable name to apply the filter to
+        :param str tag:
+            If this variable has more than one tag, specify which one
+
+        """
+        if self._is_old_multicolumn_format:
+            if tag is None:
+                return self.loc[:, variable].to_numpy()
+            return self.loc[:, (variable, tag)].to_numpy()
+        return self.loc[:, variable].to_numpy()
 
     def number_lines_totally_na(self):
         """
