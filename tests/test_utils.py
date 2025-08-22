@@ -38,7 +38,7 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_mat))
             # Check if converted filepath is provided filepath
-            self.assertEqual(filepath_mat, str(save_path))
+            self.assertEqual(filepath_mat, save_path)
             # Now check if the created mat-file can be used.
             self.assertIsInstance(spio.loadmat(save_path), dict)
             # Remove converted file again
@@ -65,7 +65,7 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
-            self.assertTrue(filepath_txt.endswith(".txt"))
+            self.assertTrue(filepath_txt.suffix == ".txt")
             # Remove converted file again
             os.remove(filepath_txt)
         for with_tag in [True, False]:
@@ -80,7 +80,7 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
-            self.assertTrue(filepath_txt.endswith(".txt"))
+            self.assertTrue(filepath_txt.suffix == ".txt")
             # Check if header matches:
             with open(filepath_txt, "r") as file:
                 header_line = file.readlines()[2]
@@ -88,7 +88,6 @@ class TestConversion(unittest.TestCase):
 
             # Remove converted file again
             os.remove(filepath_txt)
-
 
         with self.assertRaises(ValueError):
             conversion.convert_tsd_to_modelica_txt(
@@ -101,7 +100,7 @@ class TestConversion(unittest.TestCase):
         """Test function conversion.convert_tsd_to_clustering_txt().
         For an example, see the doctest in the function."""
         # First convert the file
-        save_path = os.path.normpath(os.path.join(self.example_dir, "example_data_converted.txt"))
+        save_path = self.example_dir.joinpath("example_data_converted.txt")
         # Test both conversion with specification of columns and without passing the names.
         for col in [self.columns, None]:
             filepath_txt = conversion.convert_tsd_to_clustering_txt(

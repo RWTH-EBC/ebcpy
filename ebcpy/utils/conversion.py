@@ -244,6 +244,7 @@ def _convert_to_subset(
         header_names = headers.copy()
 
     header_names.insert(0, _time_header)  # Ensure time will be at first place
+    headers.insert(0, _time_header)
 
     if isinstance(df.index, tuple(datetime_indexes)):
         df.index = df.index - df.iloc[0].name.to_datetime64()  # Make index zero based
