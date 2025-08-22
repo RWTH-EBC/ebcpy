@@ -74,17 +74,17 @@ class TestDataTypes(unittest.TestCase):
         """Test correct loading and saving"""
         tsd_ref = data_types.TimeSeriesData(
             self.example_data_csv_path,
-            sep=";")
+            sep=";", use_multicolumn=True)
         filepath = self.savedir.joinpath("test_hdf.csv")
         tsd_ref.save(filepath=filepath)
-        tsd = data_types.TimeSeriesData(filepath)
+        tsd = data_types.TimeSeriesData(filepath, use_multicolumn=True)
         self.assertTrue(tsd.equals(tsd_ref))
         # test wrong and multi-index
         with self.assertRaises(IndexError):
-            data_types.TimeSeriesData(filepath, index_col=[0, 1])
+            data_types.TimeSeriesData(filepath, index_col=[0, 1], use_multicolumn=True)
         # Test wrong and single index headers
         with self.assertRaises(IndexError):
-            data_types.TimeSeriesData(filepath, header=0)
+            data_types.TimeSeriesData(filepath, header=0, use_multicolumn=True)
 
     def _load_save_parquet(self, engine):
         """Test correct loading and saving for all parquet options"""
@@ -194,9 +194,11 @@ class TestDataTypes(unittest.TestCase):
         """Test tagging functions"""
         with self.assertRaises(TypeError):
             data_types.TimeSeriesData(self.example_data_mat_path,
-                                      default_tag=10)
+                                      default_tag=10,
+                                      use_multicolumn=True)
         tsd1 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                         default_tag='other_default')
+                                         default_tag='other_default',
+                                         use_multicolumn=True)
         with self.assertRaises(TypeError):
             tsd1.default_tag = 10
         self.assertEqual(tsd1.get_columns_by_tag('other_default').size,
@@ -204,7 +206,8 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(KeyError):
             tsd1.get_columns_by_tag('this_is_never_a:tag')
         tsd2 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                         default_tag='new_data')
+                                         default_tag='new_data',
+                                         use_multicolumn=True)
         tsd3 = pd.concat([tsd1, tsd2], axis=1)
         with self.assertRaises(KeyError):
             tsd3.default_tag = 'new_default_tag'
@@ -258,7 +261,7 @@ class TestDataTypes(unittest.TestCase):
         """Test the to_df function"""
         df = pd.DataFrame({"my_variable": np.random.rand(5),
                            "my_variable1": np.random.rand(5)})
-        tsd = data_types.TimeSeriesData(df.copy())
+        tsd = data_types.TimeSeriesData(df.copy(), use_multicolumn=True)
         self.assertEqual(tsd.to_df().columns.values.tolist(),
                          df.columns.values.tolist())
         self.assertEqual(tsd.to_df().columns.nlevels, 1)
