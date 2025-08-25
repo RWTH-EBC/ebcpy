@@ -168,12 +168,12 @@ class FMU_API(simulationapi.SimulationAPI):
 
         :keyword str result_file_suffix:
             Suffix of the result file. Supported options can be extracted
-            from the TimeSeriesData.save() function.
+            from the save() accessor function.
             Default is 'csv'.
         :keyword str parquet_engine:
             The engine to use for the data format parquet.
             Supported options can be extracted
-            from the TimeSeriesData.save() function.
+            from the save() accessor function.
             Default is 'pyarrow'.
 
         """

@@ -9,8 +9,10 @@ import pathlib
 import time
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+
 # Imports from ebcpy
-from ebcpy import DymolaAPI, TimeSeriesData, FMU_API
+from ebcpy import DymolaAPI, load_time_series_data, FMU_API
 from ebcpy.utils.conversion import convert_tsd_to_modelica_txt
 
 
@@ -102,7 +104,7 @@ def main(
     )
     # Apply some sinus function for the outdoor air temperature
     internal_gains = np.sin(time_index/3600*np.pi) * 1000
-    tsd_input = TimeSeriesData({"InternalGains": internal_gains}, index=time_index)
+    tsd_input = pd.DataFrame({"InternalGains": internal_gains}, index=time_index)
     # To generate the input in the correct format, use the convert_tsd_to_modelica_txt function:
     filepath = convert_tsd_to_modelica_txt(
         tsd=tsd_input,
@@ -157,9 +159,9 @@ def main(
     dym_api.close()
 
     # ######################### Simulation analysis ##########################
-    # Now let's load the TimeSeriesData
-    tsd_1 = TimeSeriesData(result_sp)
-    tsd_2 = TimeSeriesData(result_sp_2)
+    # Now let's load the time series data
+    tsd_1 = load_time_series_data(result_sp)
+    tsd_2 = load_time_series_data(result_sp_2)
     print("Both .mat's are equal:", all(tsd_1 == tsd_2))
     # Let's look at both results. The .mat-file contains more indexes as events are stored as well.
     # The return_option 'time_series' omits these events (as does fmpy). Thus, it's less accurate.

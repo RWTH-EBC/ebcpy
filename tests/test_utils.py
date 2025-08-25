@@ -9,7 +9,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 import scipy.io as spio
-from ebcpy import TimeSeriesData
+from ebcpy import load_time_series_data
 from ebcpy.utils import setup_logger, conversion, statistics_analyzer, reproduction, get_names
 
 
@@ -21,7 +21,7 @@ class TestConversion(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.csv")
-        self.tsd = TimeSeriesData(self.example_data_hdf_path, sep=";")
+        self.tsd = load_time_series_data(self.example_data_hdf_path, sep=";")
         self.columns = ["sine.freqHz / Hz"]
 
     def test_conversion_tsd_to_mat(self):

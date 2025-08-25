@@ -15,9 +15,9 @@ used for the analysis and optimization of **e**nergy systems, **b**uildings and 
 
 Key features are:
 
-* `TimeSeriesData`
 * `SimulationAPI`'s
 * Optimization wrapper
+* Useful loading of time series data and time series data accessor for DataFrames
 * Pre-/Postprocessing
 * Modelica utilities
 
@@ -85,7 +85,7 @@ Please use the following metadata to cite `ebcpy` in your research:
 }
 ```
 
-# TimeSeriesData
+# Time series data
 Note that we use steamline time series data based on a `pd.DataFrame`
 using a common function and the accessor `tsd`. 
 The aim is to make tasks like loading different filetypes or common functions
