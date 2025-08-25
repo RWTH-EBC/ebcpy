@@ -567,6 +567,10 @@ class SimulationAPI:
 
     def check_unsupported_variables(self, variables: List[str], type_of_var: str):
         """Log warnings if variables are not supported."""
+        # If no variables are given, the model is likely not translated yet and the check can't be done.
+        if len(self.variables) == 0:
+            return False
+
         if type_of_var == "parameters":
             ref = self.parameters.keys()
         elif type_of_var == "outputs":
