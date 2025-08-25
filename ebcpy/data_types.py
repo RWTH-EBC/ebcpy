@@ -363,11 +363,11 @@ class TimeSeriesData(pd.DataFrame):
             "TimeSeriesData will be deprecated in the next major release. "
             "Instead, use 'load_time_series_data' to load files etc. as pd.DataFrame "
             "and use the 'tsd' accessor to access useful time-series-related functions "
-            "as before with TimeSeriesData.", DeprecationWarning
+            "as before with TimeSeriesData.", FutureWarning
         )
         if use_multicolumn:
             warnings.warn(
-                "All multicolumn support will be removed in the next major release", DeprecationWarning
+                "All multicolumn support will be removed in the next major release", FutureWarning
             )
         # Initialize as default
         self._filepath = None
