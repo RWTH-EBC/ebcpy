@@ -393,7 +393,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="c1"># Trigger on init.</span>
         <span class="k">if</span> <span class="n">model_name</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_update_model</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_update_model</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># Set result_names to output variables.</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">result_names</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 
@@ -405,11 +405,11 @@
                 <span class="s2">&quot;are not part of the supported kwargs and &quot;</span>
                 <span class="s2">&quot;have thus no effect: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="s2">&quot; ,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">keys</span><span class="p">())))</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_update_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="c1"># Translate the model and extract all variables,</span>
         <span class="c1"># if the user wants to:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">extract_variables</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">extract_model_variables</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extract_model_variables</span><span class="p">(</span><span class="n">init</span><span class="o">=</span><span class="n">init</span><span class="p">)</span>
 
 <div class="viewcode-block" id="DymolaAPI.simulate"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.simulate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">simulate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                  <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -910,7 +910,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">_dummy_dymola_instance</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Successfully closed dummy Dymola instance&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="DymolaAPI.extract_model_variables"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.extract_model_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="DymolaAPI.extract_model_variables"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.extract_model_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">extract_model_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract all variables of the model by</span>
 <span class="sd">        translating it and then processing the dsin</span>
@@ -921,9 +921,16 @@
                          <span class="bp">self</span><span class="o">.</span><span class="n">model_name</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">translate</span><span class="p">()</span>
         <span class="c1"># Get dsin:</span>
-        <span class="n">df</span> <span class="o">=</span> <span class="n">manipulate_ds</span><span class="o">.</span><span class="n">convert_ds_file_to_dataframe</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_directory</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;dsin.txt&quot;</span><span class="p">)</span>
-        <span class="p">)</span>
+        <span class="k">if</span> <span class="n">init</span><span class="p">:</span>
+            <span class="c1"># if model variables are extracted during init, the dsin.txt</span>
+            <span class="c1"># is also for mp in the overall worker_directory</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">manipulate_ds</span><span class="o">.</span><span class="n">convert_ds_file_to_dataframe</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;dsin.txt&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">df</span> <span class="o">=</span> <span class="n">manipulate_ds</span><span class="o">.</span><span class="n">convert_ds_file_to_dataframe</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_get_worker_directory</span><span class="p">(</span><span class="n">use_mp</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">use_mp</span><span class="p">)</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;dsin.txt&quot;</span><span class="p">)</span>
+            <span class="p">)</span>
         <span class="c1"># Convert and return all parameters of dsin to initial values and names</span>
         <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
             <span class="n">_max</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;4&quot;</span><span class="p">])</span>

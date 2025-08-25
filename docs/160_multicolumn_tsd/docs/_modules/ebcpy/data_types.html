@@ -439,11 +439,11 @@
             <span class="s2">&quot;TimeSeriesData will be deprecated in the next major release. &quot;</span>
             <span class="s2">&quot;Instead, use &#39;load_time_series_data&#39; to load files etc. as pd.DataFrame &quot;</span>
             <span class="s2">&quot;and use the &#39;tsd&#39; accessor to access useful time-series-related functions &quot;</span>
-            <span class="s2">&quot;as before with TimeSeriesData.&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+            <span class="s2">&quot;as before with TimeSeriesData.&quot;</span><span class="p">,</span> <span class="ne">FutureWarning</span>
         <span class="p">)</span>
         <span class="k">if</span> <span class="n">use_multicolumn</span><span class="p">:</span>
             <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-                <span class="s2">&quot;All multicolumn support will be removed in the next major release&quot;</span><span class="p">,</span> <span class="ne">DeprecationWarning</span>
+                <span class="s2">&quot;All multicolumn support will be removed in the next major release&quot;</span><span class="p">,</span> <span class="ne">FutureWarning</span>
             <span class="p">)</span>
         <span class="c1"># Initialize as default</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_filepath</span> <span class="o">=</span> <span class="kc">None</span>

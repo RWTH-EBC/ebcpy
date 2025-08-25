@@ -76,7 +76,6 @@ ebcpy/preprocessing.py:245:0: R0912: Too many branches (13/12) (too-many-branche
 ebcpy/preprocessing.py:471:0: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/preprocessing.py:712:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 ************* Module ebcpy.data_types
-ebcpy/data_types.py:370:0: C0301: Line too long (103/100) (line-too-long)
 ebcpy/data_types.py:559:0: C0301: Line too long (112/100) (line-too-long)
 ebcpy/data_types.py:597:0: C0301: Line too long (112/100) (line-too-long)
 ebcpy/data_types.py:691:0: C0301: Line too long (118/100) (line-too-long)
@@ -143,8 +142,9 @@ ebcpy/utils/statistics_analyzer.py:189:0: C0303: Trailing whitespace (trailing-w
 ebcpy/utils/statistics_analyzer.py:203:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/utils/statistics_analyzer.py:206:0: C0303: Trailing whitespace (trailing-whitespace)
 ************* Module ebcpy.utils.reproduction
-ebcpy/utils/reproduction.py:296:0: C0301: Line too long (126/100) (line-too-long)
-ebcpy/utils/reproduction.py:358:0: C0301: Line too long (113/100) (line-too-long)
+ebcpy/utils/reproduction.py:173:0: C0301: Line too long (108/100) (line-too-long)
+ebcpy/utils/reproduction.py:300:0: C0301: Line too long (126/100) (line-too-long)
+ebcpy/utils/reproduction.py:362:0: C0301: Line too long (113/100) (line-too-long)
 ebcpy/utils/reproduction.py:55:0: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/utils/reproduction.py:55:0: R0914: Too many local variables (18/15) (too-many-locals)
 ebcpy/utils/reproduction.py:91:28: E1101: Instance of 'module' has no '__file__' member (no-member)
@@ -152,17 +152,18 @@ ebcpy/utils/reproduction.py:104:16: W1514: Using open without explicitly specify
 ebcpy/utils/reproduction.py:126:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
 ebcpy/utils/reproduction.py:126:64: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
 ebcpy/utils/reproduction.py:163:12: R1704: Redefining argument with the local name 'file' (redefined-argument-from-local)
-ebcpy/utils/reproduction.py:55:0: R0912: Too many branches (17/12) (too-many-branches)
-ebcpy/utils/reproduction.py:208:8: C0415: Import outside toplevel (git.Repo, git.InvalidGitRepositoryError, git.RemoteReference) (import-outside-toplevel)
-ebcpy/utils/reproduction.py:210:8: W0707: Consider explicitly re-raising using 'raise ImportError('Could not save data for reproduction, install GitPython using `pip install GitPython`: ' + str(err)) from err' (raise-missing-from)
-ebcpy/utils/reproduction.py:186:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/utils/reproduction.py:280:36: C2801: Unnecessarily calls dunder method __str__. Use str built-in function. (unnecessary-dunder-call)
-ebcpy/utils/reproduction.py:278:17: W0612: Unused variable 'dirnames' (unused-variable)
-ebcpy/utils/reproduction.py:333:24: R1735: Consider using '{"name": dist.metadata['Name'], "version": dist.version, "location": os.path.normpath(str(dist.locate_file(''))), ... }' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/utils/reproduction.py:365:16: E0401: Unable to import 'pypisearch.search' (import-error)
-ebcpy/utils/reproduction.py:365:16: C0415: Import outside toplevel (pypisearch.search.Search) (import-outside-toplevel)
-ebcpy/utils/reproduction.py:368:20: W0715: Exception arguments suggest string formatting might be intended (raising-format-tuple)
-ebcpy/utils/reproduction.py:395:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+ebcpy/utils/reproduction.py:55:0: R0912: Too many branches (19/12) (too-many-branches)
+ebcpy/utils/reproduction.py:55:0: R0915: Too many statements (53/50) (too-many-statements)
+ebcpy/utils/reproduction.py:212:8: C0415: Import outside toplevel (git.Repo, git.InvalidGitRepositoryError, git.RemoteReference) (import-outside-toplevel)
+ebcpy/utils/reproduction.py:214:8: W0707: Consider explicitly re-raising using 'raise ImportError('Could not save data for reproduction, install GitPython using `pip install GitPython`: ' + str(err)) from err' (raise-missing-from)
+ebcpy/utils/reproduction.py:190:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/utils/reproduction.py:284:36: C2801: Unnecessarily calls dunder method __str__. Use str built-in function. (unnecessary-dunder-call)
+ebcpy/utils/reproduction.py:282:17: W0612: Unused variable 'dirnames' (unused-variable)
+ebcpy/utils/reproduction.py:337:24: R1735: Consider using '{"name": dist.metadata['Name'], "version": dist.version, "location": os.path.normpath(str(dist.locate_file(''))), ... }' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/utils/reproduction.py:369:16: E0401: Unable to import 'pypisearch.search' (import-error)
+ebcpy/utils/reproduction.py:369:16: C0415: Import outside toplevel (pypisearch.search.Search) (import-outside-toplevel)
+ebcpy/utils/reproduction.py:372:20: W0715: Exception arguments suggest string formatting might be intended (raising-format-tuple)
+ebcpy/utils/reproduction.py:399:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
 ebcpy/utils/reproduction.py:12:0: W0611: Unused Tuple imported from typing (unused-import)
 ************* Module ebcpy.utils.conversion
 ebcpy/utils/conversion.py:53:7: C0113: Consider changing "not save_path_file.suffix == '.mat'" to "save_path_file.suffix != '.mat'" (unneeded-not)
@@ -193,6 +194,7 @@ ebcpy/modelica/simres.py:345:8: W0707: Consider explicitly re-raising using 'exc
 ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
 ************* Module ebcpy.simulationapi.__init__
 ebcpy/simulationapi/__init__.py:427:0: C0301: Line too long (111/100) (line-too-long)
+ebcpy/simulationapi/__init__.py:570:0: C0301: Line too long (104/100) (line-too-long)
 ************* Module ebcpy.simulationapi
 ebcpy/simulationapi/__init__.py:137:4: R0903: Too few public methods (0/2) (too-few-public-methods)
 ebcpy/simulationapi/__init__.py:145:0: R0902: Too many instance attributes (18/7) (too-many-instance-attributes)
@@ -216,16 +218,16 @@ ebcpy/simulationapi/dymola_api.py:384:0: C0301: Line too long (102/100) (line-to
 ebcpy/simulationapi/dymola_api.py:413:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/simulationapi/dymola_api.py:624:0: C0301: Line too long (103/100) (line-too-long)
 ebcpy/simulationapi/dymola_api.py:643:0: C0301: Line too long (101/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:888:0: C0301: Line too long (110/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:913:0: C0301: Line too long (106/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:939:0: C0301: Line too long (105/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1067:0: C0301: Line too long (118/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1081:0: C0301: Line too long (110/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1084:0: C0301: Line too long (110/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1181:0: C0301: Line too long (103/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1376:0: C0301: Line too long (104/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1377:0: C0301: Line too long (102/100) (line-too-long)
-ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1423/1000) (too-many-lines)
+ebcpy/simulationapi/dymola_api.py:895:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:920:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:946:0: C0301: Line too long (105/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1074:0: C0301: Line too long (118/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1088:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1091:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1188:0: C0301: Line too long (103/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1383:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1384:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1430/1000) (too-many-lines)
 ebcpy/simulationapi/dymola_api.py:66:0: R0902: Too many instance attributes (23/7) (too-many-instance-attributes)
 ebcpy/simulationapi/dymola_api.py:306:17: R1735: Consider using '{"use_mp": True, "port": port, "time_delay": i * _time_delay_between_starts, ... }' instead of a call to 'dict'. (use-dict-literal)
 ebcpy/simulationapi/dymola_api.py:310:51: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
@@ -241,25 +243,25 @@ ebcpy/simulationapi/dymola_api.py:407:4: R0915: Too many statements (131/50) (to
 ebcpy/simulationapi/dymola_api.py:705:12: W0719: Raising too general exception: Exception (broad-exception-raised)
 ebcpy/simulationapi/dymola_api.py:707:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/simulationapi/dymola_api.py:772:12: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:948:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:949:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:954:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:1005:4: R0913: Too many arguments (6/5) (too-many-arguments)
-ebcpy/simulationapi/dymola_api.py:1005:4: R0914: Too many local variables (25/15) (too-many-locals)
-ebcpy/simulationapi/dymola_api.py:1031:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
-ebcpy/simulationapi/dymola_api.py:1083:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:1104:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/simulationapi/dymola_api.py:1005:4: R0912: Too many branches (13/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:1139:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:1142:16: W0719: Raising too general exception: Exception (broad-exception-raised)
-ebcpy/simulationapi/dymola_api.py:1127:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
-ebcpy/simulationapi/dymola_api.py:1311:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/simulationapi/dymola_api.py:1351:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:955:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:956:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:961:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1012:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:1012:4: R0914: Too many local variables (25/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:1038:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:1090:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:1111:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:1012:4: R0912: Too many branches (13/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:1146:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1149:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:1134:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/simulationapi/dymola_api.py:1318:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1358:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
 ebcpy/simulationapi/dymola_api.py:20:0: W0611: Unused load_time_series_data imported from ebcpy (unused-import)
 ************* Module ebcpy.simulationapi.fmu
 ebcpy/simulationapi/fmu.py:82:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/simulationapi/fmu.py:296:0: C0301: Line too long (119/100) (line-too-long)
-ebcpy/simulationapi/fmu.py:357:0: C0301: Line too long (103/100) (line-too-long)
+ebcpy/simulationapi/fmu.py:357:0: C0301: Line too long (108/100) (line-too-long)
 ebcpy/simulationapi/fmu.py:24:0: C0103: Class name "FMU_Setup" doesn't conform to PascalCase naming style (invalid-name)
 ebcpy/simulationapi/fmu.py:40:0: C0103: Class name "FMU_API" doesn't conform to PascalCase naming style (invalid-name)
 ebcpy/simulationapi/fmu.py:182:4: R0914: Too many local variables (16/15) (too-many-locals)
@@ -267,7 +269,7 @@ ebcpy/simulationapi/fmu.py:182:4: R0912: Too many branches (14/12) (too-many-bra
 ebcpy/simulationapi/fmu.py:332:17: R1714: Consider merging these comparisons with 'in' by using 'var.causality in ('parameter', 'calculatedParameter')'. Use a set instead if elements are hashable. (consider-using-in)
 ebcpy/simulationapi/fmu.py:381:4: R0913: Too many arguments (6/5) (too-many-arguments)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
-==ebcpy.simulationapi.dymola_api:[1117:1128]
+==ebcpy.simulationapi.dymola_api:[1124:1135]
 ==ebcpy.simulationapi.fmu:[408:415]
                 ))
 
@@ -300,7 +302,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-    def _update_model(self):
+    def _update_model(self, init=False):
         # Translate the model and extract all variables,
         # if the user wants to: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
@@ -322,5 +324,5 @@ ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationa
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 9.10/10
+Your code has been rated at 9.09/10
 

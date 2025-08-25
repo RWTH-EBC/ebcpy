@@ -643,6 +643,10 @@
 
 <div class="viewcode-block" id="SimulationAPI.check_unsupported_variables"><a class="viewcode-back" href="../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.SimulationAPI.check_unsupported_variables">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">check_unsupported_variables</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">variables</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span> <span class="n">type_of_var</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Log warnings if variables are not supported.&quot;&quot;&quot;</span>
+        <span class="c1"># If no variables are given, the model is likely not translated yet and the check can&#39;t be done.</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">variables</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">False</span>
+
         <span class="k">if</span> <span class="n">type_of_var</span> <span class="o">==</span> <span class="s2">&quot;parameters&quot;</span><span class="p">:</span>
             <span class="n">ref</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
         <span class="k">elif</span> <span class="n">type_of_var</span> <span class="o">==</span> <span class="s2">&quot;outputs&quot;</span><span class="p">:</span>

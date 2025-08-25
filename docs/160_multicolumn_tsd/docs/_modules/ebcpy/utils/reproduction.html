@@ -107,7 +107,7 @@
 <span class="sd">            Content of the text file</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span>
-    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span></div>
+    <span class="n">content</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">]</span></div>
 
 
 <div class="viewcode-block" id="CopyFile"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.reproduction.CopyFile">[docs]</a><span class="nd">@dataclass</span>
@@ -245,7 +245,11 @@
                     <span class="n">logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Given file &#39;</span><span class="si">%s</span><span class="s2">&#39; is a string but &quot;</span>
                                  <span class="s2">&quot;not an existing file. Skipping...&quot;</span><span class="p">,</span> <span class="n">file</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">ReproductionFile</span><span class="p">):</span>
-                <span class="n">zip_file</span><span class="o">.</span><span class="n">writestr</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+                    <span class="c1"># Use surrogateescape to make sure all characters survive</span>
+                    <span class="n">zip_file</span><span class="o">.</span><span class="n">writestr</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">content</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s2">&quot;utf-8&quot;</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;surrogateescape&quot;</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">zip_file</span><span class="o">.</span><span class="n">writestr</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
             <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">file</span><span class="p">,</span> <span class="n">CopyFile</span><span class="p">):</span>
                 <span class="n">zip_file</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">file</span><span class="o">.</span><span class="n">sourcepath</span><span class="p">,</span> <span class="n">file</span><span class="o">.</span><span class="n">filename</span><span class="p">)</span>
                 <span class="k">if</span> <span class="n">file</span><span class="o">.</span><span class="n">remove</span><span class="p">:</span>
