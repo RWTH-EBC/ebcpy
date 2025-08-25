@@ -71,7 +71,7 @@ class TestConversion(unittest.TestCase):
         for with_tag in [True, False]:
             # Test case for df with no tags
             filepath_txt = conversion.convert_tsd_to_modelica_txt(
-                tsd=self.tsd.to_df(),
+                tsd=self.tsd,
                 save_path_file=Path("some_text_data.txt"),
                 table_name="dummy",
                 columns=self.columns[0],
