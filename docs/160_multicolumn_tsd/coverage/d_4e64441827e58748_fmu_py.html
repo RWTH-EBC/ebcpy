@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_9623ae4f7d532e21___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-22 13:29 +0000
+            created at 2025-08-25 07:57 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -250,12 +250,12 @@
     <p class="pln"><span class="n"><a id="t168" href="#t168">168</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t169" href="#t169">169</a></span><span class="t"><span class="str">        :keyword str result_file_suffix:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t170" href="#t170">170</a></span><span class="t"><span class="str">            Suffix of the result file. Supported options can be extracted</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="str">            from the TimeSeriesData.save() function.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t171" href="#t171">171</a></span><span class="t"><span class="str">            from the save() accessor function.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t172" href="#t172">172</a></span><span class="t"><span class="str">            Default is 'csv'.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t173" href="#t173">173</a></span><span class="t"><span class="str">        :keyword str parquet_engine:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t174" href="#t174">174</a></span><span class="t"><span class="str">            The engine to use for the data format parquet.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t175" href="#t175">175</a></span><span class="t"><span class="str">            Supported options can be extracted</span>&nbsp;</span><span class="r"></span></p>
-    <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="str">            from the TimeSeriesData.save() function.</span>&nbsp;</span><span class="r"></span></p>
+    <p class="pln"><span class="n"><a id="t176" href="#t176">176</a></span><span class="t"><span class="str">            from the save() accessor function.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t177" href="#t177">177</a></span><span class="t"><span class="str">            Default is 'pyarrow'.</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t178" href="#t178">178</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t179" href="#t179">179</a></span><span class="t"><span class="str">        """</span>&nbsp;</span><span class="r"></span></p>
@@ -356,7 +356,7 @@
     <p class="pln"><span class="n"><a id="t274" href="#t274">274</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t275" href="#t275">275</a></span><span class="t">            <span class="nam">os</span><span class="op">.</span><span class="nam">makedirs</span><span class="op">(</span><span class="nam">savepath</span><span class="op">,</span> <span class="nam">exist_ok</span><span class="op">=</span><span class="key">True</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t276" href="#t276">276</a></span><span class="t">            <span class="nam">filepath</span> <span class="op">=</span> <span class="nam">os</span><span class="op">.</span><span class="nam">path</span><span class="op">.</span><span class="nam">join</span><span class="op">(</span><span class="nam">savepath</span><span class="op">,</span> <span class="str">f"{result_file_name}.{result_file_suffix}"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t">            <span class="nam">TimeSeriesData</span><span class="op">(</span><span class="nam">df</span><span class="op">)</span><span class="op">.</span><span class="nam">save</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t277" href="#t277">277</a></span><span class="t">            <span class="nam">df</span><span class="op">.</span><span class="nam">tsd</span><span class="op">.</span><span class="nam">save</span><span class="op">(</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t278" href="#t278">278</a></span><span class="t">                <span class="nam">filepath</span><span class="op">=</span><span class="nam">filepath</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t279" href="#t279">279</a></span><span class="t">                <span class="nam">key</span><span class="op">=</span><span class="str">"simulation"</span><span class="op">,</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t280" href="#t280">280</a></span><span class="t">                <span class="nam">engine</span><span class="op">=</span><span class="nam">parquet_engine</span>&nbsp;</span><span class="r"></span></p>
@@ -366,7 +366,7 @@
     <p class="run"><span class="n"><a id="t284" href="#t284">284</a></span><span class="t">        <span class="key">if</span> <span class="nam">return_option</span> <span class="op">==</span> <span class="str">"last_point"</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t285" href="#t285">285</a></span><span class="t">            <span class="key">return</span> <span class="nam">df</span><span class="op">.</span><span class="nam">iloc</span><span class="op">[</span><span class="op">-</span><span class="num">1</span><span class="op">]</span><span class="op">.</span><span class="nam">to_dict</span><span class="op">(</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t286" href="#t286">286</a></span><span class="t">        <span class="com"># Else return time series data</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t">        <span class="key">return</span> <span class="nam">TimeSeriesData</span><span class="op">(</span><span class="nam">df</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t287" href="#t287">287</a></span><span class="t">        <span class="key">return</span> <span class="nam">df</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t288" href="#t288">288</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t289" href="#t289">289</a></span><span class="t">    <span class="key">def</span> <span class="nam">setup_fmu_instance</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t290" href="#t290">290</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
@@ -504,7 +504,7 @@
             <a id="nextFileLink" class="nav" href="d_9623ae4f7d532e21___init___py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-22 13:29 +0000
+            created at 2025-08-25 07:57 +0000
         </p>
     </div>
 </footer>

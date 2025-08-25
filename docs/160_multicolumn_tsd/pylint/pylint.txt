@@ -166,8 +166,8 @@ ebcpy/utils/reproduction.py:395:8: W1309: Using an f-string that does not have a
 ebcpy/utils/reproduction.py:12:0: W0611: Unused Tuple imported from typing (unused-import)
 ************* Module ebcpy.utils.conversion
 ebcpy/utils/conversion.py:53:7: C0113: Consider changing "not save_path_file.suffix == '.mat'" to "save_path_file.suffix != '.mat'" (unneeded-not)
-ebcpy/utils/conversion.py:108:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
-ebcpy/utils/conversion.py:168:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
+ebcpy/utils/conversion.py:109:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
+ebcpy/utils/conversion.py:169:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
 ************* Module ebcpy.modelica.manipulate_ds
 ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
 ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
@@ -255,6 +255,7 @@ ebcpy/simulationapi/dymola_api.py:1142:16: W0719: Raising too general exception:
 ebcpy/simulationapi/dymola_api.py:1127:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ebcpy/simulationapi/dymola_api.py:1311:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
 ebcpy/simulationapi/dymola_api.py:1351:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:20:0: W0611: Unused load_time_series_data imported from ebcpy (unused-import)
 ************* Module ebcpy.simulationapi.fmu
 ebcpy/simulationapi/fmu.py:82:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/simulationapi/fmu.py:296:0: C0301: Line too long (119/100) (line-too-long)
@@ -268,13 +269,17 @@ ebcpy/simulationapi/fmu.py:381:4: R0913: Too many arguments (6/5) (too-many-argu
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1117:1128]
 ==ebcpy.simulationapi.fmu:[408:415]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        ) (duplicate-code)
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[428:436]
 ==ebcpy.simulationapi.fmu:[199:206]
@@ -284,6 +289,7 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[324:333]
@@ -293,7 +299,10 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
                 "You passed the following kwargs which "
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
- (duplicate-code)
+
+    def _update_model(self):
+        # Translate the model and extract all variables,
+        # if the user wants to: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
 ==ebcpy.simulationapi.__init__:[509:520]
@@ -301,13 +310,14 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set the current working directory"""
+        """Set current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
+    @property
+    def cd(self) -> Path: (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.dymola_api) (cyclic-import)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 

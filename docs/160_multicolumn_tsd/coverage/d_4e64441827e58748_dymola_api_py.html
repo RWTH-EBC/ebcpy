@@ -65,7 +65,7 @@
             <a id="nextFileLink" class="nav" href="d_4e64441827e58748_fmu_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-22 13:29 +0000
+            created at 2025-08-25 07:57 +0000
         </p>
         <aside class="hidden">
             <button type="button" class="button_next_chunk" data-shortcut="j"/>
@@ -99,7 +99,7 @@
     <p class="run"><span class="n"><a id="t17" href="#t17">17</a></span><span class="t"><span class="key">from</span> <span class="nam">pydantic</span> <span class="key">import</span> <span class="nam">Field</span><span class="op">,</span> <span class="nam">BaseModel</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t18" href="#t18">18</a></span><span class="t"><span class="key">import</span> <span class="nam">pandas</span> <span class="key">as</span> <span class="nam">pd</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t19" href="#t19">19</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="key">from</span> <span class="nam">ebcpy</span> <span class="key">import</span> <span class="nam">TimeSeriesData</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t20" href="#t20">20</a></span><span class="t"><span class="key">from</span> <span class="nam">ebcpy</span> <span class="key">import</span> <span class="nam">load_time_series_data</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t21" href="#t21">21</a></span><span class="t"><span class="key">from</span> <span class="nam">ebcpy</span><span class="op">.</span><span class="nam">modelica</span> <span class="key">import</span> <span class="nam">manipulate_ds</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t22" href="#t22">22</a></span><span class="t"><span class="key">from</span> <span class="nam">ebcpy</span><span class="op">.</span><span class="nam">simulationapi</span> <span class="key">import</span> <span class="nam">SimulationSetup</span><span class="op">,</span> <span class="nam">SimulationAPI</span><span class="op">,</span> <span class="xx">\</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t23" href="#t23">23</a></span><span class="t">    <span class="nam">SimulationSetupClass</span><span class="op">,</span> <span class="nam">Variable</span>&nbsp;</span><span class="r"></span></p>
@@ -771,8 +771,8 @@
     <p class="run"><span class="n"><a id="t689" href="#t689">689</a></span><span class="t">            <span class="nam">dfs</span><span class="op">.</span><span class="nam">append</span><span class="op">(</span><span class="nam">df</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t690" href="#t690">690</a></span><span class="t">        <span class="com"># Most of the cases, only one set is provided. In that case, avoid</span>&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t691" href="#t691">691</a></span><span class="t">        <span class="key">if</span> <span class="nam">len</span><span class="op">(</span><span class="nam">dfs</span><span class="op">)</span> <span class="op">==</span> <span class="num">1</span> <span class="key">and</span> <span class="nam">squeeze</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
-    <p class="run"><span class="n"><a id="t692" href="#t692">692</a></span><span class="t">            <span class="key">return</span> <span class="nam">TimeSeriesData</span><span class="op">(</span><span class="nam">dfs</span><span class="op">[</span><span class="num">0</span><span class="op">]</span><span class="op">,</span> <span class="nam">default_tag</span><span class="op">=</span><span class="str">"sim"</span><span class="op">)</span>&nbsp;</span><span class="r"></span></p>
-    <p class="mis show_mis"><span class="n"><a id="t693" href="#t693">693</a></span><span class="t">        <span class="key">return</span> <span class="op">[</span><span class="nam">TimeSeriesData</span><span class="op">(</span><span class="nam">df</span><span class="op">,</span> <span class="nam">default_tag</span><span class="op">=</span><span class="str">"sim"</span><span class="op">)</span> <span class="key">for</span> <span class="nam">df</span> <span class="key">in</span> <span class="nam">dfs</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="run"><span class="n"><a id="t692" href="#t692">692</a></span><span class="t">            <span class="key">return</span> <span class="nam">dfs</span><span class="op">[</span><span class="num">0</span><span class="op">]</span>&nbsp;</span><span class="r"></span></p>
+    <p class="mis show_mis"><span class="n"><a id="t693" href="#t693">693</a></span><span class="t">        <span class="key">return</span> <span class="nam">dfs</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t694" href="#t694">694</a></span><span class="t">&nbsp;</span><span class="r"></span></p>
     <p class="run"><span class="n"><a id="t695" href="#t695">695</a></span><span class="t">    <span class="key">def</span> <span class="nam">translate</span><span class="op">(</span><span class="nam">self</span><span class="op">)</span><span class="op">:</span>&nbsp;</span><span class="r"></span></p>
     <p class="pln"><span class="n"><a id="t696" href="#t696">696</a></span><span class="t">        <span class="str">"""</span>&nbsp;</span><span class="r"></span></p>
@@ -1512,7 +1512,7 @@
             <a id="nextFileLink" class="nav" href="d_4e64441827e58748_fmu_py.html">&#xbb; next</a>
             &nbsp; &nbsp; &nbsp;
             <a class="nav" href="https://coverage.readthedocs.io/en/7.4.4">coverage.py v7.4.4</a>,
-            created at 2025-08-22 13:29 +0000
+            created at 2025-08-25 07:57 +0000
         </p>
     </div>
 </footer>

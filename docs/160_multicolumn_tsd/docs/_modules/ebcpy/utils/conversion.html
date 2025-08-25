@@ -94,8 +94,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a tsd to a mat-file readable within Dymola.</span>
 
-<span class="sd">    :param TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str,os.path.normpath save_path_file:</span>
 <span class="sd">        File path and name where to store the output .mat file.</span>
 <span class="sd">    :keyword list columns:</span>
@@ -114,12 +114,12 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
-<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.mat&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_mat(tsd,</span>
 <span class="sd">    &gt;&gt;&gt;                                        save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
@@ -154,7 +154,7 @@
 <span class="sd">    to a txt-file readable within the TICC-module.</span>
 
 <span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str,os.path.normpath save_path_file:</span>
 <span class="sd">        File path and name where to store the output .mat file.</span>
 <span class="sd">    :param list columns:</span>
@@ -171,11 +171,12 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_clustering_txt(tsd,</span>
 <span class="sd">    &gt;&gt;&gt;                                          save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
@@ -205,8 +206,8 @@
 <span class="sd">    Convert a TimeSeriesData object to modelica readable text. This is especially useful</span>
 <span class="sd">    for generating input data for a modelica simulation.</span>
 
-<span class="sd">    :param TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str table_name:</span>
 <span class="sd">        Name of the table for modelica.</span>
 <span class="sd">        Needed in Modelica to correctly load the file.</span>
@@ -231,12 +232,12 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
-<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_txt(tsd, &quot;dummy_input_data&quot;, save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -283,8 +284,8 @@
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Private function to ensure lean conversion to either mat or txt.</span>
 
-<span class="sd">    :param pd.DataFrame,TimeSeriesData df:</span>
-<span class="sd">        Time series data</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param list columns:</span>
 <span class="sd">        A list with names of columns that should be saved to .mat file.</span>
 <span class="sd">        If no list is provided, all columns are converted.</span>

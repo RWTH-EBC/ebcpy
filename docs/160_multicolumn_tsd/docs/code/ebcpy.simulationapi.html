@@ -446,7 +446,7 @@ simulation variable (input, parameter, output or local/state).</p>
 
 <dl class="py method pydantic_validator">
 <dt class="sig sig-object py" id="ebcpy.simulationapi.Variable.check_value">
-<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">validator</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">check_value</span></span><em class="autodoc_pydantic_validator_arrow property">&#160; <span class="pre">»</span>&#160; </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.min" title="ebcpy.simulationapi.Variable.min"><em class="xref py py-obj"><span class="pre">min</span></em></a><em class="property"><span class="pre">,</span> </em><a class="reference internal" href="#ebcpy.simulationapi.Variable.max" title="ebcpy.simulationapi.Variable.max"><em class="xref py py-obj"><span class="pre">max</span></em></a><a class="reference internal" href="../_modules/ebcpy/simulationapi.html#Variable.check_value"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#ebcpy.simulationapi.Variable.check_value" title="Permalink to this definition"></a></dt>
 <dd><p>Check if the given bounds are correct.</p>
 </dd></dl>
 
@@ -996,11 +996,11 @@ See the docstring of simulate() for information on kwargs.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>result_file_suffix</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – Suffix of the result file. Supported options can be extracted
-from the TimeSeriesData.save() function.
+from the save() accessor function.
 Default is ‘csv’.</p></li>
 <li><p><strong>parquet_engine</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><em>str</em></a>) – The engine to use for the data format parquet.
 Supported options can be extracted
-from the TimeSeriesData.save() function.
+from the save() accessor function.
 Default is ‘pyarrow’.</p></li>
 </ul>
 </dd>

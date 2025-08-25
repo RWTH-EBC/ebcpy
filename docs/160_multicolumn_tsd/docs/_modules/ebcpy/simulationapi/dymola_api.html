@@ -94,7 +94,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">Field</span><span class="p">,</span> <span class="n">BaseModel</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesData</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_time_series_data</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.modelica</span><span class="w"> </span><span class="kn">import</span> <span class="n">manipulate_ds</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.simulationapi</span><span class="w"> </span><span class="kn">import</span> <span class="n">SimulationSetup</span><span class="p">,</span> <span class="n">SimulationAPI</span><span class="p">,</span> \
     <span class="n">SimulationSetupClass</span><span class="p">,</span> <span class="n">Variable</span>
@@ -766,8 +766,8 @@
             <span class="n">dfs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
         <span class="c1"># Most of the cases, only one set is provided. In that case, avoid</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dfs</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">squeeze</span><span class="p">:</span>
-            <span class="k">return</span> <span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">default_tag</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span>
-        <span class="k">return</span> <span class="p">[</span><span class="n">TimeSeriesData</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">default_tag</span><span class="o">=</span><span class="s2">&quot;sim&quot;</span><span class="p">)</span> <span class="k">for</span> <span class="n">df</span> <span class="ow">in</span> <span class="n">dfs</span><span class="p">]</span>
+            <span class="k">return</span> <span class="n">dfs</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">dfs</span>
 
 <div class="viewcode-block" id="DymolaAPI.translate"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_api.DymolaAPI.translate">[docs]</a>    <span class="k">def</span><span class="w"> </span><span class="nf">translate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
