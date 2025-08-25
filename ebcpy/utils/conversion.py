@@ -17,8 +17,8 @@ def convert_tsd_to_modelica_mat(
     """
     Function to convert a tsd to a mat-file readable within Dymola.
 
-    :param TimeSeriesData tsd:
-        TimeSeriesData object
+    :param pd.DataFrame,TimeSeriesData tsd:
+        Dataframe or TimeSeriesData object with data to convert
     :param str,os.path.normpath save_path_file:
         File path and name where to store the output .mat file.
     :keyword list columns:
@@ -37,12 +37,12 @@ def convert_tsd_to_modelica_mat(
     Examples:
 
     >>> import os
-    >>> from ebcpy import TimeSeriesData
+    >>> from ebcpy import load_time_series_data
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
     >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
     >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.mat")
     >>> cols = ["sine.freqHz / Hz"]
-    >>> tsd = TimeSeriesData(example_file, sep=";")
+    >>> tsd = load_time_series_data(example_file, sep=";")
     >>> filepath = convert_tsd_to_modelica_mat(tsd,
     >>>                                        save_path, columns=cols)
     >>> os.remove(filepath)
@@ -77,7 +77,7 @@ def convert_tsd_to_clustering_txt(
     to a txt-file readable within the TICC-module.
 
     :param pd.DataFrame,TimeSeriesData tsd:
-        TimeSeriesData object
+        Dataframe or TimeSeriesData object with data to convert
     :param str,os.path.normpath save_path_file:
         File path and name where to store the output .mat file.
     :param list columns:
@@ -94,11 +94,12 @@ def convert_tsd_to_clustering_txt(
     Examples:
 
     >>> import os
+    >>> from ebcpy import load_time_series_data
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
     >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
     >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
     >>> cols = ["sine.freqHz / Hz"]
-    >>> tsd = TimeSeriesData(example_file, sep=";")
+    >>> tsd = load_time_series_data(example_file, sep=";")
     >>> filepath = convert_tsd_to_clustering_txt(tsd,
     >>>                                          save_path, columns=cols)
     >>> os.remove(filepath)
@@ -128,8 +129,8 @@ def convert_tsd_to_modelica_txt(
     Convert a TimeSeriesData object to modelica readable text. This is especially useful
     for generating input data for a modelica simulation.
 
-    :param TimeSeriesData tsd:
-        TimeSeriesData object
+    :param pd.DataFrame,TimeSeriesData tsd:
+        Dataframe or TimeSeriesData object with data to convert
     :param str table_name:
         Name of the table for modelica.
         Needed in Modelica to correctly load the file.
@@ -154,12 +155,12 @@ def convert_tsd_to_modelica_txt(
     Examples:
 
     >>> import os
-    >>> from ebcpy import TimeSeriesData
+    >>> from ebcpy import load_time_series_data
     >>> project_dir = os.path.dirname(os.path.dirname(__file__))
     >>> example_file = os.path.normpath(project_dir + "//tests//data//example_data.csv")
     >>> save_path = os.path.normpath(project_dir + "//tests//data//example_data_converted.txt")
     >>> cols = ["sine.freqHz / Hz"]
-    >>> tsd = TimeSeriesData(example_file, sep=";")
+    >>> tsd = load_time_series_data(example_file, sep=";")
     >>> filepath = convert_tsd_to_modelica_txt(tsd, "dummy_input_data", save_path, columns=cols)
     >>> os.remove(filepath)
     """
@@ -206,8 +207,8 @@ def _convert_to_subset(
     """
     Private function to ensure lean conversion to either mat or txt.
 
-    :param pd.DataFrame,TimeSeriesData df:
-        Time series data
+    :param pd.DataFrame,TimeSeriesData tsd:
+        Dataframe or TimeSeriesData object with data to convert
     :param list columns:
         A list with names of columns that should be saved to .mat file.
         If no list is provided, all columns are converted.

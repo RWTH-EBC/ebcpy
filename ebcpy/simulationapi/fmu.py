@@ -274,7 +274,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
             os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
-            TimeSeriesData(df).save(
+            df.tsd.save(
                 filepath=filepath,
                 key="simulation",
                 engine=parquet_engine
@@ -284,7 +284,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if return_option == "last_point":
             return df.iloc[-1].to_dict()
         # Else return time series data
-        return TimeSeriesData(df)
+        return df
 
     def setup_fmu_instance(self):
         """

@@ -17,7 +17,7 @@ from typing import Union, List
 from pydantic import Field, BaseModel
 import pandas as pd
 
-from ebcpy import TimeSeriesData
+from ebcpy import load_time_series_data
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
@@ -689,8 +689,8 @@ class DymolaAPI(SimulationAPI):
             dfs.append(df)
         # Most of the cases, only one set is provided. In that case, avoid
         if len(dfs) == 1 and squeeze:
-            return TimeSeriesData(dfs[0], default_tag="sim")
-        return [TimeSeriesData(df, default_tag="sim") for df in dfs]
+            return dfs[0]
+        return dfs
 
     def translate(self):
         """
