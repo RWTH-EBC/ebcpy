@@ -354,7 +354,7 @@ class FMU_API(simulationapi.SimulationAPI):
             wrk_idx = self.worker_idx
             if self._fmu_instance is not None:
                 return True
-            unzip_dir = self._single_unzip_dir.with_stem(self._single_unzip_dir + f"_worker_{wrk_idx}")
+            unzip_dir = self._single_unzip_dir.with_stem(self._single_unzip_dir.stem + f"_worker_{wrk_idx}")
             fmpy.extract(self.model_name,
                          unzipdir=unzip_dir)
         else:
