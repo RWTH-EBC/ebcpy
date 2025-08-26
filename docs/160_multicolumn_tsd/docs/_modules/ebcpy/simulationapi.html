@@ -289,6 +289,21 @@
             <span class="k">return</span> <span class="n">_id</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="k">return</span> <span class="kc">None</span>
 
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_worker_directory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">use_mp</span><span class="p">:</span> <span class="nb">bool</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the current working directory for the process / worker.</span>
+<span class="sd">        If this function is called from the main process, we</span>
+<span class="sd">        always return the main working_directory.</span>
+
+<span class="sd">        :param bool use_mp: Indicates if the central working directory is needed or the worker one.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">use_mp</span><span class="p">:</span>
+            <span class="n">worker_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker_idx</span>
+            <span class="k">if</span> <span class="n">worker_idx</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>  <span class="c1"># This function is called outside of multiprocessing</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;worker_</span><span class="si">{</span><span class="n">worker_idx</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">__getstate__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Overwrite magic method to allow pickling the api object&quot;&quot;&quot;</span>
         <span class="n">self_dict</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
