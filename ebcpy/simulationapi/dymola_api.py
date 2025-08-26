@@ -1063,7 +1063,8 @@ class DymolaAPI(SimulationAPI):
         ))
         # Total model
         if save_total_model and self.model_name is not None:
-            _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
+            # split ( catches model_names with modifiers. Dots are replaced as they indicate a file suffix.
+            _total_model_name = f"Dymola/{self.model_name.split('(')[0].replace('.', '_')}_total.mo"
             _total_model = Path(self.working_directory).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
             if "(" in self.model_name:
