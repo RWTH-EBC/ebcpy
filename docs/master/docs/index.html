@@ -90,9 +90,9 @@
 used for the analysis and optimization of <strong>e</strong>nergy systems, <strong>b</strong>uildings and indoor <strong>c</strong>limate (<strong>EBC</strong>).</p>
 <p>Key features are:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">TimeSeriesData</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">SimulationAPI</span></code>‘s</p></li>
 <li><p>Optimization wrapper</p></li>
+<li><p>Useful loading of time series data and time series data accessor for DataFrames</p></li>
 <li><p>Pre-/Postprocessing</p></li>
 <li><p>Modelica utilities</p></li>
 </ul>
@@ -151,51 +151,25 @@ Here you will find several examples to execute.</p>
 </pre></div>
 </div>
 </section>
-<section id="timeseriesdata">
-<h2>TimeSeriesData<a class="headerlink" href="#timeseriesdata" title="Permalink to this heading"></a></h2>
-<p>Note that we use our own <code class="docutils literal notranslate"><span class="pre">TimeSeriesData</span></code> object which inherits from <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>. The aim is to make tasks like loading different filetypes or applying multiple tags to one variable more convenient, while conserving the powerful tools of the DataFrame.
-Just a quick intro here:</p>
-</section>
-</section>
-<section id="variables-and-tags">
-<h1>Variables and tags<a class="headerlink" href="#variables-and-tags" title="Permalink to this heading"></a></h1>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesData</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">tsd</span> <span class="o">=</span> <span class="n">TimeSeriesData</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;path_to_a_supported_file&quot;</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">tsd</span><span class="p">)</span>
-<span class="go">Variables    T_heater              T_heater_1</span>
-<span class="go">Tags             meas         sim        meas         sim</span>
-<span class="go">Time</span>
-<span class="go">0.0        313.165863  313.165863  293.173126  293.173126</span>
-<span class="go">1.0        312.090271  310.787750  293.233002  293.352448</span>
-<span class="go">2.0        312.090027  310.796753  293.385925  293.719055</span>
-<span class="go">3.0        312.109436  310.870331  293.589233  294.141754</span>
-</pre></div>
-</div>
-<p>As you can see, our first column level is always a variable, and the second one a tag.
-This is especially handy when dealing with calibration or processing tasks, where you will have multiple
-versions (tags) for one variable. The default tag is <code class="docutils literal notranslate"><span class="pre">raw</span></code> to indicate the unmodified data.
-To access a variable, you have to call <code class="docutils literal notranslate"><span class="pre">.loc</span></code>. To access multiple variables that all hold one tag use <code class="docutils literal notranslate"><span class="pre">xs</span></code>:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># All tags:</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s2">&quot;variable_name&quot;</span><span class="p">]</span>
-<span class="c1"># One specific tag:</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">(</span><span class="s2">&quot;variable_name&quot;</span><span class="p">,</span> <span class="s2">&quot;tag_name&quot;</span><span class="p">)]</span>
-<span class="c1"># One tag, all variables:</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">xs</span><span class="p">(</span><span class="s2">&quot;tag_name&quot;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<section id="time-series-data">
+<h2>Time series data<a class="headerlink" href="#time-series-data" title="Permalink to this heading"></a></h2>
+<p>Note that we use steamline time series data based on a <code class="docutils literal notranslate"><span class="pre">pd.DataFrame</span></code>
+using a common function and the accessor <code class="docutils literal notranslate"><span class="pre">tsd</span></code>.
+The aim is to make tasks like loading different filetypes or common functions
+more convenient, while conserving the powerful tools of the DataFrame.
+Just a example intro here:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_time_series_data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">load_time_series_data</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;path_to_a_supported_file&quot;</span><span class="p">)</span>
+
+<span class="go"># From Datetime to float</span>
+<span class="go">df.tsd.to_float_index()</span>
+<span class="go"># From float to datetime</span>
+<span class="go">df.tsd.to_datetime_index()</span>
+<span class="go"># To clean your data and create a common frequency:</span>
+<span class="go">df.tsd.clean_and_space_equally(desired_freq=&quot;1s&quot;)</span>
 </pre></div>
 </div>
 </section>
-<section id="floatindex-and-datetimeindex">
-<h1>FloatIndex and DateTimeIndex<a class="headerlink" href="#floatindex-and-datetimeindex" title="Permalink to this heading"></a></h1>
-<p>Measured data typically holds a datetime stamps (<code class="docutils literal notranslate"><span class="pre">DateTimeIndex</span></code>) while simulation result files hold absolute seconds (<code class="docutils literal notranslate"><span class="pre">FloatIndex</span></code>).
-You can easily convert back and forth using:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># From Datetime to float</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">to_float_index</span><span class="p">()</span>
-<span class="c1"># From float to datetime</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">to_datetime_index</span><span class="p">()</span>
-<span class="c1"># To clean your data and create a common frequency:</span>
-<span class="n">tsd</span><span class="o">.</span><span class="n">clean_and_space_equally</span><span class="p">(</span><span class="n">desired_freq</span><span class="o">=</span><span class="s2">&quot;1s&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 <section id="documentation">
 <h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this heading"></a></h2>
 <p>Visit our official <a class="reference external" href="https://rwth-ebc.github.io/ebcpy/master/docs/index.html">Documentation</a>.</p>

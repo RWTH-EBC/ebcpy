@@ -79,20 +79,23 @@
 <span class="sd">Module with functions to convert</span>
 <span class="sd">certain format into other formats.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pathlib</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">scipy.io</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">spio</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">index_is_numeric</span><span class="p">,</span> <span class="n">datetime_indexes</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">index_is_numeric</span><span class="p">,</span> <span class="n">datetime_indexes</span><span class="p">,</span> <span class="n">TimeSeriesData</span>
 
 
-<div class="viewcode-block" id="convert_tsd_to_modelica_mat"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_mat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_mat</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_modelica_mat"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_mat">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_mat</span><span class="p">(</span>
+        <span class="n">tsd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">],</span> <span class="n">save_path_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a tsd to a mat-file readable within Dymola.</span>
 
-<span class="sd">    :param TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str,os.path.normpath save_path_file:</span>
 <span class="sd">        File path and name where to store the output .mat file.</span>
 <span class="sd">    :keyword list columns:</span>
@@ -111,20 +114,20 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
-<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.mat&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_mat(tsd,</span>
 <span class="sd">    &gt;&gt;&gt;                                        save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
-        <span class="n">save_path_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">save_path_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.mat&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.mat&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given savepath for txt-file is not a .mat file!&quot;</span><span class="p">)</span>
 
     <span class="c1"># Load the relevant part of the df</span>
@@ -142,13 +145,16 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<div class="viewcode-block" id="convert_tsd_to_clustering_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_clustering_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_clustering_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_clustering_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_clustering_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_clustering_txt</span><span class="p">(</span>
+        <span class="n">tsd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">],</span>
+        <span class="n">save_path_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Function to convert a TimeSeriesData object</span>
 <span class="sd">    to a txt-file readable within the TICC-module.</span>
 
-<span class="sd">    :param TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str,os.path.normpath save_path_file:</span>
 <span class="sd">        File path and name where to store the output .mat file.</span>
 <span class="sd">    :param list columns:</span>
@@ -165,15 +171,20 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_clustering_txt(tsd,</span>
 <span class="sd">    &gt;&gt;&gt;                                          save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">save_path_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.txt&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given savepath for txt-file is not a .txt file!&quot;</span><span class="p">)</span>
     <span class="c1"># Get the subset of the dataFrame</span>
     <span class="n">df_sub</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">tsd</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
@@ -185,13 +196,18 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<div class="viewcode-block" id="convert_tsd_to_modelica_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_txt</span><span class="p">(</span><span class="n">tsd</span><span class="p">,</span> <span class="n">table_name</span><span class="p">,</span> <span class="n">save_path_file</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="convert_tsd_to_modelica_txt"><a class="viewcode-back" href="../../../code/ebcpy.utils.html#ebcpy.utils.conversion.convert_tsd_to_modelica_txt">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">convert_tsd_to_modelica_txt</span><span class="p">(</span>
+        <span class="n">tsd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">],</span>
+        <span class="n">table_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">save_path_file</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert a TimeSeriesData object to modelica readable text. This is especially useful</span>
 <span class="sd">    for generating input data for a modelica simulation.</span>
 
-<span class="sd">    :param TimeSeriesData tsd:</span>
-<span class="sd">        TimeSeriesData object</span>
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
 <span class="sd">    :param str table_name:</span>
 <span class="sd">        Name of the table for modelica.</span>
 <span class="sd">        Needed in Modelica to correctly load the file.</span>
@@ -216,22 +232,22 @@
 <span class="sd">    Examples:</span>
 
 <span class="sd">    &gt;&gt;&gt; import os</span>
-<span class="sd">    &gt;&gt;&gt; from ebcpy import TimeSeriesData</span>
+<span class="sd">    &gt;&gt;&gt; from ebcpy import load_time_series_data</span>
 <span class="sd">    &gt;&gt;&gt; project_dir = os.path.dirname(os.path.dirname(__file__))</span>
 <span class="sd">    &gt;&gt;&gt; example_file = os.path.normpath(project_dir + &quot;//tests//data//example_data.csv&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; save_path = os.path.normpath(project_dir + &quot;//tests//data//example_data_converted.txt&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; cols = [&quot;sine.freqHz / Hz&quot;]</span>
-<span class="sd">    &gt;&gt;&gt; tsd = TimeSeriesData(example_file, sep=&quot;;&quot;)</span>
+<span class="sd">    &gt;&gt;&gt; tsd = load_time_series_data(example_file, sep=&quot;;&quot;)</span>
 <span class="sd">    &gt;&gt;&gt; filepath = convert_tsd_to_modelica_txt(tsd, &quot;dummy_input_data&quot;, save_path, columns=cols)</span>
 <span class="sd">    &gt;&gt;&gt; os.remove(filepath)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">pathlib</span><span class="o">.</span><span class="n">Path</span><span class="p">):</span>
-        <span class="n">save_path_file</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.txt&quot;</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">,</span> <span class="n">Path</span><span class="p">):</span>
+        <span class="n">save_path_file</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">save_path_file</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">save_path_file</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s2">&quot;.txt&quot;</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Given savepath for txt-file is not a .txt file!&quot;</span><span class="p">)</span>
 
     <span class="c1"># Load the relavant part of the df</span>
-    <span class="n">df_sub</span><span class="p">,</span> <span class="n">headers</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span>
+    <span class="n">df_sub</span><span class="p">,</span> <span class="n">header_names</span> <span class="o">=</span> <span class="n">_convert_to_subset</span><span class="p">(</span>
         <span class="n">df</span><span class="o">=</span><span class="n">tsd</span><span class="p">,</span>
         <span class="n">columns</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;columns&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">),</span>
         <span class="n">offset</span><span class="o">=</span><span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;offset&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
@@ -240,23 +256,10 @@
     <span class="c1"># Unpack kwargs</span>
     <span class="n">sep</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;sep&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">headers</span><span class="p">)</span>
+    <span class="n">n_cols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">header_names</span><span class="p">)</span>
     <span class="n">n_rows</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">df_sub</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
     <span class="c1"># Comment header line</span>
-    <span class="n">_temp_str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
-    
-    <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;with_tag&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">):</span>
-        <span class="c1"># Convert (&quot;variable&quot;, &quot;tag&quot;) to &quot;variable_tag&quot;</span>
-        <span class="n">_temp_str</span> <span class="o">=</span> <span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">)</span> <span class="k">for</span> <span class="n">variable_tag</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">])</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">var</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">headers</span><span class="p">):</span>
-            <span class="k">if</span> <span class="n">idx</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="c1"># Convert time with tag to one string as unit is important</span>
-                <span class="n">_temp_str</span> <span class="o">+=</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">var</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Convert (&quot;variable&quot;, &quot;tag&quot;) to &quot;variable&quot;</span>
-                <span class="n">_temp_str</span> <span class="o">+=</span> <span class="n">sep</span> <span class="o">+</span> <span class="n">var</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">content_as_lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">_temp_str</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
+    <span class="n">content_as_lines</span> <span class="o">=</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;#</span><span class="si">{</span><span class="n">sep</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">header_names</span><span class="p">)</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">]</span>
     <span class="n">content_as_lines</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;double </span><span class="si">{</span><span class="n">table_name</span><span class="si">}</span><span class="s2">(</span><span class="si">{</span><span class="n">n_rows</span><span class="si">}</span><span class="s2">, </span><span class="si">{</span><span class="n">n_cols</span><span class="si">}</span><span class="s2">)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">content_as_lines</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;#1</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>  <span class="c1"># Print Modelica table no</span>
 
@@ -272,11 +275,28 @@
     <span class="k">return</span> <span class="n">save_path_file</span></div>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_subset</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">columns</span><span class="p">,</span> <span class="n">offset</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_convert_to_subset</span><span class="p">(</span>
+        <span class="n">df</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">],</span>
+        <span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">offset</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">with_tag</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Private function to ensure lean conversion to either mat or txt.</span>
+
+<span class="sd">    :param pd.DataFrame,TimeSeriesData tsd:</span>
+<span class="sd">        Dataframe or TimeSeriesData object with data to convert</span>
+<span class="sd">    :param list columns:</span>
+<span class="sd">        A list with names of columns that should be saved to .mat file.</span>
+<span class="sd">        If no list is provided, all columns are converted.</span>
+<span class="sd">    :param float offset:</span>
+<span class="sd">        Offset for time in seconds, default 0</span>
+<span class="sd">    :param Boolean with_tag:</span>
+<span class="sd">        Use True each variable and tag is written to the file</span>
+<span class="sd">        If False, only the variable name is written to the file.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
     <span class="k">if</span> <span class="n">columns</span><span class="p">:</span>
         <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">columns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
             <span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="n">columns</span><span class="p">]</span>  <span class="c1"># Must be a list</span>
@@ -284,8 +304,25 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="n">headers</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
 
-    <span class="n">_time_header</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;in_s&#39;</span><span class="p">)</span>
-    <span class="n">headers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_time_header</span><span class="p">)</span>  <span class="c1"># Ensure time will be at first place</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">TimeSeriesData</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">MultiIndex</span><span class="p">):</span>
+        <span class="n">_time_header</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;in_s&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">with_tag</span><span class="p">:</span>
+            <span class="n">header_names</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">variable_tag</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="s2">&quot;_&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">variable_tag</span> <span class="ow">in</span> <span class="n">headers</span>
+            <span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">header_names</span> <span class="o">=</span> <span class="p">[</span>
+                <span class="n">variable_tag</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">variable_tag</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)</span> <span class="k">else</span> <span class="n">variable_tag</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">for</span> <span class="n">variable_tag</span> <span class="ow">in</span> <span class="n">headers</span>
+            <span class="p">]</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">_time_header</span> <span class="o">=</span> <span class="s1">&#39;time_in_s&#39;</span>
+        <span class="n">header_names</span> <span class="o">=</span> <span class="n">headers</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">header_names</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_time_header</span><span class="p">)</span>  <span class="c1"># Ensure time will be at first place</span>
+    <span class="n">headers</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">_time_header</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">datetime_indexes</span><span class="p">)):</span>
         <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span> <span class="o">-</span> <span class="n">df</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">to_datetime64</span><span class="p">()</span>  <span class="c1"># Make index zero based</span>
@@ -303,14 +340,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Selected columns contain NaN values. This would lead to errors&quot;</span>
                          <span class="s2">&quot;in the simulation environment.&quot;</span><span class="p">)</span>
 
-    <span class="c1"># Convert cases with no tag to tuple</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">_to_tuple</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
-            <span class="k">return</span> <span class="n">s</span>
-        <span class="k">return</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="p">)</span>
-    <span class="n">headers_as_tuple</span> <span class="o">=</span> <span class="p">[</span><span class="n">_to_tuple</span><span class="p">(</span><span class="n">header</span><span class="p">)</span> <span class="k">for</span> <span class="n">header</span> <span class="ow">in</span> <span class="n">headers</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">],</span> <span class="n">headers_as_tuple</span>
+    <span class="k">return</span> <span class="n">df</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">headers</span><span class="p">],</span> <span class="n">header_names</span>
 </pre></div>
 
            </div>
