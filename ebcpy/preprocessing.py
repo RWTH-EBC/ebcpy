@@ -22,6 +22,8 @@ the behaviour of a function or the meaning, please raise an issue.
 """
 import warnings
 import logging
+from typing import Union, TYPE_CHECKING
+
 from datetime import datetime
 from scipy import signal
 from sklearn import model_selection
@@ -29,12 +31,14 @@ from pandas.tseries.frequencies import to_offset
 import numpy as np
 import pandas as pd
 import scipy.stats as st
-from ebcpy import data_types
+
+if TYPE_CHECKING:
+    from ebcpy import TimeSeriesData
 
 logger = logging.getLogger(__name__)
 
 
-def build_average_on_duplicate_rows(df):
+def build_average_on_duplicate_rows(df: Union[pd.DataFrame, "TimeSeriesData"]) -> pd.DataFrame:
     """
     If the dataframe has duplicate-indexes, the average
     value of all those indexes is calculated and given to
@@ -80,13 +84,17 @@ def build_average_on_duplicate_rows(df):
     return df_dropped
 
 
-def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now(),
-                                    inplace: bool = False):
+def convert_index_to_datetime_index(
+        df: Union[pd.DataFrame, "TimeSeriesData"],
+        unit_of_index: str = "s",
+        origin: datetime = datetime.now(),
+        inplace: bool = False
+) -> pd.DataFrame:
     """
     Converts the index of the given DataFrame to a
     pandas.core.indexes.datetimes.DatetimeIndex.
 
-    :param pd.DataFrame df:
+    :param pd.DataFrame,TimeSeriesData df:
         dataframe with index not being a DateTime.
         Only numeric indexes are supported. Every integer
         is interpreted with the given unit, standard form
@@ -148,13 +156,17 @@ def convert_index_to_datetime_index(df, unit_of_index="s", origin=datetime.now()
     return df_copy
 
 
-def convert_datetime_index_to_float_index(df, offset=0, inplace: bool = False):
+def convert_datetime_index_to_float_index(
+        df: Union[pd.DataFrame, "TimeSeriesData"],
+        offset: float = 0,
+        inplace: bool = False
+) -> pd.DataFrame:
     """
     Convert a datetime-based index to FloatIndex (in seconds).
     Seconds are used as a standard unit as simulation software
     outputs data in seconds (e.g. Modelica)
 
-    :param pd.DataFrame df:
+    :param pd.DataFrame,TimeSeriesData df:
         DataFrame to be converted to FloatIndex
     :param float offset:
         Offset in seconds
@@ -191,7 +203,7 @@ def convert_datetime_index_to_float_index(df, offset=0, inplace: bool = False):
     return df_copy
 
 
-def time_based_weighted_mean(df):
+def time_based_weighted_mean(df: Union[pd.DataFrame, "TimeSeriesData"]) -> np.ndarray:
     """
     Creates the weighted mean according to time index that does not need to be equidistant.
     Further info:
@@ -230,13 +242,17 @@ def time_based_weighted_mean(df):
     return res
 
 
-def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.95):
+def clean_and_space_equally_time_series(
+        df: Union[pd.DataFrame, "TimeSeriesData"],
+        desired_freq: str,
+        confidence_warning: float = 0.95
+) -> pd.DataFrame:
     """
     Function for cleaning of the given dataFrame and interpolating
     based on the given desired frequency. Linear interpolation
     is used.
 
-    :param pd.DataFrame df:
+    :param pd.DataFrame,TimeSeriesData df:
         Unclean DataFrame. Needs to have a pd.DateTimeIndex
     :param str desired_freq:
         Frequency to determine number of elements in processed dataframe.
@@ -269,11 +285,13 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
 
     .. versionchanged:: 0.1.7
     """
+    from ebcpy import TimeSeriesData
+
     # Convert indexes to datetime_index:
     if not isinstance(df.index, pd.DatetimeIndex):
-        if isinstance(df, data_types.TimeSeriesData):
+        if isinstance(df, TimeSeriesData):
             raise TypeError("TimeSeriesData needs a DateTimeIndex for executing this function. "
-                            "Call convert_index_to_datetime_index() to convert any index to "
+                            "Call to_datetime_index() to convert any index to "
                             "a DateTimeIndex")
         # Else
         raise TypeError("DataFrame needs a DateTimeIndex for executing this function. "
@@ -358,10 +376,11 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     # should have been filtered beforehand.
 
     # Check if given dataframe was a TimeSeriesData object and of so, convert it as such
-    if isinstance(df_temp, data_types.TimeSeriesData):
+    from ebcpy import TimeSeriesData
+    if isinstance(df_temp, TimeSeriesData):
         df_temp = df_temp.resample(rule=desired_freq).first()
         df_temp.index = df_temp.index + to_offset(delta_time)
-        df_temp = data_types.TimeSeriesData(df_temp)
+        df_temp = TimeSeriesData(df_temp)
     else:
         df_temp = df_temp.resample(rule=desired_freq).first()
         df_temp.index = df_temp.index + to_offset(delta_time)
@@ -370,7 +389,7 @@ def clean_and_space_equally_time_series(df, desired_freq, confidence_warning=0.9
     return df_temp
 
 
-def low_pass_filter(data, crit_freq, filter_order):
+def low_pass_filter(data: np.ndarray, crit_freq: float, filter_order: int) -> np.ndarray:
     """
     Create a low pass filter with given order and frequency.
 
@@ -406,11 +425,11 @@ def low_pass_filter(data, crit_freq, filter_order):
     return output
 
 
-def moving_average(data, window):
+def moving_average(data: np.ndarray, window: int) -> np.ndarray:
     """
     Creates a pandas Series as moving average of the input series.
 
-    :param pd.Series data:
+    :param np.ndarray data:
         For dataframe e.g. df['a_col_name'].values
     :param int window:
         sample rate of input
@@ -449,12 +468,18 @@ def moving_average(data, window):
     return sma
 
 
-def create_on_off_signal(df, col_names, threshold, col_names_new,
-                         tags="raw", new_tag="converted_signal"):
+def create_on_off_signal(
+        df: Union[pd.DataFrame, "TimeSeriesData"],
+        col_names: list,
+        threshold: Union[float, list],
+        col_names_new: list,
+        tags: Union[list, str] = "raw",
+        new_tag: str = "converted_signal"
+):
     """
     Create on and off signals based on the given threshold for all column names.
 
-    :param pd.DataFame df:
+    :param pd.DataFame,TimeSeriesData df:
         DataFrame with the data to process
     :param list col_names:
         Column names of variables to convert to signals
@@ -516,12 +541,12 @@ def create_on_off_signal(df, col_names, threshold, col_names_new,
     return df_copy
 
 
-def number_lines_totally_na(df):
+def number_lines_totally_na(df: Union[pd.DataFrame, "TimeSeriesData"]) -> int:
     """
     Returns the number of rows in the given dataframe
     that are filled with NaN-values.
 
-    :param pd.DataFrame df:
+    :param pd.DataFrame,TimeSeriesData df:
         Given dataframe to process
     :return: int
         Number of NaN-Rows.
@@ -550,7 +575,7 @@ def number_lines_totally_na(df):
     return counter
 
 
-def z_score(x, limit=3):
+def z_score(x: np.ndarray, limit=3) -> np.ndarray:
     """
     Calculate the z-score using the mea
     and standard deviation of the given data.
@@ -576,7 +601,7 @@ def z_score(x, limit=3):
     return np.where(np.abs(z_score_value) > limit)[0]
 
 
-def modified_z_score(x, limit=3.5):
+def modified_z_score(x: np.ndarray, limit: float = 3.5) -> np.ndarray:
     """
     Calculate the modified z-score using the median
     and median average deviation of the given data.
@@ -602,7 +627,7 @@ def modified_z_score(x, limit=3.5):
     return np.where(np.abs(z_score_mod) > limit)[0]
 
 
-def interquartile_range(x):
+def interquartile_range(x: np.ndarray) -> np.ndarray:
     """
     Calculate interquartile range of given array.
     Returns the indices of values outside of the interquartile range.

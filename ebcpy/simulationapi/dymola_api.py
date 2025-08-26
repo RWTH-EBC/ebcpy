@@ -17,7 +17,6 @@ from typing import Union, List
 from pydantic import Field, BaseModel
 import pandas as pd
 
-from ebcpy import TimeSeriesData
 from ebcpy.modelica import manipulate_ds
 from ebcpy.simulationapi import SimulationSetup, SimulationAPI, \
     SimulationSetupClass, Variable
@@ -669,9 +668,18 @@ class DymolaAPI(SimulationAPI):
             return result_file
 
         data = res[1]  # Get data
+
+        # Sometimes, Dymola adds a last row with all 0 values, even the time
+        data_clean = []
+        for ini_val_set in data:
+            if all(res[-1] == 0 for res in ini_val_set):
+                data_clean.append([res[:-1] for res in ini_val_set])
+            else:
+                data_clean.append(ini_val_set)
+
         if return_option == "last_point":
             results = []
-            for ini_val_set in data:
+            for ini_val_set in data_clean:
                 results.append({result_name: ini_val_set[idx][-1] for idx, result_name
                                 in enumerate(res_names)})
             if len(results) == 1 and squeeze:
@@ -679,18 +687,19 @@ class DymolaAPI(SimulationAPI):
             return results
         # Else return as dataframe.
         dfs = []
-        for ini_val_set in data:
+        for ini_val_set in data_clean:
             df = pd.DataFrame({result_name: ini_val_set[idx] for idx, result_name
                                in enumerate(res_names)})
             # Set time index
             df = df.set_index("Time")
             # Convert it to float
             df.index = df.index.astype("float64")
+
             dfs.append(df)
         # Most of the cases, only one set is provided. In that case, avoid
         if len(dfs) == 1 and squeeze:
-            return TimeSeriesData(dfs[0], default_tag="sim")
-        return [TimeSeriesData(df, default_tag="sim") for df in dfs]
+            return dfs[0]
+        return dfs
 
     def translate(self):
         """
@@ -900,16 +909,6 @@ class DymolaAPI(SimulationAPI):
             return None
         return dymola
 
-    def _get_worker_directory(self, use_mp: bool):
-        """
-        Returns the current working directory for the process / worker.
-
-        :param bool use_mp: Indicates if the central working directory is needed or the worker one.
-        """
-        if use_mp:
-            return self.working_directory.joinpath(f"worker_{self.worker_idx}")
-        return self.working_directory
-
     def update_experiment_setup_output(self, experiment_setup_output: Union[ExperimentSetupOutput, dict]):
         """
         Function to update the ExperimentSetupOutput in Dymola for selection
@@ -1073,7 +1072,8 @@ class DymolaAPI(SimulationAPI):
         ))
         # Total model
         if save_total_model and self.model_name is not None:
-            _total_model_name = f"Dymola/{self.model_name.replace('.', '_')}_total.mo"
+            # split ( catches model_names with modifiers. Dots are replaced as they indicate a file suffix.
+            _total_model_name = f"Dymola/{self.model_name.split('(')[0].replace('.', '_')}_total.mo"
             _total_model = Path(self.working_directory).joinpath(_total_model_name)
             os.makedirs(_total_model.parent, exist_ok=True)  # Create to ensure model can be saved.
             if "(" in self.model_name:

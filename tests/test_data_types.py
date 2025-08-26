@@ -28,7 +28,7 @@ class TestDataTypes(unittest.TestCase):
     def test_default_tag(self):
         """Test the default_tag property"""
         tsd = data_types.TimeSeriesData(self.example_data_csv_path,
-                                        sep=";")
+                                        sep=";", use_multicolumn=True)
         self.assertIsInstance(tsd.default_tag, str)
         with self.assertRaises(KeyError):
             tsd.default_tag = "Not in current keys"
@@ -40,12 +40,12 @@ class TestDataTypes(unittest.TestCase):
         df.columns = pd.MultiIndex.from_product(
             [["first"], ["second"], ["third"]])
         with self.assertRaises(TypeError):
-            data_types.TimeSeriesData(df)
+            data_types.TimeSeriesData(df, use_multicolumn=True)
         df.columns = pd.MultiIndex.from_product(
             [["first"], ["second"]],
             names=["Not Variables", "not a tag"])
         with self.assertRaises(TypeError):
-            data_types.TimeSeriesData(df)
+            data_types.TimeSeriesData(df, use_multicolumn=True)
 
     def test_save(self):
         """Test fp property"""
@@ -59,7 +59,7 @@ class TestDataTypes(unittest.TestCase):
             tsd.save(filepath=filepath, key="test")
             self.assertTrue(os.path.isfile(filepath))
         except ImportError:
-            pass   # Skip the optional part
+            pass  # Skip the optional part
         # Test csv and the setter.
         filepath = self.savedir.joinpath("test_hdf.csv")
         tsd.filepath = filepath
@@ -72,18 +72,19 @@ class TestDataTypes(unittest.TestCase):
 
     def test_load_save_csv(self):
         """Test correct loading and saving"""
-        tsd_ref = data_types.TimeSeriesData(self.example_data_csv_path,
-                                        sep=";")
+        tsd_ref = data_types.TimeSeriesData(
+            self.example_data_csv_path,
+            sep=";", use_multicolumn=True)
         filepath = self.savedir.joinpath("test_hdf.csv")
         tsd_ref.save(filepath=filepath)
-        tsd = data_types.TimeSeriesData(filepath)
+        tsd = data_types.TimeSeriesData(filepath, use_multicolumn=True)
         self.assertTrue(tsd.equals(tsd_ref))
         # test wrong and multi-index
         with self.assertRaises(IndexError):
-            data_types.TimeSeriesData(filepath, index_col=[0, 1])
+            data_types.TimeSeriesData(filepath, index_col=[0, 1], use_multicolumn=True)
         # Test wrong and single index headers
         with self.assertRaises(IndexError):
-            data_types.TimeSeriesData(filepath, header=0)
+            data_types.TimeSeriesData(filepath, header=0, use_multicolumn=True)
 
     def _load_save_parquet(self, engine):
         """Test correct loading and saving for all parquet options"""
@@ -139,7 +140,7 @@ class TestDataTypes(unittest.TestCase):
                 time_series_data,
                 type(pd.DataFrame()))
         except ImportError:
-            pass   # Skip the optional part
+            pass  # Skip the optional part
         # Correctly load the .csv:
         time_series_data = data_types.TimeSeriesData(self.example_data_csv_path,
                                                      sep=";")
@@ -193,9 +194,11 @@ class TestDataTypes(unittest.TestCase):
         """Test tagging functions"""
         with self.assertRaises(TypeError):
             data_types.TimeSeriesData(self.example_data_mat_path,
-                                      default_tag=10)
+                                      default_tag=10,
+                                      use_multicolumn=True)
         tsd1 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                         default_tag='other_default')
+                                         default_tag='other_default',
+                                         use_multicolumn=True)
         with self.assertRaises(TypeError):
             tsd1.default_tag = 10
         self.assertEqual(tsd1.get_columns_by_tag('other_default').size,
@@ -203,7 +206,8 @@ class TestDataTypes(unittest.TestCase):
         with self.assertRaises(KeyError):
             tsd1.get_columns_by_tag('this_is_never_a:tag')
         tsd2 = data_types.TimeSeriesData(self.example_data_mat_path,
-                                         default_tag='new_data')
+                                         default_tag='new_data',
+                                         use_multicolumn=True)
         tsd3 = pd.concat([tsd1, tsd2], axis=1)
         with self.assertRaises(KeyError):
             tsd3.default_tag = 'new_default_tag'
@@ -213,7 +217,7 @@ class TestDataTypes(unittest.TestCase):
                          tsd2.size)
 
     def test_get_cols_by_tag(self):
-        time_series_data = data_types.TimeSeriesData(self.example_data_mat_path)
+        time_series_data = data_types.TimeSeriesData(self.example_data_mat_path, use_multicolumn=True)
         tsd2 = time_series_data.get_columns_by_tag(tag="raw")
         self.assertTrue(np.all(tsd2 == time_series_data))
         tsd2 = time_series_data.get_columns_by_tag(tag="raw",
@@ -234,8 +238,9 @@ class TestDataTypes(unittest.TestCase):
         tsd = data_types.TimeSeriesData(self.example_data_mat_path)
         self.assertEqual(len(tsd.get_variable_names()), tsd.shape[1])
         self.assertEqual(len(tsd.get_variable_names("*.y[*]")), 6)
-        self.assertIsNotNone(tsd.get_tags())
         self.assertLessEqual(len(tsd.get_variable_names()), tsd.shape[1])
+        tsd = data_types.TimeSeriesData(self.example_data_mat_path, use_multicolumn=True)
+        self.assertIsNotNone(tsd.get_tags())
 
     def test_get_keys_of_hdf_file(self):
         """Test the function get_keys_of_hdf_file.
@@ -256,7 +261,7 @@ class TestDataTypes(unittest.TestCase):
         """Test the to_df function"""
         df = pd.DataFrame({"my_variable": np.random.rand(5),
                            "my_variable1": np.random.rand(5)})
-        tsd = data_types.TimeSeriesData(df.copy())
+        tsd = data_types.TimeSeriesData(df.copy(), use_multicolumn=True)
         self.assertEqual(tsd.to_df().columns.values.tolist(),
                          df.columns.values.tolist())
         self.assertEqual(tsd.to_df().columns.nlevels, 1)

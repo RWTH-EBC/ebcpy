@@ -168,12 +168,12 @@ class FMU_API(simulationapi.SimulationAPI):
 
         :keyword str result_file_suffix:
             Suffix of the result file. Supported options can be extracted
-            from the TimeSeriesData.save() function.
+            from the save() accessor function.
             Default is 'csv'.
         :keyword str parquet_engine:
             The engine to use for the data format parquet.
             Supported options can be extracted
-            from the TimeSeriesData.save() function.
+            from the save() accessor function.
             Default is 'pyarrow'.
 
         """
@@ -274,7 +274,7 @@ class FMU_API(simulationapi.SimulationAPI):
 
             os.makedirs(savepath, exist_ok=True)
             filepath = os.path.join(savepath, f"{result_file_name}.{result_file_suffix}")
-            TimeSeriesData(df).droplevel(1, axis=1).save(
+            df.tsd.save(
                 filepath=filepath,
                 key="simulation",
                 engine=parquet_engine
@@ -284,8 +284,7 @@ class FMU_API(simulationapi.SimulationAPI):
         if return_option == "last_point":
             return df.iloc[-1].to_dict()
         # Else return time series data
-        tsd = TimeSeriesData(df, default_tag="sim")
-        return tsd
+        return df
 
     def setup_fmu_instance(self):
         """
@@ -355,7 +354,7 @@ class FMU_API(simulationapi.SimulationAPI):
             wrk_idx = self.worker_idx
             if self._fmu_instance is not None:
                 return True
-            unzip_dir = self._single_unzip_dir.with_stem(self._single_unzip_dir + f"_worker_{wrk_idx}")
+            unzip_dir = self._single_unzip_dir.with_stem(self._single_unzip_dir.stem + f"_worker_{wrk_idx}")
             fmpy.extract(self.model_name,
                          unzipdir=unzip_dir)
         else:

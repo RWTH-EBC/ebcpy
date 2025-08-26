@@ -10,7 +10,7 @@ import numpy as np
 import pandas as pd
 from pydantic import ValidationError
 from ebcpy.simulationapi import dymola_api, fmu, Variable
-from ebcpy import TimeSeriesData
+from ebcpy import load_time_series_data
 
 
 def postprocess_mat_result(mat_result_file, variable_names, n):
@@ -20,7 +20,7 @@ def postprocess_mat_result(mat_result_file, variable_names, n):
 
     Must be defined globally to allow multiprocessing.
     """
-    return TimeSeriesData(mat_result_file, variable_names=variable_names).to_df().iloc[-n:]
+    return load_time_series_data(mat_result_file, variable_names=variable_names).iloc[-n:]
 
 
 class TestVariable(unittest.TestCase):
@@ -84,7 +84,7 @@ class PartialTestSimAPI(unittest.TestCase):
         result_names = list(self.sim_api.states.keys())[:5]
         self.sim_api.result_names = result_names
         res = self.sim_api.simulate()  # Test with no parameters
-        self.assertIsInstance(res, TimeSeriesData)
+        self.assertIsInstance(res, pd.DataFrame)
         self.assertEqual(len(res.columns), len(result_names))
         res = self.sim_api.simulate(return_option='last_point')
         self.assertIsInstance(res, dict)
@@ -218,6 +218,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             dymola_exe_path = None
         mos_script = kwargs.get("mos_script", self.data_dir.joinpath("mos_script_test.mos"))
         model_name = kwargs.get("model_name", "TestModelVariables")
+        extract_variables = kwargs.get("extract_variables", True)
 
         try:
             self.sim_api = dymola_api.DymolaAPI(
@@ -228,7 +229,8 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
                 mos_script_post=mos_script,
-                save_logs=save_logs
+                save_logs=save_logs,
+                extract_variables=extract_variables
             )
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
@@ -242,6 +244,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         with self.assertRaises(ValueError):
             self.sim_api.simulate()
         self.sim_api.simulate(model_names=["TestModelVariables"], parameters=self.parameters)
+
+    def test_no_extract_model_vars(self):
+        self.sim_api.close()
+        self.start_api(
+            mos_script=None, extract_variables=False
+        )
+        self.assertEqual(self.sim_api.variables, [])
 
     def test_close(self):
         """Test close functionality of dymola api"""
@@ -331,7 +340,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
                 parameters=self.parameters,
                 return_option='savepath'
             )
-            df = TimeSeriesData(res, variables_names=variables).to_df()
+            df = load_time_series_data(res, variables_names=variables)
             self.assertEqual(sorted(variables), sorted(df.columns))
 
     def test_postprocessing_injection(self):

@@ -12,8 +12,10 @@ Goals of this part of the examples:
 import pathlib
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+
 # Imports from ebcpy
-from ebcpy import FMU_API, TimeSeriesData
+from ebcpy import FMU_API
 
 
 def main(
@@ -99,7 +101,7 @@ def main(
     )
     # Apply some sinus function for the outdoor air temperature
     t_dry_bulb = np.sin(time_index/3600*np.pi) * 10 + 263.15
-    df_inputs = TimeSeriesData({"TDryBul": t_dry_bulb}, index=time_index)
+    df_inputs = pd.DataFrame({"TDryBul": t_dry_bulb}, index=time_index)
     # Warning: If you enable the following line you will trigger an error.
     # It only goes to show that inputs to the simulation must contain clear
     # tags.

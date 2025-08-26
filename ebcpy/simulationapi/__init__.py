@@ -213,6 +213,21 @@ class SimulationAPI:
             return _id[0]
         return None
 
+    def _get_worker_directory(self, use_mp: bool):
+        """
+        Returns the current working directory for the process / worker.
+        If this function is called from the main process, we
+        always return the main working_directory.
+
+        :param bool use_mp: Indicates if the central working directory is needed or the worker one.
+        """
+        if use_mp:
+            worker_idx = self.worker_idx
+            if worker_idx is None:
+                return self.working_directory  # This function is called outside of multiprocessing
+            return self.working_directory.joinpath(f"worker_{worker_idx}")
+        return self.working_directory
+
     def __getstate__(self):
         """Overwrite magic method to allow pickling the api object"""
         self_dict = self.__dict__.copy()
@@ -567,6 +582,10 @@ class SimulationAPI:
 
     def check_unsupported_variables(self, variables: List[str], type_of_var: str):
         """Log warnings if variables are not supported."""
+        # If no variables are given, the model is likely not translated yet and the check can't be done.
+        if len(self.variables) == 0:
+            return False
+
         if type_of_var == "parameters":
             ref = self.parameters.keys()
         elif type_of_var == "outputs":

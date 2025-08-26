@@ -30,7 +30,7 @@ class ReproductionFile:
             Content of the text file
     """
     filename: str
-    content: str
+    content: Union[str, bytes]
 
 
 @dataclass
@@ -168,7 +168,11 @@ def save_reproduction_archive(
                     logger.error("Given file '%s' is a string but "
                                  "not an existing file. Skipping...", file)
             elif isinstance(file, ReproductionFile):
-                zip_file.writestr(file.filename, file.content)
+                if isinstance(file.content, str):
+                    # Use surrogateescape to make sure all characters survive
+                    zip_file.writestr(file.filename, file.content.encode("utf-8", errors="surrogateescape"))
+                else:
+                    zip_file.writestr(file.filename, file.content)
             elif isinstance(file, CopyFile):
                 zip_file.write(file.sourcepath, file.filename)
                 if file.remove:

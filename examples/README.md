@@ -19,8 +19,8 @@ Before being able to run these examples, be sure to:
 
 ### `e1_time_series_data_example.py`
 
-1. Learn how to use `TimeSeriesData`
-2. Understand why we use `TimeSeriesData`
+1. Learn how to use time series data
+2. Understand why we use `TimeSeriesAccessor`
 3. Get to know the different processing functions
 
 ### `e2_fmu_example.py`

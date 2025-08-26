@@ -127,3 +127,6 @@
   - Improve dslog reading on multiple processes #151
   - Remove cd usage in DymolaAPI
   - Fix bug to handle paths as absolute and improve doc #158
+- v0.6.0
+  - Use load_time_series_data instead of TimeSeriesData #160
+  - By default, don't use multicolumn for TimeSeriesData #160

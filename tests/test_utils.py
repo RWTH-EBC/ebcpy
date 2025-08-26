@@ -9,7 +9,7 @@ import zipfile
 import numpy as np
 import pandas as pd
 import scipy.io as spio
-from ebcpy import TimeSeriesData
+from ebcpy import load_time_series_data
 from ebcpy.utils import setup_logger, conversion, statistics_analyzer, reproduction, get_names
 
 
@@ -21,7 +21,7 @@ class TestConversion(unittest.TestCase):
         Used to setup relevant paths and APIs etc."""
         self.example_dir = Path(__file__).parent.joinpath("data")
         self.example_data_hdf_path = self.example_dir.joinpath("example_data.csv")
-        self.tsd = TimeSeriesData(self.example_data_hdf_path, sep=";")
+        self.tsd = load_time_series_data(self.example_data_hdf_path, sep=";")
         self.columns = ["sine.freqHz / Hz"]
 
     def test_conversion_tsd_to_mat(self):
@@ -38,7 +38,7 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_mat))
             # Check if converted filepath is provided filepath
-            self.assertEqual(filepath_mat, str(save_path))
+            self.assertEqual(filepath_mat, save_path)
             # Now check if the created mat-file can be used.
             self.assertIsInstance(spio.loadmat(save_path), dict)
             # Remove converted file again
@@ -65,13 +65,13 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
-            self.assertTrue(filepath_txt.endswith(".txt"))
+            self.assertTrue(filepath_txt.suffix == ".txt")
             # Remove converted file again
             os.remove(filepath_txt)
         for with_tag in [True, False]:
             # Test case for df with no tags
             filepath_txt = conversion.convert_tsd_to_modelica_txt(
-                tsd=self.tsd.to_df(),
+                tsd=self.tsd,
                 save_path_file=Path("some_text_data.txt"),
                 table_name="dummy",
                 columns=self.columns[0],
@@ -80,7 +80,7 @@ class TestConversion(unittest.TestCase):
             # Check if converted file exists
             self.assertTrue(os.path.isfile(filepath_txt))
             # Check if converted filepath is provided filepath
-            self.assertTrue(filepath_txt.endswith(".txt"))
+            self.assertTrue(filepath_txt.suffix == ".txt")
             # Check if header matches:
             with open(filepath_txt, "r") as file:
                 header_line = file.readlines()[2]
@@ -88,7 +88,6 @@ class TestConversion(unittest.TestCase):
 
             # Remove converted file again
             os.remove(filepath_txt)
-
 
         with self.assertRaises(ValueError):
             conversion.convert_tsd_to_modelica_txt(
@@ -101,7 +100,7 @@ class TestConversion(unittest.TestCase):
         """Test function conversion.convert_tsd_to_clustering_txt().
         For an example, see the doctest in the function."""
         # First convert the file
-        save_path = os.path.normpath(os.path.join(self.example_dir, "example_data_converted.txt"))
+        save_path = self.example_dir.joinpath("example_data_converted.txt")
         # Test both conversion with specification of columns and without passing the names.
         for col in [self.columns, None]:
             filepath_txt = conversion.convert_tsd_to_clustering_txt(
