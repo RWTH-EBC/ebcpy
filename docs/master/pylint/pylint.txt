@@ -271,13 +271,17 @@ ebcpy/simulationapi/fmu.py:381:4: R0913: Too many arguments (6/5) (too-many-argu
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1117:1128]
 ==ebcpy.simulationapi.fmu:[408:415]
-        ))
+                ))
+
         return super().save_for_reproduction(
             title=title,
             path=path,
             files=files,
             **kwargs
-        ) (duplicate-code)
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        """Save model as an FMU""" (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[427:435]
 ==ebcpy.simulationapi.fmu:[199:206]
