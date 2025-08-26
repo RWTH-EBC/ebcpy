@@ -26,7 +26,7 @@ def main(
     Arguments of this example:
     :param str aixlib_mo:
         Path to the package.mo of the AixLib.
-        This example was tested for AixLib version 1.0.0.
+        This example was tested for AixLib version 3.0.0.
     :param str working_directory:
         Path in which to store the output.
         Default is the examples\results folder
@@ -42,8 +42,9 @@ def main(
 
     # ######################### Simulation API Instantiation ##########################
     # %% Setup the Dymola-API:
+    model_name = "AixLib.Fluid.HeatPumps.ModularReversible.Examples.AirToWater2D_OneRoomRadiator"
     dym_api = DymolaAPI(
-        model_name="AixLib.Systems.HeatPumpSystems.Examples.HeatPumpSystem",
+        model_name=model_name,
         working_directory=working_directory,
         n_cpu=n_cpu,
         packages=[aixlib_mo],
@@ -71,7 +72,7 @@ def main(
                         "stop_time": 3600,
                         "output_interval": 100}
     dym_api.set_sim_setup(sim_setup=simulation_setup)
-    p_el_name = "heatPumpSystem.heatPump.sigBus.PelMea"
+    p_el_name = "heaPum.sigBus.PEleMea"
     dym_api.result_names = [p_el_name]
 
     # ######################### Inputs ##########################
@@ -82,19 +83,19 @@ def main(
     # We called the instance of the model `timTab`.
     # To get the output of the table, let's add it to the result names:
     dym_api.result_names = [p_el_name, 'timTab.y[1]']
-    # In order to change the inputs, you have to change the model in Dymola by:
-    # 1. Double click on timTab
+    # In order to change the inputs, you have to change the model in Dymola.
+    # You can either do this manually in Dymola or by using a modifier, see e5.
+    # If you did not change the model yourself, set use_modifier=True below for the API
+    # to automatically change the model instance for you.
+    #
+    # To change the model:
+    # 1. Double-click on timTab
     # 2. Set tableOnFile = true
     # 3. Set tableName = "myCustomInput" (or any other nice string)
-    table_name = "myCustomInput"
     # 4. Enter the fileName where you want to store your input. This can be any filepath.
-    # 5. Last, add a parameter in the model to ensure the simulation works without tuning any parameter.
-    # Sadly, this is a requirement. Models with parameters do not require this feature. As this model has
-    # no parameters, it's required. Go into the text-section and add:
-    # 'parameter Real n=1;'.
-
     # For this tutorial to work, set
     # fileName=Modelica.Utilities.Files.loadResource("modelica://AixLib/Resources/my_custom_input.txt")
+    table_name = "myCustomInput"
     file_name = pathlib.Path(aixlib_mo).parent.joinpath("Resources", "my_custom_input.txt")
     # This input generate is re-used from the fmu_example.py file.
     time_index = np.arange(
@@ -113,6 +114,20 @@ def main(
     )
     print("Successfully created Dymola input file at", filepath)
 
+    use_modifier = True
+    if use_modifier:
+        dym_api.model_name = (
+            f'{model_name}(\n'  # This work like an "extend". You may use \n for pretty display
+            f'timTab(tableOnFile=true,\n'  # Apply the steps listed above
+            f'tableName="{table_name}",\n'  # Important to use ' for string as " is needed in the modifier
+            f'fileName="{file_name.as_posix()}"))'  # as_posix helps to keep the path without backlashes
+        )
+        print(dym_api.model_name)
+        # Setting the model name again overrides the previously set result_names,
+        # which are not standard outputs in our example.
+        # Thus, we have to set them again for return option "time_series"
+        dym_api.result_names = [p_el_name, 'timTab.y[1]']
+
     # ######################### Simulation options ##########################
     # Look at the doc of simulate() in the website
     # Besides parameters (explained in fmu_example), return_option is important
@@ -121,7 +136,9 @@ def main(
         # Info: You would not need these following keyword-arguments,
         # as we've already created our file above.
         # However, you can also pass the arguments
-        # from above directly into the function call:
+        # from above directly into the function call and the API
+        # generates the files for you. Still, you need to change the
+        # model yourself or using a modifier.
         inputs=tsd_input,
         table_name=table_name,
         file_name=file_name
@@ -171,7 +188,7 @@ def main(
     plt.plot(tsd_1[p_el_name], color="blue", label="savepath", marker="^")
     plt.plot(result_time_series[p_el_name], color="red", label="time_series", marker="^")
     plt.scatter(result_last_point["Time"], result_last_point[p_el_name],
-                color="black", label="last_point", marker="^")
+                color="black", label="last_point", marker="s", s=100)
     plt.legend()
     plt.title("Difference in output for different return_options")
     plt.figure()
@@ -185,5 +202,5 @@ if __name__ == '__main__':
     # TODO-User: Change the AixLib path!
     main(
         aixlib_mo=r"D:\04_git\AixLib\AixLib\package.mo",
-        n_cpu=5
+        n_cpu=1
     )
