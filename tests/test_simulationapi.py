@@ -218,6 +218,7 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
             dymola_exe_path = None
         mos_script = kwargs.get("mos_script", self.data_dir.joinpath("mos_script_test.mos"))
         model_name = kwargs.get("model_name", "TestModelVariables")
+        extract_variables = kwargs.get("extract_variables", True)
 
         try:
             self.sim_api = dymola_api.DymolaAPI(
@@ -228,7 +229,8 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
                 n_cpu=self.n_cpu,
                 mos_script_pre=mos_script,
                 mos_script_post=mos_script,
-                save_logs=save_logs
+                save_logs=save_logs,
+                extract_variables=extract_variables
             )
         except (FileNotFoundError, ImportError, ConnectionError) as error:
             self.skipTest(f"Could not load the dymola interface "
@@ -242,6 +244,13 @@ class PartialTestDymolaAPI(PartialTestSimAPI):
         with self.assertRaises(ValueError):
             self.sim_api.simulate()
         self.sim_api.simulate(model_names=["TestModelVariables"], parameters=self.parameters)
+
+    def test_no_extract_model_vars(self):
+        self.sim_api.close()
+        self.start_api(
+            mos_script=None, extract_variables=False
+        )
+        self.assertEqual(self.sim_api.variables, [])
 
     def test_close(self):
         """Test close functionality of dymola api"""

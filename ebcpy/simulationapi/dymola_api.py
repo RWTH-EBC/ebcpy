@@ -316,7 +316,7 @@ class DymolaAPI(SimulationAPI):
         self.fully_initialized = True
         # Trigger on init.
         if model_name is not None:
-            self._update_model(init=True)
+            self._update_model()
         # Set result_names to output variables.
         self.result_names = list(self.outputs.keys())
 
@@ -328,11 +328,11 @@ class DymolaAPI(SimulationAPI):
                 "are not part of the supported kwargs and "
                 "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
 
-    def _update_model(self, init=False):
+    def _update_model(self):
         # Translate the model and extract all variables,
         # if the user wants to:
         if self.extract_variables and self.fully_initialized:
-            self.extract_model_variables(init=init)
+            self.extract_model_variables()
 
     def simulate(self,
                  parameters: Union[dict, List[dict]] = None,
@@ -833,7 +833,7 @@ class DymolaAPI(SimulationAPI):
             self._dummy_dymola_instance.close()
             self.logger.info('Successfully closed dummy Dymola instance')
 
-    def extract_model_variables(self, init=False):
+    def extract_model_variables(self):
         """
         Extract all variables of the model by
         translating it and then processing the dsin
@@ -844,16 +844,9 @@ class DymolaAPI(SimulationAPI):
                          self.model_name)
         self.translate()
         # Get dsin:
-        if init:
-            # if model variables are extracted during init, the dsin.txt
-            # is also for mp in the overall worker_directory
-            df = manipulate_ds.convert_ds_file_to_dataframe(
-                self.working_directory.joinpath("dsin.txt")
-            )
-        else:
-            df = manipulate_ds.convert_ds_file_to_dataframe(
-                self._get_worker_directory(use_mp=self.use_mp).joinpath("dsin.txt")
-            )
+        df = manipulate_ds.convert_ds_file_to_dataframe(
+            self._get_worker_directory(use_mp=self.use_mp).joinpath("dsin.txt")
+        )
         # Convert and return all parameters of dsin to initial values and names
         for idx, row in df.iterrows():
             _max = float(row["4"])
@@ -906,16 +899,6 @@ class DymolaAPI(SimulationAPI):
             DymolaAPI.dymola = dymola
             return None
         return dymola
-
-    def _get_worker_directory(self, use_mp: bool):
-        """
-        Returns the current working directory for the process / worker.
-
-        :param bool use_mp: Indicates if the central working directory is needed or the worker one.
-        """
-        if use_mp:
-            return self.working_directory.joinpath(f"worker_{self.worker_idx}")
-        return self.working_directory
 
     def update_experiment_setup_output(self, experiment_setup_output: Union[ExperimentSetupOutput, dict]):
         """
