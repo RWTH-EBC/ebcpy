@@ -636,7 +636,11 @@ class DymolaAPI(SimulationAPI):
             # Get the working_directory of the current dymola instance
             self.dymola.cd()
             # Get the value and convert it to a 100 % fitting str-path
-            dymola_working_directory = Path(self.dymola.getLastErrorLog().replace("\n", ""))
+            cd_log = self.dymola.getLastErrorLog()
+            if cd_log.endswith("\n"):  # Typically ends with \n
+                cd_log = cd_log[:-1]
+            # Sometimes, the other logs are also included. Only use the last line.
+            dymola_working_directory = Path(cd_log.split("\n")[-1])
             if dymola_working_directory != self._get_worker_directory(use_mp=self.use_mp):
                 self.logger.warning(
                     "The working directory set by ebcpy and the one with the result does not match: "
