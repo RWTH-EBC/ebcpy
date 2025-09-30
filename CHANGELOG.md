@@ -130,3 +130,5 @@
 - v0.6.0
   - Use load_time_series_data instead of TimeSeriesData #160
   - By default, don't use multicolumn for TimeSeriesData #160
+- v0.6.1
+  - Fix a savepath bug #163
