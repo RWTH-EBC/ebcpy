@@ -311,14 +311,13 @@ ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
 ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
