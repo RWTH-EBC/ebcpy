@@ -21,4 +21,4 @@ jobs:
       TEST_ENGINE: "unittest"
       EXECUTE_COVERAGE_TEST: true
       USE_DYMOLA: true
-      CONVERT_EXAMPLES: true
+      CONVERT_EXAMPLES: false
