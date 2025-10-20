@@ -745,7 +745,7 @@
             "column": 0,
             "path": "ebcpy/utils/reproduction.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-04.txt'.",
+            "message": "ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-46.txt'.",
             "message-id": "F0002"
         },
         {
@@ -789,7 +789,7 @@
             "column": 0,
             "path": "ebcpy/data_types.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt'.",
+            "message": "ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-46.txt'.",
             "message-id": "F0002"
         },
         {
@@ -800,7 +800,7 @@
             "column": 0,
             "path": "ebcpy/preprocessing.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt'.",
+            "message": "ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-47.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1086,7 +1086,7 @@
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt'.",
+            "message": "ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-47.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1097,7 +1097,7 @@
             "column": 0,
             "path": "ebcpy/utils/conversion.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt'.",
+            "message": "ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-47.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1108,7 +1108,7 @@
             "column": 0,
             "path": "ebcpy/utils/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt'.",
+            "message": "ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-47.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1284,7 +1284,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt'.",
+            "message": "ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-47.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1471,7 +1471,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt'.",
+            "message": "ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-48.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1515,7 +1515,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt'.",
+            "message": "ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-48.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1526,7 +1526,7 @@
             "column": 0,
             "path": "ebcpy/modelica/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt'.",
+            "message": "ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-55-48.txt'.",
             "message-id": "F0002"
         },
         {
@@ -1878,7 +1878,7 @@
             "column": 0,
             "path": "ebcpy/modelica/manipulate_ds.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[323:332]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[323:332]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n    def _update_model(self):\n        # Translate the model and extract all variables,\n        # if the user wants to:",
             "message-id": "R0801"
         },
         {
