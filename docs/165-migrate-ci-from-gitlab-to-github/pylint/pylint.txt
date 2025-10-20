@@ -1,4 +1,4 @@
-************* Module /home/runner/work/ebcpy/ebcpy/pylintrc
+************* Module /builds/EBC/EBC_all/github_ci/ebcpy/pylintrc
 pylintrc:1:0: E0015: Unrecognized option found: no-space-check (unrecognized-option)
 pylintrc:1:0: R0022: Useless option value for '--disable', 'print-statement' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
 pylintrc:1:0: R0022: Useless option value for '--disable', 'parameter-unpacking' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
@@ -66,15 +66,26 @@ pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pyli
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'locally-enabled' (unknown-option-value)
 pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
-************* Module ebcpy.utils.reproduction
-ebcpy/utils/reproduction.py:1:0: F0002: ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-15.txt'. (astroid-error)
+************* Module ebcpy.preprocessing
+ebcpy/preprocessing.py:245:0: R0914: Too many local variables (21/15) (too-many-locals)
+ebcpy/preprocessing.py:288:4: C0415: Import outside toplevel (ebcpy.TimeSeriesData) (import-outside-toplevel)
+ebcpy/preprocessing.py:344:4: W0632: Possible unbalanced tuple unpacking with sequence defined at line 713: left side has 2 labels, right side has 4 values (unbalanced-tuple-unpacking)
+ebcpy/preprocessing.py:379:4: W0404: Reimport 'TimeSeriesData' (imported line 288) (reimported)
+ebcpy/preprocessing.py:379:4: C0415: Import outside toplevel (ebcpy.TimeSeriesData) (import-outside-toplevel)
+ebcpy/preprocessing.py:245:0: R0912: Too many branches (13/12) (too-many-branches)
+ebcpy/preprocessing.py:471:0: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/preprocessing.py:712:4: R1705: Unnecessary "else" after "return", remove the "else" and de-indent the code inside it (no-else-return)
 ************* Module ebcpy.data_types
 ebcpy/data_types.py:559:0: C0301: Line too long (112/100) (line-too-long)
 ebcpy/data_types.py:597:0: C0301: Line too long (112/100) (line-too-long)
 ebcpy/data_types.py:691:0: C0301: Line too long (118/100) (line-too-long)
-ebcpy/data_types.py:1:0: F0002: ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-16.txt'. (astroid-error)
-************* Module ebcpy.preprocessing
-ebcpy/preprocessing.py:1:0: F0002: ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-16.txt'. (astroid-error)
+ebcpy/data_types.py:670:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/data_types.py:670:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/data_types.py:697:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/data_types.py:898:13: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/data_types.py:869:0: R0912: Too many branches (14/12) (too-many-branches)
+ebcpy/data_types.py:13:0: W0611: Unused TYPE_CHECKING imported from typing (unused-import)
+ebcpy/data_types.py:17:0: W0611: Unused numpy imported as np (unused-import)
 ************* Module ebcpy.optimization
 ebcpy/optimization.py:48:0: C0301: Line too long (140/100) (line-too-long)
 ebcpy/optimization.py:55:0: C0301: Line too long (106/100) (line-too-long)
@@ -101,30 +112,106 @@ ebcpy/optimization.py:469:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/optimization.py:471:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/optimization.py:473:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/optimization.py:518:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/optimization.py:1:0: F0002: ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-16.txt'. (astroid-error)
-************* Module ebcpy.utils.conversion
-ebcpy/utils/conversion.py:1:0: F0002: ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-16.txt'. (astroid-error)
-************* Module ebcpy.utils.__init__
-ebcpy/utils/__init__.py:1:0: F0002: ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-16.txt'. (astroid-error)
+ebcpy/optimization.py:115:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/optimization.py:115:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:120:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:120:17: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:205:4: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/optimization.py:245:12: C0103: Variable name "gp" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/optimization.py:247:16: W0212: Access to a protected member _gp of a client class (protected-access)
+ebcpy/optimization.py:205:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:205:37: W0613: Unused argument 'method' (unused-argument)
+ebcpy/optimization.py:205:50: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:279:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:279:38: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:320:4: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/optimization.py:320:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:320:29: W0613: Unused argument 'method' (unused-argument)
+ebcpy/optimization.py:320:42: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:369:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/optimization.py:369:63: W0613: Unused argument 'n_cpu' (unused-argument)
+ebcpy/optimization.py:415:4: R0914: Too many local variables (38/15) (too-many-locals)
+ebcpy/optimization.py:509:30: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+ebcpy/optimization.py:511:30: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+ebcpy/optimization.py:513:29: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+ebcpy/optimization.py:515:29: C0201: Consider iterating the dictionary directly instead of calling .keys() (consider-iterating-dictionary)
+ebcpy/optimization.py:415:4: R0915: Too many statements (58/50) (too-many-statements)
+ebcpy/optimization.py:415:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
 ************* Module ebcpy.utils.statistics_analyzer
 ebcpy/utils/statistics_analyzer.py:189:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/utils/statistics_analyzer.py:203:0: C0303: Trailing whitespace (trailing-whitespace)
 ebcpy/utils/statistics_analyzer.py:206:0: C0303: Trailing whitespace (trailing-whitespace)
-ebcpy/utils/statistics_analyzer.py:4:0: E0401: Unable to import 'numpy' (import-error)
-ebcpy/utils/statistics_analyzer.py:5:0: E0401: Unable to import 'sklearn.metrics' (import-error)
-ebcpy/preprocessing.py:23:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
-ebcpy/optimization.py:5:0: C0412: Imports from package os are not grouped (ungrouped-imports)
-ebcpy/optimization.py:6:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
-ebcpy/optimization.py:7:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
-ebcpy/utils/conversion.py:5:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
-************* Module ebcpy.utils
-ebcpy/utils/__init__.py:5:0: C0412: Imports from package logging are not grouped (ungrouped-imports)
-ebcpy/utils/__init__.py:6:0: C0412: Imports from package os are not grouped (ungrouped-imports)
-ebcpy/utils/__init__.py:8:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+************* Module ebcpy.utils.reproduction
+ebcpy/utils/reproduction.py:173:0: C0301: Line too long (108/100) (line-too-long)
+ebcpy/utils/reproduction.py:300:0: C0301: Line too long (126/100) (line-too-long)
+ebcpy/utils/reproduction.py:362:0: C0301: Line too long (113/100) (line-too-long)
+ebcpy/utils/reproduction.py:55:0: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/utils/reproduction.py:55:0: R0914: Too many local variables (18/15) (too-many-locals)
+ebcpy/utils/reproduction.py:91:28: E1101: Instance of 'module' has no '__file__' member (no-member)
+ebcpy/utils/reproduction.py:104:16: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/utils/reproduction.py:126:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/utils/reproduction.py:126:64: C0103: Variable name "f" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/utils/reproduction.py:163:12: R1704: Redefining argument with the local name 'file' (redefined-argument-from-local)
+ebcpy/utils/reproduction.py:55:0: R0912: Too many branches (19/12) (too-many-branches)
+ebcpy/utils/reproduction.py:55:0: R0915: Too many statements (53/50) (too-many-statements)
+ebcpy/utils/reproduction.py:212:8: C0415: Import outside toplevel (git.Repo, git.InvalidGitRepositoryError, git.RemoteReference) (import-outside-toplevel)
+ebcpy/utils/reproduction.py:214:8: W0707: Consider explicitly re-raising using 'raise ImportError('Could not save data for reproduction, install GitPython using `pip install GitPython`: ' + str(err)) from err' (raise-missing-from)
+ebcpy/utils/reproduction.py:190:0: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/utils/reproduction.py:284:36: C2801: Unnecessarily calls dunder method __str__. Use str built-in function. (unnecessary-dunder-call)
+ebcpy/utils/reproduction.py:282:17: W0612: Unused variable 'dirnames' (unused-variable)
+ebcpy/utils/reproduction.py:337:24: R1735: Consider using '{"name": dist.metadata['Name'], "version": dist.version, "location": os.path.normpath(str(dist.locate_file(''))), ... }' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/utils/reproduction.py:369:16: E0401: Unable to import 'pypisearch.search' (import-error)
+ebcpy/utils/reproduction.py:369:16: C0415: Import outside toplevel (pypisearch.search.Search) (import-outside-toplevel)
+ebcpy/utils/reproduction.py:372:20: W0715: Exception arguments suggest string formatting might be intended (raising-format-tuple)
+ebcpy/utils/reproduction.py:399:8: W1309: Using an f-string that does not have any interpolated variables (f-string-without-interpolation)
+ebcpy/utils/reproduction.py:12:0: W0611: Unused Tuple imported from typing (unused-import)
+************* Module ebcpy.utils.conversion
+ebcpy/utils/conversion.py:53:7: C0113: Consider changing "not save_path_file.suffix == '.mat'" to "save_path_file.suffix != '.mat'" (unneeded-not)
+ebcpy/utils/conversion.py:109:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
+ebcpy/utils/conversion.py:169:7: C0113: Consider changing "not save_path_file.suffix == '.txt'" to "save_path_file.suffix != '.txt'" (unneeded-not)
+************* Module ebcpy.modelica.manipulate_ds
+ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:116:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:132:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:134:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:143:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:149:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+************* Module ebcpy.modelica
+ebcpy/modelica/__init__.py:9:0: R0914: Too many local variables (20/15) (too-many-locals)
+ebcpy/modelica/__init__.py:56:15: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/__init__.py:60:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/__init__.py:9:0: R0912: Too many branches (13/12) (too-many-branches)
+************* Module ebcpy.modelica.simres
+ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:254:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:345:8: W0707: Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f'Time column {time_key} not found in the data dictionary.') from exc' (raise-missing-from)
+ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
 ************* Module ebcpy.simulationapi.__init__
 ebcpy/simulationapi/__init__.py:442:0: C0301: Line too long (111/100) (line-too-long)
 ebcpy/simulationapi/__init__.py:585:0: C0301: Line too long (104/100) (line-too-long)
-ebcpy/simulationapi/__init__.py:1:0: F0002: ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-17.txt'. (astroid-error)
+************* Module ebcpy.simulationapi
+ebcpy/simulationapi/__init__.py:137:4: R0903: Too few public methods (0/2) (too-few-public-methods)
+ebcpy/simulationapi/__init__.py:145:0: R0902: Too many instance attributes (18/7) (too-many-instance-attributes)
+ebcpy/simulationapi/__init__.py:211:14: W0212: Access to a protected member _identity of a client class (protected-access)
+ebcpy/simulationapi/__init__.py:265:4: R0914: Too many local variables (19/15) (too-many-locals)
+ebcpy/simulationapi/__init__.py:384:20: C0103: Variable name "t1" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:265:4: R0912: Too many branches (21/12) (too-many-branches)
+ebcpy/simulationapi/__init__.py:265:4: R0915: Too many statements (51/50) (too-many-statements)
+ebcpy/simulationapi/__init__.py:402:30: C0103: Argument name "t1" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:443:15: W0612: Unused variable 'used' (unused-variable)
+ebcpy/simulationapi/__init__.py:535:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/simulationapi/__init__.py:535:21: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:541:4: C0116: Missing function or method docstring (missing-function-docstring)
+ebcpy/simulationapi/__init__.py:541:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:547:4: C0103: Attribute name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:547:17: C0103: Argument name "cd" doesn't conform to snake_case naming style (invalid-name)
+ebcpy/simulationapi/__init__.py:24:0: C0411: standard import "from shutil import disk_usage" should be placed before "import pydantic" (wrong-import-order)
 ************* Module ebcpy.simulationapi.dymola_api
 ebcpy/simulationapi/dymola_api.py:363:0: C0301: Line too long (101/100) (line-too-long)
 ebcpy/simulationapi/dymola_api.py:383:0: C0301: Line too long (102/100) (line-too-long)
@@ -142,46 +229,46 @@ ebcpy/simulationapi/dymola_api.py:1185:0: C0301: Line too long (103/100) (line-t
 ebcpy/simulationapi/dymola_api.py:1380:0: C0301: Line too long (104/100) (line-too-long)
 ebcpy/simulationapi/dymola_api.py:1381:0: C0301: Line too long (102/100) (line-too-long)
 ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1427/1000) (too-many-lines)
-ebcpy/simulationapi/dymola_api.py:1:0: F0002: ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-17.txt'. (astroid-error)
+ebcpy/simulationapi/dymola_api.py:65:0: R0902: Too many instance attributes (23/7) (too-many-instance-attributes)
+ebcpy/simulationapi/dymola_api.py:305:17: R1735: Consider using '{"use_mp": True, "port": port, "time_delay": i * _time_delay_between_starts, ... }' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:309:51: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:187:4: R0912: Too many branches (27/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:187:4: R0915: Too many statements (80/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:406:4: R0914: Too many local variables (48/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:439:45: R1735: Consider using '{"use_mp": True}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/simulationapi/dymola_api.py:621:19: W0718: Catching too general exception Exception (broad-exception-caught)
+ebcpy/simulationapi/dymola_api.py:618:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:629:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:406:4: R0912: Too many branches (41/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:406:4: R0915: Too many statements (139/50) (too-many-statements)
+ebcpy/simulationapi/dymola_api.py:718:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:720:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:785:12: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:951:12: C0415: Import outside toplevel (dymola.dymola_interface.DymolaInterface) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:952:12: C0415: Import outside toplevel (dymola.dymola_exception.DymolaConnectionException) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:957:30: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1008:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/dymola_api.py:1008:4: R0914: Too many local variables (25/15) (too-many-locals)
+ebcpy/simulationapi/dymola_api.py:1034:8: C0415: Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information) (import-outside-toplevel)
+ebcpy/simulationapi/dymola_api.py:1087:21: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:1108:28: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/simulationapi/dymola_api.py:1008:4: R0912: Too many branches (13/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:1143:18: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1146:16: W0719: Raising too general exception: Exception (broad-exception-raised)
+ebcpy/simulationapi/dymola_api.py:1131:4: R1710: Either all return statements in a function should return an expression, or none of them should. (inconsistent-return-statements)
+ebcpy/simulationapi/dymola_api.py:1315:26: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/simulationapi/dymola_api.py:1355:71: R1735: Consider using '{"use_mp": False}' instead of a call to 'dict'. (use-dict-literal)
 ************* Module ebcpy.simulationapi.fmu
 ebcpy/simulationapi/fmu.py:82:0: C0301: Line too long (107/100) (line-too-long)
 ebcpy/simulationapi/fmu.py:296:0: C0301: Line too long (119/100) (line-too-long)
 ebcpy/simulationapi/fmu.py:357:0: C0301: Line too long (108/100) (line-too-long)
-ebcpy/simulationapi/fmu.py:1:0: F0002: ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-17.txt'. (astroid-error)
-************* Module ebcpy.modelica.__init__
-ebcpy/modelica/__init__.py:1:0: F0002: ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-10-42-17.txt'. (astroid-error)
-************* Module ebcpy.modelica.simres
-ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
-ebcpy/modelica/simres.py:55:0: E0401: Unable to import 'scipy.io' (import-error)
-ebcpy/modelica/simres.py:56:0: E0401: Unable to import 'pandas' (import-error)
-ebcpy/modelica/simres.py:57:0: E0401: Unable to import 'numpy' (import-error)
-ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
-ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
-ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/simres.py:254:0: R0914: Too many local variables (16/15) (too-many-locals)
-ebcpy/modelica/simres.py:345:8: W0707: Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f'Time column {time_key} not found in the data dictionary.') from exc' (raise-missing-from)
-ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
-ebcpy/simulationapi/dymola_api.py:4:0: C0412: Imports from package sys are not grouped (ungrouped-imports)
-ebcpy/simulationapi/dymola_api.py:5:0: C0412: Imports from package os are not grouped (ungrouped-imports)
-ebcpy/simulationapi/dymola_api.py:8:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
-ebcpy/simulationapi/dymola_api.py:11:0: C0412: Imports from package time are not grouped (ungrouped-imports)
-ebcpy/simulationapi/dymola_api.py:13:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
-ebcpy/simulationapi/fmu.py:4:0: C0412: Imports from package os are not grouped (ungrouped-imports)
-ebcpy/simulationapi/fmu.py:6:0: C0412: Imports from package atexit are not grouped (ungrouped-imports)
-ebcpy/simulationapi/fmu.py:7:0: C0412: Imports from package shutil are not grouped (ungrouped-imports)
-ebcpy/simulationapi/fmu.py:8:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
-************* Module ebcpy.modelica.manipulate_ds
-ebcpy/modelica/manipulate_ds.py:7:0: E0401: Unable to import 'pandas' (import-error)
-ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
-ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:116:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:132:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:134:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
-ebcpy/modelica/manipulate_ds.py:143:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:149:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
-ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+ebcpy/simulationapi/fmu.py:24:0: C0103: Class name "FMU_Setup" doesn't conform to PascalCase naming style (invalid-name)
+ebcpy/simulationapi/fmu.py:40:0: C0103: Class name "FMU_API" doesn't conform to PascalCase naming style (invalid-name)
+ebcpy/simulationapi/fmu.py:182:4: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/simulationapi/fmu.py:182:4: R0912: Too many branches (14/12) (too-many-branches)
+ebcpy/simulationapi/fmu.py:332:17: R1714: Consider merging these comparisons with 'in' by using 'var.causality in ('parameter', 'calculatedParameter')'. Use a set instead if elements are hashable. (consider-using-in)
+ebcpy/simulationapi/fmu.py:381:4: R0913: Too many arguments (6/5) (too-many-arguments)
+ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[1121:1132]
 ==ebcpy.simulationapi.fmu:[408:415]
         ))
@@ -191,7 +278,7 @@ ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
             files=files,
             **kwargs
         ) (duplicate-code)
-ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[427:435]
 ==ebcpy.simulationapi.fmu:[199:206]
         if kwargs:
@@ -202,7 +289,7 @@ ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
 
         # Handle multiprocessing
         if self.use_mp: (duplicate-code)
-ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.simulationapi.dymola_api:[323:332]
 ==ebcpy.simulationapi.fmu:[199:205]
         if kwargs:
@@ -214,22 +301,22 @@ ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
     def _update_model(self):
         # Translate the model and extract all variables,
         # if the user wants to: (duplicate-code)
-ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+ebcpy/simulationapi/fmu.py:1:0: R0801: Similar lines in 2 files
 ==ebcpy.optimization:[103:115]
 ==ebcpy.simulationapi.__init__:[524:535]
         return self._working_directory
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        """Set current working directory"""
+        """Set the current working directory"""
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -> Path: (duplicate-code)
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
+ebcpy/simulationapi/fmu.py:1:0: R0401: Cyclic import (ebcpy -> ebcpy.simulationapi.fmu) (cyclic-import)
 
 -----------------------------------
-Your code has been rated at 5.61/10
+Your code has been rated at 9.10/10
 
