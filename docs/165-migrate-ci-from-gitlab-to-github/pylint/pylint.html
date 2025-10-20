@@ -1,0 +1,2308 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <title>Pylint report</title>
+        <meta charset="utf-8">
+        <meta name="description" content="auto generated pylint report from JSON">
+        <style type="text/css">
+        body {
+            padding: 1em;
+            margin: 0;
+            background-color: #fffffe;
+            font-family: sans-serif;
+        }
+        table {
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 0.5em;
+            border: 1px solid #333333;
+        }
+        th {
+            background-color: #DCDCDC;
+        }
+        </style>
+    </head>
+    <body>
+        <h1>Pylint report from report.jinja2</h1>
+
+        
+        <h2>Score</h2>
+        5.61 / 10
+            
+            (previous score: 5.61 / 10)
+            
+        
+
+        <h2>Messages</h2>
+        
+        <h3>Module <code>ebcpy.data_types</code> (<code>ebcpy/data_types.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/data_types.py: Fatal error while checking &#39;ebcpy/data_types.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>559</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (112/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>597</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (112/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>691</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (118/100)</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.modelica.__init__</code> (<code>ebcpy/modelica/__init__.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/modelica/__init__.py: Fatal error while checking &#39;ebcpy/modelica/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt&#39;.</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.modelica.manipulate_ds</code> (<code>ebcpy/modelica/manipulate_ds.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[1121:1132]
+==ebcpy.simulationapi.fmu:[408:415]
+                ))
+
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        )
+
+    def _save_to_fmu(self, fail_on_error):
+        &#34;&#34;&#34;Save model as an FMU&#34;&#34;&#34;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[427:435]
+==ebcpy.simulationapi.fmu:[199:206]
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+
+        if self.use_mp:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[323:332]
+==ebcpy.simulationapi.fmu:[199:205]
+        if kwargs:
+            self.logger.error(
+                &#34;You passed the following kwargs which &#34;
+                &#34;are not part of the supported kwargs and &#34;
+                &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
+</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>duplicate-code</code></td>
+                <td>R0801</td>
+                <td></td>
+                <td><pre>Similar lines in 2 files
+==ebcpy.optimization:[103:115]
+==ebcpy.simulationapi.__init__:[524:535]
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    @property
+    def cd(self) -&gt; Path:</pre></td>
+            </tr>
+            
+            <tr>
+                <td>7</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;pandas&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>10</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>too-many-locals</code></td>
+                <td>R0914</td>
+                <td>convert_ds_file_to_dataframe</td>
+                <td><pre>Too many local variables (17/15)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>43</td>
+                <td>9</td>
+                <td>warning</td>
+                <td><code>unspecified-encoding</code></td>
+                <td>W1514</td>
+                <td>convert_ds_file_to_dataframe</td>
+                <td><pre>Using open without explicitly specifying an encoding</pre></td>
+            </tr>
+            
+            <tr>
+                <td>116</td>
+                <td>24</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>132</td>
+                <td>24</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>134</td>
+                <td>27</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>143</td>
+                <td>9</td>
+                <td>warning</td>
+                <td><code>unspecified-encoding</code></td>
+                <td>W1514</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Using open without explicitly specifying an encoding</pre></td>
+            </tr>
+            
+            <tr>
+                <td>149</td>
+                <td>9</td>
+                <td>warning</td>
+                <td><code>unspecified-encoding</code></td>
+                <td>W1514</td>
+                <td>eliminate_parameters_from_ds_file</td>
+                <td><pre>Using open without explicitly specifying an encoding</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.modelica.simres</code> (<code>ebcpy/modelica/simres.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>22</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (106/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>55</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;scipy.io&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>56</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;pandas&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>57</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;numpy&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>65</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>too-many-locals</code></td>
+                <td>R0914</td>
+                <td>loadsim</td>
+                <td><pre>Too many local variables (16/15)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>123</td>
+                <td>17</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>loadsim</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>154</td>
+                <td>20</td>
+                <td>refactor</td>
+                <td><code>use-dict-literal</code></td>
+                <td>R1735</td>
+                <td>loadsim</td>
+                <td><pre>Consider using &#39;{}&#39; instead of a call to &#39;dict&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>157</td>
+                <td>28</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>loadsim</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>158</td>
+                <td>28</td>
+                <td>convention</td>
+                <td><code>consider-using-f-string</code></td>
+                <td>C0209</td>
+                <td>loadsim</td>
+                <td><pre>Formatting a regular string which could be a f-string</pre></td>
+            </tr>
+            
+            <tr>
+                <td>254</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>too-many-locals</code></td>
+                <td>R0914</td>
+                <td>mat_to_pandas</td>
+                <td><pre>Too many local variables (16/15)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>254</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>too-many-branches</code></td>
+                <td>R0912</td>
+                <td>mat_to_pandas</td>
+                <td><pre>Too many branches (15/12)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>345</td>
+                <td>8</td>
+                <td>warning</td>
+                <td><code>raise-missing-from</code></td>
+                <td>W0707</td>
+                <td>mat_to_pandas</td>
+                <td><pre>Consider explicitly re-raising using &#39;except KeyError as exc&#39; and &#39;raise KeyError(f&#39;Time column {time_key} not found in the data dictionary.&#39;) from exc&#39;</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.optimization</code> (<code>ebcpy/optimization.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/optimization.py: Fatal error while checking &#39;ebcpy/optimization.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package os are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>6</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package pathlib are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>7</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package warnings are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>48</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (140/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>55</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (106/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>116</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (144/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>121</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (144/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>143</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (115/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>144</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (143/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>202</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>204</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>222</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>229</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>244</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>252</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>258</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>268</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>272</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (103/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>273</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (109/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>277</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>431</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>449</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>452</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>453</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>469</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>471</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (107/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>473</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>518</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.preprocessing</code> (<code>ebcpy/preprocessing.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/preprocessing.py: Fatal error while checking &#39;ebcpy/preprocessing.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>23</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package warnings are not grouped</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.simulationapi.__init__</code> (<code>ebcpy/simulationapi/__init__.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/simulationapi/__init__.py: Fatal error while checking &#39;ebcpy/simulationapi/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>442</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (111/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>585</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (104/100)</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.simulationapi.dymola_api</code> (<code>ebcpy/simulationapi/dymola_api.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>too-many-lines</code></td>
+                <td>C0302</td>
+                <td></td>
+                <td><pre>Too many lines in module (1427/1000)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/simulationapi/dymola_api.py: Fatal error while checking &#39;ebcpy/simulationapi/dymola_api.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>4</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package sys are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package os are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package warnings are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>11</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package time are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>13</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package pathlib are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>363</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (101/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>383</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (102/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>412</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (107/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>623</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (103/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>646</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (101/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>901</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (110/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>916</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (106/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>942</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (105/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1070</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (118/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1079</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (107/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1085</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (110/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1088</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (110/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1185</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (103/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1380</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (104/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1381</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (102/100)</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.simulationapi.fmu</code> (<code>ebcpy/simulationapi/fmu.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/simulationapi/fmu.py: Fatal error while checking &#39;ebcpy/simulationapi/fmu.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-06.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>4</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package os are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>6</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package atexit are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>7</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package shutil are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package pathlib are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>82</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (107/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>296</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (119/100)</pre></td>
+            </tr>
+            
+            <tr>
+                <td>357</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>line-too-long</code></td>
+                <td>C0301</td>
+                <td></td>
+                <td><pre>Line too long (108/100)</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.utils.__init__</code> (<code>ebcpy/utils/__init__.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/utils/__init__.py: Fatal error while checking &#39;ebcpy/utils/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt&#39;.</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.utils</code> (<code>ebcpy/utils/__init__.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package logging are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>6</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package os are not grouped</pre></td>
+            </tr>
+            
+            <tr>
+                <td>8</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package pathlib are not grouped</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.utils.conversion</code> (<code>ebcpy/utils/conversion.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/utils/conversion.py: Fatal error while checking &#39;ebcpy/utils/conversion.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-05.txt&#39;.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>ungrouped-imports</code></td>
+                <td>C0412</td>
+                <td></td>
+                <td><pre>Imports from package pathlib are not grouped</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.utils.reproduction</code> (<code>ebcpy/utils/reproduction.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>fatal</td>
+                <td><code>astroid-error</code></td>
+                <td>F0002</td>
+                <td></td>
+                <td><pre>ebcpy/utils/reproduction.py: Fatal error while checking &#39;ebcpy/utils/reproduction.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-04.txt&#39;.</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>ebcpy.utils.statistics_analyzer</code> (<code>ebcpy/utils/statistics_analyzer.py</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>4</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;numpy&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>5</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>import-error</code></td>
+                <td>E0401</td>
+                <td></td>
+                <td><pre>Unable to import &#39;sklearn.metrics&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>189</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>203</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+            <tr>
+                <td>206</td>
+                <td>0</td>
+                <td>convention</td>
+                <td><code>trailing-whitespace</code></td>
+                <td>C0303</td>
+                <td></td>
+                <td><pre>Trailing whitespace</pre></td>
+            </tr>
+            
+        </table>
+        
+        <h3>Module <code>/home/runner/work/ebcpy/ebcpy/pylintrc</code> (<code>pylintrc</code>)</h3>
+        <table>
+            <tr>
+                <th>Line</th>
+                <th>Col.</th>
+                <th>Type</th>
+                <th>Symbol</th>
+                <th>ID</th>
+                <th>Obj</th>
+                <th>Message</th>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>error</td>
+                <td><code>unrecognized-option</code></td>
+                <td>E0015</td>
+                <td></td>
+                <td><pre>Unrecognized option found: no-space-check</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;print-statement&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;parameter-unpacking&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;unpacking-in-except&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;old-raise-syntax&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;backtick&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;import-star-module-level&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;apply-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;basestring-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;buffer-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;cmp-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;coerce-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;execfile-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;file-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;long-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;raw_input-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;reduce-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;standarderror-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;unicode-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;xrange-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;coerce-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;delslice-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;getslice-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;setslice-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;no-absolute-import&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;old-division&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;dict-iter-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;dict-view-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;next-method-called&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;metaclass-assignment&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;indexing-exception&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;raising-string&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;reload-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;oct-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;hex-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;nonzero-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;cmp-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;input-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;round-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;intern-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;unichr-builtin&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;map-builtin-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;zip-builtin-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;range-builtin-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;filter-builtin-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;using-cmp-argument&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;div-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;idiv-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;rdiv-method&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;exception-message-attribute&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;invalid-str-codec&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;sys-max-int&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;bad-python3-import&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;deprecated-string-function&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;deprecated-str-translate-call&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;deprecated-itertools-function&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;deprecated-types-field&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;next-method-defined&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;dict-items-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;dict-keys-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>refactor</td>
+                <td><code>useless-option-value</code></td>
+                <td>R0022</td>
+                <td></td>
+                <td><pre>Useless option value for &#39;--disable&#39;, &#39;dict-values-not-iterating&#39; was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942.</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;long-suffix&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;old-ne-operator&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;old-octal-literal&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;non-ascii-bytes-literal&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;locally-enabled&#39;</pre></td>
+            </tr>
+            
+            <tr>
+                <td>1</td>
+                <td>0</td>
+                <td>warning</td>
+                <td><code>unknown-option-value</code></td>
+                <td>W0012</td>
+                <td></td>
+                <td><pre>Unknown option value for &#39;--disable&#39;, expected a valid pylint message and got &#39;eq-without-hash&#39;</pre></td>
+            </tr>
+            
+        </table>
+        
+
+        <h2>Metrics</h2>
+        
+
+        <h3>Count per types</h3>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+            
+            <tr>
+                <td>error</td>
+                <td>7</td>
+            </tr>
+            
+            <tr>
+                <td>refactor</td>
+                <td>69</td>
+            </tr>
+            
+            <tr>
+                <td>warning</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>fatal</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>convention</td>
+                <td>76</td>
+            </tr>
+            
+        </table>
+        
+
+        <h3>Count per messages</h3>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+            
+            <tr>
+                <td>unrecognized-option</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>useless-option-value</td>
+                <td>60</td>
+            </tr>
+            
+            <tr>
+                <td>unknown-option-value</td>
+                <td>6</td>
+            </tr>
+            
+            <tr>
+                <td>astroid-error</td>
+                <td>10</td>
+            </tr>
+            
+            <tr>
+                <td>line-too-long</td>
+                <td>33</td>
+            </tr>
+            
+            <tr>
+                <td>trailing-whitespace</td>
+                <td>19</td>
+            </tr>
+            
+            <tr>
+                <td>import-error</td>
+                <td>6</td>
+            </tr>
+            
+            <tr>
+                <td>ungrouped-imports</td>
+                <td>17</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-lines</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-locals</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>consider-using-f-string</td>
+                <td>6</td>
+            </tr>
+            
+            <tr>
+                <td>use-dict-literal</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>raise-missing-from</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>too-many-branches</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>unspecified-encoding</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>duplicate-code</td>
+                <td>4</td>
+            </tr>
+            
+        </table>
+        
+
+        <h3>Count per modules</h3>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+            
+            <tr>
+                <td>/home/runner/work/ebcpy/ebcpy/pylintrc</td>
+                <td>67</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.reproduction</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.data_types</td>
+                <td>4</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.preprocessing</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.optimization</td>
+                <td>29</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.conversion</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.__init__</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils.statistics_analyzer</td>
+                <td>5</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.utils</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.simulationapi.__init__</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.simulationapi.dymola_api</td>
+                <td>22</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.simulationapi.fmu</td>
+                <td>8</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.modelica.__init__</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.modelica.simres</td>
+                <td>12</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy.modelica.manipulate_ds</td>
+                <td>12</td>
+            </tr>
+            
+        </table>
+        
+
+        <h3>Count per path</h3>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Count</th>
+            </tr>
+            
+            <tr>
+                <td>pylintrc</td>
+                <td>67</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/reproduction.py</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/data_types.py</td>
+                <td>4</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/preprocessing.py</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/optimization.py</td>
+                <td>29</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/conversion.py</td>
+                <td>2</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/__init__.py</td>
+                <td>4</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/utils/statistics_analyzer.py</td>
+                <td>5</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/simulationapi/__init__.py</td>
+                <td>3</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/simulationapi/dymola_api.py</td>
+                <td>22</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/simulationapi/fmu.py</td>
+                <td>8</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/modelica/__init__.py</td>
+                <td>1</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/modelica/simres.py</td>
+                <td>12</td>
+            </tr>
+            
+            <tr>
+                <td>ebcpy/modelica/manipulate_ds.py</td>
+                <td>12</td>
+            </tr>
+            
+        </table>
+        
+
+    </body>
+</html>

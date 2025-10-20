@@ -1,0 +1,231 @@
+************* Module /home/runner/work/ebcpy/ebcpy/pylintrc
+pylintrc:1:0: E0015: Unrecognized option found: no-space-check (unrecognized-option)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'print-statement' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'parameter-unpacking' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'unpacking-in-except' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'old-raise-syntax' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'backtick' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'import-star-module-level' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'apply-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'basestring-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'buffer-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'cmp-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'coerce-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'execfile-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'file-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'long-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'raw_input-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'reduce-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'standarderror-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'unicode-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'xrange-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'coerce-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'delslice-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'getslice-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'setslice-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'no-absolute-import' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'old-division' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'dict-iter-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'dict-view-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'next-method-called' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'metaclass-assignment' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'indexing-exception' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'raising-string' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'reload-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'oct-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'hex-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'nonzero-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'cmp-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'input-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'round-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'intern-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'unichr-builtin' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'map-builtin-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'zip-builtin-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'range-builtin-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'filter-builtin-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'using-cmp-argument' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'div-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'idiv-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'rdiv-method' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'exception-message-attribute' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'invalid-str-codec' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'sys-max-int' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'bad-python3-import' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'deprecated-string-function' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'deprecated-str-translate-call' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'deprecated-itertools-function' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'deprecated-types-field' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'next-method-defined' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'dict-items-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'dict-keys-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: R0022: Useless option value for '--disable', 'dict-values-not-iterating' was removed from pylint, see https://github.com/pylint-dev/pylint/pull/4942. (useless-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'long-suffix' (unknown-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'old-ne-operator' (unknown-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'old-octal-literal' (unknown-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'non-ascii-bytes-literal' (unknown-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'locally-enabled' (unknown-option-value)
+pylintrc:1:0: W0012: Unknown option value for '--disable', expected a valid pylint message and got 'eq-without-hash' (unknown-option-value)
+************* Module ebcpy.utils.reproduction
+ebcpy/utils/reproduction.py:1:0: F0002: ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-13-59.txt'. (astroid-error)
+************* Module ebcpy.data_types
+ebcpy/data_types.py:559:0: C0301: Line too long (112/100) (line-too-long)
+ebcpy/data_types.py:597:0: C0301: Line too long (112/100) (line-too-long)
+ebcpy/data_types.py:691:0: C0301: Line too long (118/100) (line-too-long)
+ebcpy/data_types.py:1:0: F0002: ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-00.txt'. (astroid-error)
+************* Module ebcpy.preprocessing
+ebcpy/preprocessing.py:1:0: F0002: ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-01.txt'. (astroid-error)
+************* Module ebcpy.optimization
+ebcpy/optimization.py:48:0: C0301: Line too long (140/100) (line-too-long)
+ebcpy/optimization.py:55:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/optimization.py:116:0: C0301: Line too long (144/100) (line-too-long)
+ebcpy/optimization.py:121:0: C0301: Line too long (144/100) (line-too-long)
+ebcpy/optimization.py:143:0: C0301: Line too long (115/100) (line-too-long)
+ebcpy/optimization.py:144:0: C0301: Line too long (143/100) (line-too-long)
+ebcpy/optimization.py:202:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:204:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:222:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:229:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:244:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:252:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:258:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:268:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:272:0: C0301: Line too long (103/100) (line-too-long)
+ebcpy/optimization.py:273:0: C0301: Line too long (109/100) (line-too-long)
+ebcpy/optimization.py:277:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:431:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:449:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:452:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:453:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:469:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:471:0: C0301: Line too long (107/100) (line-too-long)
+ebcpy/optimization.py:473:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:518:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/optimization.py:1:0: F0002: ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-01.txt'. (astroid-error)
+************* Module ebcpy.utils.conversion
+ebcpy/utils/conversion.py:1:0: F0002: ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-01.txt'. (astroid-error)
+************* Module ebcpy.utils.__init__
+ebcpy/utils/__init__.py:1:0: F0002: ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-01.txt'. (astroid-error)
+************* Module ebcpy.utils.statistics_analyzer
+ebcpy/utils/statistics_analyzer.py:189:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/utils/statistics_analyzer.py:203:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/utils/statistics_analyzer.py:206:0: C0303: Trailing whitespace (trailing-whitespace)
+ebcpy/utils/statistics_analyzer.py:4:0: E0401: Unable to import 'numpy' (import-error)
+ebcpy/utils/statistics_analyzer.py:5:0: E0401: Unable to import 'sklearn.metrics' (import-error)
+ebcpy/preprocessing.py:23:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
+ebcpy/optimization.py:5:0: C0412: Imports from package os are not grouped (ungrouped-imports)
+ebcpy/optimization.py:6:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+ebcpy/optimization.py:7:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
+ebcpy/utils/conversion.py:5:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+************* Module ebcpy.utils
+ebcpy/utils/__init__.py:5:0: C0412: Imports from package logging are not grouped (ungrouped-imports)
+ebcpy/utils/__init__.py:6:0: C0412: Imports from package os are not grouped (ungrouped-imports)
+ebcpy/utils/__init__.py:8:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+************* Module ebcpy.simulationapi.__init__
+ebcpy/simulationapi/__init__.py:442:0: C0301: Line too long (111/100) (line-too-long)
+ebcpy/simulationapi/__init__.py:585:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/simulationapi/__init__.py:1:0: F0002: ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-01.txt'. (astroid-error)
+************* Module ebcpy.simulationapi.dymola_api
+ebcpy/simulationapi/dymola_api.py:363:0: C0301: Line too long (101/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:383:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:412:0: C0301: Line too long (107/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:623:0: C0301: Line too long (103/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:646:0: C0301: Line too long (101/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:901:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:916:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:942:0: C0301: Line too long (105/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1070:0: C0301: Line too long (118/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1079:0: C0301: Line too long (107/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1085:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1088:0: C0301: Line too long (110/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1185:0: C0301: Line too long (103/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1380:0: C0301: Line too long (104/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1381:0: C0301: Line too long (102/100) (line-too-long)
+ebcpy/simulationapi/dymola_api.py:1:0: C0302: Too many lines in module (1427/1000) (too-many-lines)
+ebcpy/simulationapi/dymola_api.py:1:0: F0002: ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-02.txt'. (astroid-error)
+************* Module ebcpy.simulationapi.fmu
+ebcpy/simulationapi/fmu.py:82:0: C0301: Line too long (107/100) (line-too-long)
+ebcpy/simulationapi/fmu.py:296:0: C0301: Line too long (119/100) (line-too-long)
+ebcpy/simulationapi/fmu.py:357:0: C0301: Line too long (108/100) (line-too-long)
+ebcpy/simulationapi/fmu.py:1:0: F0002: ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-02.txt'. (astroid-error)
+************* Module ebcpy.modelica.__init__
+ebcpy/modelica/__init__.py:1:0: F0002: ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-20-08-14-02.txt'. (astroid-error)
+************* Module ebcpy.modelica.simres
+ebcpy/modelica/simres.py:22:0: C0301: Line too long (106/100) (line-too-long)
+ebcpy/modelica/simres.py:55:0: E0401: Unable to import 'scipy.io' (import-error)
+ebcpy/modelica/simres.py:56:0: E0401: Unable to import 'pandas' (import-error)
+ebcpy/modelica/simres.py:57:0: E0401: Unable to import 'numpy' (import-error)
+ebcpy/modelica/simres.py:65:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:123:17: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:154:20: R1735: Consider using '{}' instead of a call to 'dict'. (use-dict-literal)
+ebcpy/modelica/simres.py:157:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:158:28: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/simres.py:254:0: R0914: Too many local variables (16/15) (too-many-locals)
+ebcpy/modelica/simres.py:345:8: W0707: Consider explicitly re-raising using 'except KeyError as exc' and 'raise KeyError(f'Time column {time_key} not found in the data dictionary.') from exc' (raise-missing-from)
+ebcpy/modelica/simres.py:254:0: R0912: Too many branches (15/12) (too-many-branches)
+ebcpy/simulationapi/dymola_api.py:4:0: C0412: Imports from package sys are not grouped (ungrouped-imports)
+ebcpy/simulationapi/dymola_api.py:5:0: C0412: Imports from package os are not grouped (ungrouped-imports)
+ebcpy/simulationapi/dymola_api.py:8:0: C0412: Imports from package warnings are not grouped (ungrouped-imports)
+ebcpy/simulationapi/dymola_api.py:11:0: C0412: Imports from package time are not grouped (ungrouped-imports)
+ebcpy/simulationapi/dymola_api.py:13:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+ebcpy/simulationapi/fmu.py:4:0: C0412: Imports from package os are not grouped (ungrouped-imports)
+ebcpy/simulationapi/fmu.py:6:0: C0412: Imports from package atexit are not grouped (ungrouped-imports)
+ebcpy/simulationapi/fmu.py:7:0: C0412: Imports from package shutil are not grouped (ungrouped-imports)
+ebcpy/simulationapi/fmu.py:8:0: C0412: Imports from package pathlib are not grouped (ungrouped-imports)
+************* Module ebcpy.modelica.manipulate_ds
+ebcpy/modelica/manipulate_ds.py:7:0: E0401: Unable to import 'pandas' (import-error)
+ebcpy/modelica/manipulate_ds.py:10:0: R0914: Too many local variables (17/15) (too-many-locals)
+ebcpy/modelica/manipulate_ds.py:43:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:116:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:132:24: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:134:27: C0209: Formatting a regular string which could be a f-string (consider-using-f-string)
+ebcpy/modelica/manipulate_ds.py:143:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:149:9: W1514: Using open without explicitly specifying an encoding (unspecified-encoding)
+ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[1121:1132]
+==ebcpy.simulationapi.fmu:[408:415]
+        ))
+        return super().save_for_reproduction(
+            title=title,
+            path=path,
+            files=files,
+            **kwargs
+        ) (duplicate-code)
+ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[427:435]
+==ebcpy.simulationapi.fmu:[199:206]
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
+
+        # Handle multiprocessing
+        if self.use_mp: (duplicate-code)
+ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+==ebcpy.simulationapi.dymola_api:[323:332]
+==ebcpy.simulationapi.fmu:[199:205]
+        if kwargs:
+            self.logger.error(
+                "You passed the following kwargs which "
+                "are not part of the supported kwargs and "
+                "have thus no effect: %s.", " ,".join(list(kwargs.keys())))
+ (duplicate-code)
+ebcpy/modelica/manipulate_ds.py:1:0: R0801: Similar lines in 2 files
+==ebcpy.optimization:[103:115]
+==ebcpy.simulationapi.__init__:[524:535]
+        return self._working_directory
+
+    @working_directory.setter
+    def working_directory(self, working_directory: Union[Path, str]):
+        """Set the current working directory"""
+        if isinstance(working_directory, str):
+            working_directory = Path(working_directory)
+        os.makedirs(working_directory, exist_ok=True)
+        self._working_directory = working_directory
+
+    def set_cd(self, cd: Union[Path, str]): (duplicate-code)
+
+-----------------------------------
+Your code has been rated at 5.61/10
+
