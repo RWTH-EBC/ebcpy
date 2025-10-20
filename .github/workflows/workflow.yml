@@ -18,6 +18,7 @@ jobs:
       GENERATE_DOCUMENTATION: true
       GH_PAGES: true
       EXECUTE_TESTS: true
+      TEST_ENGINE: "unittest"
       EXECUTE_COVERAGE_TEST: true
       USE_DYMOLA: true
       CONVERT_EXAMPLES: true
