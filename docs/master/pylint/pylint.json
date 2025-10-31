@@ -2,7 +2,7 @@
     "messages": [
         {
             "type": "error",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -13,7 +13,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -24,7 +24,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -35,7 +35,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -46,7 +46,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -57,7 +57,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -68,7 +68,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -79,7 +79,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -90,7 +90,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -101,7 +101,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -112,7 +112,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -123,7 +123,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -134,7 +134,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -145,7 +145,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -156,7 +156,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -167,7 +167,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -178,7 +178,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -189,7 +189,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -200,7 +200,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -211,7 +211,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -222,7 +222,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -233,7 +233,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -244,7 +244,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -255,7 +255,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -266,7 +266,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -277,7 +277,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -288,7 +288,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -299,7 +299,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -310,7 +310,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -321,7 +321,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -332,7 +332,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -343,7 +343,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -354,7 +354,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -365,7 +365,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -376,7 +376,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -387,7 +387,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -398,7 +398,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -409,7 +409,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -420,7 +420,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -431,7 +431,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -442,7 +442,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -453,7 +453,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -464,7 +464,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -475,7 +475,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -486,7 +486,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -497,7 +497,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -508,7 +508,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -519,7 +519,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -530,7 +530,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -541,7 +541,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -552,7 +552,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -563,7 +563,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -574,7 +574,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -585,7 +585,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -596,7 +596,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -607,7 +607,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -618,7 +618,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -629,7 +629,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -640,7 +640,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -651,7 +651,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -662,7 +662,7 @@
         },
         {
             "type": "refactor",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -673,7 +673,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -684,7 +684,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -695,7 +695,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -706,7 +706,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -717,7 +717,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -728,7 +728,7 @@
         },
         {
             "type": "warning",
-            "module": "/builds/EBC/EBC_all/github_ci/ebcpy/pylintrc",
+            "module": "/home/runner/work/ebcpy/ebcpy/pylintrc",
             "obj": "",
             "line": 1,
             "column": 0,
@@ -738,202 +738,26 @@
             "message-id": "W0012"
         },
         {
-            "type": "refactor",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 245,
-            "column": 0,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (21/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 288,
-            "column": 4,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (ebcpy.TimeSeriesData)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 344,
-            "column": 4,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "unbalanced-tuple-unpacking",
-            "message": "Possible unbalanced tuple unpacking with sequence defined at line 713: left side has 2 labels, right side has 4 values",
-            "message-id": "W0632"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 379,
-            "column": 4,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "reimported",
-            "message": "Reimport 'TimeSeriesData' (imported line 288)",
-            "message-id": "W0404"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 379,
-            "column": 4,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (ebcpy.TimeSeriesData)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.preprocessing",
-            "obj": "clean_and_space_equally_time_series",
-            "line": 245,
-            "column": 0,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (13/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.preprocessing",
-            "obj": "create_on_off_signal",
-            "line": 471,
-            "column": 0,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.preprocessing",
-            "obj": "get_df_index_frequency_mean_and_std",
-            "line": 712,
-            "column": 4,
-            "path": "ebcpy/preprocessing.py",
-            "symbol": "no-else-return",
-            "message": "Unnecessary \"else\" after \"return\", remove the \"else\" and de-indent the code inside it",
-            "message-id": "R1705"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.data_types",
+            "type": "fatal",
+            "module": "ebcpy.utils.reproduction",
             "obj": "",
-            "line": 559,
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (112/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/utils/reproduction.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-21.txt'.",
+            "message-id": "F0002"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.data_types",
+            "type": "fatal",
+            "module": "ebcpy.preprocessing",
             "obj": "",
-            "line": 597,
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (112/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 691,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (118/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.data_types",
-            "obj": "TimeSeriesData.low_pass_filter",
-            "line": 670,
-            "column": 4,
-            "path": "ebcpy/data_types.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.data_types",
-            "obj": "TimeSeriesData.low_pass_filter",
-            "line": 670,
-            "column": 4,
-            "path": "ebcpy/data_types.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.data_types",
-            "obj": "TimeSeriesData.moving_average",
-            "line": 697,
-            "column": 4,
-            "path": "ebcpy/data_types.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.data_types",
-            "obj": "_load_df_from_file",
-            "line": 898,
-            "column": 13,
-            "path": "ebcpy/data_types.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.data_types",
-            "obj": "_load_df_from_file",
-            "line": 869,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (14/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 13,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "unused-import",
-            "message": "Unused TYPE_CHECKING imported from typing",
-            "message-id": "W0611"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 17,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "unused-import",
-            "message": "Unused numpy imported as np",
-            "message-id": "W0611"
+            "path": "ebcpy/preprocessing.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-22.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
@@ -1211,279 +1035,59 @@
             "message-id": "C0303"
         },
         {
-            "type": "convention",
+            "type": "fatal",
             "module": "ebcpy.optimization",
-            "obj": "Optimizer.cd",
-            "line": 115,
-            "column": 4,
+            "obj": "",
+            "line": 1,
+            "column": 0,
             "path": "ebcpy/optimization.py",
-            "symbol": "missing-function-docstring",
-            "message": "Missing function or method docstring",
-            "message-id": "C0116"
+            "symbol": "astroid-error",
+            "message": "ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer.cd",
-            "line": 115,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "invalid-name",
-            "message": "Attribute name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 559,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (112/100)",
+            "message-id": "C0301"
         },
         {
             "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer.cd",
-            "line": 120,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "invalid-name",
-            "message": "Attribute name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 597,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (112/100)",
+            "message-id": "C0301"
         },
         {
             "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer.cd",
-            "line": 120,
-            "column": 17,
-            "path": "ebcpy/optimization.py",
-            "symbol": "invalid-name",
-            "message": "Argument name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 691,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (118/100)",
+            "message-id": "C0301"
         },
         {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 205,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (16/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 245,
-            "column": 12,
-            "path": "ebcpy/optimization.py",
-            "symbol": "invalid-name",
-            "message": "Variable name \"gp\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 247,
-            "column": 16,
-            "path": "ebcpy/optimization.py",
-            "symbol": "protected-access",
-            "message": "Access to a protected member _gp of a client class",
-            "message-id": "W0212"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 205,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 205,
-            "column": 37,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'method'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._bayesian_optimization",
-            "line": 205,
-            "column": 50,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'n_cpu'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._scipy_minimize",
-            "line": 279,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._scipy_minimize",
-            "line": 279,
-            "column": 38,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'n_cpu'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._dlib_minimize",
-            "line": 320,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (17/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._dlib_minimize",
-            "line": 320,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._dlib_minimize",
-            "line": 320,
-            "column": 29,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'method'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._dlib_minimize",
-            "line": 320,
-            "column": 42,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'n_cpu'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._scipy_differential_evolution",
-            "line": 369,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._scipy_differential_evolution",
-            "line": 369,
-            "column": 63,
-            "path": "ebcpy/optimization.py",
-            "symbol": "unused-argument",
-            "message": "Unused argument 'n_cpu'",
-            "message-id": "W0613"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 415,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (38/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 509,
-            "column": 30,
-            "path": "ebcpy/optimization.py",
-            "symbol": "consider-iterating-dictionary",
-            "message": "Consider iterating the dictionary directly instead of calling .keys()",
-            "message-id": "C0201"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 511,
-            "column": 30,
-            "path": "ebcpy/optimization.py",
-            "symbol": "consider-iterating-dictionary",
-            "message": "Consider iterating the dictionary directly instead of calling .keys()",
-            "message-id": "C0201"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 513,
-            "column": 29,
-            "path": "ebcpy/optimization.py",
-            "symbol": "consider-iterating-dictionary",
-            "message": "Consider iterating the dictionary directly instead of calling .keys()",
-            "message-id": "C0201"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 515,
-            "column": 29,
-            "path": "ebcpy/optimization.py",
-            "symbol": "consider-iterating-dictionary",
-            "message": "Consider iterating the dictionary directly instead of calling .keys()",
-            "message-id": "C0201"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 415,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "too-many-statements",
-            "message": "Too many statements (58/50)",
-            "message-id": "R0915"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.optimization",
-            "obj": "Optimizer._pymoo",
-            "line": 415,
-            "column": 4,
-            "path": "ebcpy/optimization.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
+            "type": "fatal",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
@@ -1519,411 +1123,92 @@
             "message-id": "C0303"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "",
-            "line": 173,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (108/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "",
-            "line": 300,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (126/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "",
-            "line": 362,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (113/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 55,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 55,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (18/15)",
-            "message-id": "R0914"
-        },
-        {
             "type": "error",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 91,
-            "column": 28,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "no-member",
-            "message": "Instance of 'module' has no '__file__' member",
-            "message-id": "E1101"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 104,
-            "column": 16,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 126,
-            "column": 9,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 126,
-            "column": 64,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "invalid-name",
-            "message": "Variable name \"f\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 163,
-            "column": 12,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "redefined-argument-from-local",
-            "message": "Redefining argument with the local name 'file'",
-            "message-id": "R1704"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 55,
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 4,
             "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (19/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "save_reproduction_archive",
-            "line": 55,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "too-many-statements",
-            "message": "Too many statements (53/50)",
-            "message-id": "R0915"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "get_git_information",
-            "line": 212,
-            "column": 8,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (git.Repo, git.InvalidGitRepositoryError, git.RemoteReference)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "get_git_information",
-            "line": 214,
-            "column": 8,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "raise-missing-from",
-            "message": "Consider explicitly re-raising using 'raise ImportError('Could not save data for reproduction, install GitPython using `pip install GitPython`: ' + str(err)) from err'",
-            "message-id": "W0707"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "get_git_information",
-            "line": 190,
-            "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "creat_copy_files_from_dir",
-            "line": 284,
-            "column": 36,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "unnecessary-dunder-call",
-            "message": "Unnecessarily calls dunder method __str__. Use str built-in function.",
-            "message-id": "C2801"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "creat_copy_files_from_dir",
-            "line": 282,
-            "column": 17,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "unused-variable",
-            "message": "Unused variable 'dirnames'",
-            "message-id": "W0612"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "get_installed_packages",
-            "line": 337,
-            "column": 24,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "use-dict-literal",
-            "message": "Consider using '{\"name\": dist.metadata['Name'], \"version\": dist.version, \"location\": os.path.normpath(str(dist.locate_file(''))), ... }' instead of a call to 'dict'.",
-            "message-id": "R1735"
-        },
-        {
-            "type": "error",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "_get_python_package_information",
-            "line": 369,
-            "column": 16,
-            "path": "ebcpy/utils/reproduction.py",
+            "path": "ebcpy/utils/statistics_analyzer.py",
             "symbol": "import-error",
-            "message": "Unable to import 'pypisearch.search'",
+            "message": "Unable to import 'numpy'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 5,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'sklearn.metrics'",
             "message-id": "E0401"
         },
         {
             "type": "convention",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "_get_python_package_information",
-            "line": 369,
-            "column": 16,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (pypisearch.search.Search)",
-            "message-id": "C0415"
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 7,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package warnings are not grouped",
+            "message-id": "C0412"
         },
         {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "_get_python_package_information",
-            "line": 372,
-            "column": 20,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "raising-format-tuple",
-            "message": "Exception arguments suggest string formatting might be intended",
-            "message-id": "W0715"
+            "type": "convention",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 10,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package os are not grouped",
+            "message-id": "C0412"
         },
         {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
-            "obj": "_get_python_reproduction",
-            "line": 399,
-            "column": 8,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "f-string-without-interpolation",
-            "message": "Using an f-string that does not have any interpolated variables",
-            "message-id": "W1309"
+            "type": "convention",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 11,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package warnings are not grouped",
+            "message-id": "C0412"
         },
         {
-            "type": "warning",
-            "module": "ebcpy.utils.reproduction",
+            "type": "convention",
+            "module": "ebcpy.data_types",
             "obj": "",
             "line": 12,
             "column": 0,
-            "path": "ebcpy/utils/reproduction.py",
-            "symbol": "unused-import",
-            "message": "Unused Tuple imported from typing",
-            "message-id": "W0611"
+            "path": "ebcpy/data_types.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package pathlib are not grouped",
+            "message-id": "C0412"
         },
         {
-            "type": "convention",
+            "type": "fatal",
             "module": "ebcpy.utils.conversion",
-            "obj": "convert_tsd_to_modelica_mat",
-            "line": 53,
-            "column": 7,
-            "path": "ebcpy/utils/conversion.py",
-            "symbol": "unneeded-not",
-            "message": "Consider changing \"not save_path_file.suffix == '.mat'\" to \"save_path_file.suffix != '.mat'\"",
-            "message-id": "C0113"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.conversion",
-            "obj": "convert_tsd_to_clustering_txt",
-            "line": 109,
-            "column": 7,
-            "path": "ebcpy/utils/conversion.py",
-            "symbol": "unneeded-not",
-            "message": "Consider changing \"not save_path_file.suffix == '.txt'\" to \"save_path_file.suffix != '.txt'\"",
-            "message-id": "C0113"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.utils.conversion",
-            "obj": "convert_tsd_to_modelica_txt",
-            "line": 169,
-            "column": 7,
-            "path": "ebcpy/utils/conversion.py",
-            "symbol": "unneeded-not",
-            "message": "Consider changing \"not save_path_file.suffix == '.txt'\" to \"save_path_file.suffix != '.txt'\"",
-            "message-id": "C0113"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "convert_ds_file_to_dataframe",
-            "line": 10,
+            "obj": "",
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (17/15)",
-            "message-id": "R0914"
+            "path": "ebcpy/utils/conversion.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
         },
         {
-            "type": "warning",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "convert_ds_file_to_dataframe",
-            "line": 43,
-            "column": 9,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "eliminate_parameters_from_ds_file",
-            "line": 116,
-            "column": 24,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "eliminate_parameters_from_ds_file",
-            "line": 132,
-            "column": 24,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "eliminate_parameters_from_ds_file",
-            "line": 134,
-            "column": 27,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "eliminate_parameters_from_ds_file",
-            "line": 143,
-            "column": 9,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.modelica.manipulate_ds",
-            "obj": "eliminate_parameters_from_ds_file",
-            "line": 149,
-            "column": 9,
-            "path": "ebcpy/modelica/manipulate_ds.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.modelica",
-            "obj": "get_expressions",
-            "line": 9,
+            "type": "fatal",
+            "module": "ebcpy.utils.__init__",
+            "obj": "",
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/modelica/__init__.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (20/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.modelica",
-            "obj": "get_expressions",
-            "line": 56,
-            "column": 15,
-            "path": "ebcpy/modelica/__init__.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.modelica",
-            "obj": "get_expressions",
-            "line": 60,
-            "column": 9,
-            "path": "ebcpy/modelica/__init__.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.modelica",
-            "obj": "get_expressions",
-            "line": 9,
-            "column": 0,
-            "path": "ebcpy/modelica/__init__.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (13/12)",
-            "message-id": "R0912"
+            "path": "ebcpy/utils/__init__.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
@@ -1935,6 +1220,39 @@
             "symbol": "line-too-long",
             "message": "Line too long (106/100)",
             "message-id": "C0301"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.modelica.simres",
+            "obj": "",
+            "line": 55,
+            "column": 0,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'scipy.io'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.modelica.simres",
+            "obj": "",
+            "line": 56,
+            "column": 0,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'pandas'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.modelica.simres",
+            "obj": "",
+            "line": 57,
+            "column": 0,
+            "path": "ebcpy/modelica/simres.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'numpy'",
+            "message-id": "E0401"
         },
         {
             "type": "refactor",
@@ -2026,201 +1344,157 @@
         },
         {
             "type": "convention",
-            "module": "ebcpy.simulationapi.__init__",
+            "module": "ebcpy.utils",
             "obj": "",
-            "line": 442,
+            "line": 8,
             "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (111/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/utils/__init__.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package pathlib are not grouped",
+            "message-id": "C0412"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.__init__",
+            "type": "error",
+            "module": "ebcpy.modelica.manipulate_ds",
             "obj": "",
-            "line": 585,
+            "line": 7,
             "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (104/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'pandas'",
+            "message-id": "E0401"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationSetup.Config",
-            "line": 137,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "too-few-public-methods",
-            "message": "Too few public methods (0/2)",
-            "message-id": "R0903"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI",
-            "line": 145,
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "convert_ds_file_to_dataframe",
+            "line": 10,
             "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "too-many-instance-attributes",
-            "message": "Too many instance attributes (18/7)",
-            "message-id": "R0902"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.worker_idx",
-            "line": 211,
-            "column": 14,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "protected-access",
-            "message": "Access to a protected member _identity of a client class",
-            "message-id": "W0212"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.simulate",
-            "line": 265,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
+            "path": "ebcpy/modelica/manipulate_ds.py",
             "symbol": "too-many-locals",
-            "message": "Too many local variables (19/15)",
+            "message": "Too many local variables (17/15)",
             "message-id": "R0914"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.simulate",
-            "line": 384,
-            "column": 20,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Variable name \"t1\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.simulate",
-            "line": 265,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (21/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.simulate",
-            "line": 265,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "too-many-statements",
-            "message": "Too many statements (51/50)",
-            "message-id": "R0915"
+            "type": "warning",
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "convert_ds_file_to_dataframe",
+            "line": 43,
+            "column": 9,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "unspecified-encoding",
+            "message": "Using open without explicitly specifying an encoding",
+            "message-id": "W1514"
         },
         {
             "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI._remaining_time",
-            "line": 402,
-            "column": 30,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Argument name \"t1\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "eliminate_parameters_from_ds_file",
+            "line": 116,
+            "column": 24,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "consider-using-f-string",
+            "message": "Formatting a regular string which could be a f-string",
+            "message-id": "C0209"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "eliminate_parameters_from_ds_file",
+            "line": 132,
+            "column": 24,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "consider-using-f-string",
+            "message": "Formatting a regular string which could be a f-string",
+            "message-id": "C0209"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "eliminate_parameters_from_ds_file",
+            "line": 134,
+            "column": 27,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "consider-using-f-string",
+            "message": "Formatting a regular string which could be a f-string",
+            "message-id": "C0209"
         },
         {
             "type": "warning",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI._check_disk_space",
-            "line": 443,
-            "column": 15,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "unused-variable",
-            "message": "Unused variable 'used'",
-            "message-id": "W0612"
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "eliminate_parameters_from_ds_file",
+            "line": 143,
+            "column": 9,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "unspecified-encoding",
+            "message": "Using open without explicitly specifying an encoding",
+            "message-id": "W1514"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.set_cd",
-            "line": 535,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "missing-function-docstring",
-            "message": "Missing function or method docstring",
-            "message-id": "C0116"
+            "type": "warning",
+            "module": "ebcpy.modelica.manipulate_ds",
+            "obj": "eliminate_parameters_from_ds_file",
+            "line": 149,
+            "column": 9,
+            "path": "ebcpy/modelica/manipulate_ds.py",
+            "symbol": "unspecified-encoding",
+            "message": "Using open without explicitly specifying an encoding",
+            "message-id": "W1514"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.set_cd",
-            "line": 535,
-            "column": 21,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Argument name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.cd",
-            "line": 541,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "missing-function-docstring",
-            "message": "Missing function or method docstring",
-            "message-id": "C0116"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.cd",
-            "line": 541,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Attribute name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.cd",
-            "line": 547,
-            "column": 4,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Attribute name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "SimulationAPI.cd",
-            "line": 547,
-            "column": 17,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "invalid-name",
-            "message": "Argument name \"cd\" doesn't conform to snake_case naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
+            "type": "fatal",
+            "module": "ebcpy.modelica.__init__",
             "obj": "",
-            "line": 24,
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "wrong-import-order",
-            "message": "standard import \"from shutil import disk_usage\" should be placed before \"import pydantic\"",
-            "message-id": "C0411"
+            "path": "ebcpy/modelica/__init__.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.fmu",
+            "obj": "",
+            "line": 82,
+            "column": 0,
+            "path": "ebcpy/simulationapi/fmu.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (107/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.fmu",
+            "obj": "",
+            "line": 296,
+            "column": 0,
+            "path": "ebcpy/simulationapi/fmu.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (119/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.fmu",
+            "obj": "",
+            "line": 357,
+            "column": 0,
+            "path": "ebcpy/simulationapi/fmu.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (108/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "fatal",
+            "module": "ebcpy.simulationapi.fmu",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/simulationapi/fmu.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-23.txt'.",
+            "message-id": "F0002"
         },
         {
             "type": "convention",
@@ -2399,484 +1673,99 @@
             "message-id": "C0302"
         },
         {
-            "type": "refactor",
+            "type": "fatal",
             "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI",
-            "line": 65,
-            "column": 0,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-instance-attributes",
-            "message": "Too many instance attributes (23/7)",
-            "message-id": "R0902"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.__init__",
-            "line": 305,
-            "column": 17,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "use-dict-literal",
-            "message": "Consider using '{\"use_mp\": True, \"port\": port, \"time_delay\": i * _time_delay_between_starts, ... }' instead of a call to 'dict'.",
-            "message-id": "R1735"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.__init__",
-            "line": 309,
-            "column": 51,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "use-dict-literal",
-            "message": "Consider using '{\"use_mp\": False}' instead of a call to 'dict'.",
-            "message-id": "R1735"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.__init__",
-            "line": 187,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (27/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.__init__",
-            "line": 187,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-statements",
-            "message": "Too many statements (80/50)",
-            "message-id": "R0915"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 406,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (48/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 439,
-            "column": 45,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "use-dict-literal",
-            "message": "Consider using '{\"use_mp\": True}' instead of a call to 'dict'.",
-            "message-id": "R1735"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 621,
-            "column": 19,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "broad-exception-caught",
-            "message": "Catching too general exception Exception",
-            "message-id": "W0718"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 618,
-            "column": 21,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 629,
-            "column": 16,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "broad-exception-raised",
-            "message": "Raising too general exception: Exception",
-            "message-id": "W0719"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 406,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (41/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._single_simulation",
-            "line": 406,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-statements",
-            "message": "Too many statements (139/50)",
-            "message-id": "R0915"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.translate",
-            "line": 718,
-            "column": 12,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "broad-exception-raised",
-            "message": "Raising too general exception: Exception",
-            "message-id": "W0719"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.set_compiler",
-            "line": 720,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.import_initial",
-            "line": 785,
-            "column": 12,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "broad-exception-raised",
-            "message": "Raising too general exception: Exception",
-            "message-id": "W0719"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._open_dymola_interface",
-            "line": 951,
-            "column": 12,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (dymola.dymola_interface.DymolaInterface)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._open_dymola_interface",
-            "line": 952,
-            "column": 12,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (dymola.dymola_exception.DymolaConnectionException)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._open_dymola_interface",
-            "line": 957,
-            "column": 30,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1008,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1008,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (25/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1034,
-            "column": 8,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "import-outside-toplevel",
-            "message": "Import outside toplevel (ebcpy.utils.reproduction.ReproductionFile, ebcpy.utils.reproduction.CopyFile, ebcpy.utils.reproduction.get_git_information)",
-            "message-id": "C0415"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1087,
-            "column": 21,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1108,
-            "column": 28,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "unspecified-encoding",
-            "message": "Using open without explicitly specifying an encoding",
-            "message-id": "W1514"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI.save_for_reproduction",
-            "line": 1008,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (13/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._save_to_fmu",
-            "line": 1143,
-            "column": 18,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "warning",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._save_to_fmu",
-            "line": 1146,
-            "column": 16,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "broad-exception-raised",
-            "message": "Raising too general exception: Exception",
-            "message-id": "W0719"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._save_to_fmu",
-            "line": 1131,
-            "column": 4,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "inconsistent-return-statements",
-            "message": "Either all return statements in a function should return an expression, or none of them should.",
-            "message-id": "R1710"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._check_dymola_instances",
-            "line": 1315,
-            "column": 26,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "consider-using-f-string",
-            "message": "Formatting a regular string which could be a f-string",
-            "message-id": "C0209"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.dymola_api",
-            "obj": "DymolaAPI._check_restart",
-            "line": 1355,
-            "column": 71,
-            "path": "ebcpy/simulationapi/dymola_api.py",
-            "symbol": "use-dict-literal",
-            "message": "Consider using '{\"use_mp\": False}' instead of a call to 'dict'.",
-            "message-id": "R1735"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
             "obj": "",
-            "line": 82,
+            "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/dymola_api.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-24.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.__init__",
+            "obj": "",
+            "line": 442,
+            "column": 0,
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "line-too-long",
-            "message": "Line too long (107/100)",
+            "message": "Line too long (111/100)",
             "message-id": "C0301"
         },
         {
             "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
-            "line": 296,
+            "line": 585,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "line-too-long",
-            "message": "Line too long (119/100)",
+            "message": "Line too long (104/100)",
             "message-id": "C0301"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 357,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (108/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_Setup",
-            "line": 24,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "invalid-name",
-            "message": "Class name \"FMU_Setup\" doesn't conform to PascalCase naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_API",
-            "line": 40,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "invalid-name",
-            "message": "Class name \"FMU_API\" doesn't conform to PascalCase naming style",
-            "message-id": "C0103"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_API._single_simulation",
-            "line": 182,
-            "column": 4,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "too-many-locals",
-            "message": "Too many local variables (16/15)",
-            "message-id": "R0914"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_API._single_simulation",
-            "line": 182,
-            "column": 4,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "too-many-branches",
-            "message": "Too many branches (14/12)",
-            "message-id": "R0912"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_API.setup_fmu_instance",
-            "line": 332,
-            "column": 17,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "consider-using-in",
-            "message": "Consider merging these comparisons with 'in' by using 'var.causality in ('parameter', 'calculatedParameter')'. Use a set instead if elements are hashable.",
-            "message-id": "R1714"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "FMU_API._custom_logger",
-            "line": 381,
-            "column": 4,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "too-many-arguments",
-            "message": "Too many arguments (6/5)",
-            "message-id": "R0913"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
+            "type": "fatal",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/__init__.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2025-10-31-10-39-24.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "refactor",
+            "module": "ebcpy.simulationapi.__init__",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1121:1132]\n==ebcpy.simulationapi.fmu:[408:415]\n                ))\n\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )\n\n    def _save_to_fmu(self, fail_on_error):\n        \"\"\"Save model as an FMU\"\"\"",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1121:1132]\n==ebcpy.simulationapi.fmu:[408:415]\n        ))\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[427:435]\n==ebcpy.simulationapi.fmu:[199:206]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        if self.use_mp:",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[427:435]\n==ebcpy.simulationapi.fmu:[199:206]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        # Handle multiprocessing\n        if self.use_mp:",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[323:332]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[323:332]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n    def _update_model(self):\n        # Translate the model and extract all variables,\n        # if the user wants to:",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[524:535]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set the current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    def set_cd(self, cd: Union[Path, str]):",
+            "message": "Similar lines in 2 files\n==ebcpy.optimization:[103:115]\n==ebcpy.simulationapi.__init__:[524:535]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    @property\n    def cd(self) -> Path:",
             "message-id": "R0801"
-        },
-        {
-            "type": "refactor",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 1,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "cyclic-import",
-            "message": "Cyclic import (ebcpy -> ebcpy.simulationapi.fmu)",
-            "message-id": "R0401"
         }
     ],
     "stats": {
         "bad_names": {
-            "argument": 5,
-            "attr": 4,
-            "klass": 2,
+            "argument": 0,
+            "attr": 0,
+            "klass": 0,
             "class_attribute": 0,
             "class_const": 0,
             "const": 0,
@@ -2884,7 +1773,7 @@
             "function": 0,
             "method": 0,
             "module": 0,
-            "variable": 3,
+            "variable": 0,
             "typevar": 0,
             "typealias": 0
         },
@@ -2899,35 +1788,35 @@
                 "warning": 0
             },
             "ebcpy.preprocessing": {
-                "convention": 2,
+                "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 4,
-                "statement": 177,
-                "warning": 2
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.optimization": {
+                "convention": 25,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.data_types": {
                 "convention": 3,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 4,
-                "statement": 238,
-                "warning": 3
-            },
-            "ebcpy.optimization": {
-                "convention": 34,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 9,
-                "statement": 225,
-                "warning": 7
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.utils.statistics_analyzer": {
-                "convention": 3,
-                "error": 0,
+                "convention": 7,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
@@ -2935,35 +1824,44 @@
                 "warning": 0
             },
             "ebcpy.utils.reproduction": {
-                "convention": 7,
-                "error": 2,
-                "fatal": 0,
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 7,
-                "statement": 148,
-                "warning": 7
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.conversion": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.utils.__init__": {
                 "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
                 "refactor": 0,
-                "statement": 41,
+                "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.conversion": {
-                "convention": 3,
-                "error": 0,
+            "ebcpy.modelica.simres": {
+                "convention": 5,
+                "error": 3,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 0,
-                "statement": 68,
-                "warning": 0
+                "refactor": 4,
+                "statement": 114,
+                "warning": 1
             },
             "ebcpy.modelica.manipulate_ds": {
                 "convention": 3,
-                "error": 0,
+                "error": 1,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 1,
@@ -2971,90 +1869,56 @@
                 "warning": 3
             },
             "ebcpy.modelica.__init__": {
-                "convention": 1,
+                "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 2,
-                "statement": 65,
-                "warning": 1
-            },
-            "ebcpy.modelica.simres": {
-                "convention": 4,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 4,
-                "statement": 114,
-                "warning": 1
-            },
-            "ebcpy.simulationapi.__init__": {
-                "convention": 11,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 5,
-                "statement": 273,
-                "warning": 2
-            },
-            "ebcpy.simulationapi.dymola_api": {
-                "convention": 22,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 15,
-                "statement": 603,
-                "warning": 8
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.simulationapi.fmu": {
-                "convention": 5,
+                "convention": 3,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 9,
-                "statement": 184,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.simulationapi.dymola_api": {
+                "convention": 16,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.simulationapi.__init__": {
+                "convention": 2,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 4,
+                "statement": 0,
                 "warning": 0
             }
         },
         "by_msg": {
-            "too-many-locals": 13,
-            "import-outside-toplevel": 7,
-            "unbalanced-tuple-unpacking": 1,
-            "reimported": 1,
-            "too-many-branches": 10,
-            "too-many-arguments": 6,
-            "no-else-return": 1,
-            "line-too-long": 36,
-            "inconsistent-return-statements": 9,
-            "unspecified-encoding": 10,
-            "unused-import": 3,
+            "astroid-error": 10,
+            "line-too-long": 33,
             "trailing-whitespace": 19,
-            "missing-function-docstring": 3,
-            "invalid-name": 13,
-            "protected-access": 2,
-            "unused-argument": 6,
-            "consider-iterating-dictionary": 4,
-            "too-many-statements": 5,
-            "no-member": 1,
-            "redefined-argument-from-local": 1,
-            "raise-missing-from": 2,
-            "unnecessary-dunder-call": 1,
-            "unused-variable": 2,
-            "use-dict-literal": 6,
-            "import-error": 1,
-            "raising-format-tuple": 1,
-            "f-string-without-interpolation": 1,
-            "unneeded-not": 3,
-            "consider-using-f-string": 10,
-            "too-few-public-methods": 1,
-            "too-many-instance-attributes": 2,
-            "wrong-import-order": 1,
+            "import-error": 6,
+            "ungrouped-imports": 5,
+            "too-many-locals": 3,
+            "consider-using-f-string": 6,
+            "use-dict-literal": 1,
+            "raise-missing-from": 1,
+            "too-many-branches": 1,
+            "unspecified-encoding": 3,
             "too-many-lines": 1,
-            "broad-exception-caught": 1,
-            "broad-exception-raised": 4,
-            "consider-using-in": 1,
-            "duplicate-code": 4,
-            "cyclic-import": 1
+            "duplicate-code": 4
         },
         "code_type_count": {
             "code": 0,
@@ -3065,8 +1929,7 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy",
-                "ebcpy.utils.conversion"
+                "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -3077,151 +1940,8 @@
             "ebcpy.optimization": [
                 "ebcpy"
             ],
-            "scipy.signal": [
-                "ebcpy.preprocessing"
-            ],
-            "sklearn.model_selection": [
-                "ebcpy.preprocessing"
-            ],
-            "pandas.tseries.frequencies": [
-                "ebcpy.preprocessing"
-            ],
-            "numpy": [
-                "ebcpy.preprocessing",
-                "ebcpy.data_types",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.utils.statistics_analyzer",
-                "ebcpy.simulationapi",
-                "ebcpy.optimization",
-                "ebcpy.utils.conversion"
-            ],
-            "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.preprocessing",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.modelica.simres",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.utils.conversion"
-            ],
-            "scipy.stats": [
-                "ebcpy.preprocessing"
-            ],
-            "ebcpy": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing"
-            ],
-            "pandas.core.internals": [
-                "ebcpy.data_types"
-            ],
-            "ebcpy.modelica.simres": [
-                "ebcpy.data_types"
-            ],
             "ebcpy.utils": [
-                "ebcpy.simulationapi",
-                "ebcpy.modelica.simres",
-                "ebcpy.optimization",
-                "ebcpy.data_types"
-            ],
-            "ebcpy.preprocessing": [
-                "ebcpy.data_types"
-            ],
-            "h5py": [
-                "ebcpy.data_types"
-            ],
-            "bayes_opt": [
-                "ebcpy.optimization"
-            ],
-            "bayes_opt.util": [
-                "ebcpy.optimization"
-            ],
-            "scipy.optimize": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.optimize": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.problems.single": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.factory": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.ctaea": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.moead": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.nsga2": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.nsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.rnsga2": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.rnsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.de": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.ga": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.unsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.nelder_mead": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.brkga": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.pattern_search": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.pso": [
-                "ebcpy.optimization"
-            ],
-            "sklearn.metrics": [
-                "ebcpy.utils.statistics_analyzer"
-            ],
-            "git": [
-                "ebcpy.utils.reproduction"
-            ],
-            "scipy.io": [
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion"
-            ],
-            "pydantic": [
-                "ebcpy.simulationapi",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
-            ],
-            "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi.fmu"
-            ],
-            "ebcpy.modelica.manipulate_ds": [
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "ebcpy.simulationapi": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "ebcpy.utils.conversion": [
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "fmpy": [
-                "ebcpy.simulationapi.fmu"
-            ],
-            "fmpy.model_description": [
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.modelica.simres"
             ]
         },
         "duplicated_lines": {
@@ -3229,33 +1949,33 @@
             "percent_duplicated_lines": 0.0
         },
         "node_count": {
-            "function": 44,
-            "klass": 19,
-            "method": 144,
-            "module": 14
+            "function": 7,
+            "klass": 2,
+            "method": 11,
+            "module": 13
         },
         "undocumented": {
             "function": 0,
             "klass": 0,
-            "method": 3,
+            "method": 0,
             "module": 0
         },
-        "convention": 98,
-        "error": 2,
-        "fatal": 0,
+        "convention": 64,
+        "error": 6,
+        "fatal": 10,
         "info": 0,
-        "refactor": 60,
-        "statement": 2246,
-        "warning": 34,
+        "refactor": 9,
+        "statement": 271,
+        "warning": 4,
         "global_note": 0,
         "nb_duplicated_lines": 23,
-        "percent_duplicated_lines": 0.3590944574551132
+        "percent_duplicated_lines": 0.383525095881274
     },
     "previous": {
         "bad_names": {
-            "argument": 5,
-            "attr": 4,
-            "klass": 2,
+            "argument": 0,
+            "attr": 0,
+            "klass": 0,
             "class_attribute": 0,
             "class_const": 0,
             "const": 0,
@@ -3263,7 +1983,7 @@
             "function": 0,
             "method": 0,
             "module": 0,
-            "variable": 3,
+            "variable": 0,
             "typevar": 0,
             "typealias": 0
         },
@@ -3278,35 +1998,35 @@
                 "warning": 0
             },
             "ebcpy.preprocessing": {
-                "convention": 2,
+                "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 4,
-                "statement": 177,
-                "warning": 2
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.optimization": {
+                "convention": 25,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.data_types": {
                 "convention": 3,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 4,
-                "statement": 238,
-                "warning": 3
-            },
-            "ebcpy.optimization": {
-                "convention": 34,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 9,
-                "statement": 225,
-                "warning": 7
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.utils.statistics_analyzer": {
-                "convention": 3,
-                "error": 0,
+                "convention": 7,
+                "error": 2,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
@@ -3314,35 +2034,44 @@
                 "warning": 0
             },
             "ebcpy.utils.reproduction": {
-                "convention": 7,
-                "error": 2,
-                "fatal": 0,
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 7,
-                "statement": 148,
-                "warning": 7
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.conversion": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.utils.__init__": {
                 "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
                 "refactor": 0,
-                "statement": 41,
+                "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.conversion": {
-                "convention": 3,
-                "error": 0,
+            "ebcpy.modelica.simres": {
+                "convention": 5,
+                "error": 3,
                 "fatal": 0,
                 "info": 0,
-                "refactor": 0,
-                "statement": 68,
-                "warning": 0
+                "refactor": 4,
+                "statement": 114,
+                "warning": 1
             },
             "ebcpy.modelica.manipulate_ds": {
                 "convention": 3,
-                "error": 0,
+                "error": 1,
                 "fatal": 0,
                 "info": 0,
                 "refactor": 1,
@@ -3350,90 +2079,56 @@
                 "warning": 3
             },
             "ebcpy.modelica.__init__": {
-                "convention": 1,
+                "convention": 0,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 2,
-                "statement": 65,
-                "warning": 1
-            },
-            "ebcpy.modelica.simres": {
-                "convention": 4,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 4,
-                "statement": 114,
-                "warning": 1
-            },
-            "ebcpy.simulationapi.__init__": {
-                "convention": 11,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 5,
-                "statement": 273,
-                "warning": 2
-            },
-            "ebcpy.simulationapi.dymola_api": {
-                "convention": 22,
-                "error": 0,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 15,
-                "statement": 603,
-                "warning": 8
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
             },
             "ebcpy.simulationapi.fmu": {
-                "convention": 5,
+                "convention": 3,
                 "error": 0,
-                "fatal": 0,
+                "fatal": 1,
                 "info": 0,
-                "refactor": 9,
-                "statement": 184,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.simulationapi.dymola_api": {
+                "convention": 16,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.simulationapi.__init__": {
+                "convention": 2,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 4,
+                "statement": 0,
                 "warning": 0
             }
         },
         "by_msg": {
-            "too-many-locals": 13,
-            "import-outside-toplevel": 7,
-            "unbalanced-tuple-unpacking": 1,
-            "reimported": 1,
-            "too-many-branches": 10,
-            "too-many-arguments": 6,
-            "no-else-return": 1,
-            "line-too-long": 36,
-            "inconsistent-return-statements": 9,
-            "unspecified-encoding": 10,
-            "unused-import": 3,
+            "astroid-error": 10,
+            "line-too-long": 33,
             "trailing-whitespace": 19,
-            "missing-function-docstring": 3,
-            "invalid-name": 13,
-            "protected-access": 2,
-            "unused-argument": 6,
-            "consider-iterating-dictionary": 4,
-            "too-many-statements": 5,
-            "no-member": 1,
-            "redefined-argument-from-local": 1,
-            "raise-missing-from": 2,
-            "unnecessary-dunder-call": 1,
-            "unused-variable": 2,
-            "use-dict-literal": 6,
-            "import-error": 1,
-            "raising-format-tuple": 1,
-            "f-string-without-interpolation": 1,
-            "unneeded-not": 3,
-            "consider-using-f-string": 10,
-            "too-few-public-methods": 1,
-            "too-many-instance-attributes": 2,
-            "wrong-import-order": 1,
+            "import-error": 6,
+            "ungrouped-imports": 5,
+            "too-many-locals": 3,
+            "consider-using-f-string": 6,
+            "use-dict-literal": 1,
+            "raise-missing-from": 1,
+            "too-many-branches": 1,
+            "unspecified-encoding": 3,
             "too-many-lines": 1,
-            "broad-exception-caught": 1,
-            "broad-exception-raised": 4,
-            "consider-using-in": 1,
-            "duplicate-code": 4,
-            "cyclic-import": 1
+            "duplicate-code": 4
         },
         "code_type_count": {
             "code": 0,
@@ -3444,8 +2139,7 @@
         },
         "dependencies": {
             "ebcpy.data_types": [
-                "ebcpy",
-                "ebcpy.utils.conversion"
+                "ebcpy"
             ],
             "ebcpy.simulationapi.dymola_api": [
                 "ebcpy"
@@ -3456,151 +2150,8 @@
             "ebcpy.optimization": [
                 "ebcpy"
             ],
-            "scipy.signal": [
-                "ebcpy.preprocessing"
-            ],
-            "sklearn.model_selection": [
-                "ebcpy.preprocessing"
-            ],
-            "pandas.tseries.frequencies": [
-                "ebcpy.preprocessing"
-            ],
-            "numpy": [
-                "ebcpy.preprocessing",
-                "ebcpy.data_types",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.statistics_analyzer",
-                "ebcpy.simulationapi",
-                "ebcpy.optimization",
-                "ebcpy.utils.conversion"
-            ],
-            "pandas": [
-                "ebcpy.modelica.manipulate_ds",
-                "ebcpy.preprocessing",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.data_types",
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion"
-            ],
-            "scipy.stats": [
-                "ebcpy.preprocessing"
-            ],
-            "ebcpy": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.preprocessing"
-            ],
-            "pandas.core.internals": [
-                "ebcpy.data_types"
-            ],
-            "ebcpy.modelica.simres": [
-                "ebcpy.data_types"
-            ],
             "ebcpy.utils": [
-                "ebcpy.simulationapi",
-                "ebcpy.modelica.simres",
-                "ebcpy.optimization",
-                "ebcpy.data_types"
-            ],
-            "ebcpy.preprocessing": [
-                "ebcpy.data_types"
-            ],
-            "h5py": [
-                "ebcpy.data_types"
-            ],
-            "bayes_opt": [
-                "ebcpy.optimization"
-            ],
-            "bayes_opt.util": [
-                "ebcpy.optimization"
-            ],
-            "scipy.optimize": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.optimize": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.problems.single": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.factory": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.ctaea": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.moead": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.nsga2": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.nsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.rnsga2": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.rnsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.de": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.ga": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.moo.unsga3": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.nelder_mead": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.brkga": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.pattern_search": [
-                "ebcpy.optimization"
-            ],
-            "pymoo.algorithms.soo.nonconvex.pso": [
-                "ebcpy.optimization"
-            ],
-            "sklearn.metrics": [
-                "ebcpy.utils.statistics_analyzer"
-            ],
-            "git": [
-                "ebcpy.utils.reproduction"
-            ],
-            "scipy.io": [
-                "ebcpy.modelica.simres",
-                "ebcpy.utils.conversion"
-            ],
-            "pydantic": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi"
-            ],
-            "ebcpy.utils.reproduction": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api",
-                "ebcpy.simulationapi"
-            ],
-            "ebcpy.modelica.manipulate_ds": [
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "ebcpy.simulationapi": [
-                "ebcpy.simulationapi.fmu",
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "ebcpy.utils.conversion": [
-                "ebcpy.simulationapi.dymola_api"
-            ],
-            "fmpy": [
-                "ebcpy.simulationapi.fmu"
-            ],
-            "fmpy.model_description": [
-                "ebcpy.simulationapi.fmu"
+                "ebcpy.modelica.simres"
             ]
         },
         "duplicated_lines": {
@@ -3608,26 +2159,26 @@
             "percent_duplicated_lines": 0.0
         },
         "node_count": {
-            "function": 44,
-            "klass": 19,
-            "method": 144,
-            "module": 14
+            "function": 7,
+            "klass": 2,
+            "method": 11,
+            "module": 13
         },
         "undocumented": {
             "function": 0,
             "klass": 0,
-            "method": 3,
+            "method": 0,
             "module": 0
         },
-        "convention": 98,
-        "error": 2,
-        "fatal": 0,
+        "convention": 64,
+        "error": 6,
+        "fatal": 10,
         "info": 0,
-        "refactor": 60,
-        "statement": 2246,
-        "warning": 34,
-        "global_note": 9.100623330365094,
+        "refactor": 9,
+        "statement": 271,
+        "warning": 4,
+        "global_note": 6.051660516605166,
         "nb_duplicated_lines": 23,
-        "percent_duplicated_lines": 0.3590944574551132
+        "percent_duplicated_lines": 0.383525095881274
     }
 }
