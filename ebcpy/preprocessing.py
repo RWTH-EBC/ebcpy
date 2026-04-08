@@ -370,7 +370,7 @@ def clean_and_space_equally_time_series(
     # in df and the first index entry that would be created
     # when applying df.resample() without loffset
     delta_time = df.index[0] - \
-                 df_temp.resample(rule=desired_freq).first().first(desired_freq).index[0]
+                 df_temp.resample(rule=desired_freq).first().index[0]
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
