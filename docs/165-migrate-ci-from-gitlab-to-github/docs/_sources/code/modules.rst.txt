@@ -1,7 +1,0 @@
-ebcpy
-=====
-
-.. toctree::
-   :maxdepth: 4
-
-   ebcpy
