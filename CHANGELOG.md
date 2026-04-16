@@ -132,3 +132,9 @@
   - By default, don't use multicolumn for TimeSeriesData #160
 - v0.6.1
   - Fix a savepath bug #163
+- v0.7.0
+  - fix dependency errors #167
+  - add support for new pymoo and bayes_opt versions
+  - add support for numpy version 2
+  - remove fmpy version cap of <0.3.17
+  - cap pandas version to <3
