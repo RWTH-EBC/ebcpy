@@ -432,7 +432,6 @@ class Optimizer:
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
             from pymoo.algorithms.moo.ctaea import CTAEA
             from pymoo.algorithms.moo.moead import MOEAD
             from pymoo.algorithms.moo.nsga2 import NSGA2
@@ -442,14 +441,20 @@ class Optimizer:
             from pymoo.algorithms.soo.nonconvex.de import DE
             from pymoo.algorithms.soo.nonconvex.ga import GA
             from pymoo.algorithms.moo.unsga3 import UNSGA3
-            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
             from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
-            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
             from pymoo.algorithms.soo.nonconvex.pso import PSO
         
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
-        
+        pymoo_version_greater_050 = True
+        try:
+            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
+            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
+            pymoo_version_greater_050 = False
+        except ImportError as error:
+            from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
+            from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
         
         pymoo_algorithms = {
             "ga": GA,
@@ -506,28 +511,44 @@ class Optimizer:
             callback = default_kwargs.pop("callback")
             display = default_kwargs.pop("display")
 
-            if "selection" in default_kwargs.keys():
-                default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
-            if "crossover" in default_kwargs.keys():
-                default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
-            if "sampling" in default_kwargs.keys():
-                default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
-            if "mutation" in default_kwargs.keys():
-                default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
+            if not pymoo_version_greater_050:
+
+                keys_to_check = ["selection", "crossover", "sampling", "mutation"]
+                if any(isinstance(default_kwargs.get(k), str) for k in keys_to_check):
+                    warnings.warn(
+                        "Support for pymoo<0.6 string arguments is deprecated and will be removed in the future. "
+                        "Please import the classes yourself and pass the objects directly to the kwargs.",
+                        DeprecationWarning,
+                        stacklevel=2
+                    )
+
+                if "selection" in default_kwargs.keys():
+                    default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+                if "crossover" in default_kwargs.keys():
+                    default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+                if "sampling" in default_kwargs.keys():
+                    default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+                if "mutation" in default_kwargs.keys():
+                    default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
             algorithm = pymoo_algorithms[method.lower()](**default_kwargs)
-            
-            res = minimize(
-                problem=EBCPYProblem(ebcpy_class=self),
-                algorithm=algorithm,
-                termination=termination,
-                seed=seed,
-                verbose=verbose,
-                display=display,
-                callback=callback,
-                save_history=save_history,
-                copy_algorithm=copy_algorithm,
-                copy_termination=copy_termination,
-            )
+
+            minimize_kwargs = {
+                "problem": EBCPYProblem(ebcpy_class=self),
+                "algorithm": algorithm,
+                "termination": termination,
+                "seed": seed,
+                "verbose": verbose,
+                "save_history": save_history,
+                "copy_algorithm": copy_algorithm,
+                "copy_termination": copy_termination,
+            }
+
+            if callback is not None:
+                minimize_kwargs["callback"] = callback
+            if display is not None:
+                minimize_kwargs["display"] = display
+
+            res = minimize(**minimize_kwargs)
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=res.X, fun=res.F[0])
             return res

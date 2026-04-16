@@ -110,6 +110,21 @@ class TestOptimizer(unittest.TestCase):
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+
+        from pymoo.operators.crossover.pntx import TwoPointCrossover
+        from pymoo.operators.mutation.bitflip import BitflipMutation
+        from pymoo.operators.sampling.rnd import BinaryRandomSampling
+        kwargs_test = {
+            "pop_size": 100,
+            "sampling": BinaryRandomSampling(),
+            "crossover": TwoPointCrossover(),
+            "mutation": BitflipMutation(),
+            "eliminate_duplicates": True
+        }
+        res_de = my_custom_optimizer.optimize(framework="pymoo",
+                                              method="NSGA2")
+        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
         
 
     def test_error_handler(self):

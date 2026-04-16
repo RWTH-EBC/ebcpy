@@ -12,7 +12,7 @@ EXTRAS_REQUIRE = {
     'full': [
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
-        'pymoo==0.5.0',
+        'pymoo>=0.5.0',
         'bayesian-optimization==1.4.3',
         'GitPython>=3.1.27',
         'pyarrow>=11.0.0'
@@ -20,7 +20,7 @@ EXTRAS_REQUIRE = {
 }
 
 INSTALL_REQUIRES = [
-    'numpy>=1.19.5,<2.0',
+    'numpy>=1.19.5',
     'matplotlib>=3.3.4',
     'scipy>=1.5.4',
     'pandas>=1.1.5,<3.0',
@@ -63,10 +63,13 @@ setuptools.setup(
         'License :: OSI Approved :: BSD License',
         'Topic :: Scientific/Engineering',
         'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13'
     ],
+    python_requires='>=3.9',
     keywords=[
         'simulation', 'building', 'energy',
         'time-series-data', 'comfort',

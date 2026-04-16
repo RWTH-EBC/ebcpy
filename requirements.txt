@@ -1,4 +1,4 @@
-numpy>=1.19.5,<2.0
+numpy>=1.19.5
 matplotlib>=3.3.4
 scipy>=1.5.4
 pandas>=1.1.5,<3.0
@@ -7,7 +7,7 @@ scikit-learn>=0.24.2
 fmpy>=0.2.27,<0.3.17
 openpyxl>=3.0.5
 xlrd>=2.0.1
-pymoo==0.5.0
+pymoo>=0.5.0
 bayesian-optimization==1.4.3
 pydantic>=2.0
 h5py>=3.1.0
