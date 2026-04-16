@@ -34,6 +34,14 @@ INSTALL_REQUIRES = [
 if sys.version_info.minor >= 9 and sys.version_info.major == 3:
     EXTRAS_REQUIRE['full'].append('fastparquet>=2023.1.0')
 
+if sys.version_info[:2] == (3, 9):
+    # On Python 3.9, PyTables wheels may not be compatible with numpy 2.x.
+    # Pin numpy below 2.0 to avoid a binary-incompatibility error at import time.
+    INSTALL_REQUIRES = [
+        req if not req.startswith('numpy') else 'numpy>=1.19.5,<2.0'
+        for req in INSTALL_REQUIRES
+    ]
+
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
 
