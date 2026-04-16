@@ -110,6 +110,44 @@ class TestOptimizer(unittest.TestCase):
                                               method="NSGA2")
         delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
         self.assertEqual(0.0, np.round(delta_solution, 3))
+
+        from pymoo.operators.crossover.sbx import SBX
+        from pymoo.operators.mutation.pm import PolynomialMutation
+        from pymoo.operators.sampling.rnd import FloatRandomSampling
+
+        kwargs_test = {
+            "pop_size": 100,
+            "sampling": FloatRandomSampling(),
+            "crossover": SBX(),
+            "mutation": PolynomialMutation(),
+            "eliminate_duplicates": True,
+        }
+        res_de = my_custom_optimizer.optimize(framework="pymoo",
+                                              method="NSGA2",
+                                              **kwargs_test)
+        delta_solution = np.sum(res_de.x - my_custom_optimizer.x_goal)
+        self.assertEqual(0.0, np.round(delta_solution, 3))
+
+        # Test bounds requirement for bayesian_optimization (mirrors the DE/pymoo checks above)
+        my_custom_optimizer.bounds = None
+        with self.assertRaises(ValueError):
+            my_custom_optimizer.optimize(framework="bayesian_optimization")
+        my_custom_optimizer.bounds = [(0, 1) for _ in range(3)]
+
+        # Test bayesian_optimization end-to-end. BO is sample-limited and stochastic,
+        # so we give it a larger budget and use a looser tolerance than the other
+        # frameworks. We also fix the seed for reproducibility in CI.
+        res_bo = my_custom_optimizer.optimize(
+            framework="bayesian_optimization",
+            kind_of_utility_function="ei",
+            xi=0.01,
+            init_points=20,
+            n_iter=80,
+            random_state=42,
+        )
+        delta_solution = np.sum(res_bo.x - my_custom_optimizer.x_goal)
+        # BO won't hit 3-decimal precision on 30-odd evaluations — use a looser bound.
+        self.assertAlmostEqual(0.0, delta_solution, delta=0.1)
         
 
     def test_error_handler(self):
@@ -127,8 +165,12 @@ class TestOptimizer(unittest.TestCase):
         for framework in opt.supported_frameworks:
             cfg = opt.get_default_config(framework=framework)
             self.assertGreater(len(cfg), 0)
-        self.assertEqual(opt.get_default_config("not supported"),
-                         {})
+        self.assertEqual(opt.get_default_config("not supported"), {})
+        # Guard against re-introducing the old typo
+        bo_cfg = opt.get_default_config("bayesian_optimization")
+        self.assertNotIn("allow_dublicate_points", bo_cfg)
+        self.assertIn("allow_duplicate_points", bo_cfg)
+        self.assertIn("kappa", bo_cfg)  # needed for UCB after the API change
 
     def tearDown(self):
         """Remove all created folders while optimizing."""

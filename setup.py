@@ -12,20 +12,20 @@ EXTRAS_REQUIRE = {
     'full': [
         'openpyxl>=3.0.5',
         'xlrd>=2.0.1',
-        'pymoo==0.5.0',
-        'bayesian-optimization==1.4.3',
+        'pymoo>=0.5.0',
+        'bayesian-optimization>=1.4.3',
         'GitPython>=3.1.27',
         'pyarrow>=11.0.0'
     ]
 }
 
 INSTALL_REQUIRES = [
-    'numpy>=1.19.5,<2.0',
+    'numpy>=1.19.5',
     'matplotlib>=3.3.4',
     'scipy>=1.5.4',
-    'pandas>=1.1.5',
+    'pandas>=1.1.5,<3.0',
     'scikit-learn>=0.24.2',
-    'fmpy>=0.2.27,<0.3.17',
+    'fmpy>=0.2.27',
     'pydantic>=2.0',
     'h5py>=3.1.0',
     'tables>=3.6.1'
@@ -33,6 +33,14 @@ INSTALL_REQUIRES = [
     
 if sys.version_info.minor >= 9 and sys.version_info.major == 3:
     EXTRAS_REQUIRE['full'].append('fastparquet>=2023.1.0')
+
+if sys.version_info[:2] == (3, 9):
+    # On Python 3.9, PyTables wheels may not be compatible with numpy 2.x.
+    # Pin numpy below 2.0 to avoid a binary-incompatibility error at import time.
+    INSTALL_REQUIRES = [
+        req if not req.startswith('numpy') else 'numpy>=1.19.5,<2.0'
+        for req in INSTALL_REQUIRES
+    ]
 
 # Add all open-source packages to setup-requires
 SETUP_REQUIRES = INSTALL_REQUIRES.copy()
@@ -63,10 +71,14 @@ setuptools.setup(
         'License :: OSI Approved :: BSD License',
         'Topic :: Scientific/Engineering',
         'Intended Audience :: Science/Research',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
-        'Programming Language :: Python :: 3.9'
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
+        'Programming Language :: Python :: 3.13'
     ],
+    python_requires='>=3.8',
     keywords=[
         'simulation', 'building', 'energy',
         'time-series-data', 'comfort',

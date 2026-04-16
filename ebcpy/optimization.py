@@ -201,32 +201,59 @@ class Optimizer:
             return self._bayesian_optimization, False
         
         raise TypeError(f"Given framework {framework} is currently not supported.")
-    
+
     def _bayesian_optimization(self, method=None, n_cpu=1, **kwargs):
         """
         Possible kwargs for the bayesian_optimization function with default values:
-        
+
         random_state = 42
-        allow_dublicate_points = True
-        init_points = 100
-        n_iter = 100
+        allow_duplicate_points = True
+        init_points = 5
+        n_iter = 25
         kind_of_utility_function = "ei"
         xi = 0.1
-        
+        kappa = 2.576
+        verbose = False
+
         For an explanation of what the parameters do, we refer to the documentation of
         the bayesian optimization package:
         https://bayesian-optimization.github.io/BayesianOptimization/index.html
+
+        Additionally, a pre-built acquisition function instance can be passed via
+        the ``acquisition_function`` kwarg. If given, it takes precedence over
+        ``kind_of_utility_function``/``xi``/``kappa``.
         """
         default_kwargs = self.get_default_config(framework="bayesian_optimization")
         default_kwargs.update(kwargs)
-        
+
+        if "allow_dublicate_points" in default_kwargs:
+            warnings.warn(
+                "'allow_dublicate_points' is a typo and deprecated. "
+                "Use 'allow_duplicate_points' instead.",
+                FutureWarning,
+                stacklevel=2,
+            )
+            default_kwargs.setdefault(
+                "allow_duplicate_points",
+                default_kwargs.pop("allow_dublicate_points"),
+            )
+
         try:
             from bayes_opt import BayesianOptimization
-            from bayes_opt.util import UtilityFunction
         except ImportError as error:
             raise ImportError("Please install bayesian-optimization to use "
                               "the bayesian_optimization function.") from error
-            
+
+        # Figure out which API version we're dealing with. In >=2.0 the old
+        # UtilityFunction was removed and replaced by the acquisition-function
+        # classes in bayes_opt.acquisition.
+        try:
+            from bayes_opt import acquisition as _bo_acquisition
+            _new_api = True
+        except ImportError:
+            _bo_acquisition = None
+            _new_api = False
+
         try:
             if self.bounds is None:
                 raise ValueError("For the bayesian optimization approach, you need to specify "
@@ -234,28 +261,77 @@ class Optimizer:
 
             pbounds = {f"x{n}": i for n, i in enumerate(self.bounds)}
 
-            optimizer = BayesianOptimization(
-                f=self._bayesian_opt_obj,
-                pbounds=pbounds,
-                random_state=default_kwargs["random_state"],
-                allow_duplicate_points=default_kwargs["allow_dublicate_points"],
-                verbose=default_kwargs["verbose"]
-            )
-            
-            gp = default_kwargs.get("gp", None)
-            if gp is not None:
-                optimizer._gp = gp
+            # Resolve the acquisition function. Users can pass a ready-made instance
+            # via `acquisition_function` (new-API only); otherwise build it from
+            # `kind_of_utility_function` + `xi`/`kappa`.
+            acq_function_instance = default_kwargs.get("acquisition_function", None)
+            kind = default_kwargs["kind_of_utility_function"].lower()
+            xi = default_kwargs["xi"]
+            kappa = default_kwargs["kappa"]
+            random_state = default_kwargs["random_state"]
 
-            acq_function = UtilityFunction(
-                kind=default_kwargs["kind_of_utility_function"],
-                xi=default_kwargs["xi"])
-            
-            optimizer.maximize(
-                init_points=default_kwargs["init_points"],
-                n_iter=default_kwargs["n_iter"],
-                acquisition_function=acq_function
-            )
-            
+            if _new_api:
+                if acq_function_instance is None:
+                    if kind in ("ei", "expected_improvement"):
+                        acq_function_instance = _bo_acquisition.ExpectedImprovement(xi=xi)
+                    elif kind in ("poi", "probability_of_improvement"):
+                        acq_function_instance = _bo_acquisition.ProbabilityOfImprovement(xi=xi)
+                    elif kind in ("ucb", "upper_confidence_bound"):
+                        acq_function_instance = _bo_acquisition.UpperConfidenceBound(kappa=kappa)
+                    else:
+                        raise ValueError(
+                            f"Unknown kind_of_utility_function '{kind}'. "
+                            "Supported: 'ei', 'poi', 'ucb' (or pass a ready-made "
+                            "instance via the 'acquisition_function' kwarg)."
+                        )
+
+                optimizer = BayesianOptimization(
+                    f=self._bayesian_opt_obj,
+                    pbounds=pbounds,
+                    acquisition_function=acq_function_instance,
+                    random_state=random_state,
+                    allow_duplicate_points=default_kwargs["allow_duplicate_points"],
+                    verbose=default_kwargs["verbose"],
+                )
+
+                gp = default_kwargs.get("gp", None)
+                if gp is not None:
+                    optimizer._gp = gp
+
+                optimizer.maximize(
+                    init_points=default_kwargs["init_points"],
+                    n_iter=default_kwargs["n_iter"],
+                )
+            else:
+                # Legacy path for bayesian-optimization < 2.0
+                warnings.warn(
+                    "You are using bayesian-optimization < 2.0. Support for this "
+                    "version is deprecated and will be removed in the future. "
+                    "Please upgrade to bayesian-optimization >= 2.0.",
+                    FutureWarning,
+                    stacklevel=2,
+                )
+                from bayes_opt.util import UtilityFunction
+
+                optimizer = BayesianOptimization(
+                    f=self._bayesian_opt_obj,
+                    pbounds=pbounds,
+                    random_state=random_state,
+                    allow_duplicate_points=default_kwargs["allow_duplicate_points"],
+                    verbose=default_kwargs["verbose"],
+                )
+
+                gp = default_kwargs.get("gp", None)
+                if gp is not None:
+                    optimizer._gp = gp
+
+                acq_function = UtilityFunction(kind=kind, xi=xi, kappa=kappa)
+                optimizer.maximize(
+                    init_points=default_kwargs["init_points"],
+                    n_iter=default_kwargs["n_iter"],
+                    acquisition_function=acq_function,
+                )
+
             res = optimizer.max
             x_res = np.array(list(res["params"].values()))
             f_res = -res["target"]
@@ -432,7 +508,6 @@ class Optimizer:
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
-            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
             from pymoo.algorithms.moo.ctaea import CTAEA
             from pymoo.algorithms.moo.moead import MOEAD
             from pymoo.algorithms.moo.nsga2 import NSGA2
@@ -442,14 +517,20 @@ class Optimizer:
             from pymoo.algorithms.soo.nonconvex.de import DE
             from pymoo.algorithms.soo.nonconvex.ga import GA
             from pymoo.algorithms.moo.unsga3 import UNSGA3
-            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
             from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
-            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
             from pymoo.algorithms.soo.nonconvex.pso import PSO
         
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
-        
+        pymoo_version_greater_050 = True
+        try:
+            from pymoo.factory import get_sampling, get_mutation, get_crossover, get_selection
+            from pymoo.algorithms.soo.nonconvex.nelder_mead import NelderMead
+            from pymoo.algorithms.soo.nonconvex.pattern_search import PatternSearch
+            pymoo_version_greater_050 = False
+        except ImportError as error:
+            from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
+            from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
         
         pymoo_algorithms = {
             "ga": GA,
@@ -506,28 +587,44 @@ class Optimizer:
             callback = default_kwargs.pop("callback")
             display = default_kwargs.pop("display")
 
-            if "selection" in default_kwargs.keys():
-                default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
-            if "crossover" in default_kwargs.keys():
-                default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
-            if "sampling" in default_kwargs.keys():
-                default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
-            if "mutation" in default_kwargs.keys():
-                default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
+            if not pymoo_version_greater_050:
+
+                keys_to_check = ["selection", "crossover", "sampling", "mutation"]
+                if any(isinstance(default_kwargs.get(k), str) for k in keys_to_check):
+                    warnings.warn(
+                        "Support for pymoo<0.6 string arguments is deprecated and will be removed in the future. "
+                        "Please import the classes yourself and pass the objects directly to the kwargs.",
+                        FutureWarning,
+                        stacklevel=2,
+                    )
+
+                if "selection" in default_kwargs.keys():
+                    default_kwargs["selection"] = get_selection(name=default_kwargs["selection"])
+                if "crossover" in default_kwargs.keys():
+                    default_kwargs["crossover"] = get_crossover(name=default_kwargs["crossover"])
+                if "sampling" in default_kwargs.keys():
+                    default_kwargs["sampling"] = get_sampling(name=default_kwargs["sampling"])
+                if "mutation" in default_kwargs.keys():
+                    default_kwargs["mutation"] = get_mutation(name=default_kwargs["mutation"])
             algorithm = pymoo_algorithms[method.lower()](**default_kwargs)
-            
-            res = minimize(
-                problem=EBCPYProblem(ebcpy_class=self),
-                algorithm=algorithm,
-                termination=termination,
-                seed=seed,
-                verbose=verbose,
-                display=display,
-                callback=callback,
-                save_history=save_history,
-                copy_algorithm=copy_algorithm,
-                copy_termination=copy_termination,
-            )
+
+            minimize_kwargs = {
+                "problem": EBCPYProblem(ebcpy_class=self),
+                "algorithm": algorithm,
+                "termination": termination,
+                "seed": seed,
+                "verbose": verbose,
+                "save_history": save_history,
+                "copy_algorithm": copy_algorithm,
+                "copy_termination": copy_termination,
+            }
+
+            if callback is not None:
+                minimize_kwargs["callback"] = callback
+            if display is not None:
+                minimize_kwargs["display"] = display
+
+            res = minimize(**minimize_kwargs)
             res_tuple = namedtuple("res_tuple", "x fun")
             res = res_tuple(x=res.X, fun=res.F[0])
             return res
@@ -600,11 +697,12 @@ class Optimizer:
                     }
         if framework.lower() == "bayesian_optimization":
             return {"random_state": 42,
-                    "allow_dublicate_points": True,
+                    "allow_duplicate_points": True,
                     "init_points": 5,
                     "n_iter": 25,
                     "kind_of_utility_function": "ei",
                     "xi": 0.1,
-                    "verbose": False
+                    "kappa": 2.576,
+                    "verbose": False,
                     }
         return {}

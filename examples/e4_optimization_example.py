@@ -4,9 +4,21 @@ Goals of this part of the examples:
 2. Learn the different optimizer frameworks
 3. See the difference in optimization when using newton-based methods and evolutionary algorithms.
    The difference is, that newton based methods (like L-BFGS-B) are vastly faster in both convex and
-   concave problems, but they are not guaranteed to find the global minimum and can get stuck in local optima. 
-   Evolutionary algorithms (like the genetic algorithm) are substantially slower, 
+   concave problems, but they are not guaranteed to find the global minimum and can get stuck in local optima.
+   Evolutionary algorithms (like the genetic algorithm) are substantially slower,
    but they can overcome local optima, as shown in the concave examples.
+4. Understand where Bayesian optimization fits in. Bayesian optimization (BO) occupies a third
+   category: it is neither as fast as newton-based methods nor as globally robust as evolutionary
+   algorithms on cheap analytic test functions. What BO is designed for is *sample efficiency* on
+   expensive objectives — it tries to find a good optimum in as few function evaluations as possible
+   by fitting a Gaussian-process surrogate and choosing the next point via an acquisition function.
+   On the cheap test problems in this example, 1000 evaluations of differential evolution or dlib
+   will almost always beat 100 evaluations of BO, and you will see BO miss the global optimum on
+   the 2D concave problem unless `init_points`/`n_iter` are increased and the acquisition function
+   is tuned (e.g. EI with a small `xi`, or UCB with a smaller `kappa`). BO earns its keep in the
+   opposite regime — when each objective evaluation is a multi-minute simulation and you can only
+   afford a few dozen evaluations total. Treat the BO result on these toy problems as a demonstration
+   of the interface, not as a fair performance comparison against the other frameworks.
 """
 
 import time
@@ -26,8 +38,10 @@ FRAMEWORK_METHODS = {
     "scipy_minimize": ("L-BFGS-B", {"x0": [0.3]}),
     "dlib_minimize": (None, {"num_function_calls": 1000}),
     "pymoo": ("ga", {"verbose": False}),
-    "bayesian_optimization": (None, {"xi": 1.2,
-                                     "kind_of_utility_function": "ucb"})
+    "bayesian_optimization": (None, {"kappa": 2.576,
+                                     "kind_of_utility_function": "ucb",
+                                     "init_points": 5,
+                                     "n_iter": 25}),
 }
 
 

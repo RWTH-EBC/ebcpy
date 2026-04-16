@@ -907,7 +907,7 @@ class DymolaAPI(SimulationAPI):
                 raise ImportError(dymola.getLastErrorLog())
         self.logger.info("Loaded modules")
 
-        dymola.experimentSetupOutput(**self.experiment_setup_output.dict())
+        dymola.experimentSetupOutput(**self.experiment_setup_output.model_dump())
         if use_mp:
             DymolaAPI.dymola = dymola
             return None

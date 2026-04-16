@@ -102,7 +102,7 @@ class TestPreProcessing(unittest.TestCase):
         with self.assertRaises(ValueError):
             preprocessing.clean_and_space_equally_time_series(df, "1s")
         # Trigger NaN-input print statement
-        df.iloc[0, 0] = np.NaN
+        df.iloc[0, 0] = np.nan
         preprocessing.clean_and_space_equally_time_series(df, "1s")
         # Generate data with floating index and small frequency
         df = pd.DataFrame(np.random.randint(0, 100, size=(dim, 4)),
@@ -166,7 +166,7 @@ class TestPreProcessing(unittest.TestCase):
         """Test function of preprocessing.number_lines_totally_na().
         For an example, see the doctest in the function."""
         dim = np.random.randint(100)
-        nan_col = [np.NaN for i in range(dim)]
+        nan_col = [np.nan for i in range(dim)]
         col = np.arange(dim)
         df_nan = pd.DataFrame({"col_1": nan_col, "col_2": nan_col})
         df_normal = pd.DataFrame({"col_1": nan_col, "col_2": col})

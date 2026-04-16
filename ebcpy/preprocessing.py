@@ -370,7 +370,7 @@ def clean_and_space_equally_time_series(
     # in df and the first index entry that would be created
     # when applying df.resample() without loffset
     delta_time = df.index[0] - \
-                 df_temp.resample(rule=desired_freq).first().first(desired_freq).index[0]
+                 df_temp.resample(rule=desired_freq).first().index[0]
     # Resample to equally spaced index.
     # All fields should already have a value. Thus NaNs and maybe +/- infs
     # should have been filtered beforehand.
@@ -556,7 +556,7 @@ def number_lines_totally_na(df: Union[pd.DataFrame, "TimeSeriesData"]) -> int:
     >>> import numpy as np
     >>> import pandas as pd
     >>> dim = np.random.randint(100) + 10
-    >>> nan_col = [np.NaN for i in range(dim)]
+    >>> nan_col = [np.nan for i in range(dim)]
     >>> col = [i for i in range(dim)]
     >>> df_nan = pd.DataFrame({"col_1":nan_col, "col_2":nan_col})
     >>> df_normal = pd.DataFrame({"col_1":nan_col, "col_2":col})
