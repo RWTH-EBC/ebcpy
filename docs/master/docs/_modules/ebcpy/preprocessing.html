@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.preprocessing &mdash; ebcpy 0.6.1 documentation</title>
+  <title>ebcpy.preprocessing &mdash; ebcpy 0.7.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -446,7 +446,7 @@
     <span class="c1"># in df and the first index entry that would be created</span>
     <span class="c1"># when applying df.resample() without loffset</span>
     <span class="n">delta_time</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> \
-                 <span class="n">df_temp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">first</span><span class="p">(</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                 <span class="n">df_temp</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">rule</span><span class="o">=</span><span class="n">desired_freq</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="c1"># Resample to equally spaced index.</span>
     <span class="c1"># All fields should already have a value. Thus NaNs and maybe +/- infs</span>
     <span class="c1"># should have been filtered beforehand.</span>
@@ -632,7 +632,7 @@
 <span class="sd">    &gt;&gt;&gt; import numpy as np</span>
 <span class="sd">    &gt;&gt;&gt; import pandas as pd</span>
 <span class="sd">    &gt;&gt;&gt; dim = np.random.randint(100) + 10</span>
-<span class="sd">    &gt;&gt;&gt; nan_col = [np.NaN for i in range(dim)]</span>
+<span class="sd">    &gt;&gt;&gt; nan_col = [np.nan for i in range(dim)]</span>
 <span class="sd">    &gt;&gt;&gt; col = [i for i in range(dim)]</span>
 <span class="sd">    &gt;&gt;&gt; df_nan = pd.DataFrame({&quot;col_1&quot;:nan_col, &quot;col_2&quot;:nan_col})</span>
 <span class="sd">    &gt;&gt;&gt; df_normal = pd.DataFrame({&quot;col_1&quot;:nan_col, &quot;col_2&quot;:col})</span>
