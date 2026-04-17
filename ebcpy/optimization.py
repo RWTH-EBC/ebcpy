@@ -10,6 +10,8 @@ from collections import namedtuple
 from abc import abstractmethod
 import numpy as np
 from ebcpy.utils import setup_logger
+
+
 # pylint: disable=import-outside-toplevel
 # pylint: disable=broad-except
 
@@ -45,7 +47,8 @@ class Optimizer:
     def __init__(self, working_directory: Union[Path, str] = None, **kwargs):
         """Instantiate class parameters"""
         if working_directory is None and "cd" in kwargs:
-            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.", category=DeprecationWarning)
+            warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead.",
+                          category=DeprecationWarning)
             self.working_directory = kwargs["cd"]
         elif working_directory is None:
             self._working_directory = None
@@ -113,12 +116,16 @@ class Optimizer:
 
     @property
     def cd(self) -> Path:
-        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.",
+                      category=DeprecationWarning)
         return self.working_directory
 
     @cd.setter
     def cd(self, cd: Union[Path, str]):
-        warnings.warn("cd was renamed to working_directory in all classes. Use working_directory instead instead.", category=DeprecationWarning)
+        warnings.warn("cd was renamed to working_directory in all classes. "
+                      "Use working_directory instead instead.",
+                      category=DeprecationWarning)
         self.working_directory = cd
 
     @property
@@ -199,7 +206,7 @@ class Optimizer:
             return self._pymoo, True
         if framework.lower() == "bayesian_optimization":
             return self._bayesian_optimization, False
-        
+
         raise TypeError(f"Given framework {framework} is currently not supported.")
 
     def _bayesian_optimization(self, method=None, n_cpu=1, **kwargs):
@@ -341,7 +348,7 @@ class Optimizer:
         except (KeyboardInterrupt, Exception) as error:
             # pylint: disable=inconsistent-return-statements
             self._handle_error(error)
-            
+
     def _bayesian_opt_obj(self, **kwargs):
         """
         This function is needed as the signature for the Bayesian-optimization
@@ -350,7 +357,6 @@ class Optimizer:
         """
         xk = np.array(list(kwargs.values()))
         return -self.obj(xk)
-            
 
     def _scipy_minimize(self, method, n_cpu=1, **kwargs):
         """
@@ -504,7 +510,7 @@ class Optimizer:
         """
         default_kwargs = self.get_default_config(framework="pymoo")
         default_kwargs.update(kwargs)
-        
+
         try:
             from pymoo.optimize import minimize
             from pymoo.problems.single import Problem
@@ -519,7 +525,7 @@ class Optimizer:
             from pymoo.algorithms.moo.unsga3 import UNSGA3
             from pymoo.algorithms.soo.nonconvex.brkga import BRKGA
             from pymoo.algorithms.soo.nonconvex.pso import PSO
-        
+
         except ImportError as error:
             raise ImportError("Please install pymoo to use this function.") from error
         pymoo_version_greater_050 = True
@@ -531,7 +537,7 @@ class Optimizer:
         except ImportError as error:
             from pymoo.algorithms.soo.nonconvex.nelder import NelderMead
             from pymoo.algorithms.soo.nonconvex.pattern import PatternSearch
-        
+
         pymoo_algorithms = {
             "ga": GA,
             "brkga": BRKGA,
@@ -547,13 +553,14 @@ class Optimizer:
             "moead": MOEAD,
             "ctaea": CTAEA,
         }
-        
+
         if method.lower() not in pymoo_algorithms:
             raise ValueError(f"Given method {method} is currently not supported. Please choose one of the "
                              "following: " + ", ".join(pymoo_algorithms.keys()))
-        
+
         class EBCPYProblem(Problem):
             """Construct wrapper problem class."""
+
             def __init__(self,
                          ebcpy_class: Optimizer
                          ):

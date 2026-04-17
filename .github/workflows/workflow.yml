@@ -23,3 +23,4 @@ jobs:
       EXECUTE_COVERAGE_TEST: true
       USE_DYMOLA: true
       CONVERT_EXAMPLES: false
+      PYPI_RELEASE: true
