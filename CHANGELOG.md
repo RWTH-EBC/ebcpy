@@ -138,3 +138,5 @@
   - add support for numpy version 2
   - remove fmpy version cap of <0.3.17
   - cap pandas version to <3
+- v0.7.1
+  - fix bug in clean_and_space_equally #171
