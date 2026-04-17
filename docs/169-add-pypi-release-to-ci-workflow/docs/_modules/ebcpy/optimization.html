@@ -86,6 +86,8 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">setup_logger</span>
+
+
 <span class="c1"># pylint: disable=import-outside-toplevel</span>
 <span class="c1"># pylint: disable=broad-except</span>
 
@@ -121,7 +123,8 @@
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Instantiate class parameters&quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="n">working_directory</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">and</span> <span class="s2">&quot;cd&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. Use working_directory instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. Use working_directory instead.&quot;</span><span class="p">,</span>
+                          <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;cd&quot;</span><span class="p">]</span>
         <span class="k">elif</span> <span class="n">working_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_working_directory</span> <span class="o">=</span> <span class="kc">None</span>
@@ -189,12 +192,16 @@
 
     <span class="nd">@property</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. Use working_directory instead instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. &quot;</span>
+                      <span class="s2">&quot;Use working_directory instead instead.&quot;</span><span class="p">,</span>
+                      <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span>
 
     <span class="nd">@cd</span><span class="o">.</span><span class="n">setter</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">cd</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cd</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Path</span><span class="p">,</span> <span class="nb">str</span><span class="p">]):</span>
-        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. Use working_directory instead instead.&quot;</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;cd was renamed to working_directory in all classes. &quot;</span>
+                      <span class="s2">&quot;Use working_directory instead instead.&quot;</span><span class="p">,</span>
+                      <span class="n">category</span><span class="o">=</span><span class="ne">DeprecationWarning</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">working_directory</span> <span class="o">=</span> <span class="n">cd</span>
 
     <span class="nd">@property</span>
@@ -275,7 +282,7 @@
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_pymoo</span><span class="p">,</span> <span class="kc">True</span>
         <span class="k">if</span> <span class="n">framework</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="o">==</span> <span class="s2">&quot;bayesian_optimization&quot;</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_bayesian_optimization</span><span class="p">,</span> <span class="kc">False</span>
-        
+
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given framework </span><span class="si">{</span><span class="n">framework</span><span class="si">}</span><span class="s2"> is currently not supported.&quot;</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_bayesian_optimization</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -417,7 +424,7 @@
         <span class="k">except</span> <span class="p">(</span><span class="ne">KeyboardInterrupt</span><span class="p">,</span> <span class="ne">Exception</span><span class="p">)</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="c1"># pylint: disable=inconsistent-return-statements</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_handle_error</span><span class="p">(</span><span class="n">error</span><span class="p">)</span>
-            
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_bayesian_opt_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        This function is needed as the signature for the Bayesian-optimization</span>
@@ -426,7 +433,6 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">xk</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">kwargs</span><span class="o">.</span><span class="n">values</span><span class="p">()))</span>
         <span class="k">return</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">obj</span><span class="p">(</span><span class="n">xk</span><span class="p">)</span>
-            
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_scipy_minimize</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">n_cpu</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -580,7 +586,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">default_kwargs</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_default_config</span><span class="p">(</span><span class="n">framework</span><span class="o">=</span><span class="s2">&quot;pymoo&quot;</span><span class="p">)</span>
         <span class="n">default_kwargs</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
-        
+
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.optimize</span><span class="w"> </span><span class="kn">import</span> <span class="n">minimize</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.problems.single</span><span class="w"> </span><span class="kn">import</span> <span class="n">Problem</span>
@@ -595,7 +601,7 @@
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.algorithms.moo.unsga3</span><span class="w"> </span><span class="kn">import</span> <span class="n">UNSGA3</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.algorithms.soo.nonconvex.brkga</span><span class="w"> </span><span class="kn">import</span> <span class="n">BRKGA</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.algorithms.soo.nonconvex.pso</span><span class="w"> </span><span class="kn">import</span> <span class="n">PSO</span>
-        
+
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ImportError</span><span class="p">(</span><span class="s2">&quot;Please install pymoo to use this function.&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">error</span>
         <span class="n">pymoo_version_greater_050</span> <span class="o">=</span> <span class="kc">True</span>
@@ -607,7 +613,7 @@
         <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">error</span><span class="p">:</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.algorithms.soo.nonconvex.nelder</span><span class="w"> </span><span class="kn">import</span> <span class="n">NelderMead</span>
             <span class="kn">from</span><span class="w"> </span><span class="nn">pymoo.algorithms.soo.nonconvex.pattern</span><span class="w"> </span><span class="kn">import</span> <span class="n">PatternSearch</span>
-        
+
         <span class="n">pymoo_algorithms</span> <span class="o">=</span> <span class="p">{</span>
             <span class="s2">&quot;ga&quot;</span><span class="p">:</span> <span class="n">GA</span><span class="p">,</span>
             <span class="s2">&quot;brkga&quot;</span><span class="p">:</span> <span class="n">BRKGA</span><span class="p">,</span>
@@ -623,13 +629,14 @@
             <span class="s2">&quot;moead&quot;</span><span class="p">:</span> <span class="n">MOEAD</span><span class="p">,</span>
             <span class="s2">&quot;ctaea&quot;</span><span class="p">:</span> <span class="n">CTAEA</span><span class="p">,</span>
         <span class="p">}</span>
-        
+
         <span class="k">if</span> <span class="n">method</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">pymoo_algorithms</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Given method </span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2"> is currently not supported. Please choose one of the &quot;</span>
                              <span class="s2">&quot;following: &quot;</span> <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">pymoo_algorithms</span><span class="o">.</span><span class="n">keys</span><span class="p">()))</span>
-        
+
         <span class="k">class</span><span class="w"> </span><span class="nc">EBCPYProblem</span><span class="p">(</span><span class="n">Problem</span><span class="p">):</span>
 <span class="w">            </span><span class="sd">&quot;&quot;&quot;Construct wrapper problem class.&quot;&quot;&quot;</span>
+
             <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                          <span class="n">ebcpy_class</span><span class="p">:</span> <span class="n">Optimizer</span>
                          <span class="p">):</span>
