@@ -170,7 +170,7 @@ class TimeSeriesAccessor:
             inplace=inplace
         )
 
-    def clean_and_space_equally(self, desired_freq, inplace=True):
+    def clean_and_space_equally(self, desired_freq, inplace=False):
         """
         Call to the preprocessing function
         ebcpy.preprocessing.clean_and_space_equally_time_series()
@@ -184,7 +184,7 @@ class TimeSeriesAccessor:
             - 6min: Every 6 minutes
             This also works for h, d, m, y, ms etc.
         :param bool inplace:
-            If True, performs operation inplace and returns None.
+            Is Deprecated and use allways the return value!
         :return: pd.DataFrame
             Cleaned and equally spaced data-frame
         """
@@ -193,8 +193,13 @@ class TimeSeriesAccessor:
             desired_freq=desired_freq
         )
         if inplace:
-            self._obj = df
-            return None
+            warnings.warn(
+                "inplace=True on clean_and_space_equally has no effect when called "
+                "via the .tsd accessor. Use the return value instead: "
+                "df = df.tsd.clean_and_space_equally(freq, inplace=False)",
+                FutureWarning,
+                stacklevel=2,
+            )
         return df
 
     def low_pass_filter(self, crit_freq, filter_order, variable):
@@ -647,7 +652,7 @@ class TimeSeriesData(pd.DataFrame):
         """
         return self.tsd.to_float_index(offset, inplace)
 
-    def clean_and_space_equally(self, desired_freq, inplace: bool = True):
+    def clean_and_space_equally(self, desired_freq, inplace: bool = False):
         """
         Call to the preprocessing function
         ebcpy.preprocessing.clean_and_space_equally_time_series()
@@ -661,7 +666,7 @@ class TimeSeriesData(pd.DataFrame):
             - 6min: Every 6 minutes
             This also works for h, d, m, y, ms etc.
         :param bool inplace:
-            If True, performs operation inplace and returns None.
+            Is Deprecated and use allways the return value!
         :return: pd.DataFrame
             Cleaned and equally spaced data-frame
         """

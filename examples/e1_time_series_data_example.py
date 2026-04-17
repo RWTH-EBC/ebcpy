@@ -83,7 +83,7 @@ def main(with_plot=True):
     df_csv.tsd.to_datetime_index(unit_of_index="s")
     # Create a copy to later reference the change.
     df_csv_ref = df_csv.copy()
-    df_csv.tsd.clean_and_space_equally(desired_freq="60s")
+    df_csv = df_csv.tsd.clean_and_space_equally(desired_freq="60s")
     plt.figure()
     plt.plot(df_csv_ref.index, df_csv_ref["outputs.TRoom"], label="Reference", color="blue")
     plt.plot(df_csv.index, df_csv["outputs.TRoom"], label="Resampled", color="red")

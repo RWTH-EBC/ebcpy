@@ -187,7 +187,7 @@ class TestDataTypes(unittest.TestCase):
         self.assertIsInstance(tsd.index, type(pd.Index([], dtype="float64")))
         tsd.to_datetime_index()
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
-        tsd.clean_and_space_equally(desired_freq="1s")
+        tsd = tsd.clean_and_space_equally(desired_freq="1s")
         self.assertIsInstance(tsd.index, pd.DatetimeIndex)
 
     def test_time_series_tagging(self):
