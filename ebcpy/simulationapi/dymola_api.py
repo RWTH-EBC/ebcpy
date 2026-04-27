@@ -76,6 +76,9 @@ class DymolaAPI(SimulationAPI):
     :keyword Boolean show_window:
         True to show the Dymola window. Default is False
     :keyword Boolean modify_structural_parameters:
+        .. deprecated::
+            Will be removed in the next major release.
+            Use model name modifiers directly instead.
         True to automatically set the structural parameters of the
         simulation model via Modelica modifiers. Default is True.
         See also the keyword ``structural_parameters``
@@ -198,6 +201,14 @@ class DymolaAPI(SimulationAPI):
         self.fully_initialized = False
         self.debug = kwargs.pop("debug", False)
         self.show_window = kwargs.pop("show_window", False)
+        if "modify_structural_parameters" in kwargs:
+            if kwargs.pop("modify_structural_parameters", True) is not True:
+                warnings.warn(
+                    "'modify_structural_parameters' is deprecated and will be removed "
+                    "in the next major release. Use model name modifiers directly instead.",
+                    FutureWarning,
+                    stacklevel=2,
+                )
         self.modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
         self.equidistant_output = kwargs.pop("equidistant_output", True)
         _variables_to_save = kwargs.pop("variables_to_save", {})
@@ -369,6 +380,10 @@ class DymolaAPI(SimulationAPI):
         :keyword dict kwargs_postprocessing:
             Keyword arguments used in the function `postprocess_mat_result`.
         :keyword List[str] structural_parameters:
+            .. deprecated::
+                Will be removed in the next major release.
+                Write modifiers directly in the model_name instead, e.g.
+                ``model_name='MyModel(myParam=newValue)'``
             A list containing all parameter names which are structural in Modelica.
             This means a modifier has to be created in order to change
             the value of this parameter. Internally, the given list
@@ -386,6 +401,15 @@ class DymolaAPI(SimulationAPI):
         """
         # Handle special case for structural_parameters
         if "structural_parameters" in kwargs:
+            warnings.warn(
+                "The 'structural_parameters' keyword argument is deprecated and will "
+                "be removed in the next major release. Instead, write modifiers directly "
+                "in the model_name, e.g.:\n"
+                "  model_name='MyModel(myParam=newValue)'\n"
+                "or pass modified model names via the 'model_names' keyword argument of simulate().",
+                FutureWarning,
+                stacklevel=2,
+            )
             _struc_params = kwargs["structural_parameters"]
             # Check if input is 2-dimensional for multiprocessing.
             # If not, make it 2-dimensional to avoid list flattening in
