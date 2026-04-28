@@ -95,7 +95,6 @@
 
 <div class="viewcode-block" id="simple_dymola_sim_study"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_utils.simple_dymola_sim_study">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">simple_dymola_sim_study</span><span class="p">(</span>
         <span class="n">model_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
-        <span class="n">mos_script_pre</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">simulation_setup</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
@@ -106,6 +105,7 @@
         <span class="n">result_file_name_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">kwargs_postprocessing</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">postprocess_mat_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">mos_script_pre</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">packages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span>
 <span class="p">):</span>
@@ -134,9 +134,6 @@
 <span class="sd">    :param list[str] model_names:</span>
 <span class="sd">        List of Dymola model names, optionally with modifiers.</span>
 <span class="sd">        E.g. ``[&quot;MyModel(nLayer=1)&quot;, &quot;MyModel(nLayer=2)&quot;]``</span>
-<span class="sd">    :param str,Path mos_script_pre:</span>
-<span class="sd">        Path to a .mos script executed before loading packages.</span>
-<span class="sd">        Typically, the startup script of your Modelica library.</span>
 <span class="sd">    :param dict simulation_setup:</span>
 <span class="sd">        Simulation settings with keys ``start_time``, ``stop_time``,</span>
 <span class="sd">        and ``output_interval``.</span>
@@ -165,6 +162,9 @@
 <span class="sd">    :param callable postprocess_mat_result:</span>
 <span class="sd">        Custom post-processing function. If None (default), .mat files</span>
 <span class="sd">        are kept unchanged. Signature: ``func(mat_result_file, **kwargs_postprocessing)</span>
+<span class="sd">    :param str,Path mos_script_pre:</span>
+<span class="sd">        Path to a .mos script executed before loading packages.</span>
+<span class="sd">        Typically, the startup script of your Modelica library.</span>
 <span class="sd">    :param list packages:</span>
 <span class="sd">        Additional Modelica packages not loaded by ``mos_script_pre``.</span>
 <span class="sd">    :param kwargs:</span>
