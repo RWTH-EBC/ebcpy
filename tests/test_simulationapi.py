@@ -494,9 +494,9 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
             "output_interval": 0.1
         }
         if "linux" in sys.platform:
-            self.mos_script_pre = None
+            self.dymola_exe_path = "/usr/local/bin/dymola"
         else:
-            self.mos_script_pre = None
+            self.dymola_exe_path = None
 
         try:
             from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
@@ -511,6 +511,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
                 working_directory=self.working_dir,
                 model_name="TestModelVariables",
                 packages=self.packages,
+                dymola_exe_path=self.dymola_exe_path,
                 n_cpu=1,
             )
             dym.close()
@@ -521,7 +522,6 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
         """Test parameter study mode."""
         result_paths = self.simple_dymola_sim_study(
             model_names=["TestModelVariables"],
-            mos_script_pre=self.mos_script_pre,
             simulation_setup=self.simulation_setup,
             working_directory=self.working_dir,
             save_path=self.save_path,
@@ -530,6 +530,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
             model_result_file_names=["param_study"],
             packages=self.packages,
             n_cpu=1,
+            dymola_exe_path=self.dymola_exe_path,
         )
         self.assertIsInstance(result_paths, dict)
         for paths in result_paths.values():
@@ -541,7 +542,6 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
         """Test model comparison mode."""
         result_paths = self.simple_dymola_sim_study(
             model_names=["TestModelVariables", "TestModelVariables"],
-            mos_script_pre=self.mos_script_pre,
             simulation_setup=self.simulation_setup,
             working_directory=self.working_dir,
             save_path=self.save_path,
@@ -549,6 +549,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
             model_result_file_names=["model_a", "model_b"],
             packages=self.packages,
             n_cpu=1,
+            dymola_exe_path=self.dymola_exe_path,
         )
         self.assertIsInstance(result_paths, list)
         self.assertEqual(len(result_paths), 2)

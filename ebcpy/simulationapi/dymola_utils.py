@@ -18,7 +18,6 @@ def _default_result_file_names(result_file_name, parameters):
 
 def simple_dymola_sim_study(
         model_names: List[str],
-        mos_script_pre: Union[str, Path],
         simulation_setup: dict,
         working_directory: Union[str, Path],
         save_path: Union[str, Path],
@@ -29,6 +28,7 @@ def simple_dymola_sim_study(
         result_file_name_func=None,
         kwargs_postprocessing: dict = None,
         postprocess_mat_result=None,
+        mos_script_pre: Union[str, Path] = None,
         packages: List[Union[str, Path]] = None,
         **kwargs
 ):
@@ -57,9 +57,6 @@ def simple_dymola_sim_study(
     :param list[str] model_names:
         List of Dymola model names, optionally with modifiers.
         E.g. ``["MyModel(nLayer=1)", "MyModel(nLayer=2)"]``
-    :param str,Path mos_script_pre:
-        Path to a .mos script executed before loading packages.
-        Typically, the startup script of your Modelica library.
     :param dict simulation_setup:
         Simulation settings with keys ``start_time``, ``stop_time``,
         and ``output_interval``.
@@ -88,6 +85,9 @@ def simple_dymola_sim_study(
     :param callable postprocess_mat_result:
         Custom post-processing function. If None (default), .mat files
         are kept unchanged. Signature: ``func(mat_result_file, **kwargs_postprocessing)
+    :param str,Path mos_script_pre:
+        Path to a .mos script executed before loading packages.
+        Typically, the startup script of your Modelica library.
     :param list packages:
         Additional Modelica packages not loaded by ``mos_script_pre``.
     :param kwargs:
