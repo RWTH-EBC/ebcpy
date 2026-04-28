@@ -318,7 +318,7 @@ if __name__ == "__main__":
     FIRST_DAY_OF_YEAR = datetime.datetime(2015, 1, 1, 0, 0)
     KWARGS_POSTPROCESSING = dict(
         variable_names=[
-            "outputs*",  # stars as wildcards are supportet
+            "outputs*",  # stars as wildcards are supported
             "hydraulic.distribution.stoBuf.layer[*].T",
             "hydraulic.distribution.stoBuf.port_a_consumer.m_flow",
             "hydraulic.distribution.stoBuf.port_a_heatGenerator.m_flow",
