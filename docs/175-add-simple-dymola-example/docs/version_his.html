@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Version History &mdash; ebcpy 0.7.2 documentation</title>
+  <title>Version History &mdash; ebcpy 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="_static/autodoc_pydantic.css" />
@@ -355,11 +355,14 @@ DataFrame by default with the new inplace argument (default False). #125</p></li
 <li><p>fix bug in clean_and_space_equally #171</p></li>
 </ul>
 </li>
-<li><p>v0.7.2</p>
+<li><p>v0.8.0</p>
 <ul class="simple">
-<li><p>Add new simple dymola exampl workflow #175</p></li>
-<li><p>Add deprecation warning for the structural_parameters kyword of the DymolaAPI #176</p></li>
-<li><p>Improve saving of .parquet files</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">simple_dymola_sim_study</span></code> utility for common Dymola simulation workflows</p></li>
+<li><p>Add <code class="docutils literal notranslate"><span class="pre">exclude</span></code> parameter to <code class="docutils literal notranslate"><span class="pre">get_names</span></code> for filtering out unwanted variable matches</p></li>
+<li><p>Handle SparseDtype columns automatically in <code class="docutils literal notranslate"><span class="pre">tsd.save()</span></code> for parquet format</p></li>
+<li><p>Deprecate <code class="docutils literal notranslate"><span class="pre">structural_parameters</span></code> keyword in <code class="docutils literal notranslate"><span class="pre">DymolaAPI.simulate()</span></code> #176</p></li>
+<li><p>Deprecate <code class="docutils literal notranslate"><span class="pre">modify_structural_parameters</span></code> keyword in <code class="docutils literal notranslate"><span class="pre">DymolaAPI.__init__()</span></code></p></li>
+<li><p>Add basic Dymola simulation workflow example #175</p></li>
 </ul>
 </li>
 </ul>

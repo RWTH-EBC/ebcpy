@@ -17,6 +17,14 @@ ebcpy.simulationapi.dymola\_api module
    :undoc-members:
    :show-inheritance:
 
+ebcpy.simulationapi.dymola\_utils module
+----------------------------------------
+
+.. automodule:: ebcpy.simulationapi.dymola_utils
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 ebcpy.simulationapi.fmu module
 ------------------------------
 

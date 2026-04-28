@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.utils &mdash; ebcpy 0.7.2 documentation</title>
+  <title>ebcpy.utils &mdash; ebcpy 0.8.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../_static/autodoc_pydantic.css" />
@@ -124,26 +124,44 @@
     <span class="k">return</span> <span class="n">logger</span></div>
 
 
-<div class="viewcode-block" id="get_names"><a class="viewcode-back" href="../../code/ebcpy.utils.html#ebcpy.utils.get_names">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span><span class="n">all_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span> <span class="n">patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]])</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<div class="viewcode-block" id="get_names"><a class="viewcode-back" href="../../code/ebcpy.utils.html#ebcpy.utils.get_names">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">get_names</span><span class="p">(</span>
+        <span class="n">all_names</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
+        <span class="n">patterns</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]],</span>
+        <span class="n">exclude</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Filter a list of candidate names by literal values or glob-style patterns.</span>
+<span class="sd">    Filter a list of candidate names by literal values or glob-style patterns,</span>
+<span class="sd">    optionally excluding names that match exclusion patterns.</span>
 
-<span class="sd">    This function returns all names from `all_names` that match the provided</span>
-<span class="sd">    `patterns`.  Patterns may be a single string or a list of strings, and may</span>
-<span class="sd">    contain the wildcard `*` to match any sequence of characters.  Literal names</span>
-<span class="sd">    without `*` must match exactly.  The matching is performed in two steps:</span>
-<span class="sd">      1. Each pattern is translated to a regular expression if it contains `*`,</span>
-<span class="sd">         otherwise used as a literal match.</span>
-<span class="sd">      2. Any pattern that matches no names in `all_names` raises a warning.</span>
+<span class="sd">    This function returns all names from ``all_names`` that match the provided</span>
+<span class="sd">    ``patterns`` and do not match any of the ``exclude`` patterns.</span>
+<span class="sd">    Patterns may be a single string or a list of strings, and may</span>
+<span class="sd">    contain the wildcard ``*`` to match any sequence of characters. Literal names</span>
+<span class="sd">    without ``*`` must match exactly.</span>
 
-<span class="sd">    The returned list preserves the order of `all_names`.</span>
+<span class="sd">    The returned list preserves the order of ``all_names``.</span>
 
-<span class="sd">    :param all_names: List of available names to filter.</span>
-<span class="sd">    :param patterns: A pattern or list of patterns (with optional `*` wildcards)</span>
-<span class="sd">                     to match against `all_names`.</span>
-<span class="sd">    :return: A list of names from `all_names` that match any of the given patterns,</span>
-<span class="sd">             in original order.</span>
-<span class="sd">    :raises KeyError: If any pattern does not match at least one name.</span>
+<span class="sd">    :param list all_names:</span>
+<span class="sd">        List of available names to filter.</span>
+<span class="sd">    :param str,list[str] patterns:</span>
+<span class="sd">        A pattern or list of patterns (with optional ``*`` wildcards)</span>
+<span class="sd">        to match against ``all_names``.</span>
+<span class="sd">    :param str,list[str] exclude:</span>
+<span class="sd">        A pattern or list of patterns to exclude from the results.</span>
+<span class="sd">        Names matching any exclusion pattern are removed after the</span>
+<span class="sd">        inclusion step. Default is None (no exclusion).</span>
+<span class="sd">    :return: A list of names from ``all_names`` that match any of the given</span>
+<span class="sd">        patterns and none of the exclusion patterns, in original order.</span>
+<span class="sd">    :rtype: list[str]</span>
+<span class="sd">    :raises KeyError: If any inclusion pattern does not match at least one name.</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">    &gt;&gt;&gt; names = [&quot;wall.layer[1].T&quot;, &quot;wall.layer[2].T&quot;, &quot;wall.layer[1].Q_flow&quot;]</span>
+<span class="sd">    &gt;&gt;&gt; get_names(names, &quot;wall.layer[*].T&quot;)</span>
+<span class="sd">    [&#39;wall.layer[1].T&#39;, &#39;wall.layer[2].T&#39;]</span>
+<span class="sd">    &gt;&gt;&gt; get_names(names, &quot;wall.layer[*].*&quot;, exclude=&quot;*Q_flow&quot;)</span>
+<span class="sd">    [&#39;wall.layer[1].T&#39;, &#39;wall.layer[2].T&#39;]</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">patterns</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">patterns</span> <span class="o">=</span> <span class="p">[</span><span class="n">patterns</span><span class="p">]</span>
@@ -169,7 +187,22 @@
             <span class="s2">&quot;The following variable names/patterns are not in the given .mat file: &quot;</span>
             <span class="o">+</span> <span class="s2">&quot;, &quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">unmatched</span><span class="p">)</span>
         <span class="p">)</span>
-    <span class="c1"># preserve original order</span>
+
+    <span class="c1"># Apply exclusion patterns</span>
+    <span class="k">if</span> <span class="n">exclude</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">exclude</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">exclude</span> <span class="o">=</span> <span class="p">[</span><span class="n">exclude</span><span class="p">]</span>
+        <span class="n">excluded</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">exclude</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;*&#39;</span> <span class="ow">in</span> <span class="n">pat</span><span class="p">:</span>
+                <span class="n">regex</span> <span class="o">=</span> <span class="s1">&#39;^&#39;</span> <span class="o">+</span> <span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\*&#39;</span><span class="p">,</span> <span class="s1">&#39;.*&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;$&#39;</span>
+                <span class="n">excluded</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">matched</span> <span class="k">if</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">k</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">pat</span> <span class="ow">in</span> <span class="n">matched</span><span class="p">:</span>
+                    <span class="n">excluded</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">pat</span><span class="p">)</span>
+        <span class="n">matched</span> <span class="o">-=</span> <span class="n">excluded</span>
+
+    <span class="c1"># Preserve original order</span>
     <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="n">var</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">all_names</span> <span class="k">if</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">matched</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">names</span></div>
 </pre></div>

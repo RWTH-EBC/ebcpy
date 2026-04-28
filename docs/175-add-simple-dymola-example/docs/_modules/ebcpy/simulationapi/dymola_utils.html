@@ -1,0 +1,311 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ebcpy.simulationapi.dymola_utils &mdash; ebcpy 0.8.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
+
+  
+      <script src="../../../_static/jquery.js"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+      <script src="../../../_static/doctools.js"></script>
+      <script src="../../../_static/sphinx_highlight.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            ebcpy
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../examples.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../code/modules.html">ebcpy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html">Contribute as a user</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Contribution.html#contribute-as-a-developer">Contribute as a developer</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../Reproduction.html">Reproducibility of research</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../version_his.html">Version History</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">ebcpy</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Module code</a></li>
+          <li class="breadcrumb-item"><a href="../simulationapi.html">ebcpy.simulationapi</a></li>
+      <li class="breadcrumb-item active">ebcpy.simulationapi.dymola_utils</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for ebcpy.simulationapi.dymola_utils</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">DymolaAPI</span><span class="p">,</span> <span class="n">load_time_series_data</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_default_result_file_names</span><span class="p">(</span><span class="n">result_file_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate unique result file names from parameter values.&quot;&quot;&quot;</span>
+    <span class="n">result_file_names</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">param_dict</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">parameters</span><span class="p">):</span>
+        <span class="n">name</span> <span class="o">=</span> <span class="n">result_file_name</span>
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">param_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">short_key</span> <span class="o">=</span> <span class="n">key</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">name</span> <span class="o">+=</span> <span class="sa">f</span><span class="s2">&quot;_</span><span class="si">{</span><span class="n">short_key</span><span class="si">}{</span><span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="n">result_file_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result_file_names</span>
+
+
+<div class="viewcode-block" id="simple_dymola_sim_study"><a class="viewcode-back" href="../../../code/ebcpy.simulationapi.html#ebcpy.simulationapi.dymola_utils.simple_dymola_sim_study">[docs]</a><span class="k">def</span><span class="w"> </span><span class="nf">simple_dymola_sim_study</span><span class="p">(</span>
+        <span class="n">model_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">mos_script_pre</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">simulation_setup</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">n_cpu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
+        <span class="n">use_parameter_study</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">model_result_file_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">result_file_name_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">kwargs_postprocessing</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">postprocess_mat_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">packages</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span>
+<span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run a Dymola simulation study with multiple models and/or parameter variations.</span>
+
+<span class="sd">    This function supports two simulation modes:</span>
+
+<span class="sd">    **Parameter study** (``use_parameter_study=True``):</span>
+<span class="sd">        Each model is simulated separately with all parameter sets.</span>
+<span class="sd">        Useful when you want the full cross-product of models × parameters.</span>
+<span class="sd">        Each model gets its own DymolaAPI instance, which translates the model</span>
+<span class="sd">        once and then runs all parameter variations.</span>
+
+<span class="sd">    **Model comparison** (``use_parameter_study=False``):</span>
+<span class="sd">        All models are simulated in a single ``simulate()`` call using the</span>
+<span class="sd">        ``model_names`` keyword. Each model can receive the same parameters</span>
+<span class="sd">        (pass a single dict) or individual parameters (pass a list of dicts</span>
+<span class="sd">        matching the length of ``model_names``). Each model is translated</span>
+<span class="sd">        individually.</span>
+
+<span class="sd">    Both modes use model name modifiers to change structural parameters.</span>
+<span class="sd">    This is the recommended approach — write the modifier directly in the</span>
+<span class="sd">    model name string.</span>
+
+<span class="sd">    :param list[str] model_names:</span>
+<span class="sd">        List of Dymola model names, optionally with modifiers.</span>
+<span class="sd">        E.g. ``[&quot;MyModel(nLayer=1)&quot;, &quot;MyModel(nLayer=2)&quot;]``</span>
+<span class="sd">    :param str,Path mos_script_pre:</span>
+<span class="sd">        Path to a .mos script executed before loading packages.</span>
+<span class="sd">        Typically, the startup script of your Modelica library.</span>
+<span class="sd">    :param dict simulation_setup:</span>
+<span class="sd">        Simulation settings with keys ``start_time``, ``stop_time``,</span>
+<span class="sd">        and ``output_interval``.</span>
+<span class="sd">    :param str,Path working_directory:</span>
+<span class="sd">        Dymola working directory.</span>
+<span class="sd">    :param str,Path save_path:</span>
+<span class="sd">        Directory for saving simulation results.</span>
+<span class="sd">    :param dict,list[dict] parameters:</span>
+<span class="sd">        Parameter values for the simulation. For parameter studies, pass a list</span>
+<span class="sd">        of dicts. For model comparison, pass a single dict (applied to all models)</span>
+<span class="sd">        or a list of dicts (one per model).</span>
+<span class="sd">    :param int n_cpu:</span>
+<span class="sd">        Number of parallel Dymola processes. Default is 4.</span>
+<span class="sd">    :param bool use_parameter_study:</span>
+<span class="sd">        If True, runs each model with all parameter sets (cross-product).</span>
+<span class="sd">        If False, runs all models in a single call.</span>
+<span class="sd">    :param list[str] model_result_file_names:</span>
+<span class="sd">        Base names for the result files, one per model.</span>
+<span class="sd">    :param callable result_file_name_func:</span>
+<span class="sd">        Function to generate unique result file names for parameter studies.</span>
+<span class="sd">        Signature: ``func(result_file_name, parameters) -&gt; list[str]``</span>
+<span class="sd">        Default generates names by appending parameter key-value pairs.</span>
+<span class="sd">    :param dict kwargs_postprocessing:</span>
+<span class="sd">        Keyword arguments passed to the post-processing function.</span>
+<span class="sd">        Required if ``postprocess_mat_result`` is provided.</span>
+<span class="sd">    :param callable postprocess_mat_result:</span>
+<span class="sd">        Custom post-processing function. If None (default), .mat files</span>
+<span class="sd">        are kept unchanged. Signature: ``func(mat_result_file, **kwargs_postprocessing)</span>
+<span class="sd">    :param list packages:</span>
+<span class="sd">        Additional Modelica packages not loaded by ``mos_script_pre``.</span>
+<span class="sd">    :param kwargs:</span>
+<span class="sd">        Additional keyword arguments forwarded to ``DymolaAPI`` constructor</span>
+<span class="sd">        (e.g. ``show_window``, ``debug``, ``n_restart``, ``dymola_version``)</span>
+<span class="sd">        and to ``DymolaAPI.simulate()`` (e.g. ``fail_on_error``).</span>
+<span class="sd">    :return: Result file paths. For parameter studies, a dict mapping model names</span>
+<span class="sd">        to lists of paths. For model comparison, a list of paths.</span>
+<span class="sd">    :rtype: dict or list</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ## Default paths</span>
+    <span class="k">if</span> <span class="n">working_directory</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">working_directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="s2">&quot;working_directory&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">save_path</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">save_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">joinpath</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="s2">&quot;SimResults&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">packages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">packages</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">model_result_file_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_result_file_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;model_result_file_names has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_result_file_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;but model_names has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">)</span><span class="si">}</span><span class="s2">. They must match.&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_parameter_study</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">parameters</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span>
+            <span class="s2">&quot;For parameter studies, parameters must be a list of dicts.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1"># ## Post-processing setup</span>
+    <span class="c1"># Dymola produces .mat files by default. These are large and use a float</span>
+    <span class="c1"># index (seconds). The post-processing function converts them to a more</span>
+    <span class="c1"># usable format (e.g. datetime-indexed parquet) containing only the</span>
+    <span class="c1"># variables you need.</span>
+    <span class="k">if</span> <span class="n">postprocess_mat_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">kwargs_postprocessing</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;kwargs_postprocessing is required when postprocess_mat_result is provided. &quot;</span>
+            <span class="s2">&quot;Pass a dict with the keyword arguments for your post-processing function.&quot;</span>
+        <span class="p">)</span>
+        <span class="c1"># Build the simulate kwargs for postprocessing</span>
+    <span class="n">postprocessing_kwargs</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">if</span> <span class="n">postprocess_mat_result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">postprocessing_kwargs</span><span class="p">[</span><span class="s2">&quot;postprocess_mat_result&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">postprocess_mat_result</span>
+        <span class="n">postprocessing_kwargs</span><span class="p">[</span><span class="s2">&quot;kwargs_postprocessing&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">kwargs_postprocessing</span>
+
+    <span class="c1"># ## Separate kwargs for DymolaAPI constructor and simulate()</span>
+    <span class="c1"># Known simulate() kwargs are forwarded there, everything else goes to DymolaAPI.</span>
+    <span class="n">simulate_kwarg_keys</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;inputs&quot;</span><span class="p">,</span> <span class="s2">&quot;table_name&quot;</span><span class="p">,</span> <span class="s2">&quot;file_name&quot;</span><span class="p">,</span> <span class="s2">&quot;fail_on_error&quot;</span><span class="p">,</span> <span class="s2">&quot;show_eventlog&quot;</span><span class="p">,</span> <span class="s2">&quot;squeeze&quot;</span><span class="p">}</span>
+    <span class="n">simulate_kwargs</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">k</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">simulate_kwarg_keys</span> <span class="k">if</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">}</span>
+
+    <span class="c1"># ## Run simulations</span>
+    <span class="k">if</span> <span class="n">use_parameter_study</span><span class="p">:</span>
+        <span class="c1"># ### Parameter study mode</span>
+        <span class="c1"># Iterate over each model variant. For each model, a separate DymolaAPI</span>
+        <span class="c1"># instance is created, the model is translated once, and all parameter</span>
+        <span class="c1"># sets are simulated. This is efficient because translation (the slow part)</span>
+        <span class="c1"># happens only once per model.</span>
+        <span class="k">if</span> <span class="n">result_file_name_func</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">result_file_name_func</span> <span class="o">=</span> <span class="n">_default_result_file_names</span>
+        <span class="n">all_result_paths</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">model_name</span><span class="p">,</span> <span class="n">result_file_name</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">model_names</span><span class="p">,</span> <span class="n">model_result_file_names</span><span class="p">):</span>
+            <span class="c1"># Create unique result file names by encoding the varied parameter values.</span>
+            <span class="c1"># Adapt this naming scheme to your parameter study.</span>
+            <span class="n">result_file_names</span> <span class="o">=</span> <span class="n">result_file_name_func</span><span class="p">(</span><span class="n">result_file_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+            <span class="n">dym_api</span> <span class="o">=</span> <span class="n">DymolaAPI</span><span class="p">(</span>
+                <span class="n">mos_script_pre</span><span class="o">=</span><span class="n">mos_script_pre</span><span class="p">,</span>
+                <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
+                <span class="n">working_directory</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span>
+                <span class="n">n_cpu</span><span class="o">=</span><span class="n">n_cpu</span><span class="p">,</span>
+                <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">kwargs</span>
+            <span class="p">)</span>
+            <span class="n">dym_api</span><span class="o">.</span><span class="n">set_sim_setup</span><span class="p">(</span><span class="n">sim_setup</span><span class="o">=</span><span class="n">simulation_setup</span><span class="p">)</span>
+
+            <span class="n">result_paths</span> <span class="o">=</span> <span class="n">dym_api</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+                <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+                <span class="n">return_option</span><span class="o">=</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span>
+                <span class="n">savepath</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span>
+                <span class="n">result_file_name</span><span class="o">=</span><span class="n">result_file_names</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">postprocessing_kwargs</span><span class="p">,</span>
+                <span class="o">**</span><span class="n">simulate_kwargs</span>
+            <span class="p">)</span>
+            <span class="n">all_result_paths</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">result_paths</span>
+            <span class="n">dym_api</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">all_result_paths</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># ### Model comparison mode</span>
+        <span class="c1"># All models are simulated in a single DymolaAPI call using the</span>
+        <span class="c1"># model_names keyword. Dymola translates each model on the fly.</span>
+        <span class="c1"># This is convenient for comparing different model configurations</span>
+        <span class="c1"># with the same or individual parameter sets.</span>
+        <span class="n">dym_api</span> <span class="o">=</span> <span class="n">DymolaAPI</span><span class="p">(</span>
+            <span class="n">mos_script_pre</span><span class="o">=</span><span class="n">mos_script_pre</span><span class="p">,</span>
+            <span class="n">working_directory</span><span class="o">=</span><span class="n">working_directory</span><span class="p">,</span>
+            <span class="n">n_cpu</span><span class="o">=</span><span class="n">n_cpu</span><span class="p">,</span>
+            <span class="n">packages</span><span class="o">=</span><span class="n">packages</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">dym_api</span><span class="o">.</span><span class="n">set_sim_setup</span><span class="p">(</span><span class="n">sim_setup</span><span class="o">=</span><span class="n">simulation_setup</span><span class="p">)</span>
+
+        <span class="n">result_paths</span> <span class="o">=</span> <span class="n">dym_api</span><span class="o">.</span><span class="n">simulate</span><span class="p">(</span>
+            <span class="n">model_names</span><span class="o">=</span><span class="n">model_names</span><span class="p">,</span>
+            <span class="n">parameters</span><span class="o">=</span><span class="n">parameters</span><span class="p">,</span>
+            <span class="n">return_option</span><span class="o">=</span><span class="s2">&quot;savepath&quot;</span><span class="p">,</span>
+            <span class="n">savepath</span><span class="o">=</span><span class="n">save_path</span><span class="p">,</span>
+            <span class="n">result_file_name</span><span class="o">=</span><span class="n">model_result_file_names</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">postprocessing_kwargs</span><span class="p">,</span>
+            <span class="o">**</span><span class="n">simulate_kwargs</span>
+        <span class="p">)</span>
+        <span class="n">dym_api</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">result_paths</span></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2019, EON EBC.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -8,18 +8,51 @@
             "column": 0,
             "path": "ebcpy/utils/reproduction.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-24.txt'.",
+            "message": "ebcpy/utils/reproduction.py: Fatal error while checking 'ebcpy/utils/reproduction.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-29.txt'.",
             "message-id": "F0002"
         },
         {
+            "type": "convention",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 569,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (112/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 607,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (112/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.data_types",
+            "obj": "",
+            "line": 701,
+            "column": 0,
+            "path": "ebcpy/data_types.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (118/100)",
+            "message-id": "C0301"
+        },
+        {
             "type": "fatal",
-            "module": "ebcpy.preprocessing",
+            "module": "ebcpy.data_types",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/preprocessing.py",
+            "path": "ebcpy/data_types.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-24.txt'.",
+            "message": "ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-30.txt'.",
             "message-id": "F0002"
         },
         {
@@ -129,51 +162,139 @@
             "column": 0,
             "path": "ebcpy/optimization.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-25.txt'.",
+            "message": "ebcpy/optimization.py: Fatal error while checking 'ebcpy/optimization.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-30.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "fatal",
+            "module": "ebcpy.preprocessing",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/preprocessing.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/preprocessing.py: Fatal error while checking 'ebcpy/preprocessing.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-30.txt'.",
+            "message-id": "F0002"
+        },
+        {
+            "type": "fatal",
+            "module": "ebcpy.utils.conversion",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/utils/conversion.py",
+            "symbol": "astroid-error",
+            "message": "ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-30.txt'.",
             "message-id": "F0002"
         },
         {
             "type": "convention",
-            "module": "ebcpy.data_types",
+            "module": "ebcpy.utils.statistics_analyzer",
             "obj": "",
-            "line": 569,
+            "line": 189,
             "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (112/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
         },
         {
             "type": "convention",
-            "module": "ebcpy.data_types",
+            "module": "ebcpy.utils.statistics_analyzer",
             "obj": "",
-            "line": 607,
+            "line": 203,
             "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (112/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
         },
         {
             "type": "convention",
-            "module": "ebcpy.data_types",
+            "module": "ebcpy.utils.statistics_analyzer",
             "obj": "",
-            "line": 701,
+            "line": 206,
             "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (118/100)",
-            "message-id": "C0301"
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "trailing-whitespace",
+            "message": "Trailing whitespace",
+            "message-id": "C0303"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 4,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'numpy'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "error",
+            "module": "ebcpy.utils.statistics_analyzer",
+            "obj": "",
+            "line": 5,
+            "column": 0,
+            "path": "ebcpy/utils/statistics_analyzer.py",
+            "symbol": "import-error",
+            "message": "Unable to import 'sklearn.metrics'",
+            "message-id": "E0401"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 5,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package os are not grouped",
+            "message-id": "C0412"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 6,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package pathlib are not grouped",
+            "message-id": "C0412"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.optimization",
+            "obj": "",
+            "line": 7,
+            "column": 0,
+            "path": "ebcpy/optimization.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package warnings are not grouped",
+            "message-id": "C0412"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.utils.conversion",
+            "obj": "",
+            "line": 5,
+            "column": 0,
+            "path": "ebcpy/utils/conversion.py",
+            "symbol": "ungrouped-imports",
+            "message": "Imports from package pathlib are not grouped",
+            "message-id": "C0412"
         },
         {
             "type": "fatal",
-            "module": "ebcpy.data_types",
+            "module": "ebcpy.utils.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/data_types.py",
+            "path": "ebcpy/utils/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/data_types.py: Fatal error while checking 'ebcpy/data_types.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-25.txt'.",
+            "message": "ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-30.txt'.",
             "message-id": "F0002"
         },
         {
@@ -309,50 +430,6 @@
             "message-id": "R0912"
         },
         {
-            "type": "convention",
-            "module": "ebcpy.optimization",
-            "obj": "",
-            "line": 7,
-            "column": 0,
-            "path": "ebcpy/optimization.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package warnings are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 10,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package os are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 11,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package warnings are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.data_types",
-            "obj": "",
-            "line": 12,
-            "column": 0,
-            "path": "ebcpy/data_types.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package pathlib are not grouped",
-            "message-id": "C0412"
-        },
-        {
             "type": "error",
             "module": "ebcpy.modelica.manipulate_ds",
             "obj": "",
@@ -448,7 +525,7 @@
             "column": 0,
             "path": "ebcpy/modelica/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-25.txt'.",
+            "message": "ebcpy/modelica/__init__.py: Fatal error while checking 'ebcpy/modelica/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-31.txt'.",
             "message-id": "F0002"
         },
         {
@@ -646,40 +723,7 @@
             "column": 0,
             "path": "ebcpy/simulationapi/dymola_api.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-25.txt'.",
-            "message-id": "F0002"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.__init__",
-            "obj": "",
-            "line": 442,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (111/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.__init__",
-            "obj": "",
-            "line": 585,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "line-too-long",
-            "message": "Line too long (104/100)",
-            "message-id": "C0301"
-        },
-        {
-            "type": "fatal",
-            "module": "ebcpy.simulationapi.__init__",
-            "obj": "",
-            "line": 1,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-26.txt'.",
+            "message": "ebcpy/simulationapi/dymola_api.py: Fatal error while checking 'ebcpy/simulationapi/dymola_api.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-31.txt'.",
             "message-id": "F0002"
         },
         {
@@ -723,227 +767,128 @@
             "column": 0,
             "path": "ebcpy/simulationapi/fmu.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-26.txt'.",
+            "message": "ebcpy/simulationapi/fmu.py: Fatal error while checking 'ebcpy/simulationapi/fmu.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-31.txt'.",
             "message-id": "F0002"
         },
         {
             "type": "convention",
-            "module": "ebcpy.utils.statistics_analyzer",
+            "module": "ebcpy.simulationapi.dymola_utils",
             "obj": "",
-            "line": 189,
+            "line": 137,
             "column": 0,
-            "path": "ebcpy/utils/statistics_analyzer.py",
-            "symbol": "trailing-whitespace",
-            "message": "Trailing whitespace",
-            "message-id": "C0303"
+            "path": "ebcpy/simulationapi/dymola_utils.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (108/100)",
+            "message-id": "C0301"
         },
         {
             "type": "convention",
-            "module": "ebcpy.utils.statistics_analyzer",
+            "module": "ebcpy.simulationapi.dymola_utils",
             "obj": "",
-            "line": 203,
+            "line": 204,
             "column": 0,
-            "path": "ebcpy/utils/statistics_analyzer.py",
-            "symbol": "trailing-whitespace",
-            "message": "Trailing whitespace",
-            "message-id": "C0303"
+            "path": "ebcpy/simulationapi/dymola_utils.py",
+            "symbol": "missing-final-newline",
+            "message": "Final newline missing",
+            "message-id": "C0304"
         },
         {
             "type": "convention",
-            "module": "ebcpy.utils.statistics_analyzer",
-            "obj": "",
-            "line": 206,
-            "column": 0,
-            "path": "ebcpy/utils/statistics_analyzer.py",
-            "symbol": "trailing-whitespace",
-            "message": "Trailing whitespace",
-            "message-id": "C0303"
-        },
-        {
-            "type": "error",
-            "module": "ebcpy.utils.statistics_analyzer",
-            "obj": "",
-            "line": 4,
-            "column": 0,
-            "path": "ebcpy/utils/statistics_analyzer.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'numpy'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "error",
-            "module": "ebcpy.utils.statistics_analyzer",
-            "obj": "",
-            "line": 5,
-            "column": 0,
-            "path": "ebcpy/utils/statistics_analyzer.py",
-            "symbol": "import-error",
-            "message": "Unable to import 'sklearn.metrics'",
-            "message-id": "E0401"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "",
-            "line": 8,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package warnings are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "",
-            "line": 9,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package os are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "",
-            "line": 10,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package sys are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "",
-            "line": 12,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package time are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi",
-            "obj": "",
-            "line": 13,
-            "column": 0,
-            "path": "ebcpy/simulationapi/__init__.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package pathlib are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 4,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package os are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 6,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package atexit are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 7,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package shutil are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "convention",
-            "module": "ebcpy.simulationapi.fmu",
-            "obj": "",
-            "line": 8,
-            "column": 0,
-            "path": "ebcpy/simulationapi/fmu.py",
-            "symbol": "ungrouped-imports",
-            "message": "Imports from package pathlib are not grouped",
-            "message-id": "C0412"
-        },
-        {
-            "type": "fatal",
-            "module": "ebcpy.utils.__init__",
+            "module": "ebcpy.simulationapi.dymola_utils",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/__init__.py",
+            "path": "ebcpy/simulationapi/dymola_utils.py",
+            "symbol": "missing-module-docstring",
+            "message": "Missing module docstring",
+            "message-id": "C0114"
+        },
+        {
+            "type": "fatal",
+            "module": "ebcpy.simulationapi.dymola_utils",
+            "obj": "",
+            "line": 1,
+            "column": 0,
+            "path": "ebcpy/simulationapi/dymola_utils.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/__init__.py: Fatal error while checking 'ebcpy/utils/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-26.txt'.",
+            "message": "ebcpy/simulationapi/dymola_utils.py: Fatal error while checking 'ebcpy/simulationapi/dymola_utils.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-31.txt'.",
             "message-id": "F0002"
         },
         {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.__init__",
+            "obj": "",
+            "line": 442,
+            "column": 0,
+            "path": "ebcpy/simulationapi/__init__.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (111/100)",
+            "message-id": "C0301"
+        },
+        {
+            "type": "convention",
+            "module": "ebcpy.simulationapi.__init__",
+            "obj": "",
+            "line": 585,
+            "column": 0,
+            "path": "ebcpy/simulationapi/__init__.py",
+            "symbol": "line-too-long",
+            "message": "Line too long (104/100)",
+            "message-id": "C0301"
+        },
+        {
             "type": "fatal",
-            "module": "ebcpy.utils.conversion",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/conversion.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "astroid-error",
-            "message": "ebcpy/utils/conversion.py: Fatal error while checking 'ebcpy/utils/conversion.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-09-08-26.txt'.",
+            "message": "ebcpy/simulationapi/__init__.py: Fatal error while checking 'ebcpy/simulationapi/__init__.py'. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in '/home/runner/.cache/pylint/pylint-crash-2026-04-28-13-59-32.txt'.",
             "message-id": "F0002"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.utils.conversion",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/conversion.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1145:1156]\n==ebcpy.simulationapi.fmu:[408:415]\n        ))\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[1145:1156]\n==ebcpy.simulationapi.fmu:[408:415]\n                ))\n\n        return super().save_for_reproduction(\n            title=title,\n            path=path,\n            files=files,\n            **kwargs\n        )\n\n    def _save_to_fmu(self, fail_on_error):\n        \"\"\"Save model as an FMU\"\"\"",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.utils.conversion",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/conversion.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
             "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[451:459]\n==ebcpy.simulationapi.fmu:[199:206]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n        if self.use_mp:",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.utils.conversion",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/conversion.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
             "message": "Similar lines in 2 files\n==ebcpy.optimization:[106:119]\n==ebcpy.simulationapi.__init__:[524:536]\n        return self._working_directory\n\n    @working_directory.setter\n    def working_directory(self, working_directory: Union[Path, str]):\n        \"\"\"Set current working directory\"\"\"\n        if isinstance(working_directory, str):\n            working_directory = Path(working_directory)\n        os.makedirs(working_directory, exist_ok=True)\n        self._working_directory = working_directory\n\n    @property\n    def cd(self) -> Path:\n        warnings.warn(\"cd was renamed to working_directory in all classes. \"",
             "message-id": "R0801"
         },
         {
             "type": "refactor",
-            "module": "ebcpy.utils.conversion",
+            "module": "ebcpy.simulationapi.__init__",
             "obj": "",
             "line": 1,
             "column": 0,
-            "path": "ebcpy/utils/conversion.py",
+            "path": "ebcpy/simulationapi/__init__.py",
             "symbol": "duplicate-code",
-            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[334:343]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n",
+            "message": "Similar lines in 2 files\n==ebcpy.simulationapi.dymola_api:[334:343]\n==ebcpy.simulationapi.fmu:[199:205]\n        if kwargs:\n            self.logger.error(\n                \"You passed the following kwargs which \"\n                \"are not part of the supported kwargs and \"\n                \"have thus no effect: %s.\", \" ,\".join(list(kwargs.keys())))\n\n    def _update_model(self):\n        # Translate the model and extract all variables,\n        # if the user wants to:",
             "message-id": "R0801"
         }
     ],
@@ -970,11 +915,11 @@
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 5,
+                "statement": 6,
                 "warning": 0
             },
-            "ebcpy.preprocessing": {
-                "convention": 0,
+            "ebcpy.data_types": {
+                "convention": 3,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -991,8 +936,44 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.data_types": {
-                "convention": 3,
+            "ebcpy.preprocessing": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.conversion": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.reproduction": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.statistics_analyzer": {
+                "convention": 7,
+                "error": 2,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 44,
+                "warning": 0
+            },
+            "ebcpy.utils.__init__": {
+                "convention": 0,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1001,7 +982,7 @@
                 "warning": 0
             },
             "ebcpy.modelica.simres": {
-                "convention": 8,
+                "convention": 4,
                 "error": 3,
                 "fatal": 0,
                 "info": 0,
@@ -1036,15 +1017,6 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.simulationapi.__init__": {
-                "convention": 2,
-                "error": 0,
-                "fatal": 1,
-                "info": 0,
-                "refactor": 0,
-                "statement": 0,
-                "warning": 0
-            },
             "ebcpy.simulationapi.fmu": {
                 "convention": 3,
                 "error": 0,
@@ -1054,8 +1026,8 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.reproduction": {
-                "convention": 0,
+            "ebcpy.simulationapi.dymola_utils": {
+                "convention": 3,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1063,26 +1035,8 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.statistics_analyzer": {
-                "convention": 12,
-                "error": 2,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 0,
-                "statement": 44,
-                "warning": 0
-            },
-            "ebcpy.utils.__init__": {
-                "convention": 0,
-                "error": 0,
-                "fatal": 1,
-                "info": 0,
-                "refactor": 0,
-                "statement": 0,
-                "warning": 0
-            },
-            "ebcpy.utils.conversion": {
-                "convention": 0,
+            "ebcpy.simulationapi.__init__": {
+                "convention": 2,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1092,18 +1046,20 @@
             }
         },
         "by_msg": {
-            "astroid-error": 10,
-            "line-too-long": 34,
+            "astroid-error": 11,
+            "line-too-long": 35,
+            "trailing-whitespace": 3,
             "import-error": 6,
+            "ungrouped-imports": 4,
             "too-many-locals": 3,
             "consider-using-f-string": 6,
             "use-dict-literal": 1,
             "raise-missing-from": 1,
             "too-many-branches": 1,
-            "ungrouped-imports": 13,
             "unspecified-encoding": 3,
             "too-many-lines": 1,
-            "trailing-whitespace": 3,
+            "missing-final-newline": 1,
+            "missing-module-docstring": 1,
             "duplicate-code": 4
         },
         "code_type_count": {
@@ -1123,6 +1079,9 @@
             "ebcpy.simulationapi.fmu": [
                 "ebcpy"
             ],
+            "ebcpy.simulationapi.dymola_utils": [
+                "ebcpy"
+            ],
             "ebcpy.optimization": [
                 "ebcpy"
             ],
@@ -1138,24 +1097,24 @@
             "function": 7,
             "klass": 2,
             "method": 11,
-            "module": 13
+            "module": 14
         },
         "undocumented": {
             "function": 0,
             "klass": 0,
             "method": 0,
-            "module": 0
+            "module": 1
         },
-        "convention": 57,
+        "convention": 51,
         "error": 6,
-        "fatal": 10,
+        "fatal": 11,
         "info": 0,
         "refactor": 9,
-        "statement": 271,
+        "statement": 274,
         "warning": 4,
         "global_note": 0,
         "nb_duplicated_lines": 24,
-        "percent_duplicated_lines": 0.39113428943937417
+        "percent_duplicated_lines": 0.3765296517100722
     },
     "previous": {
         "bad_names": {
@@ -1180,11 +1139,11 @@
                 "fatal": 0,
                 "info": 0,
                 "refactor": 0,
-                "statement": 5,
+                "statement": 6,
                 "warning": 0
             },
-            "ebcpy.preprocessing": {
-                "convention": 0,
+            "ebcpy.data_types": {
+                "convention": 3,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1201,8 +1160,44 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.data_types": {
-                "convention": 3,
+            "ebcpy.preprocessing": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.conversion": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.reproduction": {
+                "convention": 0,
+                "error": 0,
+                "fatal": 1,
+                "info": 0,
+                "refactor": 0,
+                "statement": 0,
+                "warning": 0
+            },
+            "ebcpy.utils.statistics_analyzer": {
+                "convention": 7,
+                "error": 2,
+                "fatal": 0,
+                "info": 0,
+                "refactor": 0,
+                "statement": 44,
+                "warning": 0
+            },
+            "ebcpy.utils.__init__": {
+                "convention": 0,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1211,7 +1206,7 @@
                 "warning": 0
             },
             "ebcpy.modelica.simres": {
-                "convention": 8,
+                "convention": 4,
                 "error": 3,
                 "fatal": 0,
                 "info": 0,
@@ -1246,15 +1241,6 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.simulationapi.__init__": {
-                "convention": 2,
-                "error": 0,
-                "fatal": 1,
-                "info": 0,
-                "refactor": 0,
-                "statement": 0,
-                "warning": 0
-            },
             "ebcpy.simulationapi.fmu": {
                 "convention": 3,
                 "error": 0,
@@ -1264,8 +1250,8 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.reproduction": {
-                "convention": 0,
+            "ebcpy.simulationapi.dymola_utils": {
+                "convention": 3,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1273,26 +1259,8 @@
                 "statement": 0,
                 "warning": 0
             },
-            "ebcpy.utils.statistics_analyzer": {
-                "convention": 12,
-                "error": 2,
-                "fatal": 0,
-                "info": 0,
-                "refactor": 0,
-                "statement": 44,
-                "warning": 0
-            },
-            "ebcpy.utils.__init__": {
-                "convention": 0,
-                "error": 0,
-                "fatal": 1,
-                "info": 0,
-                "refactor": 0,
-                "statement": 0,
-                "warning": 0
-            },
-            "ebcpy.utils.conversion": {
-                "convention": 0,
+            "ebcpy.simulationapi.__init__": {
+                "convention": 2,
                 "error": 0,
                 "fatal": 1,
                 "info": 0,
@@ -1302,18 +1270,20 @@
             }
         },
         "by_msg": {
-            "astroid-error": 10,
-            "line-too-long": 34,
+            "astroid-error": 11,
+            "line-too-long": 35,
+            "trailing-whitespace": 3,
             "import-error": 6,
+            "ungrouped-imports": 4,
             "too-many-locals": 3,
             "consider-using-f-string": 6,
             "use-dict-literal": 1,
             "raise-missing-from": 1,
             "too-many-branches": 1,
-            "ungrouped-imports": 13,
             "unspecified-encoding": 3,
             "too-many-lines": 1,
-            "trailing-whitespace": 3,
+            "missing-final-newline": 1,
+            "missing-module-docstring": 1,
             "duplicate-code": 4
         },
         "code_type_count": {
@@ -1333,6 +1303,9 @@
             "ebcpy.simulationapi.fmu": [
                 "ebcpy"
             ],
+            "ebcpy.simulationapi.dymola_utils": [
+                "ebcpy"
+            ],
             "ebcpy.optimization": [
                 "ebcpy"
             ],
@@ -1348,23 +1321,23 @@
             "function": 7,
             "klass": 2,
             "method": 11,
-            "module": 13
+            "module": 14
         },
         "undocumented": {
             "function": 0,
             "klass": 0,
             "method": 0,
-            "module": 0
+            "module": 1
         },
-        "convention": 57,
+        "convention": 51,
         "error": 6,
-        "fatal": 10,
+        "fatal": 11,
         "info": 0,
         "refactor": 9,
-        "statement": 271,
+        "statement": 274,
         "warning": 4,
-        "global_note": 6.3099630996309966,
+        "global_note": 6.56934306569343,
         "nb_duplicated_lines": 24,
-        "percent_duplicated_lines": 0.39113428943937417
+        "percent_duplicated_lines": 0.3765296517100722
     }
 }
