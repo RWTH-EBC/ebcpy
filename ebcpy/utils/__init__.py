@@ -48,26 +48,44 @@ def setup_logger(name: str,
     return logger
 
 
-def get_names(all_names: list, patterns: Union[str, List[str]]) -> List[str]:
+def get_names(
+        all_names: list,
+        patterns: Union[str, List[str]],
+        exclude: Union[str, List[str]] = None
+) -> List[str]:
     """
-    Filter a list of candidate names by literal values or glob-style patterns.
+    Filter a list of candidate names by literal values or glob-style patterns,
+    optionally excluding names that match exclusion patterns.
 
-    This function returns all names from `all_names` that match the provided
-    `patterns`.  Patterns may be a single string or a list of strings, and may
-    contain the wildcard `*` to match any sequence of characters.  Literal names
-    without `*` must match exactly.  The matching is performed in two steps:
-      1. Each pattern is translated to a regular expression if it contains `*`,
-         otherwise used as a literal match.
-      2. Any pattern that matches no names in `all_names` raises a warning.
+    This function returns all names from ``all_names`` that match the provided
+    ``patterns`` and do not match any of the ``exclude`` patterns.
+    Patterns may be a single string or a list of strings, and may
+    contain the wildcard ``*`` to match any sequence of characters. Literal names
+    without ``*`` must match exactly.
 
-    The returned list preserves the order of `all_names`.
+    The returned list preserves the order of ``all_names``.
 
-    :param all_names: List of available names to filter.
-    :param patterns: A pattern or list of patterns (with optional `*` wildcards)
-                     to match against `all_names`.
-    :return: A list of names from `all_names` that match any of the given patterns,
-             in original order.
-    :raises KeyError: If any pattern does not match at least one name.
+    :param list all_names:
+        List of available names to filter.
+    :param str,list[str] patterns:
+        A pattern or list of patterns (with optional ``*`` wildcards)
+        to match against ``all_names``.
+    :param str,list[str] exclude:
+        A pattern or list of patterns to exclude from the results.
+        Names matching any exclusion pattern are removed after the
+        inclusion step. Default is None (no exclusion).
+    :return: A list of names from ``all_names`` that match any of the given
+        patterns and none of the exclusion patterns, in original order.
+    :rtype: list[str]
+    :raises KeyError: If any inclusion pattern does not match at least one name.
+
+    Example:
+
+    >>> names = ["wall.layer[1].T", "wall.layer[2].T", "wall.layer[1].Q_flow"]
+    >>> get_names(names, "wall.layer[*].T")
+    ['wall.layer[1].T', 'wall.layer[2].T']
+    >>> get_names(names, "wall.layer[*].*", exclude="*Q_flow")
+    ['wall.layer[1].T', 'wall.layer[2].T']
     """
     if isinstance(patterns, str):
         patterns = [patterns]
@@ -93,6 +111,21 @@ def get_names(all_names: list, patterns: Union[str, List[str]]) -> List[str]:
             "The following variable names/patterns are not in the given .mat file: "
             + ", ".join(unmatched)
         )
-    # preserve original order
+
+    # Apply exclusion patterns
+    if exclude is not None:
+        if isinstance(exclude, str):
+            exclude = [exclude]
+        excluded = set()
+        for pat in exclude:
+            if '*' in pat:
+                regex = '^' + re.escape(pat).replace(r'\*', '.*') + '$'
+                excluded.update(k for k in matched if re.match(regex, k))
+            else:
+                if pat in matched:
+                    excluded.add(pat)
+        matched -= excluded
+
+    # Preserve original order
     names = [var for var in all_names if var in matched]
     return names
