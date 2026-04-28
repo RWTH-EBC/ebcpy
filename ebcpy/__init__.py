@@ -5,6 +5,7 @@ ebcpy-Module. See readme or documentation for more information.
 from .data_types import TimeSeriesData, TimeSeries, load_time_series_data
 from .simulationapi.dymola_api import DymolaAPI
 from .simulationapi.fmu import FMU_API
+from .simulationapi.dymola_utils import simple_dymola_sim_study
 from .optimization import Optimizer
 
 
