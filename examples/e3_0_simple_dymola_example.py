@@ -401,5 +401,5 @@ if __name__ == "__main__":
     )
 
     print("\n--- All studies finished ---")
-    print("You could now load the data again in a different scrit with `ebcpy.load_time_series_data()` "
+    print("You could now load the data again in a different script with `ebcpy.load_time_series_data()` "
           "for plotting and analysis.")
