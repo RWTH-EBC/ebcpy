@@ -7,7 +7,7 @@ ebcpy/__init__.py:8:27: F401 [*] `.optimization.Optimizer` imported but unused
 ebcpy/data_types.py:13:38: F401 [*] `typing.TYPE_CHECKING` imported but unused
 ebcpy/data_types.py:17:17: F401 [*] `numpy` imported but unused
 ebcpy/optimization.py:537:31: F841 [*] Local variable `error` is assigned to but never used
-ebcpy/simulationapi/dymola_api.py:537:70: F821 Undefined name `err`
+ebcpy/simulationapi/dymola_api.py:561:70: F821 Undefined name `err`
 ebcpy/utils/reproduction.py:12:26: F401 [*] `typing.Tuple` imported but unused
 ebcpy/utils/reproduction.py:399:9: F541 [*] f-string without any placeholders
 Found 12 errors.

@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.7.1 documentation</title>
+  <title>ebcpy.simulationapi.dymola_api &mdash; ebcpy 0.7.2 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css" />
       <link rel="stylesheet" type="text/css" href="../../../_static/autodoc_pydantic.css" />
@@ -153,6 +153,9 @@
 <span class="sd">    :keyword Boolean show_window:</span>
 <span class="sd">        True to show the Dymola window. Default is False</span>
 <span class="sd">    :keyword Boolean modify_structural_parameters:</span>
+<span class="sd">        .. deprecated::</span>
+<span class="sd">            Will be removed in the next major release.</span>
+<span class="sd">            Use model name modifiers directly instead.</span>
 <span class="sd">        True to automatically set the structural parameters of the</span>
 <span class="sd">        simulation model via Modelica modifiers. Default is True.</span>
 <span class="sd">        See also the keyword ``structural_parameters``</span>
@@ -275,6 +278,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">fully_initialized</span> <span class="o">=</span> <span class="kc">False</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">debug</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;debug&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">show_window</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;show_window&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="s2">&quot;modify_structural_parameters&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;modify_structural_parameters&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                    <span class="s2">&quot;&#39;modify_structural_parameters&#39; is deprecated and will be removed &quot;</span>
+                    <span class="s2">&quot;in the next major release. Use model name modifiers directly instead.&quot;</span><span class="p">,</span>
+                    <span class="ne">FutureWarning</span><span class="p">,</span>
+                    <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+                <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">modify_structural_parameters</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;modify_structural_parameters&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">equidistant_output</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;equidistant_output&quot;</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
         <span class="n">_variables_to_save</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;variables_to_save&quot;</span><span class="p">,</span> <span class="p">{})</span>
@@ -446,6 +457,10 @@
 <span class="sd">        :keyword dict kwargs_postprocessing:</span>
 <span class="sd">            Keyword arguments used in the function `postprocess_mat_result`.</span>
 <span class="sd">        :keyword List[str] structural_parameters:</span>
+<span class="sd">            .. deprecated::</span>
+<span class="sd">                Will be removed in the next major release.</span>
+<span class="sd">                Write modifiers directly in the model_name instead, e.g.</span>
+<span class="sd">                ``model_name=&#39;MyModel(myParam=newValue)&#39;``</span>
 <span class="sd">            A list containing all parameter names which are structural in Modelica.</span>
 <span class="sd">            This means a modifier has to be created in order to change</span>
 <span class="sd">            the value of this parameter. Internally, the given list</span>
@@ -463,6 +478,15 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Handle special case for structural_parameters</span>
         <span class="k">if</span> <span class="s2">&quot;structural_parameters&quot;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+                <span class="s2">&quot;The &#39;structural_parameters&#39; keyword argument is deprecated and will &quot;</span>
+                <span class="s2">&quot;be removed in the next major release. Instead, write modifiers directly &quot;</span>
+                <span class="s2">&quot;in the model_name, e.g.:</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;  model_name=&#39;MyModel(myParam=newValue)&#39;</span><span class="se">\n</span><span class="s2">&quot;</span>
+                <span class="s2">&quot;or pass modified model names via the &#39;model_names&#39; keyword argument of simulate().&quot;</span><span class="p">,</span>
+                <span class="ne">FutureWarning</span><span class="p">,</span>
+                <span class="n">stacklevel</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+            <span class="p">)</span>
             <span class="n">_struc_params</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s2">&quot;structural_parameters&quot;</span><span class="p">]</span>
             <span class="c1"># Check if input is 2-dimensional for multiprocessing.</span>
             <span class="c1"># If not, make it 2-dimensional to avoid list flattening in</span>
