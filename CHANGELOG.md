@@ -140,3 +140,7 @@
   - cap pandas version to <3
 - v0.7.1
   - fix bug in clean_and_space_equally #171
+- v0.7.2
+  - Add new simple dymola exampl workflow #175
+  - Add deprecation warning for the structural_parameters kyword of the DymolaAPI #176
+  - Improve saving of .parquet files
