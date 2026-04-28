@@ -49,8 +49,10 @@
 <li class="toctree-l2"><a class="reference internal" href="#what-can-i-learn-in-the-examples">What can I learn in the examples?</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#e1-time-series-data-example-py"><code class="docutils literal notranslate"><span class="pre">e1_time_series_data_example.py</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#e2-fmu-example-py"><code class="docutils literal notranslate"><span class="pre">e2_fmu_example.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#e3-0-simple-dymola-example-py"><code class="docutils literal notranslate"><span class="pre">e3_0_simple_dymola_example.py</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#e3-dymola-example-py"><code class="docutils literal notranslate"><span class="pre">e3_dymola_example.py</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="#e4-optimization-example-py"><code class="docutils literal notranslate"><span class="pre">e4_optimization_example.py</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#e5-modifier-example-py"><code class="docutils literal notranslate"><span class="pre">e5_modifier_example.py</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -94,11 +96,10 @@
 <p>While these examples should run in any IDE, we advise using PyCharm.
 Before being able to run these examples, be sure to:</p>
 <ol class="arabic simple">
-<li><p>Create a clean environment of python 3.7 or 3.8. In Anaconda run: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">py38_ebcpy</span> <span class="pre">python=3.8</span></code></p></li>
-<li><p>Activate the environment in your terminal. In Anaconda run: <code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">py38_ebcpy</span></code></p></li>
+<li><p>Create a clean environment of python (We support 3.8 to 3.12). In Anaconda run: <code class="docutils literal notranslate"><span class="pre">conda</span> <span class="pre">create</span> <span class="pre">-n</span> <span class="pre">py313_ebcpy</span> <span class="pre">python=3.13</span></code></p></li>
+<li><p>Activate the environment in your terminal. In Anaconda run: <code class="docutils literal notranslate"><span class="pre">activate</span> <span class="pre">py312_ebcpy</span></code></p></li>
 <li><p>Clone the repository by running <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/RWTH-EBC/ebcpy</span></code></p></li>
-<li><p>Clone the AixLib in order to use the models: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/RWTH-EBC/AixLib</span></code>
-Also check if you’re on development using <code class="docutils literal notranslate"><span class="pre">cd</span> <span class="pre">AixLib</span> <span class="pre">&amp;&amp;</span> <span class="pre">git</span> <span class="pre">status</span> <span class="pre">&amp;&amp;</span> <span class="pre">cd</span> <span class="pre">..</span></code></p></li>
+<li><p>Clone the BESMod in order to use the models: <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/RWTH-EBC/BESMod</span></code> and install it as described in the BESMod Readme with AixLib</p></li>
 <li><p>Install the library using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ebcpy</span></code>.
 In order to execute everything, install the full version using <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">ebcpy[full]</span></code></p></li>
 </ol>
@@ -124,12 +125,22 @@ In order to execute everything, install the full version using <code class="docu
 <li><p>Learn how to run simulations in parallel</p></li>
 </ol>
 </section>
+<section id="e3-0-simple-dymola-example-py">
+<h3><code class="docutils literal notranslate"><span class="pre">e3_0_simple_dymola_example.py</span></code><a class="headerlink" href="#e3-0-simple-dymola-example-py" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Learn a common workflow for Dymola simulation studies using ebcpy</p></li>
+<li><p>Understand how to run parameter studies across multiple model variants</p></li>
+<li><p>Learn how to use model name modifiers</p></li>
+<li><p>Learn how to post-process simulation results into usable formats</p></li>
+</ol>
+</section>
 <section id="e3-dymola-example-py">
 <h3><code class="docutils literal notranslate"><span class="pre">e3_dymola_example.py</span></code><a class="headerlink" href="#e3-dymola-example-py" title="Permalink to this heading"></a></h3>
 <ol class="arabic simple">
 <li><p>Learn how to use the <code class="docutils literal notranslate"><span class="pre">DymolaAPI</span></code></p></li>
 <li><p>Learn the different result options of the simulation</p></li>
 <li><p>Learn how to convert inputs into the Dymola format</p></li>
+<li><p>Learn advanced options for the <code class="docutils literal notranslate"><span class="pre">DymolaAPI</span></code></p></li>
 </ol>
 </section>
 <section id="e4-optimization-example-py">
@@ -142,6 +153,14 @@ The difference is, that newton based methods (like L-BFGS-B) are vastly faster i
 concave problems, but they are not guaranteed to find the global minimum and can get stock in local optima.
 Evolutionary algorithms (like the genetic algorithm) are substantially slower,
 but they can overcome local optima, as shown in the concave examples.</p></li>
+</ol>
+</section>
+<section id="e5-modifier-example-py">
+<h3><code class="docutils literal notranslate"><span class="pre">e5_modifier_example.py</span></code><a class="headerlink" href="#e5-modifier-example-py" title="Permalink to this heading"></a></h3>
+<ol class="arabic simple">
+<li><p>Learn how to use the <code class="docutils literal notranslate"><span class="pre">DymolaAPI</span></code></p></li>
+<li><p>Learn how to dynamically modify structural parameters in the model</p></li>
+<li><p>Learn how to redeclare models dynamically in the main model</p></li>
 </ol>
 </section>
 </section>
