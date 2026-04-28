@@ -9,4 +9,4 @@ from .simulationapi.dymola_utils import simple_dymola_sim_study
 from .optimization import Optimizer
 
 
-__version__ = '0.7.2'
+__version__ = '0.8.0'

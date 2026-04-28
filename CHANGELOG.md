@@ -140,7 +140,10 @@
   - cap pandas version to <3
 - v0.7.1
   - fix bug in clean_and_space_equally #171
-- v0.7.2
-  - Add new simple dymola exampl workflow #175
-  - Add deprecation warning for the structural_parameters kyword of the DymolaAPI #176
-  - Improve saving of .parquet files
+- v0.8.0
+  - Add `simple_dymola_sim_study` utility for common Dymola simulation workflows
+  - Add `exclude` parameter to `get_names` for filtering out unwanted variable matches
+  - Handle SparseDtype columns automatically in `tsd.save()` for parquet format
+  - Deprecate `structural_parameters` keyword in `DymolaAPI.simulate()` #176
+  - Deprecate `modify_structural_parameters` keyword in `DymolaAPI.__init__()`
+  - Add basic Dymola simulation workflow example #175
