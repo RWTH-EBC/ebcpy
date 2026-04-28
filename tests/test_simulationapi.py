@@ -435,5 +435,140 @@ class TestFMUAPIMultiCore(TestFMUAPI):
     n_cpu = 2
 
 
+class TestSimpleDymolaSimStudyValidation(unittest.TestCase):
+    """Test input validation — no Dymola needed."""
+
+    def test_mismatched_lengths(self):
+        from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
+        with self.assertRaises(ValueError):
+            simple_dymola_sim_study(
+                model_names=["Model"],
+                mos_script_pre="dummy.mos",
+                simulation_setup={},
+                working_directory=".",
+                save_path=".",
+                model_result_file_names=["name1", "name2"],
+            )
+
+    def test_parameter_study_requires_list(self):
+        from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
+        with self.assertRaises(TypeError):
+            simple_dymola_sim_study(
+                model_names=["Model"],
+                mos_script_pre="dummy.mos",
+                simulation_setup={},
+                working_directory=".",
+                save_path=".",
+                parameters={"a": 1},
+                use_parameter_study=True,
+                model_result_file_names=["test"],
+            )
+
+    def test_postprocessing_without_kwargs(self):
+        from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
+        with self.assertRaises(ValueError):
+            simple_dymola_sim_study(
+                model_names=["Model"],
+                mos_script_pre="dummy.mos",
+                simulation_setup={},
+                working_directory=".",
+                save_path=".",
+                model_result_file_names=["test"],
+                postprocess_mat_result=lambda x: x,
+            )
+
+
+class TestSimpleDymolaSimStudy(unittest.TestCase):
+    """Test simple_dymola_sim_study with Dymola — kept minimal for speed."""
+
+    def setUp(self):
+        self.data_dir = Path(__file__).parent.joinpath("data")
+        self.example_sim_dir = self.data_dir.joinpath("testzone")
+        os.makedirs(self.example_sim_dir, exist_ok=True)
+        self.save_path = self.example_sim_dir.joinpath("sim_study_results")
+        self.working_dir = self.example_sim_dir.joinpath("sim_study_working")
+        self.packages = [self.data_dir.joinpath("TestModelVariables.mo")]
+        self.simulation_setup = {
+            "start_time": 0.0,
+            "stop_time": 10.0,
+            "output_interval": 0.1
+        }
+        if "linux" in sys.platform:
+            self.mos_script_pre = None
+        else:
+            self.mos_script_pre = None
+
+        try:
+            from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
+            self.simple_dymola_sim_study = simple_dymola_sim_study
+        except ImportError as error:
+            self.skipTest(f"Could not import simple_dymola_sim_study: {error}")
+
+        # Quick check that Dymola is available
+        try:
+            from ebcpy import DymolaAPI
+            dym = DymolaAPI(
+                working_directory=self.working_dir,
+                model_name="TestModelVariables",
+                packages=self.packages,
+                n_cpu=1,
+            )
+            dym.close()
+        except (FileNotFoundError, ImportError, ConnectionError) as error:
+            self.skipTest(f"Dymola not available: {error}")
+
+    def test_parameter_study(self):
+        """Test parameter study mode."""
+        result_paths = self.simple_dymola_sim_study(
+            model_names=["TestModelVariables"],
+            mos_script_pre=self.mos_script_pre,
+            simulation_setup=self.simulation_setup,
+            working_directory=self.working_dir,
+            save_path=self.save_path,
+            parameters=[{"test_real": 1.0}, {"test_real": 5.0}],
+            use_parameter_study=True,
+            model_result_file_names=["param_study"],
+            packages=self.packages,
+            n_cpu=1,
+        )
+        self.assertIsInstance(result_paths, dict)
+        for paths in result_paths.values():
+            self.assertEqual(len(paths), 2)
+            for path in paths:
+                self.assertTrue(os.path.isfile(path))
+
+    def test_model_comparison(self):
+        """Test model comparison mode."""
+        result_paths = self.simple_dymola_sim_study(
+            model_names=["TestModelVariables", "TestModelVariables"],
+            mos_script_pre=self.mos_script_pre,
+            simulation_setup=self.simulation_setup,
+            working_directory=self.working_dir,
+            save_path=self.save_path,
+            parameters={"test_real": 5.0},
+            model_result_file_names=["model_a", "model_b"],
+            packages=self.packages,
+            n_cpu=1,
+        )
+        self.assertIsInstance(result_paths, list)
+        self.assertEqual(len(result_paths), 2)
+
+    def tearDown(self):
+        for path in [self.save_path, self.working_dir, self.example_sim_dir]:
+            try:
+                shutil.rmtree(path)
+            except (FileNotFoundError, PermissionError):
+                pass
+
+
+class TestSimpleDymolaSimStudySingleCore(TestSimpleDymolaSimStudy):
+    n_cpu = 1
+
+
+class TestSimpleDymolaSimStudyMultiCore(TestSimpleDymolaSimStudy):
+    """Run simple_dymola_sim_study tests on multi core."""
+    n_cpu = 2
+
+
 if __name__ == "__main__":
     unittest.main()
