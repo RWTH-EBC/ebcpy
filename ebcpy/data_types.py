@@ -113,7 +113,12 @@ class TimeSeriesAccessor:
             self._obj.to_csv(filepath, sep=kwargs.get("sep", ","))
         elif ".parquet" in filepath.name:
             parquet_split = filepath.name.split(".parquet")
-            self._obj.to_parquet(
+            # Parquet doesn't support SparseDtype — densify before writing
+            df_to_save = self._obj
+            for col in df_to_save.columns:
+                if isinstance(df_to_save[col].dtype, pd.SparseDtype):
+                    df_to_save[col] = df_to_save[col].sparse.to_dense()
+            df_to_save.to_parquet(
                 filepath, engine=kwargs.get('engine', 'pyarrow'),
                 compression=parquet_split[-1][1:] if parquet_split[-1] else None,
                 index=True
