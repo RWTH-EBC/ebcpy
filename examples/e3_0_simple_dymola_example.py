@@ -25,7 +25,31 @@ import numpy as np
 from ebcpy import DymolaAPI, load_time_series_data
 
 
-def convert_to_datetime_and_parquet(mat_result_file, first_day_of_year, variable_names):
+def filter_strings(strings, required_substrings, forbidden_substrings=None):
+    """
+    Filters and returns strings that:
+      - Contain all substrings from required_substrings.
+      - Do not contain any substring from forbidden_substrings.
+
+    Parameters:
+        strings (list of str): The list of strings to search within.
+        required_substrings (list of str): The substrings that each string must contain.
+        forbidden_substrings (list of str, optional): The substrings that must not be present in any string.
+            Defaults to an empty list if not provided.
+
+    Returns:
+        list of str: A list of strings that meet both criteria.
+    """
+    if forbidden_substrings is None:
+        forbidden_substrings = []
+
+    return [
+        s for s in strings
+        if all(req in s for req in required_substrings) and all(forb not in s for forb in forbidden_substrings)
+    ]
+
+
+def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
     """
     Post-process a Dymola .mat result file into a datetime-indexed parquet file.
 
@@ -48,7 +72,10 @@ def convert_to_datetime_and_parquet(mat_result_file, first_day_of_year, variable
     df = load_time_series_data(mat_result_file, variable_names=variable_names)
     df.tsd.to_datetime_index(origin=first_day_of_year)
 
-    # do further post-process
+    # adapt this to your study
+    variables = df.columns.to_list()
+    var_names_layer_temp = filter_strings(variables, ["layer", "T"])
+    df["stoBuf.mean_T"] = df[var_names_layer_temp].mean(axis=1)
 
     df_path = Path(mat_result_file).with_suffix(".parquet")
     df.tsd.save(df_path)
@@ -65,15 +92,18 @@ def empty_postprocessing(mat_result, **_kwargs):
 
 
 def simple_dymola_sim_study(
-        model_names: list[str],
+        model_names: List[str],
         mos_script_pre: Union[str, Path],
+        simulation_setup,
         parameters: Union[dict, List[dict]] = None,
         working_directory: Union[str, Path] = None,
         n_cpu: int = 2,
         use_postprocessing: bool = True,
-        use_parameter_study: bool = True,
+        use_parameter_study: bool = False,
         model_result_file_names: List[str] = None,
         save_path: Union[str, Path] = None,
+        kwargs_postprocessing: dict = None,
+        **kwargs
 ):
     """
     Run a Dymola simulation study with multiple models and/or parameter variations.
@@ -133,13 +163,8 @@ def simple_dymola_sim_study(
     # ## Simulation setup
     # Define the time range and output resolution for all simulations.
     # The output_interval determines the time step of the result data.
-    first_day_of_year = datetime.datetime(2015, 1, 1, 0, 0)
-    simulation_setup = {
-        "start_time": 0,
-        "stop_time": 3600 * 24 * 30,  # 30 days
-        "output_interval": 100         # one data point every 100 s
-    }
-    additional_packages = []  # use this for custom packages which are note in the mos_script_pre
+
+    additional_packages = kwargs.pop("additional_packages", [])  # use this for custom packages which are note in the mos_script_pre
 
     # ## Post-processing setup
     # Dymola produces .mat files by default. These are large and use a float
@@ -147,11 +172,9 @@ def simple_dymola_sim_study(
     # datetime-indexed parquet files containing only the variables we need.
     # If you want to keep the raw .mat files, set use_postprocessing=False.
     if use_postprocessing:
-        postprocess_mat_result = convert_to_datetime_and_parquet
-        kwargs_postprocessing = dict(
-            variable_names=["*outputs*"],
-            first_day_of_year=first_day_of_year
-        )
+        postprocess_mat_result = custom_postprocessing
+        if kwargs_postprocessing is None:
+            raise Exception
     else:
         postprocess_mat_result = empty_postprocessing
         kwargs_postprocessing = {}
@@ -165,11 +188,13 @@ def simple_dymola_sim_study(
         # happens only once per model.
         all_result_paths = {}
         for model_name, result_file_name in zip(model_names, model_result_file_names):
-            # Create unique result file names by encoding the varied parameter value
-            result_file_names = [
-                f"{result_file_name}_VPerQFlow{str(param_dict['parameterStudy.VPerQFlow']).replace('.', '_')}"
-                for param_dict in parameters
-            ]
+            # Create unique result file names by encoding the varied parameter values
+            result_file_names = []
+            for param_dict in parameters:
+                name = result_file_name
+                for key, val in param_dict.items():
+                    name += f"_{key.split(".")[-1]}{val.replace('.', '_')}"
+                result_file_names.append(name)
 
             dym_api = DymolaAPI(
                 mos_script_pre=mos_script_pre,
@@ -224,6 +249,16 @@ def simple_dymola_sim_study(
 
 
 if __name__ == "__main__":
+    # TODO: Adjust this path to your local BESMod startup script
+    MOS_SCRIPT = r"D:\01_git\BESMod\startup.mos"
+
+    # adapt this to your study
+    simulation_setup = {
+        "start_time": 0,
+        "stop_time": 3600 * 24 * 30,  # 30 days
+        "output_interval": 900  # one data point every 900 s (15 min)
+    }
+
     # ## Define model variants
     # We use model name modifiers to vary the number of storage layers.
     # This is the recommended approach for structural parameters which need a retranslation —
@@ -238,6 +273,31 @@ if __name__ == "__main__":
 
     print("Model variants:", model_names_to_simulate)
 
+    # ## Study 0: Single model, default parameters
+    # The simplest possible simulation — verify your setup works.
+    print("\n--- Study 0: Single model ---")
+    result_paths_study_0 = simple_dymola_sim_study(
+        model_names=[model_names_to_simulate[0]],
+        mos_script_pre=MOS_SCRIPT,
+        simulation_setup=simulation_setup,
+        use_parameter_study=False,
+        use_postprocessing=False,
+        model_result_file_names=[model_result_names[0]],
+        save_path=Path(__file__).parent.joinpath("results", "SimResults_0"),
+    )
+    # adapt this to your study
+    first_day_of_year = datetime.datetime(2015, 1, 1, 0, 0)
+    kwargs_postprocessing = dict(
+        variable_names=["outputs*",
+                        "hydraulic.distribution.stoBuf.layer[*].T",
+                        "hydraulic.distribution.stoBuf.port_a_consumer.m_flow",
+                        "hydraulic.distribution.stoBuf.port_a_heatGenerator.m_flow",
+                        "hydraulic.distribution.sigBusDis.*"
+                        "hydraulic.generation.sigBusGen.*"],
+        first_day_of_year=first_day_of_year
+    )
+
+    # ## Study 1: Parameter study
     # ## Define parameter variations
     parameter_study_params = [
         {"parameterStudy.VPerQFlow": np.round(v, decimals=1)}
@@ -245,17 +305,18 @@ if __name__ == "__main__":
     ]
     print("Parameter sets:", parameter_study_params)
 
-    # ## Study 1: Parameter study
     # Each model variant is simulated with all parameter sets.
     # Total simulations: len(model_names) × len(parameter_sets) = 4 × 8 = 32
     print("\n--- Study 1: Parameter study ---")
-    simple_dymola_sim_study(
+    result_paths_study_1 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
-        mos_script_pre=r"D:\01_git\BESMod\startup.mos",
+        mos_script_pre=MOS_SCRIPT,
+        simulation_setup=simulation_setup,
         parameters=parameter_study_params,
         use_parameter_study=True,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_1"),
+        kwargs_postprocessing=kwargs_postprocessing,
     )
 
     # ## Study 2: Model comparison with shared parameters
@@ -266,13 +327,15 @@ if __name__ == "__main__":
         "parameterStudy.VPerQFlow": 50,
         "parameterStudy.TBiv": 273.15 - 5
     }
-    simple_dymola_sim_study(
+    result_paths_study_2 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
-        mos_script_pre=r"D:\01_git\BESMod\startup.mos",
+        mos_script_pre=MOS_SCRIPT,
+        simulation_setup=simulation_setup,
         parameters=model_study_params,
         use_parameter_study=False,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_2"),
+        kwargs_postprocessing=kwargs_postprocessing,
     )
 
     # ## Study 3: Model comparison with individual parameters
@@ -285,13 +348,15 @@ if __name__ == "__main__":
         {"parameterStudy.VPerQFlow": int(val)}
         for val in random_example_values
     ]
-    simple_dymola_sim_study(
+    result_paths_study_3 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
-        mos_script_pre=r"D:\01_git\BESMod\startup.mos",
+        mos_script_pre=MOS_SCRIPT,
+        simulation_setup=simulation_setup,
         parameters=model_study_div_params,
         use_parameter_study=False,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_3"),
+        kwargs_postprocessing=kwargs_postprocessing,
     )
 
     print("\n--- All studies finished ---")
