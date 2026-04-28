@@ -19,34 +19,11 @@
 import datetime
 import os
 from pathlib import Path
-from typing import Union, List
 
 import numpy as np
 
-from ebcpy import DymolaAPI, load_time_series_data
-
-
-def filter_strings(strings, required_substrings, forbidden_substrings=None):
-    """
-    Helper function for filtering strings.
-    Filter strings that contain all required substrings and none of the forbidden ones.
-
-    :param list[str] strings:
-        The list of strings to filter.
-    :param list[str] required_substrings:
-        Substrings that each string must contain.
-    :param list[str] forbidden_substrings:
-        Substrings that must not be present. Default is none.
-    :return: Filtered list of strings.
-    :rtype: list[str]
-    """
-    if forbidden_substrings is None:
-        forbidden_substrings = []
-    return [
-        s for s in strings
-        if all(req in s for req in required_substrings)
-        and all(forb not in s for forb in forbidden_substrings)
-    ]
+from ebcpy import simple_dymola_sim_study, load_time_series_data
+from ebcpy.utils import get_names
 
 
 def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
@@ -75,7 +52,7 @@ def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
     # --- Adapt this section to your study ---
     # Example: compute mean storage temperature across all layers
     variables = df.columns.to_list()
-    layer_temp_vars = filter_strings(variables, ["layer", "T"])
+    layer_temp_vars = get_names(variables, "hydraulic.distribution.stoBuf.layer[*].T")
     if layer_temp_vars:
         df["stoBuf.mean_T"] = df[layer_temp_vars].mean(axis=1)
 
@@ -89,200 +66,6 @@ def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
     # remove the old mat file
     os.remove(mat_result_file)
     return df_path
-
-
-def empty_postprocessing(mat_result, **_kwargs):
-    """
-    No-op post-processing function. Returns the .mat file path unchanged.
-    Use this when you want to keep the original .mat result files.
-    """
-    return mat_result
-
-
-def simple_dymola_sim_study(
-        model_names: List[str],
-        mos_script_pre: Union[str, Path],
-        simulation_setup: dict,
-        parameters: Union[dict, List[dict]] = None,
-        working_directory: Union[str, Path] = None,
-        n_cpu: int = 4,
-        use_postprocessing: bool = True,
-        use_parameter_study: bool = False,
-        model_result_file_names: List[str] = None,
-        save_path: Union[str, Path] = None,
-        kwargs_postprocessing: dict = None,
-        postprocess_mat_result=None,
-        packages: List[Union[str, Path]] = None,
-        **kwargs
-):
-    """
-    Run a Dymola simulation study with multiple models and/or parameter variations.
-
-    This function supports two simulation modes:
-
-    **Parameter study** (``use_parameter_study=True``):
-        Each model is simulated separately with all parameter sets.
-        Useful when you want the full cross-product of models × parameters.
-        Each model gets its own DymolaAPI instance, which translates the model
-        once and then runs all parameter variations.
-
-    **Model comparison** (``use_parameter_study=False``):
-        All models are simulated in a single ``simulate()`` call using the
-        ``model_names`` keyword. Each model can receive the same parameters
-        (pass a single dict) or individual parameters (pass a list of dicts
-        matching the length of ``model_names``). Each model is translated
-        individually.
-
-    Both modes use model name modifiers to change structural parameters.
-    This is the recommended approach — write the modifier directly in the
-    model name string.
-
-    :param list[str] model_names:
-        List of Dymola model names, optionally with modifiers.
-        E.g. ``["MyModel(nLayer=1)", "MyModel(nLayer=2)"]``
-    :param str,Path mos_script_pre:
-        Path to a .mos script executed before loading packages.
-        Typically the startup script of your Modelica library.
-    :param dict simulation_setup:
-        Simulation settings with keys ``start_time``, ``stop_time``,
-        and ``output_interval``.
-    :param dict,list[dict] parameters:
-        Parameter values for the simulation. For parameter studies, pass a list
-        of dicts. For model comparison, pass a single dict (applied to all models)
-        or a list of dicts (one per model).
-    :param str,Path working_directory:
-        Dymola working directory. Default is ``./results/working_directory``.
-    :param int n_cpu:
-        Number of parallel Dymola processes. Default is 2.
-    :param bool use_postprocessing:
-        If True, .mat files are post-processed using ``postprocess_mat_result``.
-        If False, raw .mat files are kept.
-    :param bool use_parameter_study:
-        If True, runs each model with all parameter sets (cross-product).
-        If False, runs all models in a single call.
-    :param list[str] model_result_file_names:
-        Base names for the result files, one per model.
-    :param str,Path save_path:
-        Directory for saving simulation results. Default is ``./results/SimResults``.
-    :param dict kwargs_postprocessing:
-        Keyword arguments passed to the post-processing function.
-        Required if ``use_postprocessing=True``.
-    :param callable postprocess_mat_result:
-        Custom post-processing function. Default is ``custom_postprocessing``.
-        Signature: ``func(mat_result_file, **kwargs_postprocessing) -> Any``
-    :param list packages:
-        Additional Modelica packages not loaded by ``mos_script_pre``.
-    :param kwargs:
-        Additional keyword arguments forwarded to ``DymolaAPI`` constructor
-        (e.g. ``show_window``, ``debug``, ``n_restart``, ``dymola_version``)
-        and to ``DymolaAPI.simulate()`` (e.g. ``fail_on_error``).
-    :return: Result file paths. For parameter studies, a dict mapping model names
-        to lists of paths. For model comparison, a list of paths.
-    :rtype: dict or list
-    """
-    # ## Default paths
-    if working_directory is None:
-        working_directory = Path(__file__).parent.joinpath("results", "working_directory")
-    if save_path is None:
-        save_path = Path(__file__).parent.joinpath("results", "SimResults")
-    if packages is None:
-        packages = []
-
-    # ## Post-processing setup
-    # Dymola produces .mat files by default. These are large and use a float
-    # index (seconds). The post-processing function converts them to a more
-    # usable format (e.g. datetime-indexed parquet) containing only the
-    # variables you need.
-    if use_postprocessing:
-        if postprocess_mat_result is None:
-            postprocess_mat_result = custom_postprocessing
-        if kwargs_postprocessing is None:
-            raise ValueError(
-                "kwargs_postprocessing is required when use_postprocessing=True. "
-                "Pass a dict with the keyword arguments for your post-processing function."
-            )
-    else:
-        postprocess_mat_result = empty_postprocessing
-        kwargs_postprocessing = {}
-
-    # ## Separate kwargs for DymolaAPI constructor and simulate()
-    # Known simulate() kwargs are forwarded there, everything else goes to DymolaAPI.
-    simulate_kwarg_keys = {"inputs", "table_name", "file_name", "fail_on_error", "show_eventlog", "squeeze"}
-    simulate_kwargs = {k: kwargs.pop(k) for k in simulate_kwarg_keys if k in kwargs}
-
-    # ## Run simulations
-    if use_parameter_study:
-        # ### Parameter study mode
-        # Iterate over each model variant. For each model, a separate DymolaAPI
-        # instance is created, the model is translated once, and all parameter
-        # sets are simulated. This is efficient because translation (the slow part)
-        # happens only once per model.
-        all_result_paths = {}
-        for model_name, result_file_name in zip(model_names, model_result_file_names):
-            # Create unique result file names by encoding the varied parameter values.
-            # Adapt this naming scheme to your parameter study.
-            result_file_names = []
-            for param_dict in parameters:
-                name = result_file_name
-                for key, val in param_dict.items():
-                    short_key = key.split(".")[-1]
-                    name += f"_{short_key}{str(val).replace('.', '_')}"
-                result_file_names.append(name)
-
-            dym_api = DymolaAPI(
-                mos_script_pre=mos_script_pre,
-                model_name=model_name,
-                working_directory=working_directory,
-                n_cpu=n_cpu,
-                equidistant_output=True,
-                packages=packages,
-                **kwargs
-            )
-            dym_api.set_sim_setup(sim_setup=simulation_setup)
-
-            result_paths = dym_api.simulate(
-                parameters=parameters,
-                return_option="savepath",
-                savepath=save_path,
-                result_file_name=result_file_names,
-                postprocess_mat_result=postprocess_mat_result,
-                kwargs_postprocessing=kwargs_postprocessing,
-                **simulate_kwargs
-            )
-            all_result_paths[model_name] = result_paths
-            dym_api.close()
-
-        return all_result_paths
-
-    else:
-        # ### Model comparison mode
-        # All models are simulated in a single DymolaAPI call using the
-        # model_names keyword. Dymola translates each model on the fly.
-        # This is convenient for comparing different model configurations
-        # with the same or individual parameter sets.
-        dym_api = DymolaAPI(
-            mos_script_pre=mos_script_pre,
-            working_directory=working_directory,
-            n_cpu=n_cpu,
-            equidistant_output=True,
-            packages=packages,
-            **kwargs
-        )
-        dym_api.set_sim_setup(sim_setup=simulation_setup)
-
-        result_paths = dym_api.simulate(
-            model_names=model_names,
-            parameters=parameters,
-            return_option="savepath",
-            savepath=save_path,
-            result_file_name=model_result_file_names,
-            postprocess_mat_result=postprocess_mat_result,
-            kwargs_postprocessing=kwargs_postprocessing,
-            **simulate_kwargs
-        )
-        dym_api.close()
-
-        return result_paths
 
 
 if __name__ == "__main__":
@@ -335,9 +118,9 @@ if __name__ == "__main__":
         model_names=[model_names_to_simulate[0]],
         mos_script_pre=MOS_SCRIPT,
         simulation_setup=SIMULATION_SETUP,
-        use_postprocessing=False,
-        model_result_file_names=[model_result_names[0]],
         save_path=Path(__file__).parent.joinpath("results", "SimResults_0"),
+        working_directory=Path(__file__).parent.joinpath("results", "working_directory"),
+        model_result_file_names=[model_result_names[0]],
     )
 
     # ## Study 1: Parameter study
@@ -354,10 +137,12 @@ if __name__ == "__main__":
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
         simulation_setup=SIMULATION_SETUP,
+        working_directory=Path(__file__).parent.joinpath("results", "working_directory"),
+        save_path=Path(__file__).parent.joinpath("results", "SimResults_1"),
         parameters=parameter_study_params,
         use_parameter_study=True,
         model_result_file_names=model_result_names,
-        save_path=Path(__file__).parent.joinpath("results", "SimResults_1"),
+        postprocess_mat_result=custom_postprocessing,
         kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
@@ -373,9 +158,11 @@ if __name__ == "__main__":
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
         simulation_setup=SIMULATION_SETUP,
+        working_directory=Path(__file__).parent.joinpath("results", "working_directory"),
+        save_path=Path(__file__).parent.joinpath("results", "SimResults_2"),
         parameters=model_study_params,
         model_result_file_names=model_result_names,
-        save_path=Path(__file__).parent.joinpath("results", "SimResults_2"),
+        postprocess_mat_result=custom_postprocessing,
         kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
@@ -394,9 +181,11 @@ if __name__ == "__main__":
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
         simulation_setup=SIMULATION_SETUP,
+        working_directory=Path(__file__).parent.joinpath("results", "working_directory"),
+        save_path=Path(__file__).parent.joinpath("results", "SimResults_3"),
         parameters=model_study_div_params,
         model_result_file_names=model_result_names,
-        save_path=Path(__file__).parent.joinpath("results", "SimResults_3"),
+        postprocess_mat_result=custom_postprocessing,
         kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
