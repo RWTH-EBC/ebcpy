@@ -1,19 +1,20 @@
 # # Example: Basic Dymola Simulation Workflow
 #
 # Goals of this example:
-# 1. Learn the recommended workflow for Dymola simulation studies using ebcpy
+# 1. Learn a common workflow for Dymola simulation studies using ebcpy
 # 2. Understand how to run parameter studies across multiple model variants
 # 3. Learn how to use model name modifiers
 # 4. Learn how to post-process simulation results into usable formats
 #
-# This example demonstrates three common simulation patterns:
+# This example demonstrates common simulation patterns:
+# - **Study 0:** Single model — verify your setup works
 # - **Study 1:** Parameter study — multiple models × multiple parameter sets
 # - **Study 2:** Model comparison — multiple models with the same parameters
 # - **Study 3:** Model comparison — multiple models with individual parameters
 #
 # **Prerequisites:**
-# This example requires a Dymola installation and the BESMod library.
-# Adjust the `mos_script_pre` path to your local BESMod startup script.
+# This example requires a Dymola installation and the BESMod library with AixLib.
+# Adjust the ``MOS_SCRIPT`` path to your local BESMod startup script.
 
 import datetime
 import os
@@ -27,25 +28,24 @@ from ebcpy import DymolaAPI, load_time_series_data
 
 def filter_strings(strings, required_substrings, forbidden_substrings=None):
     """
-    Filters and returns strings that:
-      - Contain all substrings from required_substrings.
-      - Do not contain any substring from forbidden_substrings.
+    Helper function for filtering strings.
+    Filter strings that contain all required substrings and none of the forbidden ones.
 
-    Parameters:
-        strings (list of str): The list of strings to search within.
-        required_substrings (list of str): The substrings that each string must contain.
-        forbidden_substrings (list of str, optional): The substrings that must not be present in any string.
-            Defaults to an empty list if not provided.
-
-    Returns:
-        list of str: A list of strings that meet both criteria.
+    :param list[str] strings:
+        The list of strings to filter.
+    :param list[str] required_substrings:
+        Substrings that each string must contain.
+    :param list[str] forbidden_substrings:
+        Substrings that must not be present. Default is none.
+    :return: Filtered list of strings.
+    :rtype: list[str]
     """
     if forbidden_substrings is None:
         forbidden_substrings = []
-
     return [
         s for s in strings
-        if all(req in s for req in required_substrings) and all(forb not in s for forb in forbidden_substrings)
+        if all(req in s for req in required_substrings)
+        and all(forb not in s for forb in forbidden_substrings)
     ]
 
 
@@ -55,11 +55,11 @@ def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
 
     This function is passed to ``DymolaAPI.simulate()`` via the
     ``postprocess_mat_result`` keyword. It is called automatically
-    for each simulation result. You can write your own custom post-processing functions
+    for each simulation result. Adapt this function to your study.
 
     :param str mat_result_file:
         Path to the .mat file produced by Dymola.
-        Mandatory parameter passed over by ``DymolaAPI.simulate()``
+        Mandatory parameter passed by ``DymolaAPI.simulate()``.
     :param datetime.datetime first_day_of_year:
         Reference datetime for converting the float index (in seconds)
         to a DatetimeIndex.
@@ -72,13 +72,21 @@ def custom_postprocessing(mat_result_file, first_day_of_year, variable_names):
     df = load_time_series_data(mat_result_file, variable_names=variable_names)
     df.tsd.to_datetime_index(origin=first_day_of_year)
 
-    # adapt this to your study
+    # --- Adapt this section to your study ---
+    # Example: compute mean storage temperature across all layers
     variables = df.columns.to_list()
-    var_names_layer_temp = filter_strings(variables, ["layer", "T"])
-    df["stoBuf.mean_T"] = df[var_names_layer_temp].mean(axis=1)
+    layer_temp_vars = filter_strings(variables, ["layer", "T"])
+    if layer_temp_vars:
+        df["stoBuf.mean_T"] = df[layer_temp_vars].mean(axis=1)
 
+    # save the partial result dataframe in a different format
+    # Here we use parquet because it is fast and results in small file sizes
+    # If you also save variables with a lot of constant segments
+    # you can use further compressions like ".parquet.snappy"
+    # for small and short studies you could also use csv but this is not recommended
     df_path = Path(mat_result_file).with_suffix(".parquet")
     df.tsd.save(df_path)
+    # remove the old mat file
     os.remove(mat_result_file)
     return df_path
 
@@ -94,7 +102,7 @@ def empty_postprocessing(mat_result, **_kwargs):
 def simple_dymola_sim_study(
         model_names: List[str],
         mos_script_pre: Union[str, Path],
-        simulation_setup,
+        simulation_setup: dict,
         parameters: Union[dict, List[dict]] = None,
         working_directory: Union[str, Path] = None,
         n_cpu: int = 2,
@@ -103,12 +111,14 @@ def simple_dymola_sim_study(
         model_result_file_names: List[str] = None,
         save_path: Union[str, Path] = None,
         kwargs_postprocessing: dict = None,
+        postprocess_mat_result=None,
+        packages: List[Union[str, Path]] = None,
         **kwargs
 ):
     """
     Run a Dymola simulation study with multiple models and/or parameter variations.
 
-    This function demonstrates two simulation modes:
+    This function supports two simulation modes:
 
     **Parameter study** (``use_parameter_study=True``):
         Each model is simulated separately with all parameter sets.
@@ -120,7 +130,8 @@ def simple_dymola_sim_study(
         All models are simulated in a single ``simulate()`` call using the
         ``model_names`` keyword. Each model can receive the same parameters
         (pass a single dict) or individual parameters (pass a list of dicts
-        matching the length of ``model_names``). Each model run will be translated
+        matching the length of ``model_names``). Each model is translated
+        individually.
 
     Both modes use model name modifiers to change structural parameters.
     This is the recommended approach — write the modifier directly in the
@@ -132,6 +143,9 @@ def simple_dymola_sim_study(
     :param str,Path mos_script_pre:
         Path to a .mos script executed before loading packages.
         Typically the startup script of your Modelica library.
+    :param dict simulation_setup:
+        Simulation settings with keys ``start_time``, ``stop_time``,
+        and ``output_interval``.
     :param dict,list[dict] parameters:
         Parameter values for the simulation. For parameter studies, pass a list
         of dicts. For model comparison, pass a single dict (applied to all models)
@@ -141,7 +155,7 @@ def simple_dymola_sim_study(
     :param int n_cpu:
         Number of parallel Dymola processes. Default is 2.
     :param bool use_postprocessing:
-        If True, .mat files are converted to datetime-indexed parquet files.
+        If True, .mat files are post-processed using ``postprocess_mat_result``.
         If False, raw .mat files are kept.
     :param bool use_parameter_study:
         If True, runs each model with all parameter sets (cross-product).
@@ -150,6 +164,18 @@ def simple_dymola_sim_study(
         Base names for the result files, one per model.
     :param str,Path save_path:
         Directory for saving simulation results. Default is ``./results/SimResults``.
+    :param dict kwargs_postprocessing:
+        Keyword arguments passed to the post-processing function.
+        Required if ``use_postprocessing=True``.
+    :param callable postprocess_mat_result:
+        Custom post-processing function. Default is ``custom_postprocessing``.
+        Signature: ``func(mat_result_file, **kwargs_postprocessing) -> Any``
+    :param list packages:
+        Additional Modelica packages not loaded by ``mos_script_pre``.
+    :param kwargs:
+        Additional keyword arguments forwarded to ``DymolaAPI`` constructor
+        (e.g. ``show_window``, ``debug``, ``n_restart``, ``dymola_version``)
+        and to ``DymolaAPI.simulate()`` (e.g. ``fail_on_error``).
     :return: Result file paths. For parameter studies, a dict mapping model names
         to lists of paths. For model comparison, a list of paths.
     :rtype: dict or list
@@ -159,25 +185,30 @@ def simple_dymola_sim_study(
         working_directory = Path(__file__).parent.joinpath("results", "working_directory")
     if save_path is None:
         save_path = Path(__file__).parent.joinpath("results", "SimResults")
-
-    # ## Simulation setup
-    # Define the time range and output resolution for all simulations.
-    # The output_interval determines the time step of the result data.
-
-    additional_packages = kwargs.pop("additional_packages", [])  # use this for custom packages which are note in the mos_script_pre
+    if packages is None:
+        packages = []
 
     # ## Post-processing setup
     # Dymola produces .mat files by default. These are large and use a float
-    # index (seconds). The post-processing function converts them to
-    # datetime-indexed parquet files containing only the variables we need.
-    # If you want to keep the raw .mat files, set use_postprocessing=False.
+    # index (seconds). The post-processing function converts them to a more
+    # usable format (e.g. datetime-indexed parquet) containing only the
+    # variables you need.
     if use_postprocessing:
-        postprocess_mat_result = custom_postprocessing
+        if postprocess_mat_result is None:
+            postprocess_mat_result = custom_postprocessing
         if kwargs_postprocessing is None:
-            raise Exception
+            raise ValueError(
+                "kwargs_postprocessing is required when use_postprocessing=True. "
+                "Pass a dict with the keyword arguments for your post-processing function."
+            )
     else:
         postprocess_mat_result = empty_postprocessing
         kwargs_postprocessing = {}
+
+    # ## Separate kwargs for DymolaAPI constructor and simulate()
+    # Known simulate() kwargs are forwarded there, everything else goes to DymolaAPI.
+    simulate_kwarg_keys = {"inputs", "table_name", "file_name", "fail_on_error", "show_eventlog", "squeeze"}
+    simulate_kwargs = {k: kwargs.pop(k) for k in simulate_kwarg_keys if k in kwargs}
 
     # ## Run simulations
     if use_parameter_study:
@@ -188,12 +219,14 @@ def simple_dymola_sim_study(
         # happens only once per model.
         all_result_paths = {}
         for model_name, result_file_name in zip(model_names, model_result_file_names):
-            # Create unique result file names by encoding the varied parameter values
+            # Create unique result file names by encoding the varied parameter values.
+            # Adapt this naming scheme to your parameter study.
             result_file_names = []
             for param_dict in parameters:
                 name = result_file_name
                 for key, val in param_dict.items():
-                    name += f"_{key.split(".")[-1]}{val.replace('.', '_')}"
+                    short_key = key.split(".")[-1]
+                    name += f"_{short_key}{str(val).replace('.', '_')}"
                 result_file_names.append(name)
 
             dym_api = DymolaAPI(
@@ -202,7 +235,8 @@ def simple_dymola_sim_study(
                 working_directory=working_directory,
                 n_cpu=n_cpu,
                 equidistant_output=True,
-                packages=additional_packages
+                packages=packages,
+                **kwargs
             )
             dym_api.set_sim_setup(sim_setup=simulation_setup)
 
@@ -213,6 +247,7 @@ def simple_dymola_sim_study(
                 result_file_name=result_file_names,
                 postprocess_mat_result=postprocess_mat_result,
                 kwargs_postprocessing=kwargs_postprocessing,
+                **simulate_kwargs
             )
             all_result_paths[model_name] = result_paths
             dym_api.close()
@@ -230,7 +265,8 @@ def simple_dymola_sim_study(
             working_directory=working_directory,
             n_cpu=n_cpu,
             equidistant_output=True,
-            packages=additional_packages
+            packages=packages,
+            **kwargs
         )
         dym_api.set_sim_setup(sim_setup=simulation_setup)
 
@@ -242,6 +278,7 @@ def simple_dymola_sim_study(
             result_file_name=model_result_file_names,
             postprocess_mat_result=postprocess_mat_result,
             kwargs_postprocessing=kwargs_postprocessing,
+            **simulate_kwargs
         )
         dym_api.close()
 
@@ -252,26 +289,44 @@ if __name__ == "__main__":
     # TODO: Adjust this path to your local BESMod startup script
     MOS_SCRIPT = r"D:\01_git\BESMod\startup.mos"
 
-    # adapt this to your study
-    simulation_setup = {
+    # ## Simulation setup
+    # Adapt these values to your study.
+    SIMULATION_SETUP = {
         "start_time": 0,
         "stop_time": 3600 * 24 * 30,  # 30 days
-        "output_interval": 900  # one data point every 900 s (15 min)
+        "output_interval": 900         # one data point every 900 s (15 min)
     }
 
     # ## Define model variants
     # We use model name modifiers to vary the number of storage layers.
-    # This is the recommended approach for structural parameters which need a retranslation —
-    # write the modifier directly in the model name string. You can also redeclare models here.
-    base_model_name = "BESMod.Examples.DesignOptimization.BES"
+    # This is the recommended approach for structural parameters which
+    # need a retranslation — write the modifier directly in the model name
+    # string. You can also redeclare models here.
+    BASE_MODEL = "BESMod.Examples.DesignOptimization.BES"
     storage_layers = np.arange(1, 5, 1, dtype=int)
     model_names_to_simulate = [
-        f"{base_model_name}(hydraulic.distribution.parStoBuf(nLayer={n}))"
+        f"{BASE_MODEL}(hydraulic.distribution.parStoBuf(nLayer={n}))"
         for n in storage_layers
     ]
+    # Base names for result files — one per model variant
     model_result_names = [f"BufSto_nLayer{n}" for n in storage_layers]
-
     print("Model variants:", model_names_to_simulate)
+
+    # ## Post-processing configuration
+    # Adapt the variable_names patterns to select which variables
+    # you want to keep from the .mat files.
+    FIRST_DAY_OF_YEAR = datetime.datetime(2015, 1, 1, 0, 0)
+    KWARGS_POSTPROCESSING = dict(
+        variable_names=[
+            "outputs*",  # stars as wildcards are supportet
+            "hydraulic.distribution.stoBuf.layer[*].T",
+            "hydraulic.distribution.stoBuf.port_a_consumer.m_flow",
+            "hydraulic.distribution.stoBuf.port_a_heatGenerator.m_flow",
+            "hydraulic.distribution.sigBusDis.*",
+            "hydraulic.generation.sigBusGen.*",
+        ],
+        first_day_of_year=FIRST_DAY_OF_YEAR,
+    )
 
     # ## Study 0: Single model, default parameters
     # The simplest possible simulation — verify your setup works.
@@ -279,67 +334,54 @@ if __name__ == "__main__":
     result_paths_study_0 = simple_dymola_sim_study(
         model_names=[model_names_to_simulate[0]],
         mos_script_pre=MOS_SCRIPT,
-        simulation_setup=simulation_setup,
-        use_parameter_study=False,
+        simulation_setup=SIMULATION_SETUP,
         use_postprocessing=False,
         model_result_file_names=[model_result_names[0]],
         save_path=Path(__file__).parent.joinpath("results", "SimResults_0"),
     )
-    # adapt this to your study
-    first_day_of_year = datetime.datetime(2015, 1, 1, 0, 0)
-    kwargs_postprocessing = dict(
-        variable_names=["outputs*",
-                        "hydraulic.distribution.stoBuf.layer[*].T",
-                        "hydraulic.distribution.stoBuf.port_a_consumer.m_flow",
-                        "hydraulic.distribution.stoBuf.port_a_heatGenerator.m_flow",
-                        "hydraulic.distribution.sigBusDis.*"
-                        "hydraulic.generation.sigBusGen.*"],
-        first_day_of_year=first_day_of_year
-    )
 
     # ## Study 1: Parameter study
-    # ## Define parameter variations
+    # Each model variant is simulated with all parameter sets.
+    # Each parameter set can have multiple and different parameters
+    # Total simulations: len(model_names) × len(parameter_sets) = 4 × 8 = 32
+    print("\n--- Study 1: Parameter study ---")
     parameter_study_params = [
         {"parameterStudy.VPerQFlow": np.round(v, decimals=1)}
         for v in np.linspace(5, 100, 8)
     ]
     print("Parameter sets:", parameter_study_params)
-
-    # Each model variant is simulated with all parameter sets.
-    # Total simulations: len(model_names) × len(parameter_sets) = 4 × 8 = 32
-    print("\n--- Study 1: Parameter study ---")
     result_paths_study_1 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
-        simulation_setup=simulation_setup,
+        simulation_setup=SIMULATION_SETUP,
         parameters=parameter_study_params,
         use_parameter_study=True,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_1"),
-        kwargs_postprocessing=kwargs_postprocessing,
+        kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
     # ## Study 2: Model comparison with shared parameters
-    # All model variants are simulated with the same parameter set.
+    # All model variants are simulated with the same parameter set. You do not need to specify any parameters.
     # Total simulations: len(model_names) = 4
     print("\n--- Study 2: Model comparison (shared parameters) ---")
     model_study_params = {
         "parameterStudy.VPerQFlow": 50,
-        "parameterStudy.TBiv": 273.15 - 5
+        "parameterStudy.TBiv": 273.15 - 5,
     }
     result_paths_study_2 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
-        simulation_setup=simulation_setup,
+        simulation_setup=SIMULATION_SETUP,
         parameters=model_study_params,
-        use_parameter_study=False,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_2"),
-        kwargs_postprocessing=kwargs_postprocessing,
+        kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
     # ## Study 3: Model comparison with individual parameters
     # Each model variant gets its own parameter set.
+    # If one model variant does not have a parameter set you have to set an empty dictionary {}
     # Total simulations: len(model_names) = 4
     print("\n--- Study 3: Model comparison (individual parameters) ---")
     rng = np.random.default_rng(42)
@@ -351,12 +393,13 @@ if __name__ == "__main__":
     result_paths_study_3 = simple_dymola_sim_study(
         model_names=model_names_to_simulate,
         mos_script_pre=MOS_SCRIPT,
-        simulation_setup=simulation_setup,
+        simulation_setup=SIMULATION_SETUP,
         parameters=model_study_div_params,
-        use_parameter_study=False,
         model_result_file_names=model_result_names,
         save_path=Path(__file__).parent.joinpath("results", "SimResults_3"),
-        kwargs_postprocessing=kwargs_postprocessing,
+        kwargs_postprocessing=KWARGS_POSTPROCESSING,
     )
 
     print("\n--- All studies finished ---")
+    print("You could now load the data again in a different scrit with `ebcpy.load_time_series_data()` "
+          "for plotting and analysis.")
