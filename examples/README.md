@@ -7,8 +7,8 @@ This folder contains several example files which help with the understanding of 
 While these examples should run in any IDE, we advise using PyCharm.
 Before being able to run these examples, be sure to:
 
-1. Create a clean environment of python (We support 3.8 to 3.12). In Anaconda run: `conda create -n py313_ebcpy python=3.13`
-2. Activate the environment in your terminal. In Anaconda run: `activate py312_ebcpy` 
+1. Create a clean environment of python (We support 3.8 to 3.13). In Anaconda run: `conda create -n py313_ebcpy python=3.13`
+2. Activate the environment in your terminal. In Anaconda run: `activate py313_ebcpy` 
 3. Clone the repository by running `git clone https://github.com/RWTH-EBC/ebcpy`
 4. Clone the BESMod in order to use the models: `git clone https://github.com/RWTH-EBC/BESMod` and install it as described in the BESMod Readme with AixLib
 5. Install the library using `pip install ebcpy`.
