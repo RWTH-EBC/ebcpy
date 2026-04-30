@@ -118,6 +118,8 @@ if __name__ == "__main__":
         model_names=[model_names_to_simulate[0]],
         mos_script_pre=MOS_SCRIPT,
         simulation_setup=SIMULATION_SETUP,
+        # save path and working directory should not be the same folder
+        # and if you are in a git repository add the working_directory folder to .gitignore
         save_path=Path(__file__).parent.joinpath("results", "SimResults_0"),
         working_directory=Path(__file__).parent.joinpath("results", "working_directory"),
         model_result_file_names=[model_result_names[0]],
