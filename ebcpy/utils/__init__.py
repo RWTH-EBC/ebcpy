@@ -77,7 +77,7 @@ def get_names(
     :return: A list of names from ``all_names`` that match any of the given
         patterns and none of the exclusion patterns, in original order.
     :rtype: list[str]
-    :raises KeyError: If any inclusion pattern does not match at least one name.
+    :raises warning: If any inclusion pattern does not match at least one name.
 
     Example:
 
