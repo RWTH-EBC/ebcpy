@@ -480,6 +480,7 @@ class TestSimpleDymolaSimStudyValidation(unittest.TestCase):
 
 class TestSimpleDymolaSimStudy(unittest.TestCase):
     """Test simple_dymola_sim_study with Dymola — kept minimal for speed."""
+    n_cpu = None
 
     def setUp(self):
         self.data_dir = Path(__file__).parent.joinpath("data")
@@ -512,7 +513,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
                 model_name="TestModelVariables",
                 packages=self.packages,
                 dymola_exe_path=self.dymola_exe_path,
-                n_cpu=1,
+                n_cpu=self.n_cpu,
             )
             dym.close()
         except (FileNotFoundError, ImportError, ConnectionError) as error:
@@ -529,7 +530,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
             use_parameter_study=True,
             model_result_file_names=["param_study"],
             packages=self.packages,
-            n_cpu=1,
+            n_cpu=self.n_cpu,
             dymola_exe_path=self.dymola_exe_path,
         )
         self.assertIsInstance(result_paths, dict)
@@ -548,7 +549,7 @@ class TestSimpleDymolaSimStudy(unittest.TestCase):
             parameters={"test_real": 5.0},
             model_result_file_names=["model_a", "model_b"],
             packages=self.packages,
-            n_cpu=1,
+            n_cpu=self.n_cpu,
             dymola_exe_path=self.dymola_exe_path,
         )
         self.assertIsInstance(result_paths, list)
