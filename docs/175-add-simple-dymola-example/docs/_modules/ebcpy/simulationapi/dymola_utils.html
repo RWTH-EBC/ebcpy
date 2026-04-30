@@ -98,10 +98,10 @@
         <span class="n">simulation_setup</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">working_directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
         <span class="n">save_path</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">model_result_file_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
         <span class="n">parameters</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">dict</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">dict</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">n_cpu</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
         <span class="n">use_parameter_study</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-        <span class="n">model_result_file_names</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">result_file_name_func</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">kwargs_postprocessing</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">postprocess_mat_result</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
@@ -141,6 +141,8 @@
 <span class="sd">        Dymola working directory.</span>
 <span class="sd">    :param str,Path save_path:</span>
 <span class="sd">        Directory for saving simulation results.</span>
+<span class="sd">    :param list[str] model_result_file_names:</span>
+<span class="sd">        Base names for the result files, one per model.</span>
 <span class="sd">    :param dict,list[dict] parameters:</span>
 <span class="sd">        Parameter values for the simulation. For parameter studies, pass a list</span>
 <span class="sd">        of dicts. For model comparison, pass a single dict (applied to all models)</span>
@@ -150,8 +152,6 @@
 <span class="sd">    :param bool use_parameter_study:</span>
 <span class="sd">        If True, runs each model with all parameter sets (cross-product).</span>
 <span class="sd">        If False, runs all models in a single call.</span>
-<span class="sd">    :param list[str] model_result_file_names:</span>
-<span class="sd">        Base names for the result files, one per model.</span>
 <span class="sd">    :param callable result_file_name_func:</span>
 <span class="sd">        Function to generate unique result file names for parameter studies.</span>
 <span class="sd">        Signature: ``func(result_file_name, parameters) -&gt; list[str]``</span>
@@ -183,7 +183,7 @@
     <span class="k">if</span> <span class="n">packages</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">packages</span> <span class="o">=</span> <span class="p">[]</span>
 
-    <span class="k">if</span> <span class="n">model_result_file_names</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_result_file_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_result_file_names</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;model_result_file_names has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_result_file_names</span><span class="p">)</span><span class="si">}</span><span class="s2"> &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;but model_names has length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">model_names</span><span class="p">)</span><span class="si">}</span><span class="s2">. They must match.&quot;</span>
