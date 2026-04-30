@@ -201,15 +201,15 @@ class DymolaAPI(SimulationAPI):
         self.fully_initialized = False
         self.debug = kwargs.pop("debug", False)
         self.show_window = kwargs.pop("show_window", False)
-        if "modify_structural_parameters" in kwargs:
-            if kwargs.pop("modify_structural_parameters", True) is not True:
-                warnings.warn(
-                    "'modify_structural_parameters' is deprecated and will be removed "
-                    "in the next major release. Use model name modifiers directly instead.",
-                    FutureWarning,
-                    stacklevel=2,
-                )
-        self.modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
+        _modify_structural_parameters = kwargs.pop("modify_structural_parameters", True)
+        if _modify_structural_parameters is not True:
+            warnings.warn(
+                "'modify_structural_parameters' is deprecated and will be removed "
+                "in the next major release. Use model name modifiers directly instead.",
+                FutureWarning,
+                stacklevel=2,
+            )
+        self.modify_structural_parameters = _modify_structural_parameters
         self.equidistant_output = kwargs.pop("equidistant_output", True)
         _variables_to_save = kwargs.pop("variables_to_save", {})
         self.experiment_setup_output = ExperimentSetupOutput(**_variables_to_save)
