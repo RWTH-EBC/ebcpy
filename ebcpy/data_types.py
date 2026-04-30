@@ -114,7 +114,7 @@ class TimeSeriesAccessor:
         elif ".parquet" in filepath.name:
             parquet_split = filepath.name.split(".parquet")
             # Parquet doesn't support SparseDtype — densify before writing
-            df_to_save = self._obj
+            df_to_save = self._obj.copy()
             for col in df_to_save.columns:
                 if isinstance(df_to_save[col].dtype, pd.SparseDtype):
                     df_to_save[col] = df_to_save[col].sparse.to_dense()
