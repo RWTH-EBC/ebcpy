@@ -55,7 +55,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/data_types.py: Fatal error while checking &#39;ebcpy/data_types.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-49.txt&#39;.</pre></td>
+                <td><pre>ebcpy/data_types.py: Fatal error while checking &#39;ebcpy/data_types.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-11.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -109,7 +109,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/modelica/__init__.py: Fatal error while checking &#39;ebcpy/modelica/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-50.txt&#39;.</pre></td>
+                <td><pre>ebcpy/modelica/__init__.py: Fatal error while checking &#39;ebcpy/modelica/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-12.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -361,7 +361,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/optimization.py: Fatal error while checking &#39;ebcpy/optimization.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-49.txt&#39;.</pre></td>
+                <td><pre>ebcpy/optimization.py: Fatal error while checking &#39;ebcpy/optimization.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-11.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -505,7 +505,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/preprocessing.py: Fatal error while checking &#39;ebcpy/preprocessing.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-49.txt&#39;.</pre></td>
+                <td><pre>ebcpy/preprocessing.py: Fatal error while checking &#39;ebcpy/preprocessing.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-12.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -529,7 +529,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/simulationapi/__init__.py: Fatal error while checking &#39;ebcpy/simulationapi/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-50.txt&#39;.</pre></td>
+                <td><pre>ebcpy/simulationapi/__init__.py: Fatal error while checking &#39;ebcpy/simulationapi/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -571,6 +571,7 @@
                 &#34;are not part of the supported kwargs and &#34;
                 &#34;have thus no effect: %s.&#34;, &#34; ,&#34;.join(list(kwargs.keys())))
 
+        # Handle multiprocessing
         if self.use_mp:</pre></td>
             </tr>
             
@@ -588,14 +589,13 @@
 
     @working_directory.setter
     def working_directory(self, working_directory: Union[Path, str]):
-        &#34;&#34;&#34;Set current working directory&#34;&#34;&#34;
+        &#34;&#34;&#34;Set the current working directory&#34;&#34;&#34;
         if isinstance(working_directory, str):
             working_directory = Path(working_directory)
         os.makedirs(working_directory, exist_ok=True)
         self._working_directory = working_directory
 
-    @property
-    def cd(self) -&gt; Path:
+    def set_cd(self, cd: Union[Path, str]):
         warnings.warn(&#34;cd was renamed to working_directory in all classes. &#34;</pre></td>
             </tr>
             
@@ -668,7 +668,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/simulationapi/dymola_api.py: Fatal error while checking &#39;ebcpy/simulationapi/dymola_api.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-50.txt&#39;.</pre></td>
+                <td><pre>ebcpy/simulationapi/dymola_api.py: Fatal error while checking &#39;ebcpy/simulationapi/dymola_api.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -862,7 +862,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/simulationapi/dymola_utils.py: Fatal error while checking &#39;ebcpy/simulationapi/dymola_utils.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-50.txt&#39;.</pre></td>
+                <td><pre>ebcpy/simulationapi/dymola_utils.py: Fatal error while checking &#39;ebcpy/simulationapi/dymola_utils.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -906,7 +906,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/simulationapi/fmu.py: Fatal error while checking &#39;ebcpy/simulationapi/fmu.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-50.txt&#39;.</pre></td>
+                <td><pre>ebcpy/simulationapi/fmu.py: Fatal error while checking &#39;ebcpy/simulationapi/fmu.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-13.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -960,7 +960,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/utils/__init__.py: Fatal error while checking &#39;ebcpy/utils/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-49.txt&#39;.</pre></td>
+                <td><pre>ebcpy/utils/__init__.py: Fatal error while checking &#39;ebcpy/utils/__init__.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-12.txt&#39;.</pre></td>
             </tr>
             
         </table>
@@ -984,7 +984,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/utils/conversion.py: Fatal error while checking &#39;ebcpy/utils/conversion.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-49.txt&#39;.</pre></td>
+                <td><pre>ebcpy/utils/conversion.py: Fatal error while checking &#39;ebcpy/utils/conversion.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-12.txt&#39;.</pre></td>
             </tr>
             
             <tr>
@@ -1018,7 +1018,7 @@
                 <td><code>astroid-error</code></td>
                 <td>F0002</td>
                 <td></td>
-                <td><pre>ebcpy/utils/reproduction.py: Fatal error while checking &#39;ebcpy/utils/reproduction.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-02-48.txt&#39;.</pre></td>
+                <td><pre>ebcpy/utils/reproduction.py: Fatal error while checking &#39;ebcpy/utils/reproduction.py&#39;. Please open an issue in our bug tracker so we address this. There is a pre-filled template that you can use in &#39;/home/runner/.cache/pylint/pylint-crash-2026-04-30-08-04-10.txt&#39;.</pre></td>
             </tr>
             
         </table>
