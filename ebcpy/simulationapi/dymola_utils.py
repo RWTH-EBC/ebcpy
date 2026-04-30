@@ -84,7 +84,7 @@ def simple_dymola_sim_study(
         Required if ``postprocess_mat_result`` is provided.
     :param callable postprocess_mat_result:
         Custom post-processing function. If None (default), .mat files
-        are kept unchanged. Signature: ``func(mat_result_file, **kwargs_postprocessing)
+        are kept unchanged. Signature: ``func(mat_result_file, **kwargs_postprocessing)``
     :param str,Path mos_script_pre:
         Path to a .mos script executed before loading packages.
         Typically, the startup script of your Modelica library.
