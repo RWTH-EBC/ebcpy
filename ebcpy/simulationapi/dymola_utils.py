@@ -1,7 +1,8 @@
 from pathlib import Path
 from typing import Union, List
 
-from ebcpy import DymolaAPI, load_time_series_data
+from .dymola_api import DymolaAPI
+from ..data_types import load_time_series_data
 
 
 def _default_result_file_names(result_file_name, parameters):
