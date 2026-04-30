@@ -78,7 +78,8 @@
 <span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">ebcpy</span><span class="w"> </span><span class="kn">import</span> <span class="n">DymolaAPI</span><span class="p">,</span> <span class="n">load_time_series_data</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.dymola_api</span><span class="w"> </span><span class="kn">import</span> <span class="n">DymolaAPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..data_types</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_time_series_data</span>
 
 
 <span class="k">def</span><span class="w"> </span><span class="nf">_default_result_file_names</span><span class="p">(</span><span class="n">result_file_name</span><span class="p">,</span> <span class="n">parameters</span><span class="p">):</span>
