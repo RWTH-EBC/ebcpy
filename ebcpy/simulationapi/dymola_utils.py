@@ -21,10 +21,10 @@ def simple_dymola_sim_study(
         simulation_setup: dict,
         working_directory: Union[str, Path],
         save_path: Union[str, Path],
+        model_result_file_names: List[str],
         parameters: Union[dict, List[dict]] = None,
         n_cpu: int = 4,
         use_parameter_study: bool = False,
-        model_result_file_names: List[str] = None,
         result_file_name_func=None,
         kwargs_postprocessing: dict = None,
         postprocess_mat_result=None,
@@ -64,6 +64,8 @@ def simple_dymola_sim_study(
         Dymola working directory.
     :param str,Path save_path:
         Directory for saving simulation results.
+    :param list[str] model_result_file_names:
+        Base names for the result files, one per model.
     :param dict,list[dict] parameters:
         Parameter values for the simulation. For parameter studies, pass a list
         of dicts. For model comparison, pass a single dict (applied to all models)
@@ -73,8 +75,6 @@ def simple_dymola_sim_study(
     :param bool use_parameter_study:
         If True, runs each model with all parameter sets (cross-product).
         If False, runs all models in a single call.
-    :param list[str] model_result_file_names:
-        Base names for the result files, one per model.
     :param callable result_file_name_func:
         Function to generate unique result file names for parameter studies.
         Signature: ``func(result_file_name, parameters) -> list[str]``
@@ -106,7 +106,7 @@ def simple_dymola_sim_study(
     if packages is None:
         packages = []
 
-    if model_result_file_names is not None and len(model_result_file_names) != len(model_names):
+    if len(model_result_file_names) != len(model_names):
         raise ValueError(
             f"model_result_file_names has length {len(model_result_file_names)} "
             f"but model_names has length {len(model_names)}. They must match."
