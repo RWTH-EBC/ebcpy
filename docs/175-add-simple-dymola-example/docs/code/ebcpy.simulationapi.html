@@ -974,7 +974,7 @@ Default generates names by appending parameter key-value pairs.</p></li>
 <li><p><strong>kwargs_postprocessing</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><em>dict</em></a>) – Keyword arguments passed to the post-processing function.
 Required if <code class="docutils literal notranslate"><span class="pre">postprocess_mat_result</span></code> is provided.</p></li>
 <li><p><strong>postprocess_mat_result</strong> (<em>callable</em>) – Custom post-processing function. If None (default), .mat files
-are kept unchanged. Signature: <a href="#id1"><span class="problematic" id="id2">``</span></a>func(mat_result_file, <a href="#id3"><span class="problematic" id="id4">**</span></a>kwargs_postprocessing)</p></li>
+are kept unchanged. Signature: <code class="docutils literal notranslate"><span class="pre">func(mat_result_file,</span> <span class="pre">**kwargs_postprocessing)</span></code></p></li>
 <li><p><strong>mos_script_pre</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><em>str</em></a><em>,</em><em>Path</em>) – Path to a .mos script executed before loading packages.
 Typically, the startup script of your Modelica library.</p></li>
 <li><p><strong>packages</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><em>list</em></a>) – Additional Modelica packages not loaded by <code class="docutils literal notranslate"><span class="pre">mos_script_pre</span></code>.</p></li>
