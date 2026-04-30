@@ -74,7 +74,7 @@ def simple_dymola_sim_study(
         If True, runs each model with all parameter sets (cross-product).
         If False, runs all models in a single call.
     :param list[str] model_result_file_names:
-        Base names for the result files, one per model. Required.
+        Base names for the result files, one per model.
     :param callable result_file_name_func:
         Function to generate unique result file names for parameter studies.
         Signature: ``func(result_file_name, parameters) -> list[str]``
@@ -106,12 +106,7 @@ def simple_dymola_sim_study(
     if packages is None:
         packages = []
 
-    if model_result_file_names is None:
-        raise ValueError(
-            "model_result_file_names is required. "
-            "Provide a list of result file base names, one per model in model_names."
-        )
-    if len(model_result_file_names) != len(model_names):
+    if model_result_file_names is not None and len(model_result_file_names) != len(model_names):
         raise ValueError(
             f"model_result_file_names has length {len(model_result_file_names)} "
             f"but model_names has length {len(model_names)}. They must match."

@@ -438,18 +438,6 @@ class TestFMUAPIMultiCore(TestFMUAPI):
 class TestSimpleDymolaSimStudyValidation(unittest.TestCase):
     """Test input validation — no Dymola needed."""
 
-    def test_model_result_file_names_required(self):
-        from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
-        with self.assertRaises(ValueError):
-            simple_dymola_sim_study(
-                model_names=["Model"],
-                mos_script_pre="dummy.mos",
-                simulation_setup={},
-                working_directory=".",
-                save_path=".",
-                model_result_file_names=None,
-            )
-
     def test_mismatched_lengths(self):
         from ebcpy.simulationapi.dymola_utils import simple_dymola_sim_study
         with self.assertRaises(ValueError):
