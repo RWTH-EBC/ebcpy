@@ -54,6 +54,8 @@ def simple_dymola_sim_study(
     Both modes use model name modifiers to change structural parameters.
     This is the recommended approach — write the modifier directly in the
     model name string.
+    (e.g. 'BESMod.Examples.GasBoilerBuildingOnly(
+            redeclare BESMod.Systems.Control.DHWSuperheating control(dTDHW=10))')
 
     :param list[str] model_names:
         List of Dymola model names, optionally with modifiers.
