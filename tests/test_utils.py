@@ -348,6 +348,39 @@ class TestGetNames(unittest.TestCase):
                 result = get_names(all_names, patterns)
                 self.assertEqual(result, expected)
 
+    def test_exclude(self):
+        """
+        Test exclusion with literal and wildcard patterns.
+        """
+        test_cases = [
+            # exclude single literal
+            (['alpha', 'beta', 'gamma'], '*', 'beta', ['alpha', 'gamma']),
+            # exclude wildcard
+            (['wall[1].T', 'wall[2].T', 'wall[1].Q_flow'], 'wall*', '*Q_flow',
+             ['wall[1].T', 'wall[2].T']),
+            # exclude list of patterns
+            (['a1', 'a2', 'b1', 'b2', 'c1'], '*', ['a*', 'c*'], ['b1', 'b2']),
+            # exclude with no effect (nothing matches exclusion)
+            (['x1', 'x2', 'x3'], 'x*', 'y*', ['x1', 'x2', 'x3']),
+            # exclude all matches
+            (['a1', 'a2'], 'a*', 'a*', []),
+            # exclude literal from wildcard match
+            (['wall1.T', 'wall2.T', 'floor.T'], '*.T', 'floor.T', ['wall1.T', 'wall2.T']),
+        ]
+        for all_names, patterns, exclude, expected in test_cases:
+            with self.subTest(patterns=patterns, exclude=exclude):
+                result = get_names(all_names, patterns, exclude=exclude)
+                self.assertEqual(result, expected)
+
+    def test_exclude_none(self):
+        """
+        Test that exclude=None (default) has no effect.
+        """
+        result = get_names(['a', 'b', 'c'], '*')
+        self.assertEqual(result, ['a', 'b', 'c'])
+        result_explicit = get_names(['a', 'b', 'c'], '*', exclude=None)
+        self.assertEqual(result, result_explicit)
+
     def test_errors(self):
         """
         Patterns or literals that match nothing should raise a warning.

@@ -1,7 +1,8 @@
 """
 Goals of this part of the examples:
 1. Learn how to use the `DymolaAPI`
-2. Learn how to dynamically modify parameters in the model
+2. Learn how to dynamically modify structural parameters in the model
+3. Learn how to redeclare models dynamically in the main model
 """
 # Start by importing all relevant packages
 import pathlib
